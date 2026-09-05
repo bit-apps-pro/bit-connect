@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26a2d0882e56cbf15a28ba798e9a5a5d",
+    "content-hash": "3bf2d12e9f0bab2876fa8fac0aa4aed5",
     "packages": [
         {
             "name": "bitapps/wp-database",
@@ -64,25 +64,30 @@
         },
         {
             "name": "bitapps/wp-kit",
-            "version": "dev-feat/static-router",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Bit-Apps-Pro/wp-kit.git",
-                "reference": "995b8aa1aadc00f38052922198f5fad773f053d3"
+                "url": "https://github.com/bit-apps-pro/wp-kit.git",
+                "reference": "a17210323f8021634ee168a5a32f79ec5204c080"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bit-Apps-Pro/wp-kit/zipball/995b8aa1aadc00f38052922198f5fad773f053d3",
-                "reference": "995b8aa1aadc00f38052922198f5fad773f053d3",
+                "url": "https://api.github.com/repos/bit-apps-pro/wp-kit/zipball/a17210323f8021634ee168a5a32f79ec5204c080",
+                "reference": "a17210323f8021634ee168a5a32f79ec5204c080",
                 "shasum": ""
             },
             "require": {
-                "bitapps/wp-validator": "^1.0"
+                "bitapps/wp-validator": "^1.0",
+                "php": ">=8.0"
             },
             "require-dev": {
+                "captainhook/captainhook": "^5.29",
+                "captainhook/hook-installer": "^1.0",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
                 "friendsofphp/php-cs-fixer": "^3.10",
                 "phpcompatibility/phpcompatibility-wp": "*",
+                "phpunit/phpunit": "^9.6",
+                "rector/rector": "^2.5",
                 "sirbrillig/phpcs-variable-analysis": "*"
             },
             "type": "library",
@@ -107,10 +112,10 @@
                 "wp"
             ],
             "support": {
-                "issues": "https://github.com/Bit-Apps-Pro/wp-kit/issues",
-                "source": "https://github.com/Bit-Apps-Pro/wp-kit/tree/feat/static-router"
+                "issues": "https://github.com/bit-apps-pro/wp-kit/issues",
+                "source": "https://github.com/bit-apps-pro/wp-kit/tree/2.4.0"
             },
-            "time": "2026-01-27T04:33:15+00:00"
+            "time": "2026-09-05T11:56:28+00:00"
         },
         {
             "name": "bitapps/wp-telemetry",
@@ -166,16 +171,16 @@
         },
         {
             "name": "bitapps/wp-validator",
-            "version": "1.2.1",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Bit-Apps-Pro/wp-validator.git",
-                "reference": "294d6a7c35436419060dc067f58a9c5a0d72b37e"
+                "url": "https://github.com/bit-apps-pro/wp-validator.git",
+                "reference": "f11daf31d16a128109199185c07509df95f6cddf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bit-Apps-Pro/wp-validator/zipball/294d6a7c35436419060dc067f58a9c5a0d72b37e",
-                "reference": "294d6a7c35436419060dc067f58a9c5a0d72b37e",
+                "url": "https://api.github.com/repos/bit-apps-pro/wp-validator/zipball/f11daf31d16a128109199185c07509df95f6cddf",
+                "reference": "f11daf31d16a128109199185c07509df95f6cddf",
                 "shasum": ""
             },
             "require": {
@@ -221,7 +226,7 @@
                 "issues": "https://github.com/Bit-Apps-Pro/wp-validator/issues",
                 "source": "https://github.com/Bit-Apps-Pro/wp-validator"
             },
-            "time": "2024-10-31T05:50:19+00:00"
+            "time": "2026-09-05T11:10:28+00:00"
         },
         {
             "name": "typisttech/imposter",
@@ -10641,9 +10646,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "bitapps/wp-kit": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

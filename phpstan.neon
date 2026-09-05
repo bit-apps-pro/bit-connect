@@ -1,16 +1,5 @@
 parameters:
     ignoreErrors:
-        # wp-kit's Hooks facade dispatches through __callStatic, and its class
-        # docblock annotates every method as returning HooksWrapper:
-        #     @method static HooksWrapper applyFilter($tag, $value, ...$args)
-        # True of the fluent registration calls, wrong for applyFilter(), which
-        # returns whatever apply_filters() returned. So `(bool) Hooks::applyFilter(...)`
-        # is correct at runtime and reads here as casting an object.
-        # Not fixable in vendor/ — it is not committed, and composer install would
-        # restore the annotation. The real fix belongs upstream in bitapps/wp-kit.
-        - '#Cannot cast BitApps\\BitConnect\\Deps\\BitApps\\WPKit\\Hooks\\HooksWrapper to (int|string|float)#'
-        - '#supplied for foreach, only iterables are supported#'
-        - '#Deps\\BitApps\\WPKit\\Hooks\\HooksWrapper#'
         # wp-database's Connection is a facade over $wpdb: __callStatic forwards
         # any $wpdb method, and none of them are declared or annotated. The
         # migrations under backend/db use it the same way and only escape this
@@ -19,9 +8,16 @@ parameters:
     level: 5
     disallowedClasses:
     treatPhpDocTypesAsCertain: false
+    # Only the shipped sources. The packages' own tests/ carry throwaway
+    # WordPress function and class declarations (wp-kit's tests/bootstrap.php
+    # declares current_time(), flush_rewrite_rules(), WP_Error and more), which
+    # would shadow php-stubs/wordpress-stubs and produce bogus signature errors.
     scanDirectories:
-        - vendor/bitapps
-    
+        - vendor/bitapps/wp-database/src
+        - vendor/bitapps/wp-kit/src
+        - vendor/bitapps/wp-telemetry/src
+        - vendor/bitapps/wp-validator/src
+
     paths:
         - backend
     excludePaths:
