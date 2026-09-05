@@ -1,8 +1,8 @@
 === Bit Connect ===
-Contributors: bitpressadmin, khoaiz
+Contributors: bitpressadmin
 Tags: forum, community, feedback, roadmap, feature requests
 Requires at least: 6.8
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.2
 Stable tag: 1.0.0
 License: GPL-2.0-or-later
@@ -30,13 +30,14 @@ Some features are provided by a separate **Bit Connect Pro** add-on, which is no
 
 == Development ==
 
-The compiled JavaScript and CSS under `assets/` are built from the TypeScript and React sources in this plugin's public repository:
+Bit Connect is developed in the open. The complete, unminified source of the free plugin — including the TypeScript and React sources that the compiled JavaScript and CSS under `assets/` are built from — lives in its public GitHub repository:
 
-* Source: [github.com/Bit-Apps-Pro/bit-connect](https://github.com/Bit-Apps-Pro/bit-connect)
+* Free source repository: [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/)
 * Build: `composer install && pnpm install && pnpm build:free`
-* Needs: PHP 8.2+, Node 20+, pnpm 9+ and Composer 2. Nothing else — no private registry, credential, submodule or configuration file is involved, and a plain clone of the repository builds as it stands.
 
-The build is [Vite](https://vitejs.dev) with the entry points named in `vite.config.mts` (admin) and `vite.config.client.mts` (portal); `pnpm build:free` writes the admin bundle to `assets/`, the portal bundle to `assets/client/` and its server-rendered HTML to `assets/client/ssr/`. PHP dependencies are namespaced at install time by [Imposter](https://github.com/TypistTech/imposter-plugin).
+Issues and pull requests are welcome there.
+
+The build is [Vite](https://vitejs.dev) with the entry points named in `vite.config.mts` (admin) and `vite.config.client.mts` (portal). PHP dependencies are namespaced at install time by [Imposter](https://github.com/TypistTech/imposter-plugin).
 
 == External Services ==
 
@@ -88,6 +89,10 @@ Alternatively, you can download the plugin zip file from [wp.org](https://wordpr
 - [Live Chat Support](https://tawk.to/chat/60eac4b6d6e7610a49aab375/1faah0r3e)
 - [Facebook Community](https://www.facebook.com/groups/3308027439209387)
 
+= Where is the source code? =
+
+The free plugin is fully open source at [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/). Everything shipped in this plugin, including the sources behind the compiled `assets/` bundle, is in that repository. See *Development* above for the build command.
+
 = Do I need the Pro add-on? =
 
 No. Bit Connect is a complete forum on its own. The Pro add-on is a separate plugin that adds further features; nothing described in this readme depends on it.
@@ -118,6 +123,5 @@ Two, both described under *External Services* above: Google Fonts, which serves 
 * First stable release.
 * Split into two editions: the free plugin, and Bit Connect Pro as a separate add-on.
 
-= 0.1.0 =
+= v0.1.0
 * Initial Beta release
-
