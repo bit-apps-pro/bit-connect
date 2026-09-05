@@ -7,7 +7,6 @@
   "entry": [
     "frontend/admin/src/main.tsx",
     "frontend/client/src/main.tsx",
-    "frontend/client/src/prerender-main.tsx",
     "frontend/admin/src/config/test.setup.ts",
     "frontend/client/src/config/test.setup.ts",
     "frontend/admin/src/config/devHotModule.js",

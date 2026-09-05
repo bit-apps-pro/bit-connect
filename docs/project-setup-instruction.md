@@ -76,13 +76,16 @@ until you build it once:
 pnpm build:free
 ```
 
-That is three steps — `build:admin`, `build:client`, `build:ssr` — and writes:
+That is two steps — `build:admin` and `build:client` — and writes:
 
 | Output | What it is |
 | --- | --- |
 | `assets/` | the wp-admin panel bundle |
 | `assets/client/` | the public portal bundle |
-| `assets/client/ssr/` | the portal's server-rendered HTML and `routes.json` |
+
+The portal's server-rendered HTML is not a build output: PHP renders it per
+request from that request's own data (see `backend/app/SSR/`), so there is
+nothing to prebuild.
 
 ## Activate the plugin
 
