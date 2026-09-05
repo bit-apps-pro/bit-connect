@@ -6,6 +6,17 @@ import { createServer } from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// This is a build step, so the app graph must be loaded against the *production*
+// builds of React, react-router and antd — the same ones the client bundle is
+// built from. Without this, Node resolves their development builds and antd
+// emits `css-dev-only-do-not-override-<hash>` class names into the prerendered
+// HTML, which the production client bundle never reproduces: every portal page
+// would then hydrate against markup that does not match. (It also silences the
+// dev-only useLayoutEffect-on-the-server warnings, which are a symptom of the
+// same thing.) Vite's `mode: 'production'` below governs Vite's own transforms;
+// it does not change how Node resolves these packages' export conditions.
+process.env.NODE_ENV ??= 'production'
+
 // The client app graph imports browser-only modules (e.g. Quill) that touch
 // `document`/`window` at module-eval time. Provide a lightweight DOM (happy-dom)
 // on the Node globals before the app is loaded so those imports don't throw.
