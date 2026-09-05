@@ -26,13 +26,26 @@ pnpm build:free
 ```
 
 That writes `assets/` (WordPress admin panel) and `assets/client/` (the public
-portal, including its server-rendered entry). At that point the directory *is*
-the plugin: copy it into `wp-content/plugins/bit-connect` and activate it, or
-run `pnpm prod:free-zip` to get an installable zip in `build/`.
+portal). At that point the directory *is* the plugin: copy it into
+`wp-content/plugins/bit-connect` and activate it.
 
 Requirements: **PHP ≥ 8.2**, **Node ≥ 20**, **pnpm ≥ 9**, and Composer 2. No
 private registry, credential or submodule is involved — a plain `git clone` is
 enough, and no `.env` is needed to build.
+
+### An installable zip
+
+To get the file you would upload under **Plugins → Add New → Upload Plugin**:
+
+```bash
+pnpm prod:free-zip
+```
+
+That builds the frontend, resolves PHP dependencies with `--no-dev`, stages the
+shipped files, strips development artefacts, and writes
+`build/bit-connect-<version>.zip`. The version comes from the `Version:` header
+in [bit-connect.php](bit-connect.php). Your working tree is left as it was —
+development dependencies are reinstalled once the staging copy has been taken.
 
 ### How the build is wired
 
@@ -40,7 +53,7 @@ enough, and no `.env` is needed to build.
 | --- | --- |
 | Admin panel entry and config | [vite.config.mts](vite.config.mts), [frontend/admin/](frontend/admin/) |
 | Portal entry and config | [vite.config.client.mts](vite.config.client.mts), [frontend/client/](frontend/client/) |
-| Portal server-side render | [vite.config.client.ssr.mts](vite.config.client.ssr.mts), [bin/prerender.js](bin/prerender.js) |
+| Portal server-side render | [backend/app/SSR/](backend/app/SSR/) — rendered by PHP per request, not prebuilt |
 | PHP plugin | [bit-connect.php](bit-connect.php), [backend/](backend/) |
 
 The frontend is React + TypeScript, bundled by [Vite](https://vitejs.dev), with
@@ -74,9 +87,12 @@ composer install && pnpm install
 pnpm build:free      # once, so the plugin has assets to activate with
 ```
 
-Activate **Bit Connect** in wp-admin, then run `pnpm dev`. In development the
-plugin serves the Vite dev servers instead of the built files, so the admin
-panel and the portal both hot-reload while you edit.
+Activate **Bit Connect** in wp-admin, then run `pnpm dev`. It starts two Vite
+servers — the admin panel on `:3000` and the portal on `:3001` — and writes a
+`.port` file. That file is how PHP knows to load the dev servers instead of the
+built files, so both hot-reload while you edit. Stopping `pnpm dev` removes it
+and the plugin goes back to serving `assets/`; if a crash ever leaves `.port`
+behind, delete it by hand.
 
 `cp .env.example .env` if you need to change where the dev servers bind, serve
 them over HTTPS, or point the end-to-end tests at your site. Every value in it
