@@ -50,6 +50,10 @@ const outputZip = path.resolve(rootDirectory, outdir, `${pluginSlug}-${pluginVer
 const filesAndFolders = [
   'assets',
   'backend',
+  // Ships the .pot the plugin header's `Domain Path: /languages` points at, and
+  // the extracted-strings file that makes the JS strings visible to the
+  // translate.wordpress.org parser.
+  'languages',
   'vendor',
   `${pluginSlug}.php`,
   'readme.txt',

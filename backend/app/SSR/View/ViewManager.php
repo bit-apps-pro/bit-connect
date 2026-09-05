@@ -2,8 +2,6 @@
 
 namespace BitApps\BitConnect\SSR\View;
 
-use BitApps\BitConnect\SSR\SSRData;
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -214,7 +212,7 @@ class ViewManager
     {
         $normalizedRoute = $this->normalizeRoute($route);
 
-        return isset($this->views[$normalizedRoute]) || SSRData::hasPreRendered($normalizedRoute);
+        return isset($this->views[$normalizedRoute]);
     }
 
     /**
@@ -256,11 +254,11 @@ class ViewManager
      */
     private function normalizeRoute($route)
     {
-        // Convert route to file name format. Incoming routes are concrete URL
-        // paths (e.g. "/login"), which map 1:1 to the prerendered files the
-        // prerender step writes (login.html, index.html for "/"). Only static
-        // routes are prerendered; dynamic routes simply won't have a file and
-        // fall back to the client-side render.
+        // Incoming routes are concrete URL paths (e.g. "/login"). They are
+        // reduced to the ".html" keys that registerView() uses — "/" becomes
+        // "index.html" — so a route can be given its own SSRView subclass. A
+        // route with no registered view falls back to the default one, which
+        // renders this request's own content (see SSRView::render).
         $normalized = trim($route, '/');
 
         if ($normalized === '') {
