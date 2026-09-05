@@ -6,6 +6,10 @@ import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const PLUGIN_SLUG = 'bit-connect'
+// See vite.config.mts — BaseView.php prints the portal payload onto this same
+// global, and the default keeps a clean clone (no `.env`) from building
+// `window.undefined`.
+const DEFAULT_SERVER_VARIABLES = `${PLUGIN_SLUG.replace(/-/g, '_')}_`
 // See vite.config.mts — same two-build scheme, one level deeper because the
 // portal bundle lives under the admin bundle's directory.
 const isPro = process.env.VITE_PRO === 'true'
@@ -76,7 +80,7 @@ export default defineConfig(({ command, mode }) => {
       target: 'es2022'
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES}` })
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
     },
     optimizeDeps: {
       exclude: ['@wordpress/interactivity'],

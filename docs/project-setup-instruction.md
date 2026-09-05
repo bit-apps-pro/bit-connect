@@ -1,34 +1,40 @@
-# Bit Flow Setup Guide
+# Bit Connect Setup Guide
 
-This guide will walk you through the process of setup the Bit Flow project.
+How to get Bit Connect running on a local WordPress install, from a fresh clone
+to a hot-reloading dev server. [README.md](../README.md) is the short version;
+this is the whole path, including wp-cli and the test suites.
 
 ## Table of Contents
 
-1. [Installation](#installation)
-   - [Install Wordpress](#install-wordpress)
-   - [Enable Debugging](#enable-debugging)
+1. [Requirements](#requirements)
+2. [Install WordPress](#install-wordpress)
+   - [Enable debugging](#enable-debugging)
    - [Clone the repository](#clone-the-repository)
-2. [Setup Environments](#setup-environments)
-   - [project env](##setup-project-env-file)
-   - [test env](#setup-test-env-file)
-3. [Install Dependencies](#install-dependencies)
-4. [Install wp-cli](#install-wp-cli)
-   - [Install wp-cli](#install-wp-cli)
-   - [Verify wp-cli installation](#verify-wp-cli-installation)
-5. [Activate the Plugin](#activate-the-plugin)
-6. [Run the Project](#run-the-project)
+3. [Install dependencies](#install-dependencies)
+4. [Build the assets](#build-the-assets)
+5. [Activate the plugin](#activate-the-plugin)
+6. [Run the dev servers](#run-the-dev-servers)
+7. [Environment file](#environment-file)
+8. [Tests and checks](#tests-and-checks)
+9. [Packaging a release](#packaging-a-release)
 
-## Installation
+## Requirements
 
-### Install Wordpress
+- **PHP** ≥ 8.2
+- **Node** ≥ 20 and **pnpm** ≥ 9
+- **Composer** 2
+- A local **WordPress** ≥ 6.8
 
-1. Create a new database for your WordPress installation.
-2. Download and Install [WordPress](https://wordpress.org/download/) on your local machine or server.
+Nothing else: no private registry, credential or submodule is involved.
 
-### Enable Debugging
+## Install WordPress
 
-1. Open the `wp-config.php` file in the root directory of your WordPress installation.
-2. Add the following lines to enable debugging:
+1. Create a database for the install.
+2. Download and install [WordPress](https://wordpress.org/download/) locally.
+
+### Enable debugging
+
+In `wp-config.php`:
 
 ```php
 define('WP_DEBUG', true);
@@ -41,88 +47,119 @@ define('WP_DEBUG_DISPLAY', false);
 
 ### Clone the repository
 
-1. Open your terminal or command prompt.
-2. Navigate to the wordpress `plugin` directory and clone the repository.
+Clone into the plugins directory of that install, under the plugin slug — the
+directory name has to be `bit-connect`:
 
 ```bash
-# You should clone the repo using SSH
-git clone git@github.com:Bit-Apps-Pro/bit-pi.git
+cd wp-content/plugins
+git clone https://github.com/Bit-Apps-Pro/bit-connect.git
+cd bit-connect
 ```
 
-## Setup Environments
+## Install dependencies
 
-### Setup Project Env File
+```bash
+composer install   # PHP; also re-namespaces the vendor tree with Imposter
+pnpm install       # Node
+```
 
-1. Copy the `.env.example` file to `.env` in the root directory of the project.
+`composer install` runs [Imposter](https://github.com/TypistTech/imposter-plugin)
+on the way out, which re-namespaces the installed PHP dependencies under
+`BitApps\BitConnect\Deps\` so two plugins bundling the same library never fight.
+
+## Build the assets
+
+`assets/` is generated and not committed, so the plugin has nothing to load
+until you build it once:
+
+```bash
+pnpm build:free
+```
+
+That is three steps — `build:admin`, `build:client`, `build:ssr` — and writes:
+
+| Output | What it is |
+| --- | --- |
+| `assets/` | the wp-admin panel bundle |
+| `assets/client/` | the public portal bundle |
+| `assets/client/ssr/` | the portal's server-rendered HTML and `routes.json` |
+
+## Activate the plugin
+
+Either activate **Bit Connect** from wp-admin → Plugins, or:
+
+```bash
+wp plugin activate bit-connect
+```
+
+If you do not have [wp-cli](https://wp-cli.org/#installing) installed, install
+it and check it with `wp --info`; `composer install` also pulls in a copy at
+`vendor/wp-cli/wp-cli/bin/wp`, which is what the `composer connect` shortcut
+runs.
+
+The plugin also ships dev-only wp-cli commands in [cli/](../cli/) —
+`wp bit-connect db` and `wp bit-connect use`. They are registered only when the
+environment variable `bit_connect_CLI_ACTIVE` is set (see
+`Config::getEnv('CLI_ACTIVE')`), so they stay out of the way on a normal
+install.
+
+## Run the dev servers
+
+```bash
+pnpm dev          # admin + portal, both with hot reload
+pnpm dev:admin    # just the wp-admin panel
+pnpm dev:client   # just the portal
+```
+
+With the plugin active and a dev server running, the plugin serves Vite instead
+of the built files, so both apps hot-reload while you edit.
+
+## Environment file
 
 ```bash
 cp .env.example .env
 ```
 
-### Setup Test Env File
+Every value in it is optional — the build and the dev servers work without a
+`.env` at all. Set one when you need to point the end-to-end tests at your site
+(`DEV_DOMAIN`), serve the dev servers over HTTPS, or bind them to a hostname
+other than `localhost`.
 
-1. Copy the `tests.config.sample.php` file to `tests.config.php` in the root directory of the project.
+For the PHPUnit suite, copy the sample test config as well and edit the database
+credentials in it:
 
 ```bash
 cp tests.config.sample.php tests.config.php
 ```
 
-2. Open the `tests.config.php` file and update the domain to match your local WordPress installation. at the bottom of the file, you will find the following line:
+> **Warning:** the PHPUnit suite **drops every table** with the configured
+> prefix. Point `DB_NAME` at a throwaway database, never at your dev site's.
 
-```php
-# replace your_domain.test with your local domain
-define('WP_TESTS_DOMAIN', 'your_domain.test');
-```
-
-## Install Dependencies
-
-1. Navigate to the cloned repository directory or open the Bit Flow to your code editor.
-2. Run the following command to install the necessary dependencies:
+## Tests and checks
 
 ```bash
-# Install Node.js dependencies
-pnpm install
+pnpm test         # Vitest — admin and portal
+pnpm ts-check     # TypeScript, all three projects
+pnpm lint         # ESLint (writes fixes)
+pnpm lint:css     # Stylelint (writes fixes)
+pnpm test:e2e     # Playwright, against DEV_DOMAIN
+
+composer test     # PHPUnit — needs tests.config.php
+composer analyze  # PHPStan
+composer lint     # php-cs-fixer + PHPCS (writes fixes)
+composer compat   # PHP 8.2+ compatibility sniff
+composer rector   # Rector, dry run
 ```
+
+## Packaging a release
 
 ```bash
-# Install PHP dependencies for both plugins.
-# `pro/` is a separate Composer root with its own vendor tree and Imposter
-# prefix, so it has to be installed separately from the free plugin.
-composer install && composer pro:install
+pnpm prod:free-zip
 ```
 
-```bash
-# Install submodules
-pnpm sm:add && pnpm plugin:commons:sync
-```
-
-## Install wp-cli
-
-1. Install [wp-cli](https://wp-cli.org/#installing) if you haven't already. You can follow the instructions on the official website to install it.
-2. After installing, you can verify the installation by running:
-
-```bash
-wp --info
-```
-
-## Activate the Plugin
-
-1. Run the following command to activate the plugin:
-
-```bash
-wp plugin activate bit-pi
-```
-
-2. Run the following command to activate the pro plugin:
-
-```bash
-composer pro:enable
-```
-
-## Run the Project
-
-1. Run the following command to start the development server:
-
-```bash
-pnpm dev:pro
-```
+Builds, stages the plugin in `build/bit-connect/`, prunes the dev-only files
+([scripts/prune-build.mjs](../scripts/prune-build.mjs)) and leaves an
+installable `build/bit-connect-<version>.zip` — the artefact that ships to
+WordPress.org. Only `assets/`, `backend/`, `languages/`, `vendor/`,
+`bit-connect.php`, `composer.json` and `readme.txt` go into it; the tooling,
+tests, `cli/` and `docs/` stay in the repository.

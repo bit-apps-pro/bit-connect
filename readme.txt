@@ -34,8 +34,9 @@ The compiled JavaScript and CSS under `assets/` are built from the TypeScript an
 
 * Source: [github.com/Bit-Apps-Pro/bit-connect](https://github.com/Bit-Apps-Pro/bit-connect)
 * Build: `composer install && pnpm install && pnpm build:free`
+* Needs: PHP 8.2+, Node 20+, pnpm 9+ and Composer 2. Nothing else — no private registry, credential, submodule or configuration file is involved, and a plain clone of the repository builds as it stands.
 
-The build is [Vite](https://vitejs.dev) with the entry points named in `vite.config.mts` (admin) and `vite.config.client.mts` (portal). PHP dependencies are namespaced at install time by [Imposter](https://github.com/TypistTech/imposter-plugin).
+The build is [Vite](https://vitejs.dev) with the entry points named in `vite.config.mts` (admin) and `vite.config.client.mts` (portal); `pnpm build:free` writes the admin bundle to `assets/`, the portal bundle to `assets/client/` and its server-rendered HTML to `assets/client/ssr/`. PHP dependencies are namespaced at install time by [Imposter](https://github.com/TypistTech/imposter-plugin).
 
 == External Services ==
 
@@ -117,6 +118,6 @@ Two, both described under *External Services* above: Google Fonts, which serves 
 * First stable release.
 * Split into two editions: the free plugin, and Bit Connect Pro as a separate add-on.
 
-= v0.1.0
+= 0.1.0 =
 * Initial Beta release
 
