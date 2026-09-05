@@ -1,0 +1,5106 @@
+# Copyright (C) 2026 Bit Apps
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bit Connect 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bit-connect\n"
+"Last-Translator: Bit Apps <developer@bitapps.pro>\n"
+"Language-Team: Bit Apps <support@bitapps.pro>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-05T07:34:02+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+
+#. Plugin Name of the plugin
+#: bit-connect.php
+#: backend/app/Views/Menu.php:62
+#: backend/app/Views/Menu.php:63
+#: languages/frontend-extracted-strings.php:588
+msgid "Bit Connect"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: bit-connect.php
+msgid "https://bitapps.pro/bit-connect"
+msgstr ""
+
+#. Description of the plugin
+#: bit-connect.php
+msgid "A plugin connect user to product development process. User will be able to add feature requests, create issues. Also will be able send feedback. Add ideas on features in roadmap to improve features."
+msgstr ""
+
+#. Author of the plugin
+#: bit-connect.php
+msgid "Bit Apps"
+msgstr ""
+
+#. Author URI of the plugin
+#: bit-connect.php
+msgid "https://bitapps.pro"
+msgstr ""
+
+#: backend/app/Enum/NotificationSettings.php:229
+msgid "The member's display name"
+msgstr ""
+
+#: backend/app/Enum/NotificationSettings.php:230
+msgid "Your community name"
+msgstr ""
+
+#: backend/app/Enum/NotificationSettings.php:231
+msgid "How many notifications the email covers"
+msgstr ""
+
+#: backend/app/Enum/NotificationSettings.php:232
+msgid "A link back to the forum"
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:44
+#: backend/app/Http/Controller/AccountSecurityController.php:112
+#: backend/app/Http/Controller/MemberProfileController.php:40
+#: backend/app/Http/Controller/UserManagementController.php:86
+#: backend/app/Http/Controller/UserManagementController.php:111
+#: backend/app/Http/Controller/UserProfileController.php:56
+#: backend/app/Http/Controller/UserProfileController.php:70
+#: backend/app/Http/Controller/UserProfileController.php:85
+#: backend/app/Http/Controller/UserProfileController.php:100
+#: backend/app/Http/Controller/UserProfileController.php:115
+#: backend/app/Http/Controller/UserProfileController.php:132
+#: backend/app/Http/Controller/UserStatsController.php:35
+#: backend/app/Services/AuthService.php:604
+#: backend/app/Services/EmailChangeService.php:74
+#: backend/app/Services/EmailChangeService.php:159
+#: build/bit-connect-pro/backend/app/Http/Controller/ProfileBadgeController.php:90
+#: pro/backend/app/Http/Controller/ProfileBadgeController.php:90
+msgid "User not found."
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:63
+msgid "Please enter your current password."
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:70
+msgid "That is not your current password."
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:90
+msgid "Your password has been changed."
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:132
+msgid "Check your inbox for a link to set a new password."
+msgstr ""
+
+#: backend/app/Http/Controller/AccountSecurityController.php:151
+msgid "Check your new inbox for a confirmation link."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:35
+msgid "The portal login form is disabled. Please use the site login page."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:78
+msgid "The portal registration form is disabled. Please use the site registration page."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:83
+msgid "Registration is currently disabled."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:110
+msgid "Sorry, that username already exists!"
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:115
+msgid "Sorry, that email address is already used!"
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:221
+#: backend/app/Services/AuthService.php:591
+#: languages/frontend-extracted-strings.php:1804
+msgid "Invalid verification link."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:247
+msgid "Please enter your username or email address."
+msgstr ""
+
+#: backend/app/Http/Controller/AuthApiController.php:269
+msgid "Password reset email sent. Please check your inbox."
+msgstr ""
+
+#: backend/app/Http/Controller/CapabilitySettingsController.php:53
+msgid "Role not found."
+msgstr ""
+
+#: backend/app/Http/Controller/CapabilitySettingsController.php:60
+msgid "Failed to update capabilities."
+msgstr ""
+
+#: backend/app/Http/Controller/CommentController.php:253
+msgid "You are not allowed to edit this comment."
+msgstr ""
+
+#: backend/app/Http/Controller/FollowController.php:38
+msgid "That is not something this forum lets you follow."
+msgstr ""
+
+#: backend/app/Http/Controller/FollowController.php:49
+msgid "That could not be saved. Please try again."
+msgstr ""
+
+#: backend/app/Http/Controller/MemberProfileController.php:105
+msgid "Please enter a display name."
+msgstr ""
+
+#: backend/app/Http/Controller/NotificationController.php:75
+msgid "Nothing was named to mark as read."
+msgstr ""
+
+#: backend/app/Http/Controller/NotificationSettingsController.php:73
+msgid "Your account has no email address to send to."
+msgstr ""
+
+#: backend/app/Http/Controller/NotificationSettingsController.php:80
+msgid "WordPress could not send the message. Check this site's email configuration or SMTP plugin."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:52
+msgid "That is not something this forum accepts reports about."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:116
+#: languages/frontend-extracted-strings.php:1554
+msgid "Thank you. A moderator will look at this."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:169
+msgid "Choose what to do with the report."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:179
+msgid "You do not have permission to remove other people's content."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:200
+#: backend/app/Http/Controller/ReportController.php:223
+msgid "There is nothing left to review on this."
+msgstr ""
+
+#: backend/app/Http/Controller/ReportController.php:208
+msgid "That could not be removed, so the reports are still open."
+msgstr ""
+
+#: backend/app/Http/Controller/TopicController.php:232
+msgid "You are not allowed to edit this topic."
+msgstr ""
+
+#: backend/app/Http/Controller/TopicController.php:649
+msgid "Private topics are not available on this forum."
+msgstr ""
+
+#: backend/app/Http/Controller/UserManagementController.php:91
+msgid "Per-user capability overrides are not available on this forum. Set capabilities per role instead."
+msgstr ""
+
+#: backend/app/Http/Controller/VoteController.php:32
+msgid "Post not found."
+msgstr ""
+
+#: backend/app/Http/Controller/VoteController.php:50
+#: backend/app/Services/VoteService.php:120
+msgid "Comment not found."
+msgstr ""
+
+#: backend/app/Http/Middleware/AdminNonceCheckerMiddleware.php:33
+msgid "Access Denied: Only administrators are allowed to make this request"
+msgstr ""
+
+#: backend/app/Http/Middleware/AdminNonceCheckerMiddleware.php:46
+#: build/bit-connect-pro/backend/app/Http/Middleware/AdminNonceMiddleware.php:43
+#: pro/backend/app/Http/Middleware/AdminNonceMiddleware.php:43
+msgid "Invalid nonce token"
+msgstr ""
+
+#: backend/app/Http/Requests/ChangePasswordRequest.php:59
+#: backend/app/Http/Requests/RequestEmailChangeRequest.php:51
+#: backend/app/Http/Requests/SendPasswordResetRequest.php:51
+#: backend/app/Http/Requests/UpdateMemberProfileRequest.php:65
+#: backend/app/Http/Requests/UpdateUserCapabilitiesRequest.php:64
+#: build/bit-connect-pro/backend/app/Http/Requests/UpdateUserBadgesRequest.php:47
+#: pro/backend/app/Http/Requests/UpdateUserBadgesRequest.php:47
+msgid "User ID is required."
+msgstr ""
+
+#: backend/app/Http/Requests/ChangePasswordRequest.php:60
+msgid "Password must be at least 6 characters."
+msgstr ""
+
+#: backend/app/Http/Requests/ChangePasswordRequest.php:61
+msgid "Please enter a new password."
+msgstr ""
+
+#: backend/app/Http/Requests/CheckPortalSlugRequest.php:48
+#: backend/app/Http/Requests/CreatePortalPageRequest.php:48
+#: backend/app/Http/Requests/UpdatePortalSlugRequest.php:48
+msgid "Slug is required."
+msgstr ""
+
+#: backend/app/Http/Requests/CreateReportRequest.php:58
+#: backend/app/Http/Requests/CreateReportRequest.php:59
+msgid "What is being reported is missing."
+msgstr ""
+
+#: backend/app/Http/Requests/CreateReportRequest.php:60
+msgid "Please choose a reason."
+msgstr ""
+
+#: backend/app/Http/Requests/CreateReportRequest.php:61
+msgid "Please keep the explanation under 2000 characters."
+msgstr ""
+
+#: backend/app/Http/Requests/RequestEmailChangeRequest.php:49
+#: backend/app/Services/EmailChangeService.php:80
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: backend/app/Http/Requests/RequestEmailChangeRequest.php:50
+msgid "Please enter an email address."
+msgstr ""
+
+#: backend/app/Http/Requests/RestVerifyEmailChangeRequest.php:41
+msgid "Confirmation token is required."
+msgstr ""
+
+#: backend/app/Http/Requests/RestVerifyEmailChangeRequest.php:42
+#: backend/app/Services/EmailChangeService.php:122
+msgid "This confirmation link is not valid."
+msgstr ""
+
+#. translators: %s: comma-separated list of valid email frequencies
+#: backend/app/Http/Requests/SaveNotificationPreferencesRequest.php:51
+#, php-format
+msgid "Choose one of: %s."
+msgstr ""
+
+#: backend/app/Http/Requests/ToggleCommentVoteRequest.php:44
+msgid "Comment ID is required."
+msgstr ""
+
+#: backend/app/Http/Requests/ToggleCommentVoteRequest.php:45
+msgid "Comment ID must be a valid integer."
+msgstr ""
+
+#: backend/app/Http/Requests/ToggleFollowRequest.php:57
+#: backend/app/Http/Requests/ToggleFollowRequest.php:58
+msgid "What is being followed is missing."
+msgstr ""
+
+#: backend/app/Http/Requests/TogglePostVoteRequest.php:44
+msgid "Post ID is required."
+msgstr ""
+
+#: backend/app/Http/Requests/TogglePostVoteRequest.php:45
+msgid "Post ID must be a valid integer."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:79
+msgid "A custom login page URL is required when using a custom login page."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:83
+msgid "The custom login page URL is not a valid URL, for example https://example.com/login."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:91
+msgid "The custom registration page URL is not a valid URL, for example https://example.com/register."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateCapabilitySettingsRequest.php:46
+msgid "Role is required."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateCapabilitySettingsRequest.php:47
+msgid "Capabilities map is required."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateMemberProfileRequest.php:62
+msgid "Your bio is too long."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateMemberProfileRequest.php:63
+msgid "Display name must be 60 characters or fewer."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateMemberProfileRequest.php:64
+msgid "User ID must be a valid integer."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateNotificationSettingsRequest.php:69
+msgid "That address is too long."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateNotificationSettingsRequest.php:70
+msgid "Please keep the sender name under 120 characters."
+msgstr ""
+
+#: backend/app/Http/Requests/UpdateUserCapabilitiesRequest.php:65
+msgid "Capabilities are required."
+msgstr ""
+
+#: backend/app/Providers/HookProvider.php:109
+msgid "Bit Connect Portal Template"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:102
+msgctxt "Post Type General Name"
+msgid "Bit Connect Posts"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:103
+msgctxt "Post Type Singular Name"
+msgid "Bit Connect Post"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:112
+msgid "Bit Connect Post"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:113
+msgid "Bit Connect custom post type"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:175
+msgid "Questions"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:189
+msgid "Need Approval"
+msgstr ""
+
+#. translators: %d: number of minutes
+#: backend/app/Services/AuthRateLimiter.php:134
+#, php-format
+msgid "Too many sign-in attempts. Please wait %d minute and try again."
+msgid_plural "Too many sign-in attempts. Please wait %d minutes and try again."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of minutes
+#: backend/app/Services/AuthRateLimiter.php:146
+#, php-format
+msgid "Too many attempts. Please wait %d minute and try again."
+msgid_plural "Too many attempts. Please wait %d minutes and try again."
+msgstr[0] ""
+msgstr[1] ""
+
+#: backend/app/Services/AuthService.php:551
+msgid "Verify your email address"
+msgstr ""
+
+#. translators: %s: verification URL
+#: backend/app/Services/AuthService.php:554
+#, php-format
+msgid ""
+"Hello,\n"
+"\n"
+"Thank you for registering. Please verify your email address by clicking the link below:\n"
+"\n"
+"%s\n"
+"\n"
+"This link expires in 24 hours.\n"
+"\n"
+"If you did not register, you can safely ignore this email."
+msgstr ""
+
+#: backend/app/Services/AuthService.php:595
+msgid "This verification link has expired. Please register again."
+msgstr ""
+
+#: backend/app/Services/ContentVisibilityService.php:55
+msgid "Hidden pending review"
+msgstr ""
+
+#. translators: %s: number of hidden topics
+#: backend/app/Services/ContentVisibilityService.php:62
+#, php-format
+msgid "Hidden pending review <span class=\"count\">(%s)</span>"
+msgid_plural "Hidden pending review <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: backend/app/Services/ContentVisibilityService.php:250
+msgid "This comment is hidden while a moderator reviews it."
+msgstr ""
+
+#: backend/app/Services/EmailChangeService.php:84
+msgid "That is already your email address."
+msgstr ""
+
+#: backend/app/Services/EmailChangeService.php:90
+#: backend/app/Services/EmailChangeService.php:142
+msgid "That email address is already in use."
+msgstr ""
+
+#: backend/app/Services/EmailChangeService.php:130
+msgid "This confirmation link has expired. Please request the change again."
+msgstr ""
+
+#: backend/app/Services/EmailChangeService.php:188
+msgid "Confirm your new email address"
+msgstr ""
+
+#. translators: %s: confirmation URL
+#: backend/app/Services/EmailChangeService.php:191
+#, php-format
+msgid ""
+"Hello,\n"
+"\n"
+"Please confirm this address so we can use it for your account:\n"
+"\n"
+"%s\n"
+"\n"
+"This link expires in 24 hours.\n"
+"\n"
+"If you did not ask to change your email address, you can safely ignore this email — nothing has changed."
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:188
+msgid "Test notification"
+msgstr ""
+
+#. translators: %s: site name
+#: backend/app/Services/NotificationMailer.php:190
+#, php-format
+msgid "Test notification from %s"
+msgstr ""
+
+#. translators: %s: member's display name
+#: backend/app/Services/NotificationMailer.php:192
+#, php-format
+msgid "Hello %s,"
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:194
+msgid "This is a test message from your forum's notification settings. If you are reading it, email notifications are working."
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:224
+#: languages/frontend-extracted-strings.php:1502
+msgid "Someone"
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:246
+#: languages/frontend-extracted-strings.php:1504
+msgid "a topic"
+msgstr ""
+
+#. translators: 1: member name, 2: topic title
+#: backend/app/Services/NotificationMailer.php:251
+#, php-format
+msgid "%1$s commented on %2$s"
+msgstr ""
+
+#. translators: 1: member name, 2: topic title
+#: backend/app/Services/NotificationMailer.php:255
+#, php-format
+msgid "%1$s replied to you in %2$s"
+msgstr ""
+
+#. translators: 1: member name, 2: topic title
+#: backend/app/Services/NotificationMailer.php:259
+#, php-format
+msgid "%1$s posted a new topic: %2$s"
+msgstr ""
+
+#. translators: 1: member name, 2: topic title
+#: backend/app/Services/NotificationMailer.php:263
+#, php-format
+msgid "%1$s mentioned you in %2$s"
+msgstr ""
+
+#. translators: 1: number of people, 2: topic title
+#: backend/app/Services/NotificationMailer.php:268
+#, php-format
+msgid "%1$d people upvoted your post in %2$s"
+msgstr ""
+
+#. translators: 1: member name, 2: topic title
+#: backend/app/Services/NotificationMailer.php:270
+#, php-format
+msgid "%1$s upvoted your post in %2$s"
+msgstr ""
+
+#. translators: %1$s: the moderator's decision, e.g. "Dismissed"
+#: backend/app/Services/NotificationMailer.php:275
+#, php-format
+msgid "A moderator reviewed something you reported — %1$s"
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:280
+#: languages/frontend-extracted-strings.php:1512
+msgid "Something you wrote was removed after review"
+msgstr ""
+
+#. translators: %s: badge name
+#: backend/app/Services/NotificationMailer.php:285
+#, php-format
+msgid "You were given the %s badge"
+msgstr ""
+
+#. translators: %s: topic title
+#: backend/app/Services/NotificationMailer.php:291
+#, php-format
+msgid "The status changed on %s"
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:294
+#: languages/frontend-extracted-strings.php:1516
+msgid "A new report is waiting in the moderation queue"
+msgstr ""
+
+#: backend/app/Services/NotificationMailer.php:297
+msgid "Something happened in the forum"
+msgstr ""
+
+#. translators: %d: number of notifications
+#: backend/app/Services/NotificationMailer.php:320
+#, php-format
+msgid "%d new notification"
+msgid_plural "%d new notifications"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of notifications, 2: site name
+#: backend/app/Services/NotificationMailer.php:327
+#, php-format
+msgid "%1$d new notification from %2$s"
+msgid_plural "%1$d new notifications from %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: backend/app/Services/NotificationMailer.php:336
+msgid "Forum notification"
+msgstr ""
+
+#. translators: 1: what happened, 2: site name
+#. translators: 1: term name, 2: community name.
+#. translators: 1: member display name, 2: community name.
+#: backend/app/Services/NotificationMailer.php:343
+#: backend/app/SSR/Seo/SeoMeta.php:139
+#: backend/app/SSR/Seo/SeoMeta.php:181
+#, php-format
+msgid "%1$s — %2$s"
+msgstr ""
+
+#: backend/app/Services/PortalAccess.php:60
+msgid "This community is open to members only. Please log in to continue."
+msgstr ""
+
+#: backend/app/Services/ProfileSlugService.php:260
+msgid "Please use letters, numbers or dashes for your profile URL."
+msgstr ""
+
+#. translators: 1: minimum character count, 2: maximum character count
+#: backend/app/Services/ProfileSlugService.php:268
+#, php-format
+msgid "A profile URL must be between %1$d and %2$d characters."
+msgstr ""
+
+#: backend/app/Services/ProfileSlugService.php:277
+msgid "A profile URL cannot be only numbers."
+msgstr ""
+
+#: backend/app/Services/ProfileSlugService.php:281
+msgid "That profile URL is reserved. Please choose another."
+msgstr ""
+
+#: backend/app/Services/ProfileSlugService.php:292
+msgid "That profile URL is already taken."
+msgstr ""
+
+#: backend/app/Services/ReportRateLimiter.php:113
+msgid "You have reported several things just now. Please wait a little before reporting anything else."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:98
+msgid "You must be logged in to report anything."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:104
+msgid "That is not a reason this forum recognises."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:110
+#: languages/frontend-extracted-strings.php:1566
+msgid "Please say what is wrong with it."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:116
+msgid "That content no longer exists."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:120
+msgid "You cannot report your own content."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:124
+msgid "You have already reported this."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:148
+msgid "Your report could not be saved. Please try again."
+msgstr ""
+
+#: backend/app/Services/ReportService.php:252
+msgid "The reports could not be updated. Please try again."
+msgstr ""
+
+#: backend/app/Services/RootRouter.php:240
+msgid "Bit Connect is set to serve the portal at the site root, but the front page is not the portal page."
+msgstr ""
+
+#: backend/app/Services/RootRouter.php:243
+msgid "Set Settings → Reading → \"Your homepage displays\" to the portal page, or turn off root mode in Bit Connect → General."
+msgstr ""
+
+#: backend/app/Services/UserBadgeService.php:218
+msgid "Admin"
+msgstr ""
+
+#: backend/app/Services/UserBadgeService.php:222
+msgid "Moderator"
+msgstr ""
+
+#. translators: %d: number of seconds
+#: backend/app/Services/VoteRateLimiter.php:93
+#, php-format
+msgid "You are voting too quickly. Please wait %d seconds before voting again."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:43
+msgid "You do not have permission to vote on posts."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:53
+msgid "Invalid post."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:62
+#: backend/app/Services/VoteService.php:129
+msgid "Vote removed."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:86
+#: backend/app/Services/VoteService.php:153
+msgid "Vote added."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:106
+msgid "Comment upvoting is not enabled on this forum."
+msgstr ""
+
+#: backend/app/Services/VoteService.php:110
+msgid "You do not have permission to vote on comments."
+msgstr ""
+
+#: backend/app/SSR/Seo/SeoContent.php:130
+#: backend/app/SSR/Seo/SeoContent.php:173
+msgid "Back to all topics"
+msgstr ""
+
+#: backend/app/SSR/Seo/SeoContent.php:140
+msgid "No topics here yet."
+msgstr ""
+
+#: backend/app/SSR/Seo/SeoContent.php:289
+msgid "Newer topics"
+msgstr ""
+
+#: backend/app/SSR/Seo/SeoContent.php:294
+msgid "Older topics"
+msgstr ""
+
+#. translators: %s: number of replies on a topic.
+#: backend/app/SSR/Seo/SeoContent.php:377
+#, php-format
+msgid "%s reply"
+msgid_plural "%s replies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: backend/app/SSR/Seo/SeoContent.php:493
+msgid "Replies"
+msgstr ""
+
+#. translators: 1: community name, 2: page number.
+#: backend/app/SSR/Seo/SeoMeta.php:62
+#, php-format
+msgid "%1$s — page %2$s"
+msgstr ""
+
+#. translators: %s: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:179
+#, php-format
+msgid "Member profile — %s"
+msgstr ""
+
+#. translators: %s: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:216
+#, php-format
+msgid "Notifications — %s"
+msgstr ""
+
+#. translators: %s: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:529
+#, php-format
+msgid "Discussions and topics from the %s community."
+msgstr ""
+
+#. translators: 1: community name, 2: comma-separated list of recent topic titles.
+#: backend/app/SSR/Seo/SeoMeta.php:533
+#, php-format
+msgid "Recent discussions in %1$s: %2$s"
+msgstr ""
+
+#. translators: 1: term name, 2: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:553
+#, php-format
+msgid "Discussions tagged %1$s in the %2$s community."
+msgstr ""
+
+#. translators: 1: number of discussions, 2: term name, 3: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:558
+#, php-format
+msgid "%1$s discussion about %2$s in the %3$s community."
+msgid_plural "%1$s discussions about %2$s in the %3$s community."
+msgstr[0] ""
+msgstr[1] ""
+
+#: backend/app/Views/PluginPageActions.php:24
+#: languages/frontend-extracted-strings.php:584
+msgid "Settings"
+msgstr ""
+
+#: backend/app/Views/PluginPageActions.php:32
+#: languages/frontend-extracted-strings.php:586
+msgid "License & Support"
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Http/Middleware/AdminNonceMiddleware.php:30
+#: pro/backend/app/Http/Middleware/AdminNonceMiddleware.php:30
+msgid "You are not allowed to manage licenses."
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Http/Middleware/IsProCheckerMiddleware.php:25
+#: pro/backend/app/Http/Middleware/IsProCheckerMiddleware.php:25
+msgid "Please activate Bit Connect Pro with a valid license."
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Http/Requests/DeleteProfileBadgeRequest.php:44
+#: pro/backend/app/Http/Requests/DeleteProfileBadgeRequest.php:44
+msgid "Which badge to delete is required."
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Http/Requests/ReorderProfileBadgesRequest.php:44
+#: pro/backend/app/Http/Requests/ReorderProfileBadgesRequest.php:44
+msgid "The new badge order is required."
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Http/Requests/SaveProfileBadgeRequest.php:49
+#: build/bit-connect-pro/backend/app/Services/ProfileBadgeService.php:124
+#: pro/backend/app/Http/Requests/SaveProfileBadgeRequest.php:49
+#: pro/backend/app/Services/ProfileBadgeService.php:124
+msgid "A badge needs a name."
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Plugin.php:156
+#: build/bit-connect-pro/backend/bootstrap.php:18
+#: pro/backend/app/Plugin.php:156
+#: pro/backend/bootstrap.php:18
+msgid "Bit Connect Pro:"
+msgstr ""
+
+#: build/bit-connect-pro/backend/app/Plugin.php:158
+#: pro/backend/app/Plugin.php:158
+msgid "Bit Connect is required. Please install and activate it for the pro features to load."
+msgstr ""
+
+#. translators: %d: the maximum number of badges.
+#: build/bit-connect-pro/backend/app/Services/ProfileBadgeService.php:144
+#: pro/backend/app/Services/ProfileBadgeService.php:144
+#, php-format
+msgid "A forum can hold %d badges. Delete one to add another."
+msgstr ""
+
+#. translators: %s: composer command
+#: build/bit-connect-pro/backend/bootstrap.php:13
+#: pro/backend/bootstrap.php:13
+#, php-format
+msgid "Vendor dependencies are missing. Please run %s in the plugin directory."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:4
+msgid "404"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:6
+msgid "Changelog"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:8
+msgid "Join Our Facebook Community"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:10
+msgid "Connect, share, and grow with like-minded individuals"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:12
+msgid "Exclusive Content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:14
+msgid "Daily Discussion"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:16
+msgid "Special Events"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:18
+msgid "Join Now"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:20
+msgid "License & Activation"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:22
+msgid "Dev Version On"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:24
+msgid "Version"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:26
+msgid "Code Name:"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:28
+msgid "Pro Version"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:30
+msgid "Not Activated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:32
+msgid "Buy Pro Version"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:34
+msgid "Deactivate License"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:36
+msgid "Activate License"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:38
+msgid "Please ensure that your product subscription is valid. If needed, try deactivating and reactivating your license."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:40
+msgid "For further assistance, feel free to reach out to our live support or email us at support@bitapps.pro ."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:42
+msgid "Your license is invalid, try reactivate"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:44
+msgid "Manage license"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:48
+msgid ""
+"Please update your license to ensure you receive the latest security updates and bug fixes. \n"
+"          Using an outdated or unofficial license may leave your system vulnerable to security breaches and data leaks. \n"
+"          We cannot take responsibility for issues arising from such scenarios. For your safety, always download from the official Bit Apps server."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:52
+msgid "Your license is invalid"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:54
+#, php-format
+msgid "Plugin Update Required (%s)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:56
+msgid "Please update both Free and Pro plugins to the latest version. Keeping them the same is crucial to avoid potential issues."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:58
+msgid "Updating..."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:60
+msgid "Update Now"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:62
+msgid "Checking updates"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:64
+msgid "New version available"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:66
+msgid "Please update to the latest version to ensure plugin security and optimal performance. Stay safe and enjoy the enhanced features!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:68
+msgid "is up to date"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:70
+msgid "A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:72
+msgid "WordPress CRM to manage contacts, leads, deals, and invoices and run your whole sales pipeline right from your WordPress dashboard."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:74
+msgid "Zapier Alternative in WordPress Unlimited Task."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:76
+msgid "An social media management plugin for WordPress, that allows you to share your post to different social media platform, schedule post, manage social media account and many more feature."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:78
+msgid "Cash Back"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:80
+msgid "Hi"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:82
+msgid "We want your feedback!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:84
+msgid "Write a review"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:86
+#, php-format
+msgid "of your experience with %s, and we'll send you a"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:88
+msgid "$10 Cash back"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:90
+msgid "to say thanks!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:92
+msgid "To claim your cash back, simply reply to support with a screenshot or link of your review."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:94
+msgid "Review Now"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:96
+msgid "Improvement"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:98
+msgid "Allow the collection of diagnostic data and error reports to enhance the application's performance. Please review our"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:100
+msgid "Privacy Policy"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:102
+msgid "for more information."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:104
+msgid "Recommended Plugins"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:106
+msgid "Support"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:108
+msgid "About"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:110
+msgid "Save changes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:112
+msgid "Cancel"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:114
+msgid "Private topics, visible only to the people you choose"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:116
+msgid "Profile badges you author and hand out"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:118
+msgid "Upvotes on comments, not just topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:120
+msgid "Hide reported content automatically, before a moderator gets to it"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:122
+msgid "Daily and weekly email digests"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:124
+msgid "Send forum email from your own name and address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:126
+msgid "Write your own wording for every notification email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:128
+msgid "Maybe later"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:130
+msgid "Get Bit Connect Pro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:132
+msgid "Bit Connect Pro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:134
+msgid "Bit Connect Pro adds:"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:136
+msgid "Select Icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:138
+msgid "Preview"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:140
+msgid "Sample"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:142
+msgid "Icon Preview"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:144
+msgid "Remove"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:146
+msgid "Change Icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:148
+msgid "Upload Icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:150
+msgid "Recommended size: 64x64 to 512x512 pixels (square). Max file size: 2MB. Supported formats: PNG, JPG, SVG."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:152
+msgid "Optional. Shown when the portal is viewed in dark mode — upload a lighter version here if your icon is dark. Falls back to the light-mode icon when empty."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:154
+msgid "Tag name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:156
+msgid "Invalid message"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:158
+msgid "Write tag name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:160
+msgid "Used in portal URLs. Changing it breaks links that already point here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:162
+msgid "Used in portal URLs. Leave blank to build one from the name."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:164
+msgid "Slug"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:166
+msgid "term-slug"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:168
+msgid "No icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:170
+msgid "Reorder"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:172
+msgid "Failed to save the new order"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:174
+msgid "Description"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:176
+msgid "Write here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:178
+msgid "Too short"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:180
+msgid "Max 500 chars"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:182
+msgid "Light"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:184
+msgid "System"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:186
+msgid "Dark"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:188
+msgid "Theme"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:190
+msgid "Colour theme"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:192
+msgid "Today"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:194
+msgid "Yesterday"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:196
+msgid "Nothing matches those filters."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:198
+msgid "Nothing recorded yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:200
+msgid "Widen the search — a topic and a comment can share an id, so check the type too."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:202
+msgid "Rows appear when someone acts on content they did not write."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:204
+msgid "Activity"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:206
+msgid "Everything done to content another member wrote — taken down, hidden, locked or cleared. Nobody can rewrite someone else’s words, so no edit is recorded here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:208
+msgid "matching actions"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:210
+msgid "actions recorded"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:212
+msgid "Any action"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:214
+msgid "Topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:216
+msgid "Comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:218
+msgid "Any content type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:220
+msgid "Ids are unique per kind — a topic and a comment can share one."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:222
+msgid "Topic or comment ID"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:224
+msgid "Clear"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:226
+msgid "The activity log could not be loaded."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:228
+msgid "Something went wrong"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:230
+msgid "Show all"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:232
+msgid "the reports were dismissed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:234
+msgid "the content was kept"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:236
+msgid "the content was removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:238
+msgid "Deleted content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:240
+msgid "Deleted comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:242
+msgid "Took"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:244
+msgid "reply"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:246
+msgid "replies"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:248
+msgid "down with it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:250
+msgid "report was"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:252
+msgid "reports were"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:254
+msgid "open against it at the time."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:256
+msgid "Closed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:258
+msgid "report"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:260
+msgid "reports"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:262
+msgid "Automatic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:264
+msgid "(deleted account)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:266
+msgid "Comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:268
+msgid "Topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:270
+msgid "by"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:272
+msgid "gone"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:274
+msgid "Sorry, the page you visited does not exist."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:276
+msgid "Portal slug is required"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:278
+msgid "Saving…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:280
+msgid "Settings saved successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:282
+msgid "There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:284
+msgid "Address saved, but no page is there yet"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:286
+msgid "Failed to save settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:288
+msgid "Branding"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:290
+msgid "Location"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:292
+msgid "Access"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:294
+msgid "Sign in"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:296
+msgid "Sidebar card"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:298
+msgid "General"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:300
+msgid "What the portal is called, where it lives, who can see it, and how people sign in."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:302
+msgid "Unsaved changes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:304
+msgid "Save"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:306
+msgid "Newest, oldest, most active — how the topic list is ordered."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:308
+msgid "Sort"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:310
+msgid "Narrow the list down to one product or department."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:312
+msgid "Product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:314
+msgid "Narrow the list down to a tag."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:316
+msgid "Tags"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:318
+msgid "Who can read the portal."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:320
+msgid "Who can see the portal"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:322
+msgid "Anyone can read topics, and search engines can index them. Posting still needs an account."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:324
+msgid "Everyone"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:326
+msgid "Visitors are sent to sign in first. Nothing in the portal is publicly readable or indexable."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:328
+msgid "Logged-in users only"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:330
+msgid "The controls above the topic list. A hidden filter still applies when its value is in the URL, so links people have already shared keep working."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:332
+msgid "Topic list filters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:334
+msgid "Filters visitors can use"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:336
+msgid "Where visitors go when they need an account."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:338
+msgid "Sign-in method"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:340
+msgid "Login and registration form"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:342
+msgid "People sign in and register on the portal itself. You choose its banner, heading and wording below."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:344
+msgid "Built-in form"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:346
+msgid "People are sent to pages you already have — a membership plugin, or your theme."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:348
+msgid "My own login page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:350
+msgid "What the built-in login and registration page shows."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:352
+msgid "Login page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:354
+msgid "Sits at the top of the form. A wide, transparent image reads best."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:356
+msgid "Banner"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:358
+msgid "Login banner preview"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:360
+msgid "The heading above the form."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:362
+msgid "Title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:364
+msgid "e.g. Welcome back!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:366
+msgid "A line or two below the title."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:368
+msgid "e.g. Sign in to join the conversation."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:370
+msgid "Send people straight to the form with these links."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:372
+msgid "Page addresses"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:374
+msgid "Login"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:376
+msgid "Copy"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:378
+msgid "Registration"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:380
+msgid "What happens when someone registers through the built-in form."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:382
+msgid "New accounts"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:384
+msgid "The WordPress role people get when they register."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:386
+msgid "Registration role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:388
+msgid "Select a role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:390
+msgid "New members have to confirm their email address before they can sign in."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:392
+msgid "Require email verification"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:394
+msgid "Where the portal sends people instead of showing its own form."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:396
+msgid "Your login pages"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:398
+msgid "The page people sign in on."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:400
+msgid "Login page URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:402
+msgid "The page people create an account on. Leave empty to reuse the login page."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:404
+msgid "Registration page URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:406
+msgid "The name and logo the portal shows visitors, and where the logo takes them."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:408
+msgid "Used for the browser tab, the meta title and the name emails are sent under. It usually reads best as your site title."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:410
+msgid "Portal title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:412
+msgid "e.g. Acme Community"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:414
+msgid "Shown in the portal header. A wide, transparent image reads best — around 480 × 120, or 4:1."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:416
+msgid "Logo"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:418
+msgid "Site logo preview"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:420
+msgid "Where clicking the logo takes a visitor."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:422
+msgid "Logo link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:424
+msgid "Portal home"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:426
+msgid "Custom URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:428
+msgid "Choose an image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:430
+msgid "Remove image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:432
+msgid "Replace"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:434
+msgid "The community is now your homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:436
+msgid "The community is back on its own page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:438
+msgid "Could not change the community address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:440
+#, php-format
+msgid "Create a page with the slug \"%s\" and the shortcode in it, then try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:442
+msgid "Add the shortcode to a page and publish it, then try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:444
+msgid "There is no community page yet"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:446
+msgid "Your current homepage is replaced by the community, and topic links change from /slug/topic to /topic. Links people already shared will stop working."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:448
+msgid "The community goes back to yoursite.com/slug and topic links change again. Your homepage returns to the default WordPress posts page."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:450
+msgid "Yes, make it my homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:452
+msgid "Yes, move it back"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:454
+msgid "Show the community as your homepage?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:456
+msgid "Move the community back to its own page?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:458
+msgid "Homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:460
+msgid "Own page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:462
+msgid "Not set up"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:464
+msgid "Your community is at"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:466
+msgid "Edit this page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:468
+msgid "The web address where people find your community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:470
+msgid "Community address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:472
+msgid "No published page at this address — create one with the shortcode in it, or change the slug below."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:474
+msgid "No page yet — add the shortcode below to a page and publish it to start the community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:476
+msgid "Your homepage is not the community page — pick it in Settings → Reading, or turn off \"Show as homepage\"."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:478
+msgid "Not used while the community is your homepage."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:480
+msgid "The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that contains the shortcode. Changing it changes every topic link."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:482
+msgid "Address slug"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:484
+msgid "e.g. community"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:486
+msgid "This page does not contain the [bit-connect] shortcode, so the community will not show on it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:488
+msgid "Show the community at yoursite.com instead of yoursite.com/slug. It replaces your current homepage — best for a site that is only the community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:490
+msgid "Show as homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:492
+msgid "Saves right away"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:494
+msgid "Needs the page first"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:496
+msgid "Put this on any WordPress page to show the community there. If you have no community page yet, the page you publish with it becomes the community page."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:498
+msgid "Shortcode"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:500
+msgid "Every field is empty, so no card is shown."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:502
+msgid "The last line is typed out one phrase at a time."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:504
+msgid "Shown at the foot of the portal sidebar."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:506
+msgid "Show the card"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:508
+msgid "A small card at the foot of the portal sidebar: a headline, a rotating line of text, and a link. Off by default — it appears on your public pages, so it is your call."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:510
+msgid "Sidebar promo card"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:512
+msgid "Every line is yours to write, and any you leave empty is simply left off the card. Fill in none of them and no card is shown."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:514
+msgid "Top line"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:516
+msgid "e.g. A Bit Apps product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:518
+msgid "Headline"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:520
+msgid "e.g. Built with Bit Connect"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:522
+msgid "Stays put while the phrases below are typed out after it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:524
+msgid "Text before the rotating line"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:526
+msgid "e.g. We also build"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:528
+msgid "One phrase per line, typed out in turn. Up to 10, and short ones read best in a narrow sidebar."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:530
+msgid "Rotating text"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:532
+msgid "e.g. smart WordPress forms"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:534
+msgid "no-code automations"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:536
+msgid "communities like this"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:538
+msgid "Link label"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:540
+msgid "e.g. Explore our plugins"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:542
+msgid "Opened in a new tab. Without one the card is plain text rather than a link."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:544
+msgid "Link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:546
+msgid "The card is hidden. Turn it on to write what it says."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:548
+msgid "Checking…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:550
+msgid "This is already your community page."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:552
+#, php-format
+msgid "A page already exists at %s. Please choose another name."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:554
+#, php-format
+msgid "%s is available. Your community page will be created here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:556
+#, php-format
+msgid "There is no page at %s yet. Create one with the shortcode in it, or rename your community page to this slug."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:558
+msgid "A page exists here, but it does not contain the [bit-connect] shortcode yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:560
+msgid "This is your community page."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:562
+msgid "A page with the shortcode is ready here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:564
+msgid "Loading"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:566
+msgid "Dashboard"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:568
+msgid "Stages"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:570
+msgid "Topic Types"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:572
+msgid "Products"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:574
+msgid "Status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:576
+msgid "Manager"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:578
+msgid "Reports"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:580
+msgid "Notifications"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:582
+msgid "SEO"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:590
+msgid "Product by Bit Apps"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:592
+msgid "Failed to delete the badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:594
+msgid "Badge deleted"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:596
+msgid "Failed to reorder badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:598
+msgid "Failed to reset capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:600
+msgid "Capabilities reset to role defaults"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:602
+msgid "Failed to save the badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:604
+msgid "Badge saved"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:606
+msgid "Failed to update capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:608
+msgid "Capabilities updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:610
+msgid "Failed to update badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:612
+msgid "Badges updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:614
+msgid "Failed to update user capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:616
+msgid "User capabilities updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:618
+msgid "Manage Users"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:620
+msgid "View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:622
+msgid "Profile Badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:624
+msgid "Role Capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:626
+msgid "Search by name, email or username…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:628
+msgid "No users found."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:630
+msgid "User"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:632
+msgid "Email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:634
+msgid "Roles"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:636
+msgid "Capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:638
+msgid "No role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:640
+msgid "Badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:642
+msgid "Profile badges are a Pro feature."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:644
+msgid "Pro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:646
+msgid "Per-user capability overrides are a Pro feature. Set defaults per role instead."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:648
+msgid "Capabilities, set by role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:650
+msgid "Posts"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:652
+msgid "Voting"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:654
+msgid "Other People’s Content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:656
+msgid "Moderation & Admin"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:658
+msgid "Checked = this user has the capability. Unchecked = revoked even if their role grants it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:660
+msgid "Remove all overrides and restore role defaults"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:662
+msgid "Reset to role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:664
+msgid "User Capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:666
+msgid "Edit user capabilities"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:668
+msgid "caps"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:670
+msgid "Developer"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:672
+msgid "Group Expert"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:674
+msgid "Name your people beyond what their permissions make them — Developer, Support, Group Expert — and hand the badges out per member."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:676
+msgid "For example"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:678
+msgid "With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:680
+msgid "Authoring and assigning profile badges is a Pro feature."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:682
+msgid "Buy Pro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:684
+msgid "Badges you write yourself, for the things permissions cannot say — Developer, Support, Group Expert. Assign them to members from the user list."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:686
+msgid "Edit badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:688
+msgid "New badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:690
+msgid "Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:692
+msgid "Colour"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:694
+msgid "Delete a badge to add another"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:696
+msgid "Add badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:698
+msgid "Members will see"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:700
+msgid "No badges yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:702
+msgid "A member wearing several shows the first of these beside their name. Move a badge up to have it win."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:704
+msgid "Move up"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:706
+msgid "Move down"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:708
+msgid "Keep"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:710
+msgid "Everyone wearing it loses it. Members are not otherwise changed."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:712
+msgid "Delete"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:714
+msgid "Delete this badge?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:716
+msgid "Delete badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:718
+msgid "Forum Capabilities by Role"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:720
+msgid "Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:722
+msgid "No badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:724
+msgid "No badges defined yet. Create one from Profile Badges."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:726
+#, php-format
+msgid "Up to %d at once. The first one they wear is what bylines show."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:728
+msgid "Edit profile badges"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:730
+msgid "Assign"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:732
+msgid "Could not save notification settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:734
+msgid "Notification settings saved"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:736
+msgid "WordPress could not send the message. Check this site's email configuration."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:738
+msgid "Test email sent to"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:740
+msgid "Test email sent"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:742
+msgid "Who forum email appears to come from."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:744
+msgid "Email delivery"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:746
+msgid "Notifications are sent as"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:748
+msgid "Taken from your site title and address. A custom sender, and daily or weekly digests, come with Pro."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:750
+msgid "A custom sender and digest schedule are Pro features."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:752
+msgid "Send test email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:754
+msgid "Sent to your own address, using the settings as last saved."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:756
+msgid "Who forum email appears to come from, and when digests go out."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:758
+msgid "Sender name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:760
+msgid "Sender address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:762
+msgid "Default email frequency"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:764
+msgid "Digest send hour"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:766
+msgid "Greeting"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:768
+msgid "Instant email intro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:770
+msgid "Digest intro"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:772
+msgid "Sign-off"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:774
+msgid "The wording around the list of what happened."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:776
+msgid "Email wording"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:778
+msgid "Notification emails use the wording below. Rewriting these lines comes with Pro."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:780
+msgid "Custom email wording is a Pro feature."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:782
+msgid "The first line of every notification email."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:784
+msgid "Introduces a single notification sent immediately."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:786
+msgid "Introduces a daily or weekly digest, which covers several at once."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:788
+msgid "Sits above the link members follow to change these settings."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:790
+msgid "The wording around the list of what happened. Plain text only."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:792
+msgid "Notification settings could not be loaded."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:794
+msgid "The master switch. Off, the forum writes no notifications and sends no email at all."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:796
+msgid "Notifications are on"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:798
+msgid "Notifications are off for everyone"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:800
+msgid "Defaults apply to members who have never opened their own settings. Turn off \"Member may change\" to make your answer final for everyone."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:802
+msgid "What the forum sends"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:804
+msgid "Notification"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:806
+msgid "In app"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:808
+msgid "Member may change"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:810
+msgid "This is always delivered in the app."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:812
+msgid "Only moderators receive this, so there is nothing for a member to change."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:814
+msgid "How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:816
+msgid "Housekeeping"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:818
+msgid "Keep read notifications for"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:820
+msgid "days"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:822
+msgid "Slug & URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:824
+msgid "Portal"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:826
+msgid "Title & logo"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:828
+msgid "Login settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:830
+msgid "Auth"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:832
+msgid "Welcome to Bit Connect"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:834
+msgid "Let's set up your community portal in a few steps."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:836
+msgid "Authentication"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:838
+msgid "Choose how users will log in and register on your portal."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:840
+msgid "Auth Mode"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:842
+msgid "Plugin Default"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:844
+msgid "Login Page Title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:846
+msgid "Welcome back!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:848
+msgid "Login Page Description"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:850
+msgid "Sign in to continue"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:852
+msgid "Require Email Verification"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:854
+msgid "Custom Login URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:856
+msgid "Custom Registration URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:858
+msgid "Back"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:860
+msgid "Finish Setup"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:862
+msgid "Branding & Access"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:864
+msgid "Set your community title, logo, and who can access the portal."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:866
+msgid "Community Title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:868
+msgid "My Community"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:870
+msgid "Upload"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:872
+msgid "https://example.com/logo.png"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:874
+msgid "Logo Link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:876
+msgid "Default (portal home)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:878
+msgid "Portal Access"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:880
+msgid "Next"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:882
+msgid "Could not create the page. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:884
+msgid "The page was created, but it could not be set as your homepage. You can turn that on later in Settings."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:886
+msgid "Where should your community live?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:888
+msgid "We will create a page for it. You can change this later in Settings."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:890
+msgid "On its own page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:892
+msgid "yoursite.com/community — the rest of your website stays as it is. Recommended."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:894
+msgid "As the homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:896
+msgid "yoursite.com — the community is the first thing visitors see."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:898
+msgid "Your current homepage is replaced, and topic links use the site root (yoursite.com/topic-name). Best for a site that is only the community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:900
+msgid "This replaces your homepage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:902
+msgid "Page name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:904
+msgid "Only used as the page name in WordPress — visitors see yoursite.com."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:906
+msgid "Want to use your own page instead?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:908
+msgid "Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:910
+msgid "Skip"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:912
+msgid "Create page and continue"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:914
+msgid "Failed to delete department"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:916
+msgid "Department deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:918
+msgid "Product created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:920
+msgid "Failed to update product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:922
+msgid "Product updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:924
+msgid "Manage your products here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:926
+msgid "Add Product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:928
+msgid "Create Product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:930
+msgid "Save Changes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:932
+msgid "Edit Product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:934
+msgid "Product Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:936
+msgid "Are you sure to delete?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:938
+msgid "Delete Product"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:940
+msgid "Actions"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:942
+msgid "Awaiting review"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:944
+msgid "Kept"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:946
+msgid "Removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:948
+msgid "Dismissed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:950
+msgid "items dismissed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:952
+msgid "items awaiting review"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:954
+msgid "items kept"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:956
+msgid "items removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:958
+msgid "No report has been dismissed yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:960
+msgid "Nothing is waiting for review."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:962
+msgid "No reported content has been kept yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:964
+msgid "No reported content has been removed yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:966
+msgid "Nothing here yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:968
+msgid "Reports members file from the forum land here for a decision."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:970
+msgid "Grouped by what was reported — several people reporting one item is one decision."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:972
+msgid "items"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:974
+msgid "The report queue could not be loaded."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:976
+msgid "There are more reports than this screen reads at once. Work through these and reload."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:978
+msgid "Showing part of the queue"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:980
+msgid "dismissed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:982
+msgid "kept"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:984
+msgid "removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:986
+msgid "The content was removed."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:988
+msgid "The content is public again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:990
+msgid "That could not be saved."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:992
+msgid "(no content)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:994
+msgid "already removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:996
+msgid "Open in the forum"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:998
+msgid "Written by"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1000
+msgid "first reported"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1002
+msgid "Why it was reported"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1004
+msgid "What reporters wrote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1006
+msgid "Reported by"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1008
+msgid "Note (optional) — kept on every report closed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1010
+msgid "Keep content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1012
+msgid "The reply and everything posted underneath it are deleted for good."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1014
+msgid "The topic and its replies are deleted for good."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1016
+msgid "Remove it"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1018
+msgid "Delete this permanently?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1020
+msgid "Remove content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1022
+msgid "Dismiss"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1024
+msgid "Author"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1026
+msgid "Votes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1028
+msgid "Date"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1030
+msgid "Recent Topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1032
+msgid "Total Topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1034
+msgid "Total Comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1036
+msgid "Total Members"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1038
+msgid "Total Votes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1040
+msgid "Top Topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1042
+msgid "No topics yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1044
+msgid "Monthly Activity"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1046
+msgid "Failed to update SEO settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1048
+msgid "SEO settings updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1050
+msgid "Departments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1052
+msgid "Statuses"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1054
+msgid "Topic types"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1056
+msgid "{name}"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1058
+msgid "A workflow state. Served so visitors can browse it, but left out of the index by default — nobody searches for \"in progress\", and the listing changes constantly."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1060
+msgid "workflow"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1062
+msgid "terms"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1064
+msgid "Taxonomy"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1066
+msgid "Serve the archive URL at all. Switching this off makes it a 404."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1068
+msgid "Route"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1070
+msgid "The route is switched off."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1072
+msgid "Offer the archive to search engines rather than marking it noindex."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1074
+msgid "Indexed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1076
+msgid "Not indexed, so it is never listed — a sitemap asks for indexing."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1078
+msgid "List this taxonomy’s archives in the sitemap."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1080
+msgid "In sitemap"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1082
+msgid "None detected"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1084
+msgid "Current status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1086
+msgid "The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1088
+msgid "Portal is members-only"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1090
+msgid "Search engines and AI crawlers cannot read the portal, because the content they receive is generated by the setting below."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1092
+msgid "Content for crawlers is switched off"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1094
+msgid "SEO plugin detected"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1096
+msgid "It prints the portal tags, using our data"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1098
+msgid "Bit Connect prints the portal tags"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1100
+msgid "Portal URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1102
+msgid "Sitemap"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1104
+msgid "Published topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1106
+msgid "Indexable archive pages"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1108
+msgid "(no archives are indexable)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1110
+msgid "Overview"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1112
+msgid "The portal is a JavaScript app. Search engines and AI crawlers do not run it, so the server sends them plain HTML of the same content."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1114
+msgid "Content for crawlers"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1116
+msgid "Render topics, replies and archives as plain HTML. Switching this off makes the portal invisible to anything that does not run JavaScript."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1118
+msgid "Server-rendered content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1120
+msgid "Topics per rendered page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1122
+msgid "How many topics appear in the server-rendered list. Higher values make each page heavier for every visitor; older topics stay reachable through the sitemap and the older/newer links."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1124
+msgid "Crawling"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1126
+msgid "Who prints the page title, canonical URL and social preview tags for portal routes."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1128
+msgid "Meta tags"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1130
+msgid "Automatic (recommended)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1132
+msgid "If an SEO plugin is active it prints the tags, using the portal data Bit Connect feeds it. Otherwise Bit Connect prints them."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1134
+msgid "Always Bit Connect"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1136
+msgid "Bit Connect prints the tags even when an SEO plugin is active. Use this if your SEO plugin is producing wrong tags on portal pages."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1138
+msgid "Always my SEO plugin"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1140
+msgid "Bit Connect prints no tags of its own. If no supported SEO plugin is active, portal routes get no title or canonical at all."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1142
+msgid "Machine-readable descriptions that let search engines show richer results for discussions."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1144
+msgid "Structured data"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1146
+msgid "Describe topics as forum discussions with their author, dates and replies, and lists as collections."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1148
+msgid "Discussion and collection schema"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1150
+msgid "Show the community as the parent of each topic and archive in search results."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1152
+msgid "Breadcrumb schema"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1154
+msgid "Meta & schema"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1156
+msgid "A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each row is one taxonomy: whether its archive is served, whether search engines may index it, and whether the sitemap lists it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1158
+msgid "Term archives"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1160
+msgid "Archives"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1162
+msgid "These routes always work for visitors. Indexing them puts thin, near-identical pages in front of the topics they link to, so they are excluded by default."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1164
+msgid "What search engines may index"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1166
+msgid "Member profile pages. These are thin and similar to one another, and indexing them publishes member names and activity."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1168
+msgid "Index member profiles"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1170
+msgid "Pages 2, 3, … of the topic list. They exist so crawlers can reach older topics, not to rank themselves."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1172
+msgid "Index paginated list pages"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1174
+msgid "Indexing"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1176
+msgid "How search engines discover the portal, including topics no page links to directly. Archive inclusion is set per taxonomy on the Archives tab."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1178
+msgid "Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1180
+msgid "Portal sitemap"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1182
+msgid "Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1184
+msgid "Announce in robots.txt"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1186
+msgid "List the portal landing page as the entry point of the community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1188
+msgid "Include portal home"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1190
+msgid "List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1192
+msgid "Include topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1194
+msgid "URLs per sitemap page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1196
+msgid "Large communities are split across several sitemap pages. The sitemap standard allows up to 50,000 URLs per page; smaller pages are lighter to generate."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1198
+msgid "How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1200
+msgid "Failed to update settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1202
+msgid "Settings updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1204
+msgid "Moderation"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1206
+msgid "Control what happens to reported content before a moderator has looked at it"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1208
+msgid "Hide content automatically"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1210
+msgid "Hiding content on report count is a Pro feature."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1212
+msgid "Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1214
+msgid "Hide content after"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1216
+msgid "One report takes a topic or reply out of public view immediately. Anyone who dislikes a post can hide it on their own until a moderator looks."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1218
+msgid "A topic or reply is taken out of public view once this many different members have reported it, and comes back if a moderator keeps it. Content written by moderators and admins is never hidden this way."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1220
+msgid "Available with Bit Connect Pro."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1222
+msgid "WordPress Media Limits"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1224
+msgid "These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1226
+msgid "Max upload size"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1228
+msgid "(set by server php.ini via wp_max_upload_size)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1230
+msgid "Max image dimensions"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1232
+msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1234
+msgid "Allowed file types"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1236
+msgid "On/off your Topic Upvote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1238
+msgid "Upvote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1240
+msgid "On/off your Comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1242
+msgid "On/off your Topic comment Upvote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1244
+msgid "Comment Upvote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1246
+msgid "Let authors keep a topic private, visible only to them and the forum team"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1248
+msgid "Private Topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1250
+msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1252
+msgid "Delete Data on Uninstall"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1254
+msgid "Show and require Topic Type when creating a topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1256
+msgid "Require Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1258
+msgid "Show and require Products/Department when creating a topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1260
+msgid "Require Products/Department"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1262
+msgid "Choose what members can do on a topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1264
+msgid "Topic Access Settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1266
+msgid "Control which fields are shown and required when creating a topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1268
+msgid "Topic Form Fields"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1270
+msgid "Manage what data is removed when the plugin is uninstalled"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1272
+msgid "Data Cleanup"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1274
+msgid "Please enter a valid Custom Login Page URL, for example https://example.com/login"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1276
+msgid "Please enter a valid Custom Registration Page URL, for example https://example.com/register"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1278
+msgid "Failed to delete stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1280
+msgid "Stage deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1282
+msgid "Stage created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1284
+msgid "Failed to update stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1286
+msgid "Stage updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1288
+msgid "Edit Stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1290
+msgid "Create Stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1292
+msgid "Stage Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1294
+msgid "Stage name is required"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1296
+msgid "Enter stage name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1298
+msgid "Enter stage description (optional)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1300
+msgid "Icon (light mode)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1302
+msgid "Stage icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1304
+msgid "Icon (dark mode)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1306
+msgid "Stage icon for dark mode"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1308
+msgid "No description"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1310
+msgid "Icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1312
+msgid "Edit stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1314
+msgid "Delete Stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1316
+msgid "Delete stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1318
+msgid "Stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1320
+msgid "Manage stages for your project"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1322
+msgid "Failed to delete status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1324
+msgid "Status deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1326
+msgid "Status created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1328
+msgid "Failed to update status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1330
+msgid "Status updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1332
+msgid "Manage status to organize your content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1334
+msgid "Add Status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1336
+msgid "Create"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1338
+msgid "Create Status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1340
+msgid "Edit Status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1342
+msgid "Status Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1344
+msgid "Write a status here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1346
+msgid "Color"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1348
+msgid "Status icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1350
+msgid "Status icon for dark mode"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1352
+msgid "(For Admin)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1354
+msgid "Write a description here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1356
+msgid "Default"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1358
+msgid "No color"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1360
+msgid "Delete Status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1362
+msgid "Failed to delete tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1364
+msgid "Tag deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1366
+msgid "Tag created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1368
+msgid "Failed to update tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1370
+msgid "Tag updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1372
+msgid "Manage tags to organize your content"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1374
+msgid "Create Tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1376
+msgid "Edit Tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1378
+msgid "Tag Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1380
+msgid "Tag name is required"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1382
+msgid "Enter tag name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1384
+msgid "Enter description"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1386
+msgid "Edit tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1388
+msgid "Delete Tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1390
+msgid "Delete tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1392
+msgid "Failed to delete topic type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1394
+msgid "Topic type deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1396
+msgid "Topic type created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1398
+msgid "Failed to update topic type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1400
+msgid "Topic type updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1402
+msgid "Manage your topic types here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1404
+msgid "Add Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1406
+msgid "Edit Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1408
+msgid "Topic Type Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1410
+msgid "Write Topic Title here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1412
+msgid "Write Description here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1414
+msgid "Topic type icon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1416
+msgid "Topic type icon for dark mode"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1418
+msgid "Create Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1420
+msgid "Delete Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1422
+msgid "Word document"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1424
+msgid "GIF image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1426
+msgid "JPEG image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1428
+msgid "PDF document"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1430
+msgid "PNG image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1432
+msgid "WebP image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1434
+msgid "Maximum"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1436
+msgid "Only"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1438
+msgid "Add Files"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1440
+msgid "Processing…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1442
+msgid "Uploading"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1444
+msgid "Uploaded"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1446
+msgid "Retry"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1448
+msgid "Log in to join the conversation."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1450
+msgid "Create Account"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1452
+msgid "Login required"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1454
+msgid "You need to be logged in to perform this action. Please log in or create an account to continue."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1456
+msgid "Mark all read"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1458
+msgid "See all notifications"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1460
+msgid "unread"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1462
+msgid "You are all caught up"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1464
+msgid "Nothing yet"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1466
+msgid "New replies and mentions will appear here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1468
+msgid "Replies, mentions and moderation decisions will show up here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1470
+msgid "Instant"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1472
+msgid "Daily"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1474
+msgid "Weekly"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1476
+msgid "Never"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1478
+msgid "That could not be saved. Please check your connection and try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1480
+msgid "Your notification settings could not be loaded."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1482
+msgid "Email frequency"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1484
+msgid "How often email should arrive. This does not change what you are notified about — only when it is sent."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1486
+msgid "What you are notified about"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1488
+msgid "Changes save as you make them."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1490
+msgid "App"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1492
+msgid "This forum always tells you about this."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1494
+msgid "Your administrator has set this for everyone."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1496
+msgid "Email is switched off entirely, so the Email column has no effect until you choose a frequency above."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1498
+msgid "now"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1500
+msgid "The forum"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1506
+msgid "You were given the"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1508
+msgid "badge"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1510
+msgid "replied to you in"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1514
+msgid "mentioned you in"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1518
+msgid "A moderator reviewed something you reported"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1520
+msgid "posted a new topic:"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1522
+msgid "commented on"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1524
+msgid "The status changed on"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1526
+#, php-format
+msgid "%d people"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1528
+msgid "upvoted your post in"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1530
+msgid "No longer available"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1532
+msgid "You will be notified about new replies."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1534
+msgid "You will no longer be notified about this topic."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1536
+msgid "Could not change your follow setting."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1538
+msgid "You are following this because you took part."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1540
+msgid "You chose to follow this topic."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1542
+msgid "You muted this topic."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1544
+msgid "Notify me when someone replies."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1546
+msgid "Unfollow"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1548
+msgid "Follow"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1550
+msgid "opens in a new tab"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1552
+msgid "It is now hidden from the forum until a moderator has reviewed it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1556
+msgid "Your report could not be sent. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1558
+msgid "Send report"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1560
+msgid "Report this to a moderator"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1562
+msgid "The list of reasons could not be loaded, so this cannot be sent right now."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1564
+msgid "What is wrong with it?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1568
+msgid "Share"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1570
+msgid "Share this reply"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1572
+msgid "Share this topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1574
+msgid "Links straight to this reply in"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1576
+msgid "Or copy the link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1578
+msgid "Link to share"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1580
+msgid "Copied"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1582
+msgid "More sharing options"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1584
+#, php-format
+msgid "Share on %s"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1586
+msgid "Could not save the topic. Please check your connection and try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1588
+msgid "Topic created successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1590
+msgid "Could not update topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1592
+msgid "Topic updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1594
+#, php-format
+msgid "The link you chose was already taken, so this topic is at /%s"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1596
+msgid "Edit permalink"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1598
+msgid "Set a custom permalink"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1600
+msgid "topic-slug"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1602
+msgid "Links that already point at this topic will stop working."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1604
+msgid "Letters, numbers and hyphens. Leave blank to build one from the title."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1606
+msgid "Done"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1608
+msgid "Checking availability…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1610
+msgid "Available"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1612
+msgid "Already taken — this topic will be saved as"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1614
+msgid "Uploading files..."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1616
+msgid "Submit"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1618
+msgid "Create New Topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1620
+msgid "Update"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1622
+msgid "Edit Topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1624
+msgid "Failed to upload image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1626
+msgid "Public Topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1628
+msgid "Topic Title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1630
+msgid "Please enter a topic title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1632
+msgid "Topic title cannot exceed 200 characters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1634
+msgid "Write a post title"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1636
+msgid "Permalink"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1638
+msgid "Slug cannot exceed 200 characters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1640
+msgid "Slug must contain at least one letter or number"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1642
+msgid "Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1644
+msgid "Please select a topic type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1646
+msgid "Select a Topic Type"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1648
+msgid "Products/Department"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1650
+msgid "Please select a department"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1652
+msgid "All Products/Department"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1654
+msgid "Write Your Topic Description Here"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1656
+msgid "Please enter a description or add an image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1658
+msgid "Description cannot exceed 10000 characters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1660
+msgid "Write your topic description..."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1662
+msgid "Tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1664
+msgid "Select tags.."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1666
+msgid "Normal text"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1668
+msgid "Heading"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1670
+msgid "Subheading"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1672
+msgid "Small heading"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1674
+msgid "Text format"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1676
+msgid "Bulleted list"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1678
+msgid "Numbered list"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1680
+msgid "Code block"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1682
+msgid "Attach file"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1684
+msgid "Bold"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1686
+msgid "Italic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1688
+msgid "Underline"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1690
+msgid "Apply link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1692
+msgid "Cancel link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1694
+msgid "Insert link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1696
+msgid "Insert image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1698
+msgid "More formatting"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1700
+msgid "Uploading…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1702
+msgid "(edited)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1704
+msgid "Edited by"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1706
+msgid "All Products"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1708
+msgid "Search topic, tag, etc."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1710
+msgid "Newest"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1712
+msgid "Oldest"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1714
+msgid "Private"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1716
+msgid "My Topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1718
+msgid "Filter by tag"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1720
+#, php-format
+msgid "%s selected"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1722
+msgid "comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1724
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1726
+msgid "If an account exists for that username or email, a password reset link has been sent. Please check your inbox."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1728
+msgid "Check your email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1730
+msgid "Back to Login"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1732
+msgid "Forgot Password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1734
+msgid "Enter your username or email and we'll send you a reset link."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1736
+msgid "Username or Email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1738
+msgid "Please enter your username or email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1740
+msgid "Enter your username or email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1742
+msgid "Send Reset Link"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1744
+msgid "Username or email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1746
+msgid "Password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1748
+msgid "Forgot password?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1750
+msgid "Please enter your password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1752
+msgid "Enter your password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1754
+msgid "Remember me"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1756
+msgid "Don't have an account?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1758
+msgid "New account registration is currently disabled on this site."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1760
+msgid "Registration is closed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1762
+msgid "Already have an account?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1764
+msgid "We sent a verification link to"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1766
+msgid "Click the link in the email to activate your account."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1768
+msgid "Almost there!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1770
+msgid "Wrong email?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1772
+msgid "Go back"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1774
+msgid "Display Name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1776
+msgid "Display name must be 60 characters or fewer"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1778
+msgid "Your public display name (optional)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1780
+msgid "Email Address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1782
+msgid "Please enter your email address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1784
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1786
+msgid "Enter your email address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1788
+msgid "Please choose a password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1790
+msgid "Password must be at least 6 characters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1792
+msgid "Choose a password (min. 6 characters)"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1794
+msgid "Confirm Password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1796
+msgid "Please confirm your password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1798
+msgid "Passwords do not match"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1800
+msgid "Repeat your password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1802
+msgid "Register"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1806
+msgid "Verification failed. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1808
+msgid "Email Change"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1810
+msgid "Email Verification"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1812
+msgid "Verifying your email address…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1814
+msgid "Go to forum"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1816
+msgid "Your account now uses this email address."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1818
+msgid "Your email has been verified. You are now logged in."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1820
+msgid "Email address updated!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1822
+msgid "Email verified!"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1824
+msgid "Register again"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1826
+msgid "Could not change your email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1828
+msgid "Verification failed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1830
+msgid "We can’t find that page"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1832
+msgid "The link may be broken, or the topic could have been moved or removed. Everything else in the community is still here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1834
+msgid "Back to the community"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1836
+msgid "My Profile"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1838
+msgid "Log Out"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1840
+msgid "Open menu"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1842
+msgid "New"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1844
+msgid "Account menu"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1846
+msgid "Main navigation"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1848
+msgid "Close menu"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1850
+#, php-format
+msgid "%d unread"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1852
+msgid "All"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1854
+msgid "Unread"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1856
+msgid "That is everything."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1858
+msgid "Please log in to upload images."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1860
+#, php-format
+msgid "Attachment limit reached (maximum %d files)."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1862
+msgid "Replying to"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1864
+msgid "Delete comment?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1866
+msgid "Edit"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1868
+msgid "Report"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1870
+msgid "under review"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1872
+msgid "Out of public view while a moderator reviews a report about it"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1874
+msgid "Hidden"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1876
+msgid "Reply"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1878
+msgid "More actions"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1880
+msgid "Hide"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1882
+msgid "Loading more..."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1884
+msgid "🎉 You're all caught up — no more comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1886
+msgid "Remove your upvote"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1888
+msgid "View image full size"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1890
+msgid "Failed to load post"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1892
+msgid "Failed to load settings"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1894
+msgid "Failed to vote on post"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1896
+msgid "Failed to vote on comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1898
+msgid "Comment posted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1900
+msgid "Failed to post comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1902
+msgid "Reply posted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1904
+msgid "Failed to post reply"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1906
+msgid "Comment updated successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1908
+msgid "Failed to update comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1910
+msgid "Comment deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1912
+msgid "Failed to delete comment"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1914
+msgid "Log in to post a comment."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1916
+msgid "Failed to load statuses"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1918
+msgid "Failed to load stages"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1920
+msgid "This action cannot be undone. Are you sure you want to delete this post?"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1922
+msgid "Post deleted successfully"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1924
+msgid "Failed to delete post"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1926
+msgid "Delete Post"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1928
+msgid "Topic stage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1930
+msgid "Topic status"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1932
+msgid "Only you and the moderators can see this while a report is reviewed. Nothing has been deleted."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1934
+msgid "Out of public view while a report is reviewed."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1936
+msgid "Download"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1938
+msgid "Open"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1940
+msgid "Show less"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1942
+msgid "more"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1944
+msgid "About the author"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1946
+msgid "Member since"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1948
+msgid "Upvotes"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1950
+msgid "Sort comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1952
+msgid "All comments"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1954
+msgid "Most voted"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1956
+msgid "Share on social media"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1958
+msgid "Topic details"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1960
+msgid "Related topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1962
+msgid "Failed to load posts"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1964
+msgid "Failed to load more posts"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1966
+msgid "Filters"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1968
+msgid "Remove filter"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1970
+msgid "Reset"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1972
+msgid "Sort by"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1974
+msgid "Loading posts..."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1976
+msgid "No posts found"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1978
+msgid "🎉 You're all caught up — no more topics"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1980
+msgid "Back to top"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1982
+msgid "Could not change your password. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1984
+msgid "Your password has been changed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1986
+msgid "Could not start the email change. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1988
+msgid "Open it from that inbox to finish the change."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1990
+msgid "Confirmation link sent"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1992
+msgid "Could not send the reset link. Please try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1994
+msgid "Open it to set a new password."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1996
+msgid "Reset link sent to your email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:1998
+msgid "Could not save your profile. Please check your connection and try again."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2000
+msgid "Profile updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2002
+msgid "Account and security"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2004
+msgid "Only you can see these. They are never shown on your profile."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2006
+msgid "Open the link we sent to finish the change."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2008
+#, php-format
+msgid "Waiting for you to confirm %s"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2010
+msgid "We will email the new address to make sure you can read it."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2012
+msgid "Email address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2014
+msgid "Please enter an email address"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2016
+msgid "you@example.com"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2018
+msgid "Change email"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2020
+msgid "You signed in without one, so there is nothing to confirm — just choose a password below."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2022
+msgid "Your account has no password yet"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2024
+msgid "Sending…"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2026
+msgid "Current password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2028
+msgid "Please enter your current password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2030
+msgid "New password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2032
+msgid "Please enter a new password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2034
+msgid "Confirm new password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2036
+msgid "Please confirm your new password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2038
+msgid "Change password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2040
+msgid "Set password"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2042
+msgid "Could not update your picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2044
+msgid "Profile picture updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2046
+msgid "Could not remove your picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2048
+msgid "Profile picture removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2050
+msgid "Replace picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2052
+msgid "Upload a picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2054
+msgid "Remove picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2056
+msgid "Change profile picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2058
+msgid "replied to"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2060
+msgid "Could not update your cover"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2062
+msgid "Cover image updated"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2064
+msgid "Could not remove your cover"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2066
+msgid "Cover image removed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2068
+msgid "Cover image"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2070
+#, php-format
+msgid "The strip behind your picture. Wide images work best — up to %s MB."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2072
+msgid "posted a topic"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2074
+msgid "Profile picture"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2076
+#, php-format
+msgid "Shown beside everything you post. JPG, PNG, GIF or WebP, up to %s MB."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2078
+msgid "Choose what the forum tells you about, and whether it also emails you."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2080
+msgid "allowed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2082
+msgid "not allowed"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2084
+msgid "Permissions"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2086
+msgid "What you can do"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2088
+msgid "What this member can do"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2090
+msgid "Set by your role and any per-member overrides an admin has applied."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2092
+msgid "Website"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2094
+msgid "GitHub"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2096
+msgid "X / Twitter"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2098
+msgid "LinkedIn"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2100
+msgid "Mastodon"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2102
+msgid "Profile details"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2104
+msgid "How you appear across the community."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2106
+msgid "Display name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2108
+msgid "Please enter a display name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2110
+msgid "Your name"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2112
+msgid "Links you have already shared keep working — they redirect here."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2114
+msgid "Profile URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2116
+msgid "Please enter a profile URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2118
+msgid "Bio"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2120
+msgid "Your bio is too long"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2122
+msgid "A sentence or two about yourself"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2124
+msgid "Links"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2126
+msgid "Please enter a valid URL"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2128
+msgid "Profile"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2130
+msgid "Joined"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2132
+msgid "Last active"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2134
+msgid "Manage profile"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2136
+msgid "No comments yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2138
+msgid "No upvoted topics yet."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2140
+msgid "Upvoted"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2142
+msgid "Manage"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2144
+msgid "Back to portal"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2146
+msgid "This member could not be found."
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:2148
+msgid "Profile sections"
+msgstr ""

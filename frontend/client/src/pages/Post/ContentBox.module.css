@@ -1,0 +1,151 @@
+/**
+ * Emoji that arrived as images.
+ *
+ * WordPress probes whether the reader's fonts can draw the newest Unicode set.
+ * Linux with a current Noto Color Emoji passes and the characters stay
+ * characters; Windows and macOS fonts lag, so wp-emoji-release.min.js rewrites
+ * every emoji in the live DOM to `<img class="emoji" src=".../svg/1f310.svg">`
+ * — after React renders, and again on every render, through its own
+ * MutationObserver. sanitizeHtml never sees those, so CSS is the only layer
+ * that can catch them. The same applies to a stored 😀 whose `class="emoji"`
+ * the formatters stripped.
+ *
+ * `!important` is not decoration here. Core ships its own guard,
+ * `img.emoji { width: 1em !important }`, but the image utilities on the body —
+ * `[&_img]:bc-block`, `bc-w-auto`, `bc-max-w-full` — compile important too and
+ * tie it on specificity, so the photo sizing won and a 🌐 rendered at the full
+ * column width (452px on desktop, the 220px ceiling on a phone). Marking these
+ * important lets the higher specificity here settle it.
+ */
+.body :global(img.emoji),
+.body :global(img.wp-smiley),
+.body :global(img[src*='/images/core/emoji/']),
+.body :global(img[src*='twemoji']) {
+  /* stylelint-disable declaration-no-important -- see the note above */
+  display: inline-block !important;
+  width: 1.2em !important;
+  height: 1.2em !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 0.05em !important;
+  vertical-align: -0.25em !important;
+  object-fit: contain;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  cursor: inherit !important;
+  /* stylelint-enable declaration-no-important */
+}
+
+/**
+ * A comment that is nothing but a few emoji, rendered the way Facebook renders
+ * one: large enough to read as a reaction rather than a sentence. Applied to the
+ * paragraphs rather than the container so it does not fight the `!important`
+ * body size the comment bubble sets.
+ */
+.emojiOnly :global(p) {
+  font-size: 32px;
+  line-height: 1.25;
+}
+
+.emojiOnly :global(img.emoji),
+.emojiOnly :global(img.wp-smiley),
+.emojiOnly :global(img[src*='/images/core/emoji/']) {
+  vertical-align: -0.15em;
+}
+
+/**
+ * Lists and code blocks in a stored body.
+ *
+ * Quill's stylesheet dresses both inside the editor, but it never reaches the
+ * posted copy, and Tailwind runs with `preflight: false` — so what lands here
+ * is whatever the browser's own defaults give. For lists that is close enough
+ * to want only spacing; for code it is wrong in one expensive way. `<pre>`
+ * defaults to `white-space: pre`, so a stack trace or a long shortcode — the
+ * things people actually paste into a support forum — runs off the side of the
+ * column and drags the page's horizontal scrollbar out with it.
+ */
+.body :global(ul),
+.body :global(ol) {
+  margin: 0.75em 0;
+  padding-left: 1.5em;
+}
+
+.body :global(ul) {
+  list-style: disc outside;
+}
+
+.body :global(ol) {
+  list-style: decimal outside;
+}
+
+.body :global(li) {
+  margin: 0.25em 0;
+}
+
+/* A nested list belongs to the item above it, so it sits tighter. */
+.body :global(li) > :global(ul),
+.body :global(li) > :global(ol) {
+  margin: 0.25em 0;
+}
+
+.body :global(pre) {
+  /* The scroll stays inside the block — see the note above. */
+  overflow-x: auto;
+  margin: 0.75em 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--bc-ink);
+  white-space: pre;
+  background: var(--bc-surface-sunken);
+  border: 1px solid var(--bc-line);
+  border-radius: 8px;
+  tab-size: 2;
+}
+
+/* Inside a block the <code> is structural only; the <pre> already styles it. */
+.body :global(pre) :global(code) {
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  border: 0;
+}
+
+/* A run of inline code reads as marked-up prose, not as a box of its own. */
+.body :global(code) {
+  padding: 0.15em 0.4em;
+  font-size: 0.9em;
+  background: var(--bc-surface-sunken);
+  border-radius: 4px;
+}
+
+/**
+ * A mention.
+ *
+ * Drawn in the portal's own blue — `--bc-info` is the brand pair, mirroring
+ * colorPrimary in config/theme.ts and already contrast-checked against its tint
+ * in both themes. A name being spoken to is part of the product's voice, not a
+ * fourth badge colour, which is what the violet badge tone made it look like.
+ *
+ * What still separates it from the ordinary links around it is the tint and the
+ * missing underline, not the hue: the pill reads as one object you cannot edit a
+ * letter out of, where a link is just words that happen to be blue.
+ *
+ * `!important` on the colour is not decoration. The body carries
+ * `[&_a]:bc-text-blue-500`, and Tailwind runs with `important: true` in this
+ * project, so the utility beats any plain rule here however specific.
+ */
+.body :global(a.bc-mention) {
+  padding: 0 3px;
+  font-weight: 500;
+  /* stylelint-disable-next-line declaration-no-important -- see the note above */
+  color: var(--bc-info) !important;
+  text-decoration: none;
+  background: var(--bc-info-soft);
+  border-radius: 4px;
+}
+
+.body :global(a.bc-mention):hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

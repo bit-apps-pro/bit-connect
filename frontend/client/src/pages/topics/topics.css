@@ -1,0 +1,118 @@
+/* Floating "Back to top" pill. It fades + slides in while scrolling and out
+   again once scrolling stops (toggled via .is-visible). Its sticky wrapper
+   handles the centering now, so these transforms only carry the slide-in and
+   the hover lift.
+
+   Flat primary, not the gradient it used to carry: white on the light end of
+   that gradient (#5b86f5) measured 3.4:1, under the 4.5:1 floor for 14px text,
+   and the glow + glass blur made it the only control in the portal not drawn
+   from the shared button tokens. Solid #3266ea is 5.0:1. */
+.back-to-top-btn {
+  background: #3266ea;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 18%);
+  transform: translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.28s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.back-to-top-btn.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.back-to-top-btn.is-visible:hover {
+  transform: translateY(-3px);
+  background: #2a58cf;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 22%);
+}
+
+.back-to-top-btn.is-visible:active {
+  transform: translateY(-1px) scale(0.97);
+}
+
+.back-to-top-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.back-to-top-btn.is-visible:hover svg {
+  transform: translateY(-1px);
+}
+
+/* Active-filter dot: a blue badge that gently pulses to signal applied
+   filters. Tailwind can't express a keyframed box-shadow glow inline, so it
+   lives here. The button is now a quiet slate circle, so the dot is blue with
+   a soft blue halo breathing outward. Disabled under prefers-reduced-motion. */
+@keyframes filter-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(50, 102, 234, 40%);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(50, 102, 234, 0%);
+  }
+}
+
+.filter-dot-pulse {
+  animation: filter-dot-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-dot-pulse {
+    animation: none;
+  }
+}
+
+/* Desktop sort/product filter dropdowns (Sort + Product). These sit on the same
+   row as the search field, so they take its treatment — pill radius, no border,
+   same tint (the `filled` variant supplies the tint) — and read as one control
+   bar rather than three different shapes. Focus still gets a primary-blue
+   (#3266ea) ring. Scoped to .ant-select-filled so the mobile borderless variant
+   inside the filter drawer is untouched. */
+.topics-filter-select.ant-select-filled .ant-select-selector {
+  border-radius: 999px;
+  transition: box-shadow 0.2s ease;
+}
+
+.topics-filter-select.ant-select-filled.ant-select-focused:not(.ant-select-disabled)
+  .ant-select-selector {
+  box-shadow: 0 0 0 3px rgba(50, 102, 234, 15%) !important;
+}
+
+/* Tag filter. It is a multiple Select, so antd renders each selection as a box
+   inside the control; left alone those read as a row of nested inputs and break
+   the pill silhouette the other two filters have. Rounding them and dropping
+   the border turns them back into quiet chips sitting on the control. */
+.topics-tag-select .ant-select-selection-overflow-item .ant-select-selection-item {
+  height: 22px;
+  padding-inline: 8px;
+  border: none;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+/* The "+N" overflow chip is a count, not a removable tag — keep it lighter so
+   it doesn't compete with the real selections. Ordered before the variant
+   rules below to keep specificity ascending (no-descending-specificity). */
+.topics-tag-select .ant-select-selection-overflow-item-rest .ant-select-selection-item {
+  color: var(--bc-ink-subtle);
+  font-weight: 500;
+}
+
+/* Filled (desktop): white chip on the tinted control reads as raised. */
+.topics-tag-select.ant-select-filled .ant-select-selection-overflow-item .ant-select-selection-item {
+  background: var(--bc-surface);
+}
+
+/* Borderless (mobile drawer): no control tint to sit on, so the chip supplies
+   its own. */
+.topics-tag-select.ant-select-borderless .ant-select-selection-overflow-item .ant-select-selection-item {
+  background: var(--bc-surface-hover);
+}

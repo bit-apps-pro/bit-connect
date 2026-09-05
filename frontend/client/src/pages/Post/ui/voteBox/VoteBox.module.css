@@ -1,0 +1,78 @@
+.voteBox {
+  align-items: center;
+
+  /* Now a <button>: reset the UA font and padding it brings with it. */
+  font: inherit;
+  padding: 0;
+  background: var(--bc-surface);
+  border: 2px solid var(--bc-line);
+  border-radius: 0.8125rem;
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 4px;
+  height: 56px;
+  width: 56px;
+  justify-content: center;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 300ms;
+}
+
+/* Voting can be switched off per topic; the control then reports itself as
+   disabled rather than looking clickable and doing nothing. */
+.voteBox:disabled {
+  cursor: default;
+}
+
+.voteBox:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.voteBox:hover:not(:disabled),
+.voteBox.voted {
+  border-color: var(--bc-brand);
+}
+
+.icon {
+  fill: var(--bc-surface);
+  stroke: var(--bc-ink-muted);
+  stroke-width: 1.5px;
+  transition: all 300ms;
+}
+
+.voteBox.voted .icon {
+  fill: var(--bc-brand);
+  stroke: var(--bc-brand);
+}
+
+.count {
+  color: var(--bc-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+@media (width <= 768px) {
+  .voteBox {
+    height: 52px;
+    width: 52px;
+  }
+}
+
+/* Phones. The control shares the title's row here, so its width is width the
+   headline does not get — and a topic title is what the reader came for.
+   48px is where that stops being free: the icon, gap and count come to 36px,
+   so 44px left them 2px short of each edge and the box read as overstuffed.
+   At 48 they keep 4px, the radius stays a quarter of the box as above, and the
+   control is still a comfortable touch target. */
+@media (width <= 639px) {
+  .voteBox {
+    height: 48px;
+    width: 48px;
+    border-radius: 0.75rem;
+  }
+}

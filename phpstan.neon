@@ -1,0 +1,31 @@
+parameters:
+    ignoreErrors:
+        # wp-kit's Hooks facade dispatches through __callStatic, and its class
+        # docblock annotates every method as returning HooksWrapper:
+        #     @method static HooksWrapper applyFilter($tag, $value, ...$args)
+        # True of the fluent registration calls, wrong for applyFilter(), which
+        # returns whatever apply_filters() returned. So `(bool) Hooks::applyFilter(...)`
+        # is correct at runtime and reads here as casting an object.
+        # Not fixable in vendor/ — it is not committed, and composer install would
+        # restore the annotation. The real fix belongs upstream in bitapps/wp-kit.
+        - '#Cannot cast BitApps\\BitConnect\\Deps\\BitApps\\WPKit\\Hooks\\HooksWrapper to (int|string|float)#'
+        - '#supplied for foreach, only iterables are supported#'
+        - '#Deps\\BitApps\\WPKit\\Hooks\\HooksWrapper#'
+        # wp-database's Connection is a facade over $wpdb: __callStatic forwards
+        # any $wpdb method, and none of them are declared or annotated. The
+        # migrations under backend/db use it the same way and only escape this
+        # because excludePaths skips them. Same upstream fix as above.
+        - '#Call to an undefined static method BitApps\\BitConnect\\Deps\\BitApps\\WPDatabase\\Connection::#'
+    level: 5
+    disallowedClasses:
+    treatPhpDocTypesAsCertain: false
+    scanDirectories:
+        - vendor/bitapps
+    
+    paths:
+        - backend
+    excludePaths:
+        - backend/tests/*
+        - backend/vendor/*
+        - backend/hooks/*
+        - backend/db/*

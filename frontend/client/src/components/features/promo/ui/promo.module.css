@@ -1,0 +1,90 @@
+/*
+ * Motion lives here rather than in Tailwind utilities on purpose: the config
+ * sets `important: true`, so a `hover:bc-translate-y` would outrank any
+ * `prefers-reduced-motion` override and the card would keep moving for readers
+ * who asked it not to.
+ */
+.card {
+  transition:
+    transform 200ms ease-out,
+    border-color 200ms ease-out,
+    box-shadow 200ms ease-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Follows the icon's own diagonal, so the nudge reads as "leaving the page". */
+.arrow {
+  transition: transform 200ms ease-out;
+}
+
+.card:hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Warms the corner on hover without repainting the whole card. */
+.glow {
+  position: absolute;
+  top: -50%;
+  right: -15%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(50, 102, 234, 22%) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+  pointer-events: none;
+}
+
+.card:hover .glow {
+  opacity: 1;
+}
+
+/*
+ * A caret has to blink, not breathe: Tailwind's `animate-pulse` eases opacity
+ * in and out, which beside typed text reads as a glow rather than a cursor.
+ * `step-end` gives it the hard on/off of a real one.
+ */
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: currentcolor;
+  animation: bc-promo-caret-blink 1s step-end infinite;
+}
+
+@keyframes bc-promo-caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/*
+ * The hook already pins the phrase when motion is reduced; this settles
+ * everything else, including the caret — held solid so the line still reads as
+ * a prompt rather than a stray dash.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .arrow,
+  .card,
+  .glow {
+    transition: none;
+  }
+
+  .card:hover,
+  .card:hover .arrow {
+    transform: none;
+  }
+
+  .caret {
+    animation: none;
+  }
+}

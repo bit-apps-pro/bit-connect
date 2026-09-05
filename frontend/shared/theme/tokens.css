@@ -1,0 +1,130 @@
+/**
+ * Semantic colour tokens — the surfaces, ink and lines the UI is built from.
+ *
+ * Both apps had ~300 hard-coded colours (`bc-bg-white`, `bc-text-[#1c1e21]`,
+ * `bc-border-[#E6E6E6]`) with no dark counterpart, so dark mode rendered white
+ * cards with near-black text on a dark page. Writing a `dark:` variant beside
+ * each one would work and would be unmaintainable: the same six greys were
+ * spelled a dozen different ways, and every new screen re-picks them.
+ *
+ * So the colours are named by *role* instead and resolved per theme here. A
+ * component asks for `bc-bg-surface` and never learns which theme it is in —
+ * which is also why the `dark:` variant almost never appears in the sweep that
+ * introduced this file.
+ *
+ * The values are aligned to Ant Design's own tokens on purpose. Most screens
+ * mix antd components with Tailwind-styled markup in the same card; when the
+ * two disagree about what "the container background" is, the seam is visible.
+ *
+ * Both apps import this. Anything genuinely app-specific belongs in that app's
+ * variables.css, not here.
+ */
+
+:root {
+  /* Surfaces, from the page backdrop up to the thing you hover. */
+  --bc-surface: #fff;
+  --bc-surface-sunken: #f2f3f5;
+  --bc-surface-raised: #e4e6eb;
+
+  /* One step "toward the reader" from --bc-surface, for hover and selection.
+     It is a token of its own because that step is *darker* on light and
+     *lighter* on dark — reusing either neighbour above gets one theme right
+     and inverts the other. */
+  --bc-surface-hover: #f5f6f7;
+
+  /* Ink, in descending prominence: body copy, supporting text, metadata. */
+  --bc-ink: #1c1e21;
+  --bc-ink-muted: #65676b;
+  --bc-ink-subtle: #8a8d91;
+
+  /* Dividers and card edges; `-strong` is for an edge that has to be seen. */
+  --bc-line: #e6e6e6;
+  --bc-line-strong: #d8dadf;
+
+  /* Status pairs — the tinted background and the text that sits on it. */
+  --bc-positive: #1a7f43;
+  --bc-positive-soft: #e7f4ec;
+  --bc-negative: #b42318;
+  --bc-negative-soft: #fdebec;
+  --bc-info: #1d4fd8;
+  --bc-info-soft: #eaf1fe;
+
+  /* Badge tones. The one place in this file a colour is picked for its colour
+     rather than its role: an admin authors a profile badge — Developer,
+     Support, Group Expert — and chooses how it looks, so these have to be
+     told apart at a glance and cannot mean anything on their own. The status
+     pairs above cover red, blue and green; these three fill the palette out.
+     Each is a text/tint pair like the ones above, and every value here is
+     named by a BadgeTone case. */
+  --bc-tone-violet: #6941c6;
+  --bc-tone-violet-soft: #f4f0ff;
+  --bc-tone-amber: #b54708;
+  --bc-tone-amber-soft: #fef6e7;
+  --bc-tone-teal: #0f766e;
+  --bc-tone-teal-soft: #e3f5f2;
+}
+
+/*
+ * Set by `applyThemeToDocument()` (and, before first paint, by the inline
+ * script in Views/ThemeBoot.php).
+ *
+ * These tokens are the only thing that flips. Tailwind `dark:` variants do NOT
+ * follow: the `bc-` prefix is applied to the dark class too, so `dark:bc-*`
+ * compiles to `:is(.bc-dark *)` and never matches the `.dark` set here. Every
+ * `dark:bc-*` in both apps is inert today. Theme a component by reaching for a
+ * token below, not a `dark:` utility — or fix it globally by moving the config
+ * to `darkMode: ['class', '.dark']`, which would activate those dormant rules
+ * and so needs a look at each one first.
+ */
+:root.dark {
+  /* Pinned to antd's dark scale — colorBgContainer #141414, colorBgElevated
+     #1f1f1f — because most cards mix antd components with token-styled markup
+     and a seam between two blacks is exactly the kind visible from across the
+     room. */
+  --bc-surface: #141414;
+  --bc-surface-sunken: #0d0d0d;
+  --bc-surface-raised: #1f1f1f;
+  --bc-surface-hover: #1f1f1f;
+
+  /* Ink is translucent white rather than a fixed grey, matching antd: it keeps
+     its contrast on any of the three surfaces above instead of being tuned for
+     one and washing out on the others. */
+  --bc-ink: rgba(255, 255, 255, 88%);
+  --bc-ink-muted: rgba(255, 255, 255, 65%);
+  --bc-ink-subtle: rgba(255, 255, 255, 45%);
+  --bc-line: #303030;
+  --bc-line-strong: #424242;
+
+  /* The light theme's status text is too dark to read on a dark tint, and its
+     tints are too bright to sit in a dark card. Both move: the text lightens
+     past AA against the tint, and the tint becomes a low-alpha wash of the hue
+     so it reads as the same colour without glaring. */
+  --bc-positive: #5dd48f;
+  --bc-positive-soft: rgba(46, 160, 67, 18%);
+  --bc-negative: #ff9891;
+  --bc-negative-soft: rgba(248, 81, 73, 18%);
+  --bc-info: #9db8ff;
+  --bc-info-soft: rgba(50, 102, 234, 20%);
+
+  /* Badge tones move the same way the status pairs do: the text lightens past
+     AA against the tint, and the tint becomes a low-alpha wash of the hue. */
+  --bc-tone-violet: #c7b2f5;
+  --bc-tone-violet-soft: rgba(105, 65, 198, 25%);
+  --bc-tone-amber: #f0b46a;
+  --bc-tone-amber-soft: rgba(181, 71, 8, 28%);
+  --bc-tone-teal: #5fd4c4;
+  --bc-tone-teal-soft: rgba(15, 118, 110, 28%);
+}
+
+/*
+ * Theme-switch reveal (shared/theme/use-theme-switch-ripple.tsx): the switch
+ * runs inside a View Transition, and the script animates a clip-path circle on
+ * the new frame. The browser's default cross-fade would run underneath and
+ * dissolve the old frame mid-reveal, so both snapshots are pinned still here.
+ * Scoped concern: neither app runs any other view transition.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
