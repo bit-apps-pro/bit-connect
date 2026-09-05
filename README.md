@@ -30,8 +30,9 @@ portal, including its server-rendered entry). At that point the directory *is*
 the plugin: copy it into `wp-content/plugins/bit-connect` and activate it, or
 run `pnpm prod:free-zip` to get an installable zip in `build/`.
 
-Requirements: **PHP ≥ 8.2**, **Node ≥ 20**, **pnpm**, and Composer. No private
-registry, credential or submodule is involved — a plain `git clone` is enough.
+Requirements: **PHP ≥ 8.2**, **Node ≥ 20**, **pnpm ≥ 9**, and Composer 2. No
+private registry, credential or submodule is involved — a plain `git clone` is
+enough, and no `.env` is needed to build.
 
 ### How the build is wired
 
@@ -55,10 +56,11 @@ fight.
 pnpm dev            # admin + portal dev servers
 pnpm test           # Vitest
 pnpm ts-check       # TypeScript
-pnpm lint           # ESLint
-composer test       # PHPUnit
+pnpm lint           # ESLint (writes fixes)
+pnpm test:e2e       # Playwright, against DEV_DOMAIN
+composer test       # PHPUnit (needs tests.config.php — see the setup guide)
 composer analyze    # PHPStan
-composer lint       # php-cs-fixer + PHPCS
+composer lint       # php-cs-fixer + PHPCS (writes fixes)
 ```
 
 To work on the plugin, clone it into the plugins directory of any WordPress
