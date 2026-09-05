@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Bit Connect and SEO — who handles what</title>
+
+<style>
+  :root {
+    --paper: #f6f7fa;
+    --surface: #ffffff;
+    --surface-sunk: #eef0f6;
+    --ink: #101521;
+    --ink-soft: #39415a;
+    --muted: #5c6579;
+    --line: #dde1ec;
+    --line-strong: #b9c0d4;
+    --accent: #3266ea;
+    --accent-soft: #e6ecfd;
+    --ok: #10704e;
+    --ok-soft: #e0f0e8;
+    --warn: #8c5c07;
+    --warn-soft: #f7eddb;
+    --miss: #b23a32;
+    --miss-soft: #f8e6e4;
+    --serp-link: #1a0dab;
+    --serp-url: #4d6b53;
+
+    --display: Georgia, "Iowan Old Style", "Times New Roman", ui-serif, serif;
+    --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, "Cascadia Mono", "Roboto Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0d1017;
+      --surface: #141924;
+      --surface-sunk: #1b2130;
+      --ink: #e6eaf3;
+      --ink-soft: #b9c2d6;
+      --muted: #8b95ac;
+      --line: #262d3d;
+      --line-strong: #3a4356;
+      --accent: #7fa3f7;
+      --accent-soft: #1a2440;
+      --ok: #57c496;
+      --ok-soft: #14291f;
+      --warn: #d9a441;
+      --warn-soft: #2a2313;
+      --miss: #e5786d;
+      --miss-soft: #2e1917;
+      --serp-link: #8ab4f8;
+      --serp-url: #9aa8a0;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #0d1017;
+    --surface: #141924;
+    --surface-sunk: #1b2130;
+    --ink: #e6eaf3;
+    --ink-soft: #b9c2d6;
+    --muted: #8b95ac;
+    --line: #262d3d;
+    --line-strong: #3a4356;
+    --accent: #7fa3f7;
+    --accent-soft: #1a2440;
+    --ok: #57c496;
+    --ok-soft: #14291f;
+    --warn: #d9a441;
+    --warn-soft: #2a2313;
+    --miss: #e5786d;
+    --miss-soft: #2e1917;
+    --serp-link: #8ab4f8;
+    --serp-url: #9aa8a0;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #f6f7fa;
+    --surface: #ffffff;
+    --surface-sunk: #eef0f6;
+    --ink: #101521;
+    --ink-soft: #39415a;
+    --muted: #5c6579;
+    --line: #dde1ec;
+    --line-strong: #b9c0d4;
+    --accent: #3266ea;
+    --accent-soft: #e6ecfd;
+    --ok: #10704e;
+    --ok-soft: #e0f0e8;
+    --warn: #8c5c07;
+    --warn-soft: #f7eddb;
+    --miss: #b23a32;
+    --miss-soft: #f8e6e4;
+    --serp-link: #1a0dab;
+    --serp-url: #4d6b53;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 2px solid var(--line-strong);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .standfirst {
+    font-size: 1.075rem;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 62ch;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .facts b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- answer box ---------- */
+
+  .answer {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 74ch;
+  }
+
+  .answer h2 {
+    font-family: var(--body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .answer p { margin: 0; color: var(--ink-soft); }
+
+  /* ---------- scoreboard ---------- */
+
+  .scores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .score {
+    background: var(--surface);
+    padding: 1.25rem 1.25rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .score .n {
+    font-family: var(--display);
+    font-size: 2.25rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score .n.ok { color: var(--ok); }
+  .score .n.warn { color: var(--warn); }
+  .score .n.miss { color: var(--miss); }
+
+  .score .k {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .score .d { font-size: 0.875rem; color: var(--ink-soft); }
+
+  /* ---------- sections ---------- */
+
+  section { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .sec-head { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  h2.sec {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3vw, 1.95rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .sec-head p { margin: 0; color: var(--ink-soft); max-width: 68ch; }
+
+  /* ---------- the demo ---------- */
+
+  .demo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--panel-rule, var(--line-strong));
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel.bad { --panel-rule: var(--miss); }
+  .panel.good { --panel-rule: var(--ok); }
+
+  .panel-head {
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .panel-head .t {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .panel.bad .panel-head .t { color: var(--miss); }
+  .panel.good .panel-head .t { color: var(--ok); }
+
+  .panel-head .s { font-size: 0.85rem; color: var(--muted); }
+
+  .panel-body {
+    padding: 1.25rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .mock-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.6rem;
+  }
+
+  /* fake search results */
+
+  .serp { display: flex; flex-direction: column; gap: 1rem; }
+
+  .result .url {
+    font-size: 0.75rem;
+    color: var(--serp-url);
+    word-break: break-all;
+  }
+
+  .result .headline {
+    font-size: 1rem;
+    color: var(--serp-link);
+    line-height: 1.35;
+    margin: 0.15rem 0 0.2rem;
+  }
+
+  .result .snippet {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .dupe-flag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--miss);
+    display: block;
+    margin-top: 0.35rem;
+  }
+
+  /* fake share card */
+
+  .share {
+    border: 1px solid var(--line);
+    background: var(--surface-sunk);
+    max-width: 22rem;
+  }
+
+  .share .thumb {
+    height: 4.5rem;
+    background: var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .share.good .thumb {
+    background: linear-gradient(115deg, var(--accent) 0%, #6d8ff2 100%);
+    color: #ffffff;
+  }
+
+  .share .meta { padding: 0.7rem 0.85rem; display: flex; flex-direction: column; gap: 0.2rem; }
+  .share .site { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+  .share .st { font-size: 0.875rem; font-weight: 600; line-height: 1.35; }
+  .share .sd { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+
+  /* ---------- matrices ---------- */
+
+  .matrix {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-sunk);
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  td.subject { color: var(--ink); font-weight: 500; width: 26%; }
+  td.note { font-size: 0.875rem; }
+
+  .tech {
+    display: block;
+    margin-top: 0.35rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--surface-sunk);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+
+  /* ---------- status chips ---------- */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  .chip.yes { color: var(--ok); background: var(--ok-soft); }
+  .chip.no { color: var(--miss); background: var(--miss-soft); }
+  .chip.part { color: var(--warn); background: var(--warn-soft); }
+  .chip.na { color: var(--muted); background: transparent; }
+
+  .chip::before { font-weight: 700; }
+  .chip.yes::before { content: "\2713"; }
+  .chip.no::before { content: "\00d7"; }
+  .chip.part::before { content: "\0021"; }
+  .chip.na::before { content: "\2013"; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .legend li { display: flex; align-items: center; gap: 0.5rem; }
+
+  tr.group td {
+    background: var(--surface-sunk);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td.dflt {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    width: 7rem;
+  }
+
+  td.dflt.on { color: var(--ok); }
+  td.dflt.off { color: var(--muted); }
+  td.dflt.num { color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
+
+  td.sev {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-left: 3px solid var(--sev, var(--line-strong));
+    color: var(--sev, var(--muted));
+    width: 8rem;
+  }
+
+  tr.high { --sev: var(--miss); }
+  tr.mid { --sev: var(--warn); }
+  tr.low { --sev: var(--muted); }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    font-size: 0.925rem;
+    color: var(--ink-soft);
+    max-width: 72ch;
+    margin: 0;
+  }
+
+  .callout b { color: var(--ink); }
+
+  /* ---------- priority ---------- */
+
+  .queue {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .queue li {
+    counter-increment: step;
+    background: var(--surface);
+    padding: 1.1rem 1.25rem;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .queue li::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .queue .what { display: flex; flex-direction: column; gap: 0.25rem; }
+  .queue .what b { font-weight: 600; }
+  .queue .what span { font-size: 0.875rem; color: var(--muted); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  footer .fh {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.9;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .page { padding: 2.5rem 1rem 4rem; gap: 3rem; }
+    td.subject { width: auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- theme toggle (standalone file only) ---------- */
+
+  .theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media print { .theme-toggle { display: none; } }
+</style>
+</head>
+
+<body>
+<button class="theme-toggle" type="button" id="themeToggle">Dark</button>
+
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">Bit Connect · search visibility review · 2 August 2026</p>
+    <h1>Do I still need an SEO plugin with Bit Connect?</h1>
+    <p class="standfirst">
+      Short answer: yes, for the rest of your site — but not for your community. Bit Connect
+      now takes care of the community pages itself, and hands the right information to your
+      SEO plugin so the two do not fight. Here is exactly who handles what, and what is
+      still missing.
+    </p>
+    <ul class="facts">
+      <li><b>Who this is for</b> anyone deciding what to install</li>
+      <li><b>SEO plugins checked</b> 13</li>
+      <li><b>Grey lines</b> technical detail, skip if not useful</li>
+    </ul>
+  </header>
+
+  <section>
+    <div class="answer">
+      <h2>The one-paragraph version</h2>
+      <p>
+        Your community lives inside a single WordPress page, and every discussion is a
+        view inside it. WordPress — and therefore every SEO plugin — only ever sees that
+        one page. So without help, Google is told that a thousand discussions are all the
+        same page, and each of them gets the same title, the same description and the same
+        link preview. Bit Connect fixes that from the inside: it gives every discussion,
+        tag page and member page its own identity, and then passes that identity to Yoast,
+        Rank Math, AIOSEO or SEOPress so they print it as if it were their own.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="scores">
+      <div class="score">
+        <span class="n ok">17</span>
+        <span class="k">Handled for you</span>
+        <span class="d">Things Bit Connect does on community pages that no SEO plugin can do on its own.</span>
+      </div>
+      <div class="score">
+        <span class="n ok">4</span>
+        <span class="k">Plugins that just work</span>
+        <span class="d">Yoast, Rank Math, AIOSEO and SEOPress need no setup at all.</span>
+      </div>
+      <div class="score">
+        <span class="n warn">4</span>
+        <span class="k">Need one setting</span>
+        <span class="d">Four other SEO plugins aren't recognised yet, so one option needs changing.</span>
+      </div>
+      <div class="score">
+        <span class="n miss">17</span>
+        <span class="k">Still missing</span>
+        <span class="d">Features SEO plugins offer that Bit Connect has no equivalent for yet.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">What the difference actually looks like</h2>
+      <p>
+        Two things people see every day: your discussions in Google, and a link to a
+        discussion pasted into Slack, WhatsApp or Facebook.
+      </p>
+    </div>
+
+    <div class="demo">
+      <div class="panel bad">
+        <div class="panel-head">
+          <span class="t">SEO plugin on its own</span>
+          <span class="s">Every discussion looks identical</span>
+        </div>
+        <div class="panel-body">
+          <div>
+            <p class="mock-label">In Google</p>
+            <div class="serp">
+              <div class="result">
+                <div class="url">acme.com › community</div>
+                <p class="headline">Community — Acme</p>
+                <p class="snippet">Ask questions, share ideas and get help from the Acme community.</p>
+              </div>
+              <div class="result">
+                <div class="url">acme.com › community</div>
+                <p class="headline">Community — Acme</p>
+                <p class="snippet">Ask questions, share ideas and get help from the Acme community.</p>
+                <span class="dupe-flag">same page, over and over</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="mock-label">Pasted into Slack</p>
+            <div class="share">
+              <div class="thumb">no image</div>
+              <div class="meta">
+                <span class="site">acme.com</span>
+                <span class="st">Community — Acme</span>
+                <span class="sd">Ask questions, share ideas and get help from the Acme community.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel good">
+        <div class="panel-head">
+          <span class="t">With Bit Connect</span>
+          <span class="s">Each discussion stands on its own</span>
+        </div>
+        <div class="panel-body">
+          <div>
+            <p class="mock-label">In Google</p>
+            <div class="serp">
+              <div class="result">
+                <div class="url">acme.com › community › how-do-i-reset-my-api-key</div>
+                <p class="headline">How do I reset my API key?</p>
+                <p class="snippet">You can roll a new key from Settings → API without breaking existing integrations — the old key stays valid for 24 hours. 12 replies.</p>
+              </div>
+              <div class="result">
+                <div class="url">acme.com › topic › billing</div>
+                <p class="headline">Billing — Acme Community</p>
+                <p class="snippet">48 discussions about Billing in the Acme community.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="mock-label">Pasted into Slack</p>
+            <div class="share good">
+              <div class="thumb">topic image</div>
+              <div class="meta">
+                <span class="site">acme.com</span>
+                <span class="st">How do I reset my API key?</span>
+                <span class="sd">You can roll a new key from Settings → API without breaking existing integrations.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="callout">
+      <b>The expensive part is the one you cannot see.</b> An SEO plugin doesn't just show the
+      wrong title — it tells Google that every discussion "is really" the community home page.
+      Google then drops the discussions from its index entirely. Bit Connect corrects that
+      signal on every community URL.
+      <span class="tech">Technically: it emits a per-route canonical and removes WordPress's own conflicting <code>rel_canonical</code> tag.</span>
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">1 · What happens on community pages</h2>
+      <p>
+        Everything here applies to your community home, each discussion, each tag or
+        category page, the "older discussions" pages and member profiles. The middle column
+        is what an SEO plugin manages there without Bit Connect's help.
+      </p>
+      <ul class="legend">
+        <li><span class="chip yes">Yes</span> handled</li>
+        <li><span class="chip part">Partly</span> works with a caveat</li>
+        <li><span class="chip no">No</span> not handled</li>
+        <li><span class="chip na">n/a</span> doesn't apply</li>
+      </ul>
+    </div>
+
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">What you'd want</th>
+            <th scope="col">Bit Connect</th>
+            <th scope="col">SEO plugin alone</th>
+            <th scope="col">What it means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="subject">Each discussion has its own title in Google</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Otherwise every result reads "Community — Acme" and nobody clicks.
+              <span class="tech">document_title_parts filter, per resolved route</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Each discussion has its own description</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Taken from the question itself, or the tag's description on a tag page.
+              <span class="tech">excerpt → first 30 words, HTML and shortcodes stripped</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Google treats discussions as separate pages</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">Actively harmful</span></td>
+            <td class="note">The single most damaging default — see the note above.
+              <span class="tech">per-route canonical; core's rel_canonical unhooked at priority 1</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Shared links show the right title and image</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Falls back sensibly: discussion image, then your community logo, then the site icon.
+              <span class="tech">Open Graph + Twitter card tags, summary_large_image when an image exists</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Google can read discussions without running the app</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Matters most for AI assistants and link previews, which never run JavaScript.
+              <span class="tech">server-rendered HTML of topics, replies, tags and bylines + ~1 KB critical CSS</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Discussions show as forum results in Google</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Google has a dedicated forum result style, with reply counts and dates.
+              <span class="tech">DiscussionForumPosting with author, dates and up to 20 Comment nodes</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Results show "Community › Billing", not a bare link</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">The trail under a search result that tells people where they'd land.
+              <span class="tech">BreadcrumbList structured data (no visible trail in the UI yet)</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Tag and category pages exist as real pages</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">These are what rank for a subject ("billing questions") rather than one question.
+              <span class="tech">portal-served term archives: /topic/, /department/, /tag/, /stage/, /status/</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Every discussion listed in your sitemap</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">Wrong addresses</span></td>
+            <td class="note">Left alone, the sitemap lists addresses that immediately redirect elsewhere.
+              <span class="tech">core sitemap provider + standalone /bit-connect-sitemap.xml, announced in robots.txt</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Old or alternate links keep working</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Anyone landing on an older address is sent to the real discussion.
+              <span class="tech">301 from the CPT permalink and from theme term archives</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Google can reach older discussions</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Without this, only the newest screenful is reachable by following links.
+              <span class="tech">/page/N crawl path with prev/next links, self-canonical, noindex,follow</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Sorting and filtering doesn't create duplicates</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Every sort and filter combination is the same list in a different order.
+              <span class="tech">all query-string variants canonical to the bare community URL</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Member profiles stay out of search</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Thin and near-identical pages that would otherwise compete with real discussions.
+              <span class="tech">noindex,follow by default; switchable in the SEO screen</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Workflow pages stay out of search</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">Nobody searches "in progress" — these are for your team, not for Google.
+              <span class="tech">indexArchives.stage and .status, both off by default</span></td>
+          </tr>
+          <tr>
+            <td class="subject">A private community stays private</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">Leaks</span></td>
+            <td class="note">If the community is members-only, nothing is written out for search engines at all.
+              <span class="tech">members-only always wins over the server-rendering setting</span></td>
+          </tr>
+          <tr>
+            <td class="subject">Broken links say "not found" properly</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip no">No</span></td>
+            <td class="note">And visitors stay inside the community instead of hitting your theme's error page.
+              <span class="tech">real 404 status with the portal shell rendered</span></td>
+          </tr>
+          <tr>
+            <td class="subject">One control panel for all of it</td>
+            <td><span class="chip yes">Yes</span></td>
+            <td><span class="chip na">n/a</span></td>
+            <td class="note">Six tabs, opening on a status panel that shows what is actually live right now.
+              <span class="tech">Bit Connect → SEO in the admin sidebar</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">2 · Your SEO plugin, whichever one it is</h2>
+      <p>
+        Four plugins are recognised automatically: Bit Connect quietly hands them the right
+        title, description and link for each discussion, and they print it in their own
+        format. You keep one SEO plugin in charge of your whole site. The rest need one
+        setting changed, or simply don't overlap.
+      </p>
+    </div>
+
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Plugin</th>
+            <th scope="col">Status</th>
+            <th scope="col">What you need to do</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="subject">Yoast SEO</td>
+            <td><span class="chip yes">Just works</span></td>
+            <td>Nothing</td>
+            <td class="note">Best supported. The community sitemap is even added to Yoast's own sitemap list.</td>
+          </tr>
+          <tr>
+            <td class="subject">Rank Math</td>
+            <td><span class="chip yes">Just works</span></td>
+            <td>Nothing</td>
+            <td class="note">Fully wired, including keeping duplicate addresses out of its sitemap.</td>
+          </tr>
+          <tr>
+            <td class="subject">SEOPress</td>
+            <td><span class="chip yes">Just works</span></td>
+            <td>Exclude the topic type from its sitemap</td>
+            <td class="note">Titles and previews are correct automatically; only the sitemap needs a tick.</td>
+          </tr>
+          <tr>
+            <td class="subject">All in One SEO</td>
+            <td><span class="chip yes">Just works</span></td>
+            <td>Exclude the topic type from its sitemap</td>
+            <td class="note">Same as SEOPress.</td>
+          </tr>
+          <tr>
+            <td class="subject">The SEO Framework</td>
+            <td><span class="chip part">One setting</span></td>
+            <td>Set "Meta tags" to <b>Bit Connect</b> in the SEO screen</td>
+            <td class="note">Not recognised yet, so both would describe the page and search engines see two answers.</td>
+          </tr>
+          <tr>
+            <td class="subject">Slim SEO</td>
+            <td><span class="chip part">One setting</span></td>
+            <td>Same as above</td>
+            <td class="note">Same situation.</td>
+          </tr>
+          <tr>
+            <td class="subject">Squirrly SEO</td>
+            <td><span class="chip part">One setting</span></td>
+            <td>Same as above</td>
+            <td class="note">Same situation.</td>
+          </tr>
+          <tr>
+            <td class="subject">SmartCrawl</td>
+            <td><span class="chip part">One setting</span></td>
+            <td>Same as above</td>
+            <td class="note">Same situation.</td>
+          </tr>
+          <tr>
+            <td class="subject">Schema Pro and similar</td>
+            <td><span class="chip na">No conflict</span></td>
+            <td>Turn off "Structured data" if it duplicates</td>
+            <td class="note">Both add extra information for Google; two copies is worse than one.</td>
+          </tr>
+          <tr>
+            <td class="subject">Redirection</td>
+            <td><span class="chip na">No conflict</span></td>
+            <td>Nothing</td>
+            <td class="note">Recommended, in fact — it covers the redirect gap listed in the next section.</td>
+          </tr>
+          <tr>
+            <td class="subject">Broken Link Checker</td>
+            <td><span class="chip na">No conflict</span></td>
+            <td>Nothing</td>
+            <td class="note">Works better than it would otherwise, because community content is now readable to it.</td>
+          </tr>
+          <tr>
+            <td class="subject">Site Kit by Google</td>
+            <td><span class="chip na">No conflict</span></td>
+            <td>Nothing</td>
+            <td class="note">Handles Search Console and Analytics for the whole site, community included.</td>
+          </tr>
+          <tr>
+            <td class="subject">WPML / Polylang</td>
+            <td><span class="chip no">Not supported</span></td>
+            <td>—</td>
+            <td class="note">A community in several languages has no proper handling yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">3 · Every setting, and what it changes</h2>
+      <p>
+        Found under <b>Bit Connect &rarr; SEO</b>, split across six tabs &mdash;
+        <b>Overview</b>, <b>Crawling</b>, <b>Meta</b>, <b>Archives</b>, <b>Indexing</b> and
+        <b>Sitemap</b>. Overview is read-only: which SEO plugin was found and who is
+        currently printing the tags, your community and sitemap addresses, how many
+        discussions are published, and how many tag pages are open to search engines. It
+        warns you outright if the community is members-only, or if content for crawlers has
+        been switched off, because in either case nothing else on the screen has any effect.
+      </p>
+    </div>
+
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Setting</th>
+            <th scope="col">Default</th>
+            <th scope="col">What it does</th>
+            <th scope="col">What changes if you switch it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="4">Crawling tab &mdash; content for crawlers</td></tr>
+          <tr>
+            <td class="subject">Server-rendered content</td>
+            <td class="dflt on">On</td>
+            <td class="note">Sends a plain-HTML copy of discussions, replies and tag pages, so anything that cannot run JavaScript still sees the community.</td>
+            <td class="note">Off makes the community invisible to AI crawlers and link previews. Google can still read it, and the sitemap keeps working.</td>
+          </tr>
+          <tr>
+            <td class="subject">Topics per rendered page</td>
+            <td class="dflt num">30</td>
+            <td class="note">How many discussions appear in that plain-HTML list. Anything from 1 to 200.</td>
+            <td class="note">Higher makes every page heavier for every visitor. Older discussions stay reachable through the sitemap and the older/newer links.</td>
+          </tr>
+
+          <tr class="group"><td colspan="4">Meta tab &mdash; who writes the title, address and link preview</td></tr>
+          <tr>
+            <td class="subject">Automatic</td>
+            <td class="dflt on">Default</td>
+            <td class="note">If one of the four recognised SEO plugins is active, it prints the tags using the information Bit Connect gives it. If not, Bit Connect prints them.</td>
+            <td class="note">Right for almost everyone.</td>
+          </tr>
+          <tr>
+            <td class="subject">Always Bit Connect</td>
+            <td class="dflt off">&mdash;</td>
+            <td class="note">Bit Connect prints the tags even when an SEO plugin is active.</td>
+            <td class="note">Use this if your SEO plugin is not recognised, or is producing wrong titles on community pages.</td>
+          </tr>
+          <tr>
+            <td class="subject">Always my SEO plugin</td>
+            <td class="dflt off">&mdash;</td>
+            <td class="note">Bit Connect prints nothing of its own.</td>
+            <td class="note">Only safe with a recognised plugin. Otherwise community pages get no title and no address at all.</td>
+          </tr>
+
+          <tr class="group"><td colspan="4">Meta tab &mdash; structured data, for richer results</td></tr>
+          <tr>
+            <td class="subject">Discussion and collection schema</td>
+            <td class="dflt on">On</td>
+            <td class="note">Describes each discussion as a forum thread with its author, dates and replies, and each listing as a collection.</td>
+            <td class="note">Off loses the forum-style result. Worth switching off only if another plugin already adds the same thing.</td>
+          </tr>
+          <tr>
+            <td class="subject">Breadcrumb schema</td>
+            <td class="dflt on">On</td>
+            <td class="note">Shows the community as the parent of each discussion and tag page in search results.</td>
+            <td class="note">Off leaves results showing a bare web address.</td>
+          </tr>
+
+          <tr class="group"><td colspan="4">Archives tab &mdash; one row per taxonomy, three switches each</td></tr>
+          <tr>
+            <td class="subject">Route</td>
+            <td class="dflt on">All five on</td>
+            <td class="note">Serves the page itself &mdash; <code>/topic/&hellip;</code>, <code>/department/&hellip;</code>, <code>/tag/&hellip;</code>, <code>/stage/&hellip;</code>, <code>/status/&hellip;</code> &mdash; listing that term's discussions. Each row shows how many terms it currently covers.</td>
+            <td class="note">Off turns that address into a "not found" page, so existing links to it stop working.</td>
+          </tr>
+          <tr>
+            <td class="subject">Indexed &mdash; topic types, departments, tags</td>
+            <td class="dflt on">On</td>
+            <td class="note">Offers the page to search engines rather than marking it "please don't index". These are the pages that can rank for a subject rather than for one question &mdash; people search product and tag names.</td>
+            <td class="note">Off keeps the page working for visitors but hides it from search.</td>
+          </tr>
+          <tr>
+            <td class="subject">Indexed &mdash; stages, statuses</td>
+            <td class="dflt off">Off</td>
+            <td class="note">Marked "workflow" on the tab. Nobody searches "in progress" or "needs approval", and these listings change constantly.</td>
+            <td class="note">Rarely worth turning on. Unavailable while the route above is off.</td>
+          </tr>
+          <tr>
+            <td class="subject">In sitemap</td>
+            <td class="dflt on">All five on</td>
+            <td class="note">Lists that taxonomy's pages in the sitemap.</td>
+            <td class="note">Anything not indexed is never listed regardless &mdash; a sitemap is a request to index.</td>
+          </tr>
+
+          <tr class="group"><td colspan="4">Indexing tab &mdash; what search engines may index</td></tr>
+          <tr>
+            <td class="subject">Index member profiles</td>
+            <td class="dflt off">Off</td>
+            <td class="note">Profiles work either way; this decides whether they can appear in search.</td>
+            <td class="note">On publishes member names and activity, and puts thin pages in competition with real discussions. Turn on if your members are the draw.</td>
+          </tr>
+          <tr>
+            <td class="subject">Index paginated list pages</td>
+            <td class="dflt off">Off</td>
+            <td class="note">Pages 2, 3, &hellip; of the discussion list.</td>
+            <td class="note">They exist so crawlers can reach older discussions, not to rank themselves. On usually just crowds your own results.</td>
+          </tr>
+
+          <tr class="group"><td colspan="4">Sitemap tab &mdash; how discussions get found</td></tr>
+          <tr>
+            <td class="subject">Portal sitemap</td>
+            <td class="dflt on">On</td>
+            <td class="note">Publishes the community sitemap file that lists every discussion.</td>
+            <td class="note">Off removes the file and its robots.txt entry, and everything below it stops applying.</td>
+          </tr>
+          <tr>
+            <td class="subject">Announce in robots.txt</td>
+            <td class="dflt on">On</td>
+            <td class="note">How search engines find the sitemap without you submitting it anywhere.</td>
+            <td class="note">Keep on &mdash; this is the one route that survives whichever SEO plugin owns your main sitemap.</td>
+          </tr>
+          <tr>
+            <td class="subject">Include portal home</td>
+            <td class="dflt on">On</td>
+            <td class="note">Lists the community landing page as the entry point.</td>
+            <td class="note">Rarely worth switching off.</td>
+          </tr>
+          <tr>
+            <td class="subject">Include topics</td>
+            <td class="dflt on">On</td>
+            <td class="note">Lists every published discussion.</td>
+            <td class="note">This is the main way deep discussions get found. Off usually means they are not.</td>
+          </tr>
+          <tr>
+            <td class="subject">URLs per sitemap page</td>
+            <td class="dflt num">2,000</td>
+            <td class="note">Large communities are split across several sitemap pages. Anything from 100 to 50,000.</td>
+            <td class="note">Smaller pages are lighter for your server to generate.</td>
+          </tr>
+          <tr>
+            <td class="subject">Archives by taxonomy</td>
+            <td class="dflt on">All on</td>
+            <td class="note">Set on the <b>Archives</b> tab instead, in its "In sitemap" column, so each taxonomy's three switches stay together.</td>
+            <td class="note">&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="callout">
+      <b>The three switches stack in one direction.</b> A page has to be
+      <b>served</b> before it can be <b>indexed</b>, and indexed before it is
+      <b>listed in the sitemap</b>. Turning something off at any step turns off
+      everything after it &mdash; on purpose: a sitemap that lists a page marked
+      "please don't index this" asks search engines for two opposite things, and they
+      trust the whole sitemap a little less for it.
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">4 · What's still missing</h2>
+      <p>
+        Some of these your SEO plugin already covers for the rest of the site. The ones that
+        matter are the ones nothing covers, because they only exist inside the community.
+      </p>
+    </div>
+
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Priority</th>
+            <th scope="col">What's missing</th>
+            <th scope="col">What that costs you</th>
+            <th scope="col">What to do today</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="high">
+            <td class="sev">High</td>
+            <td class="subject">Editing a discussion's title and description for search</td>
+            <td class="note">The description is taken from the first lines of the question. If those lines are vague, the Google result is vague, and nobody can override it.</td>
+            <td class="note">Ask authors to open with a clear sentence.</td>
+          </tr>
+          <tr class="high">
+            <td class="sev">High</td>
+            <td class="subject">Redirects when a discussion is renamed</td>
+            <td class="note">Renaming a discussion changes its address. Old links — from Google, from emails, from other sites — break silently, and nothing records that it happened.</td>
+            <td class="note">Install Redirection and add a rule when renaming.</td>
+          </tr>
+          <tr class="high">
+            <td class="sev">High</td>
+            <td class="subject">Marking the accepted answer for Google</td>
+            <td class="note">Google can show a solved question with its answer directly in the results. Solved discussions are the strongest content you have, and this is the format built for them.</td>
+            <td class="note">Nothing available yet.</td>
+          </tr>
+          <tr class="high">
+            <td class="sev">Med-high</td>
+            <td class="subject">Telling search engines about new discussions immediately</td>
+            <td class="note">New discussions wait to be found on the next crawl, which can take days. For a support community, being current is most of the value.</td>
+            <td class="note">Rank Math or AIOSEO can do this site-wide.</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Medium</td>
+            <td class="subject">A visible breadcrumb trail</td>
+            <td class="note">Google gets the trail, but visitors don't see one — only a "Back to all topics" link. It also means fewer internal links between related pages.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Medium</td>
+            <td class="subject">Business details for Google (name, logo, search box)</td>
+            <td class="note">Only matters if Bit Connect runs without any SEO plugin. With one installed, it already supplies this.</td>
+            <td class="note">Keep an SEO plugin installed.</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Medium</td>
+            <td class="subject">Multi-language communities</td>
+            <td class="note">Search engines aren't told which language version of a discussion to show to whom.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Medium</td>
+            <td class="subject">Member profiles as author pages</td>
+            <td class="note">Profiles are hidden from search rather than made useful. Expert contributors get no visible credit.</td>
+            <td class="note">Turn profiles on in the SEO screen if your members are the draw.</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Medium</td>
+            <td class="subject">Automatic sitemap cleanup for SEOPress and AIOSEO</td>
+            <td class="note">Yoast and Rank Math are handled automatically; with the other two, duplicate addresses stay in the sitemap until you exclude them by hand.</td>
+            <td class="note">One tick in that plugin's sitemap settings.</td>
+          </tr>
+          <tr class="mid">
+            <td class="sev">Low-med</td>
+            <td class="subject">Image handling</td>
+            <td class="note">No automatic image descriptions and no image sitemap, so images in discussions don't surface in image search.</td>
+            <td class="note">Rank Math or AIOSEO can help site-wide.</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Video and news sitemaps</td>
+            <td class="note">Specialist formats. Rarely relevant to a support community.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">"Last updated" dates on tag pages</td>
+            <td class="note">Discussions carry one; tag pages don't, so crawlers can't tell which have changed.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Writing suggestions and keyword scores</td>
+            <td class="note">The green-light scoring an SEO plugin gives you when writing a post. Not really applicable to member-written questions.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Internal link suggestions</td>
+            <td class="note">No prompts to link related discussions. Tag pages already do much of this work.</td>
+            <td class="note">—</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Rankings and traffic reporting</td>
+            <td class="note">Bit Connect shows no search performance data of its own.</td>
+            <td class="note">Site Kit by Google, or your SEO plugin.</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Editing crawler rules (robots.txt)</td>
+            <td class="note">Bit Connect only adds its sitemap line; there's no screen for custom rules.</td>
+            <td class="note">Any SEO plugin has an editor for this.</td>
+          </tr>
+          <tr class="low">
+            <td class="sev">Low</td>
+            <td class="subject">Fine control over paging tags</td>
+            <td class="note">Duplicate listings are already prevented; a few smaller signals about page order aren't sent.</td>
+            <td class="note">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2 class="sec">What we'd build next</h2>
+      <p>In order — correctness first, then reach, then tidying up the plugins that currently double up.</p>
+    </div>
+
+    <ol class="queue">
+      <li>
+        <div class="what">
+          <b>Let people edit how a discussion appears in search</b>
+          <span>A title, description and image field on the discussion itself. The only gap authors can feel directly.</span>
+        </div>
+      </li>
+      <li>
+        <div class="what">
+          <b>Keep old links alive when a discussion is renamed</b>
+          <span>Automatic redirects plus a log of broken links, so nothing is lost quietly.</span>
+        </div>
+      </li>
+      <li>
+        <div class="what">
+          <b>Mark accepted answers for Google</b>
+          <span>Solved questions become answer results. The data already exists — it just isn't published.</span>
+        </div>
+      </li>
+      <li>
+        <div class="what">
+          <b>Recognise four more SEO plugins</b>
+          <span>The SEO Framework, Slim SEO, Squirrly and SmartCrawl — so nobody has to change a setting.</span>
+        </div>
+      </li>
+      <li>
+        <div class="what">
+          <b>Clean up sitemaps for SEOPress and AIOSEO automatically</b>
+          <span>Same treatment Yoast and Rank Math already get.</span>
+        </div>
+      </li>
+      <li>
+        <div class="what">
+          <b>Announce new discussions the moment they're posted</b>
+          <span>Instead of waiting for the next crawl. Small change, real effect on a busy community.</span>
+        </div>
+      </li>
+    </ol>
+
+    <p class="callout">
+      <b>Landed recently:</b> the SEO control panel is now in the admin sidebar with all six
+      tabs and a live status panel, and the community sitemap keeps working even if you
+      switch off the plain-HTML fallback.
+    </p>
+  </section>
+
+  <footer>
+    <span class="fh">For developers</span>
+    <p>
+      backend/app/SSR/Seo/{SeoMeta, SeoContent, SeoPluginBridge, PortalSitemap}.php ·
+      backend/app/Enum/SeoSettings.php · backend/app/Services/PortalTaxonomies.php ·
+      backend/app/Http/Controller/{SeoSettingsController, NotFoundController}.php ·
+      frontend/admin/src/pages/seo/ · tests/Seo/ · scripts/crawl-check.mjs ·
+      branch feat/seo-full-coverage
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement
+    var btn = document.getElementById('themeToggle')
+    var saved = null
+
+    try { saved = localStorage.getItem('bc-seo-theme') } catch (e) {}
+    if (saved) root.setAttribute('data-theme', saved)
+
+    function current() {
+      return root.getAttribute('data-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    }
+
+    function label() { btn.textContent = current() === 'dark' ? 'Light' : 'Dark' }
+
+    label()
+
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark'
+      root.setAttribute('data-theme', next)
+      try { localStorage.setItem('bc-seo-theme', next) } catch (e) {}
+      label()
+    })
+  })()
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{
+  "name": "bitapps/bit-connect",
+  "description": "A plugin connect user to product development process. User will be able to add feature requests, create issues. Also will be able send feedback. Add ideas on features in roadmap to improve features.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.2",
+    "bitapps/wp-validator": "^1",
+    "bitapps/wp-database": "^1",
+    "bitapps/wp-telemetry": "^0",
+    "bitapps/wp-kit": "^2.4",
+    "typisttech/imposter-plugin": "^0.6.2"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3",
+    "sirbrillig/phpcs-variable-analysis": "^2",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpunit/phpunit": "^9",
+    "yoast/phpunit-polyfills": "^4",
+    "phpcompatibility/phpcompatibility-wp": "*",
+    "spatie/phpunit-watcher": "^1",
+    "nunomaduro/phpinsights": "^2",
+    "wp-cli/wp-cli-bundle": "^2",
+    "szepeviktor/phpstan-wordpress": "^2",
+    "phpstan/extension-installer": "^1",
+    "spaze/phpstan-disallowed-calls": "^4",
+    "rector/rector": "^2",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "BitApps\\BitConnect\\": "./backend/app"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BitApps\\BitConnect\\CLI\\": "./cli",
+      "BitApps\\BitConnect\\Fixers\\": "./custom-fixers"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./vendor && rm composer.lock && rm -rf ./dependencies",
+    "reset": "composer clean && composer install",
+    "analyze": "vendor/bin/phpstan analyse",
+    "test": "./vendor/bin/phpunit --testdox --colors=always tests/",
+    "test:watch": "./vendor/bin/phpunit-watcher watch",
+    "insights": "./vendor/bin/phpinsights",
+    "phpcs": "phpcs -s",
+    "compat": "./vendor/bin/phpcs -p backend --standard=PHPCompatibilityWP --runtime-set testVersion 8.2- --extensions=php",
+    "lint": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php && composer phpcs",
+    "phpcs:fix": "phpcbf",
+    "phpcs:report": "phpcs --report=summary --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1",
+    "connect": "./vendor/wp-cli/wp-cli/bin/wp bit-connect",
+    "db": "composer pi db",
+    "pro:enable": "composer pi use enablePro",
+    "pro:disable": "composer pi use disablePro",
+    "use:prod": "composer pi use toggleDev -- --active=n",
+    "use:dev": "composer pi use toggleDev -- --active=y",
+    "rector": "./vendor/bin/rector process --dry-run",
+    "refactor": "./vendor/bin/rector process"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "typisttech/imposter-plugin": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "extra": {
+    "imposter": {
+      "namespace": "BitApps\\BitConnect\\Deps\\"
+    }
+  }
+}

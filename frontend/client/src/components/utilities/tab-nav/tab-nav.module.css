@@ -1,0 +1,13 @@
+/* Horizontal tab strip.
+   The scrollbar is hidden rather than styled: the tabs bleed past the container
+   edge when they overflow, which signals "more this way" on its own, and a
+   desktop scroll trough under a tab row reads as a rendering fault. Keyboard
+   and wheel scrolling still work — only the visual bar is suppressed. */
+.scroller {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}

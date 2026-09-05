@@ -1,0 +1,60 @@
+pre-push:
+  parallel: true
+  commands:
+    style-lint:
+      glob: '*.{css,scss}'
+      run: pnpm stylelint {staged_files} --aei --fix --quiet
+
+    php-lint:
+      glob: '*.php'
+      run: pnpm lint:php
+    php-test:
+      glob: '*php'
+      run: composer test {staged_files}
+
+    lint:
+      glob: '*.{js,ts,jsx,tsx}'
+      # Lint only staged files (like the other pre-push hooks). Running against
+      # the whole `frontend` tree fails on pre-existing violations in untouched
+      # files, which is why this gate was previously disabled.
+      run: pnpm eslint {staged_files}
+    pretty:
+      glob: '*.{js,ts,jsx,tsx}'
+      run: pnpm pretty:fix
+    ts-check:
+      glob: '*.{ts,tsx}'
+      run: pnpm tsc
+    test:
+      glob: '*.test.{js,ts,jsx,tsx}'
+      follow: true
+      skip_empty: true
+      run: pnpm vitest run {staged_files} -c ./vite.config.ts
+    sort-package-json:
+      glob: 'package.json'
+      run: pnpm sort-package-json
+
+commit-msg:
+  commands:
+    commit-lint:
+      run: pnpm commitlint --edit {1}
+
+github-actions:
+  parallel: true
+  commands:
+    lint:
+      run: pnpm eslint frontend
+    lint-css:
+      run: pnpm lint:css
+    lint-php:
+      run: composer lint
+    php-compatibility-check:
+      run: composer compat
+    prettier:
+      run: pnpm pretty:fix
+    test-js:
+      run: pnpm test
+    ts-check:
+      run: pnpm ts-check
+    # require db conn
+    # test-php:
+    #   run: composer test:unit
