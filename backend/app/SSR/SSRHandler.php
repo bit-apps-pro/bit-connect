@@ -33,8 +33,6 @@ class SSRHandler
         $this->rootElementId = $rootElementId;
         $this->rootElementAttributes = $rootElementAttributes;
 
-        $this->loadSSRData();
-
         // Initialize ViewManager with configuration
         $this->viewManager = ViewManager::getInstance(
             null, // Use default SSRView class
@@ -45,34 +43,6 @@ class SSRHandler
 
         $this->stateHelper = new StateHelper($interactiveNamespace);
         $this->contextHelper = new ContextHelper();
-    }
-
-    /**
-     * Get prebuilt HTML for a specific route.
-     *
-     * @param mixed $route
-     */
-    public function getSSRContent($route = 'index.html')
-    {
-        return SSRData::getHTML($route);
-    }
-
-    /**
-     * Check if SSR content exists for a route.
-     *
-     * @param mixed $route
-     */
-    public function hasSSRContent($route = 'index.html')
-    {
-        return SSRData::hasPreRendered($route);
-    }
-
-    /**
-     * Get all available SSR routes.
-     */
-    public function getAvailableRoutes()
-    {
-        return SSRData::getAllRoutes();
     }
 
     /**
@@ -209,17 +179,5 @@ class SSRHandler
     public function getRootElementAttributes()
     {
         return $this->rootElementAttributes;
-    }
-
-    private function loadSSRData()
-    {
-        $routeFile = SSRData::getSsrDir() . '/routes.json';
-
-        if (file_exists($routeFile)) {
-            $data = json_decode(file_get_contents($routeFile), true);
-            if ($data) {
-                SSRData::setRoutes($data);
-            }
-        }
     }
 }

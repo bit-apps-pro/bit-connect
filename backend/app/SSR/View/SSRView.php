@@ -258,12 +258,14 @@ class SSRView
         // Apply interactivity state
         $this->applyInteractivity();
 
-        // Server content comes from this request's own data, not from the
-        // build-time bundle in SSRData. That bundle rendered `routeList` alone
-        // while the client mounts the full AppRoutes tree (ConfigProvider >
-        // StyleProvider > AllPluginEssentials > Layout > page), so React could
-        // never hydrate it — the structural mismatch made it re-render the whole
-        // root anyway, and its markup held no real content to index.
+        // Server content comes from this request's own data. A build-time
+        // prerender of the React app used to be emitted here too; it rendered
+        // `routeList` alone while the client mounts the full AppRoutes tree
+        // (ConfigProvider > StyleProvider > AllPluginEssentials > Layout >
+        // page), so React could never hydrate it — the structural mismatch made
+        // it re-render the whole root anyway, and its markup held no real
+        // content to index. That step has been removed rather than left
+        // generating output nothing reads.
         //
         // What is emitted instead is the route's actual topics, rendered as plain
         // semantic HTML by SeoContent, so crawlers that never run JavaScript still
