@@ -79,7 +79,10 @@ class BaseView
             $currentPostUrl = $_SERVER['REQUEST_URI'] ?? '';
         }
 
-        $currentPath = $currentPostUrl ? trim(parse_url($currentPostUrl, PHP_URL_PATH), '/') : '';
+        // A home URL with no trailing slash ("https://example.com") has no path
+        // component, so parse_url() returns null there — which trim() has
+        // deprecated as an argument since PHP 8.1.
+        $currentPath = $currentPostUrl ? trim(parse_url($currentPostUrl, PHP_URL_PATH) ?? '', '/') : '';
 
         if ($currentPath === '') {
             $currentPath = '/';

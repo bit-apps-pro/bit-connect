@@ -17,7 +17,7 @@
     "dev": "pnpm concurrently \"pnpm dev:admin\" \"pnpm dev:client\"",
     "dev:admin": "cross-env VITE_PRO=false vite",
     "dev:client": "cross-env VITE_PRO=false vite --config ./vite.config.client.mts",
-    "lint": "eslint frontend _bitapps-plugin-commons --fix",
+    "lint": "eslint frontend --fix",
     "lint:css": "stylelint frontend/**/*.{css,scss} --aei --color --fix",
     "lint:php": "composer lint",
     "pre-commit": "lefthook run pre-commit",

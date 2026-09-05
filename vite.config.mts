@@ -11,6 +11,13 @@ import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const PLUGIN_SLUG = 'bit-connect'
+// The global the PHP side prints the server payload onto: Head.php writes
+// `window.<Config::VAR_PREFIX>`, and every bare SERVER_VARIABLES read in the
+// source is `define`d to it below. `.env` may override the name, but it must
+// never be *required* — without a default, a clean clone builds
+// `window.undefined` and the admin app dies on its first config read.
+// Derived from the slug so it cannot drift from VAR_PREFIX.
+const DEFAULT_SERVER_VARIABLES = `${PLUGIN_SLUG.replace(/-/g, '_')}_`
 // One source tree, two builds. `VITE_PRO` only moves the output directory and
 // flips the `isPro()` literal — Rollup then folds the `.pro` branch of every
 // dispatch away, so the free bundle never contains pro code.
@@ -79,7 +86,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES}` })
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
     },
     plugins: [
       react({

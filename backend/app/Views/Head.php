@@ -123,7 +123,9 @@ class Head
         // for every admin screen load.
 
         // Extract the path from the URL and remove leading/trailing slashes
-        $currentPath = $currentPostUrl ? parse_url($currentPostUrl, PHP_URL_PATH) : '';
+        // parse_url() returns null for a URL with no path component (a home URL
+        // with no trailing slash), and trim() has deprecated null since PHP 8.1.
+        $currentPath = $currentPostUrl ? (parse_url($currentPostUrl, PHP_URL_PATH) ?? '') : '';
         $currentPath = trim($currentPath, '/');
         if ($currentPath === '') {
             $currentPath = '/';
