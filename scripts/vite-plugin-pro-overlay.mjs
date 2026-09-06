@@ -14,9 +14,11 @@
  * tree and nothing is generated: free source exists in exactly one place, and a
  * change to it reaches the pro bundle on the next build.
  *
- * Without `BIT_PRO_OVERLAY_DIR` the plugin resolves nothing at all, so a free
- * build — including one run by somebody who only has the public repository —
- * behaves exactly as it would if the plugin were not installed.
+ * Unless `VITE_PRO` is true *and* `BIT_PRO_OVERLAY_DIR` is set, the plugin
+ * resolves nothing at all, so a free build — including one run by somebody who
+ * only has the public repository — behaves exactly as it would if the plugin
+ * were not installed. Both conditions are required: see the note where they are
+ * checked for why an available overlay must not be sufficient on its own.
  *
  * ## The rule overlay files follow
  *
@@ -124,12 +126,21 @@ function readAliases(appRoot) {
  * @returns {import('vite').Plugin}
  */
 export default function proOverlay({ appRoot, overlayDir, mirrorRoot }) {
-  const overlay = overlayDir ? path.resolve(overlayDir) : null
+  // Both conditions, and the second one is the safety property: an overlay
+  // directory being *available* must never be enough to graft pro modules into
+  // a free build. Anything that sets the path globally — a docker-compose
+  // `environment:` block, an exported shell variable — would otherwise reach
+  // the free dev server too, and it would serve the add-on's source to the
+  // browser while the UI, correctly, showed the free edition. Checking
+  // `VITE_PRO` here means the guarantee holds wherever the plugin is used,
+  // rather than depending on every caller remembering to withhold the path.
+  const isProBuild = process.env.VITE_PRO === 'true'
+  const overlay = overlayDir && isProBuild ? path.resolve(overlayDir) : null
 
   if (overlay && !fs.existsSync(overlay)) {
     throw new Error(
       `pro-overlay: BIT_PRO_OVERLAY_DIR points at ${overlay}, which does not exist. ` +
-        'Unset it to build the free edition.'
+        'Unset it, or set VITE_PRO=false, to build the free edition.'
     )
   }
 
