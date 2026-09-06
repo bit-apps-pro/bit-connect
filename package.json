@@ -169,7 +169,6 @@
     "msw": "^2.15.0",
     "postcss": "^8.5.28",
     "postcss-csso": "^6.0.1",
-    "potomatic": "github:GravityKit/Potomatic#b0c247675a404dacd1428ce59a3fe7366404cc9c",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-error-boundary": "^5.0.0",

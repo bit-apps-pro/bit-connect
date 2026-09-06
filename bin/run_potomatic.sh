@@ -7,6 +7,13 @@ if [ -z "$OPENAI_API_KEY" ]; then
 fi
 
 LANGUAGE_DIR="languages"
+
+# Potomatic is fetched on demand rather than kept in devDependencies: it pulls
+# extract-zip, which is abandoned at 2.0.1 with an unpatched symlink path
+# traversal (GHSA-jmr9-qjv8-65gv). This script is the only thing that uses it,
+# and it is run by hand, so the dependency does not need to sit in the lockfile.
+POTOMATIC_REF="github:GravityKit/Potomatic#b0c247675a404dacd1428ce59a3fe7366404cc9c"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -27,7 +34,7 @@ fi
 for lang in $LANG_CODES; do
     echo "Processing language: $lang"
 
-    pnpm potomatic \
+    pnpm dlx "$POTOMATIC_REF" \
         --target-languages "$lang" \
         --pot-file-path "$POT_FILE_PATH" \
         --output-dir "languages/" \
