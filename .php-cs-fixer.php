@@ -9,9 +9,13 @@ $finder = Finder::create()
         __DIR__ . '/vendor',
         __DIR__ . '/bin',
     ])
+    // `_bitapps-plugin-commons/backend` used to be listed here. It is the
+    // shared commons checkout, which is not part of this repository — the
+    // Finder threw on the missing directory and `composer lint` could not run
+    // at all. Nothing under it was ever formatted by this config anyway: the
+    // free plugin uses only the commons' frontend half.
     ->in([
         __DIR__ . '/backend',
-        __DIR__ . '/_bitapps-plugin-commons/backend',
         __DIR__ . '/custom-fixers',
     ])
     ->ignoreVCSIgnored(true);
