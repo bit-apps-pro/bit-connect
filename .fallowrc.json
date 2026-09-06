@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "ignorePatterns": [
+    "_bitapps-plugin-commons/**",
+    "frontend/_plugin-commons/**"
+  ],
+  "entry": [
+    "frontend/admin/src/main.tsx",
+    "frontend/client/src/main.tsx",
+    "frontend/client/src/prerender-main.tsx",
+    "frontend/admin/src/config/test.setup.ts",
+    "frontend/client/src/config/test.setup.ts",
+    "frontend/admin/src/config/devHotModule.js",
+    "frontend/client/src/config/devHotModule.js",
+    "vite.config*.mts",
+    "playwright.config.ts",
+    "scripts/**/*.{js,mjs}",
+    "bin/**/*.mjs",
+    "frontend/language/*.js"
+  ]
+}

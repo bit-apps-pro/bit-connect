@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<phpunit
+    backupGlobals="false"
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    >
+    <testsuites>
+        <testsuite  name="Unit">
+            <directory suffix="Test.php">./tests/</directory>
+            <exclude>./tests/__libs</exclude>
+            <exclude>./tests/BaseTestCase.php</exclude>
+        </testsuite>
+        <!--
+            The add-on's own tests. They exercise pro classes, so they cannot
+            live in ./tests/ — that directory is published as open source, where
+            BitApps\BitConnectPro does not exist. This suite is dropped from the
+            free plugin's phpunit.xml along with pro/ itself.
+        -->
+        <testsuite name="Pro">
+            <directory suffix="Test.php">./pro/tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

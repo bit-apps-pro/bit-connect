@@ -1,0 +1,16 @@
+.layoutWrp {
+  height: calc(100% - 10px);
+  margin: 3px 10px 7px 0;
+  border-radius: 0.8125rem;
+  overflow: hidden;
+  border: 2px solid var(--border-20);
+}
+
+.layoutWrp[color-scheme='dark'] {
+  background-color: hsla(287deg, 0%, 0%, 100%) !important;
+  background-image:
+    radial-gradient(at 12% 16%, hsla(296deg, 10%, 2%, 100%) 0, transparent 50%),
+    radial-gradient(at 90% 14%, hsla(236deg, 15%, 3%, 100%) 0, transparent 50%),
+    radial-gradient(at 86% 84%, hsla(263deg, 15%, 4%, 100%) 0, transparent 50%),
+    radial-gradient(at 52% 20%, hsla(256deg, 20%, 5%, 100%), transparent 50%) !important;
+}

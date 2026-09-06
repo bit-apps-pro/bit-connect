@@ -1,0 +1,447 @@
+/* ===== Top-level comment list ===== */
+.commentList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.commentListItem {
+  list-style: none;
+}
+
+.commentListItem + .commentListItem {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--bc-line);
+}
+
+/* ===== Thread wrapper ===== */
+.thread {
+  position: relative;
+}
+
+/* ===== Comment row (avatar + content) ===== */
+.commentRow {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding: 6px 0;
+}
+
+/* --- Vertical line from parent avatar (depth 0, 36px avatar, center at 18px) --- */
+.thread[data-depth='0'] > .commentRowWithReplies::after {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 42px;
+  bottom: -1px;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* --- Vertical line from parent avatar (depth 1, 28px avatar, center at 14px) --- */
+.thread[data-depth='1'] > .commentRowWithReplies::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 34px;
+  bottom: -1px;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* --- Vertical line from parent avatar (depth 2, 24px avatar, center at 12px) --- */
+.thread[data-depth='2'] > .commentRowWithReplies::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 30px;
+  bottom: -1px;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* --- Vertical line from parent avatar (depth 3, 22px avatar, center at 11px) --- */
+.thread[data-depth='3'] > .commentRowWithReplies::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 28px;
+  bottom: -1px;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* ===== The comment a link was pointing at =====
+   A reader who followed `#comment-N` lands mid-thread, where every row looks
+   like every other one. This says which row answered the link.
+
+   The mark is a rail down the leading edge plus a tinted bubble, matching the
+   unread rail in the notification list — the same idea (this is the one you
+   came for) said the same way.
+
+   It settles from a wider glow into the flat tint over the first couple of
+   seconds, which is roughly how long the smooth scroll takes to arrive, and the
+   hook drops it a few seconds after that. Timed rather than permanent: once the
+   reader is looking at the row the mark has done its job, and a comment left
+   tinted for the rest of the visit reads as a state the comment is in rather
+   than as an answer to the link. The bubble's own background transition carries
+   it out. */
+.focused {
+  position: relative;
+}
+
+.focused::before {
+  content: '';
+  position: absolute;
+  inset-block: 2px;
+  inset-inline-start: -8px;
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--bc-info);
+}
+
+.focused .commentBubble {
+  background-color: var(--bc-info-soft);
+  animation: comment-focus-settle 1.8s ease-out;
+}
+
+/* Hover must still register on the focused row, or the bubble looks frozen. */
+.focused .commentBubble:hover {
+  background-color: var(--bc-surface-hover);
+}
+
+@keyframes comment-focus-settle {
+  0%,
+  35% {
+    /* Held for a third of a second before it starts fading, so the mark is
+       still at full strength when a smooth scroll arrives at the row. */
+    box-shadow: 0 0 0 3px var(--bc-info-soft);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* The wash and the rail carry it on their own; only the settling is dropped. */
+@media (prefers-reduced-motion: reduce) {
+  .focused .commentBubble {
+    animation: none;
+  }
+}
+
+/* ===== Comment content area ===== */
+.commentContent {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== Comment bubble ===== */
+.commentBubble {
+  background-color: var(--bc-surface-sunken);
+  border-radius: 14px;
+  padding: 8px 14px;
+  transition: background-color 0.15s ease;
+
+  /* Hug the text instead of spanning the thread: a one-line comment stretched
+     to the full ~1090px column left a band of empty grey, and a long one ran
+     past 140 characters per line. Caps the measure at a readable ~68ch. */
+  width: fit-content;
+  max-width: min(100%, 54ch);
+
+  /* Long unbroken words/URLs wrap instead of overflowing narrow bubbles
+     (overflow-wrap inherits to the rendered comment content) */
+  overflow-wrap: anywhere;
+}
+
+/* ===== Inline editor wrapper (reply + edit modes) ===== */
+
+/* Sits above the thread connector lines; on mobile it also breaks out of the
+   nesting indent (see media query below) so the editor keeps a usable width. */
+.editorBreakout {
+  position: relative;
+  z-index: 1;
+  background-color: var(--bc-surface);
+}
+
+.commentBubble:hover {
+  background-color: var(--bc-surface-hover);
+}
+
+/* ===== Comment meta (name, admin badge, date) ===== */
+.commentMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+}
+
+/* ===== Comment actions row ===== */
+.commentActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 6px 4px;
+}
+
+/* The "N replies" expander sits on its own line under the actions, directly
+   above the replies it opens. Inside the actions row it shifted Upvote/Reply
+   right on every comment that had replies, so no two rows lined up. */
+.replyToggleRow {
+  padding: 0 4px 4px;
+}
+
+/* Reply/Edit/Delete/Upvote sit at 24px tall by default — the bare WCAG 2.2
+   minimum, and cramped for thumbs. Give them a comfortable target on touch
+   pointers without enlarging the row for mouse users. */
+@media (pointer: coarse) {
+  .commentActions :is(button, [role='button']) {
+    min-height: 32px;
+  }
+}
+
+/* On mobile (<768px) the Reply/Edit/Delete buttons show their label only —
+   their leading icon is hidden to save horizontal space. The reply-toggle
+   chevron is intentionally left untouched. */
+@media (width < 768px) {
+  .actionButton :global(.ant-btn-icon) {
+    display: none;
+  }
+}
+
+/* ===== Comment action buttons (Reply / Edit / Delete / More) =====
+   One class instead of the same three Tailwind utilities repeated on every
+   button. Those utilities also hard-coded a grey that beat antd's `danger` red
+   — the Tailwind build emits !important — so Delete rendered in exactly the
+   same grey as Reply. `.actionMeta` carries only the shared metrics, which lets
+   the destructive button keep its own colour. */
+.actionMeta {
+  font-size: 12px;
+  padding-inline: 8px;
+}
+
+.actionButton,
+.replyToggle {
+  color: var(--bc-ink-muted);
+}
+
+.replyToggle {
+  font-weight: 600;
+}
+
+.actionButton:hover,
+.replyToggle:hover {
+  color: var(--bc-ink);
+  background-color: var(--bc-surface-hover);
+}
+
+/* ===== Replies container ===== */
+.replies {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===== Reply item ===== */
+.replyItem {
+  position: relative;
+  list-style: none;
+}
+
+/* --- Indentation based on parent depth --- */
+.replyItem[data-parent-depth='0'] {
+  padding-left: 48px;
+}
+
+.replyItem[data-parent-depth='1'] {
+  padding-left: 40px;
+}
+
+.replyItem[data-parent-depth='2'] {
+  padding-left: 36px;
+}
+
+.replyItem[data-parent-depth='3'] {
+  padding-left: 32px;
+}
+
+/* ===== Curved connector for each reply ===== */
+
+/* Replies of depth 0 parent (connector aligns with 36px avatar center) */
+.replyItem[data-parent-depth='0']::after {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: -1px;
+  height: 22px;
+  width: 24px;
+  border-left: 2px solid var(--bc-line-strong);
+  border-bottom: 2px solid var(--bc-line-strong);
+  border-bottom-left-radius: 12px;
+}
+
+/* Replies of depth 1 parent (connector aligns with 28px avatar center) */
+.replyItem[data-parent-depth='1']::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: -1px;
+  height: 18px;
+  width: 20px;
+  border-left: 2px solid var(--bc-line-strong);
+  border-bottom: 2px solid var(--bc-line-strong);
+  border-bottom-left-radius: 10px;
+}
+
+/* Replies of depth 2 parent (connector aligns with 24px avatar center) */
+.replyItem[data-parent-depth='2']::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: -1px;
+  height: 16px;
+  width: 18px;
+  border-left: 2px solid var(--bc-line-strong);
+  border-bottom: 2px solid var(--bc-line-strong);
+  border-bottom-left-radius: 9px;
+}
+
+/* Replies of depth 3 parent (connector aligns with 22px avatar center) */
+.replyItem[data-parent-depth='3']::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: -1px;
+  height: 14px;
+  width: 16px;
+  border-left: 2px solid var(--bc-line-strong);
+  border-bottom: 2px solid var(--bc-line-strong);
+  border-bottom-left-radius: 8px;
+}
+
+/* ===== Vertical line continuation (non-last replies) ===== */
+
+/* Non-last replies of depth 0 parent */
+.replyItem[data-parent-depth='0']:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: -1px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* Non-last replies of depth 1 parent */
+.replyItem[data-parent-depth='1']:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: -1px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* Non-last replies of depth 2 parent */
+.replyItem[data-parent-depth='2']:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: -1px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* Non-last replies of depth 3 parent */
+.replyItem[data-parent-depth='3']:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: -1px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--bc-line-strong);
+  z-index: 0;
+}
+
+/* ===== Mobile (<768px): tighter indents so deep threads keep readable width =====
+   Desktop indents accumulate to 124px at max depth, which on a ~390px phone
+   squeezes deep bubbles/editors to ~200px. Connector elbows (::after) keep
+   their left edge on the parent avatar center (unchanged avatar sizes) but
+   shrink in width to end just before the child avatar at the new indent. */
+@media (width < 768px) {
+  .commentRow {
+    gap: 8px;
+  }
+
+  .commentBubble {
+    padding: 6px 12px;
+  }
+
+  .replyItem[data-parent-depth='0'] {
+    padding-left: 32px;
+  }
+
+  .replyItem[data-parent-depth='1'] {
+    padding-left: 24px;
+  }
+
+  .replyItem[data-parent-depth='2'] {
+    padding-left: 20px;
+  }
+
+  .replyItem[data-parent-depth='3'] {
+    padding-left: 20px;
+  }
+
+  .replyItem[data-parent-depth='0']::after {
+    width: 13px;
+    border-bottom-left-radius: 12px;
+  }
+
+  .replyItem[data-parent-depth='1']::after {
+    width: 9px;
+    border-bottom-left-radius: 9px;
+  }
+
+  .replyItem[data-parent-depth='2']::after {
+    width: 7px;
+    border-bottom-left-radius: 7px;
+  }
+
+  .replyItem[data-parent-depth='3']::after {
+    width: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  /* Editor breakout: pull reply/edit editors back to the thread's left edge
+     (negative margin = cumulative reply indents + avatar column at that depth)
+     so they get the full thread width instead of the deep-nesting remainder. */
+  .editorBreakout[data-depth='0'] {
+    margin-left: -44px;
+  }
+
+  .editorBreakout[data-depth='1'] {
+    margin-left: -68px;
+  }
+
+  .editorBreakout[data-depth='2'] {
+    margin-left: -88px;
+  }
+
+  .editorBreakout[data-depth='3'] {
+    margin-left: -106px;
+  }
+}

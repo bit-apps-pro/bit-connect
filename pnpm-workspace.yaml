@@ -1,0 +1,9 @@
+ignoredBuiltDependencies:
+  - lefthook
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - less
+  - msw
+  - unrs-resolver

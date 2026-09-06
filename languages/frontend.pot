@@ -1,0 +1,4821 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"POT-Creation-Date: Sat Sep 05 2026 19:01:46 GMT+0600 (Bangladesh Standard "
+"Time)\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: frontend/_plugin-commons/components/Changelog/ui/Changelog.tsx:30
+msgid "Changelog"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:51
+msgid "Join Our Facebook Community"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:54
+msgid "Connect, share, and grow with like-minded individuals"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:58
+msgid "Exclusive Content"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:59
+msgid "Daily Discussion"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:60
+msgid "Special Events"
+msgstr ""
+
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:77
+msgid "Join Now"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:112
+msgid "License & Activation"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:116
+msgid "Dev Version On"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:121
+msgid "Version"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:124
+#: frontend/_plugin-commons/components/License.pro.tsx:162
+msgid "Code Name:"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:137
+#: frontend/_plugin-commons/components/License.pro.tsx:159
+msgid "Pro Version"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:137
+msgid "Not Activated"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:147
+msgid "Buy Pro Version"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:185
+msgid "Deactivate License"
+msgstr ""
+
+#: frontend/_plugin-commons/components/License.pro.tsx:198
+msgid "Activate License"
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:15
+msgid ""
+"Please ensure that your product subscription is valid. If needed, try "
+"deactivating and reactivating your license."
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:19
+msgid ""
+"For further assistance, feel free to reach out to our live support or email "
+"us at support@bitapps.pro ."
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:24
+msgid "Your license is invalid, try reactivate"
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:23
+msgid "Manage license"
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:27
+msgid ""
+"Please update your license to ensure you receive the latest security "
+"updates and bug fixes. \n"
+"          Using an outdated or unofficial license may leave your system "
+"vulnerable to security breaches and data leaks. \n"
+"          We cannot take responsibility for issues arising from such "
+"scenarios. For your safety, always download from the official Bit Apps "
+"server."
+msgstr ""
+
+#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:32
+msgid "Your license is invalid"
+msgstr ""
+
+#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:60
+msgid "Plugin Update Required (%s)"
+msgstr ""
+
+#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:62
+msgid ""
+"Please update both Free and Pro plugins to the latest version. Keeping them "
+"the same is crucial to avoid potential issues."
+msgstr ""
+
+#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:79
+msgid "Updating..."
+msgstr ""
+
+#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:79
+msgid "Update Now"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:22
+msgid "Checking updates"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:34
+msgid "New version available"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:37
+msgid ""
+"Please update to the latest version to ensure plugin security and optimal "
+"performance. Stay safe and enjoy the enhanced features!"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:54
+msgid "is up to date"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:15
+msgid ""
+"A community forum for WordPress where users raise feature requests, report "
+"issues, send feedback and vote on what gets built next."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:26
+msgid ""
+"WordPress CRM to manage contacts, leads, deals, and invoices and run your "
+"whole sales pipeline right from your WordPress dashboard."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:37
+msgid "Zapier Alternative in WordPress Unlimited Task."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:46
+msgid ""
+"An social media management plugin for WordPress, that allows you to share "
+"your post to different social media platform, schedule post, manage social "
+"media account and many more feature."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:27
+msgid "Cash Back"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:39
+msgid "Hi"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:42
+msgid "We want your feedback!"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:43
+msgid "Write a review"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:44
+msgid "of your experience with %s, and we'll send you a"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:45
+msgid "$10 Cash back"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:45
+msgid "to say thanks!"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:47
+msgid ""
+"To claim your cash back, simply reply to support with a screenshot or link "
+"of your review."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:67
+msgid "Review Now"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:22
+msgid "Improvement"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:30
+msgid ""
+"Allow the collection of diagnostic data and error reports to enhance the "
+"application's performance. Please review our"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:39
+msgid "Privacy Policy"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:41
+msgid "for more information."
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/RecommendedPlugins.tsx:44
+msgid "Recommended Plugins"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:24
+msgid "Support"
+msgstr ""
+
+#: frontend/_plugin-commons/components/SupportPage/SupportPage.tsx:41
+msgid "About"
+msgstr ""
+
+#: frontend/admin/src/common/helpers/i18nWrap.test.ts:26
+#: frontend/admin/src/common/helpers/i18nWrap.test.ts:34
+#: frontend/admin/src/common/helpers/i18nWrap.test.ts:50
+#: frontend/client/src/common/helpers/i18nWrap.test.ts:26
+#: frontend/client/src/common/helpers/i18nWrap.test.ts:34
+#: frontend/client/src/common/helpers/i18nWrap.test.ts:50
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:170
+msgid "Save changes"
+msgstr ""
+
+#: frontend/admin/src/common/helpers/i18nWrap.test.ts:40
+#: frontend/admin/src/pages/general/internal/location-section.tsx:89
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:154
+#: frontend/admin/src/pages/products/ui/product-create-modal.tsx:37
+#: frontend/admin/src/pages/products/ui/product-edit-modal.tsx:70
+#: frontend/admin/src/pages/products/ui/products-table.tsx:58
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:276
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:78
+#: frontend/admin/src/pages/stages/stages.tsx:132
+#: frontend/admin/src/pages/status/ui/status-create-modal.tsx:53
+#: frontend/admin/src/pages/status/ui/status-edit-modal.tsx:90
+#: frontend/admin/src/pages/status/ui/status-table.tsx:102
+#: frontend/admin/src/pages/tags/ui/tag-create-modal.tsx:39
+#: frontend/admin/src/pages/tags/ui/tag-edit-modal.tsx:72
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:52
+#: frontend/admin/src/pages/topic-types/ui/topic-type-edit-modal.tsx:95
+#: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:52
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:97
+#: frontend/client/src/common/helpers/i18nWrap.test.ts:40
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:90
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:144
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:66
+#: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:117
+#: frontend/client/src/pages/Post/CommentEditor.tsx:464
+#: frontend/client/src/pages/Post/CommentItem.tsx:106
+#: frontend/client/src/pages/Post/PostHeader.tsx:167
+msgid "Cancel"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:35
+msgid "Private topics, visible only to the people you choose"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:36
+msgid "Profile badges you author and hand out"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:37
+msgid "Upvotes on comments, not just topics"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:38
+msgid "Hide reported content automatically, before a moderator gets to it"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:39
+msgid "Daily and weekly email digests"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:40
+msgid "Send forum email from your own name and address"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:41
+msgid "Write your own wording for every notification email"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:59
+msgid "Maybe later"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:69
+msgid "Get Bit Connect Pro"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:74
+msgid "Bit Connect Pro"
+msgstr ""
+
+#: frontend/admin/src/components/buy-pro.tsx:76
+msgid "Bit Connect Pro adds:"
+msgstr ""
+
+#: frontend/admin/src/components/hooks/use-wp-media-modal.ts:33
+#: frontend/admin/src/components/hooks/use-wp-media-modal.ts:39
+msgid "Select Icon"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/chip-preview.tsx:23
+#: frontend/admin/src/pages/general/internal/promo-preview.tsx:46
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:95
+msgid "Preview"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/chip-preview.tsx:26
+msgid "Sample"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:82
+msgid "Icon Preview"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:90
+#: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:119
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:102
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:118
+msgid "Remove"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:95
+msgid "Change Icon"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:95
+msgid "Upload Icon"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:120
+msgid ""
+"Recommended size: 64x64 to 512x512 pixels (square). Max file size: 2MB. "
+"Supported formats: PNG, JPG, SVG."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/icon-picker-field.tsx:125
+msgid ""
+"Optional. Shown when the portal is viewed in dark mode — upload a lighter "
+"version here if your icon is dark. Falls back to the light-mode icon when "
+"empty."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Input/Input.test.tsx:11
+#: frontend/client/src/components/utilities/Input/Input.test.tsx:11
+msgid "Tag name"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Input/Input.test.tsx:22
+#: frontend/client/src/components/utilities/Input/Input.test.tsx:22
+msgid "Invalid message"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Input/Input.test.tsx:27
+#: frontend/client/src/components/utilities/Input/Input.test.tsx:27
+msgid "Write tag name"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/slug-field/index.tsx:43
+msgid "Used in portal URLs. Changing it breaks links that already point here."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/slug-field/index.tsx:44
+msgid "Used in portal URLs. Leave blank to build one from the name."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/slug-field/index.tsx:46
+msgid "Slug"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/slug-field/index.tsx:49
+msgid "term-slug"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/term-icon-cell.tsx:32
+msgid "No icon"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/term-order/sortable-row.tsx:27
+msgid "Reorder"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/term-order/use-reorder-terms.ts:45
+msgid "Failed to save the new order"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Textarea/TextArea.test.tsx:11
+#: frontend/admin/src/components/utilities/Textarea/TextArea.test.tsx:16
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:103
+#: frontend/admin/src/pages/products/ui/product-form.tsx:21
+#: frontend/admin/src/pages/products/ui/product-form.tsx:22
+#: frontend/admin/src/pages/products/ui/products-table.tsx:44
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:102
+#: frontend/admin/src/pages/stages/stages.tsx:113
+#: frontend/admin/src/pages/status/ui/status-form.tsx:63
+#: frontend/admin/src/pages/status/ui/status-table.tsx:88
+#: frontend/admin/src/pages/tags/ui/tag-form.tsx:31
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:37
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:31
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:82
+#: frontend/client/src/components/utilities/Textarea/TextArea.test.tsx:11
+#: frontend/client/src/components/utilities/Textarea/TextArea.test.tsx:16
+msgid "Description"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Textarea/TextArea.test.tsx:21
+#: frontend/client/src/components/utilities/Textarea/TextArea.test.tsx:21
+msgid "Write here"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Textarea/TextArea.test.tsx:27
+#: frontend/client/src/components/utilities/Textarea/TextArea.test.tsx:27
+msgid "Too short"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/Textarea/TextArea.test.tsx:32
+#: frontend/client/src/components/utilities/Textarea/TextArea.test.tsx:32
+msgid "Max 500 chars"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/theme-toggle.tsx:40
+#: frontend/client/src/components/utilities/theme-toggle.tsx:42
+msgid "Light"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/theme-toggle.tsx:41
+#: frontend/client/src/components/utilities/theme-toggle.tsx:43
+msgid "System"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/theme-toggle.tsx:42
+#: frontend/client/src/components/utilities/theme-toggle.tsx:44
+msgid "Dark"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/theme-toggle.tsx:120
+#: frontend/client/src/components/utilities/theme-toggle.tsx:130
+msgid "Theme"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/theme-toggle.tsx:145
+#: frontend/client/src/components/utilities/theme-toggle.tsx:155
+msgid "Colour theme"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:30
+msgid "Today"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:30
+msgid "Yesterday"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:58
+msgid "Nothing matches those filters."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:58
+msgid "Nothing recorded yet."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:62
+msgid ""
+"Widen the search — a topic and a comment can share an id, so check the type "
+"too."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:63
+msgid "Rows appear when someone acts on content they did not write."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:100
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:34
+msgid "Activity"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:107
+msgid ""
+"Everything done to content another member wrote — taken down, hidden, "
+"locked or cleared. Nobody can rewrite someone else’s words, so no edit is "
+"recorded here."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:125
+msgid "matching actions"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:125
+msgid "actions recorded"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:137
+msgid "Any action"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:145
+#: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:38
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:84
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:163
+msgid "Topics"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:146
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:22
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:17
+#: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:46
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:311
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:86
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:164
+#: frontend/client/src/pages/User/UserProfilePage.tsx:116
+msgid "Comments"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:148
+msgid "Any content type"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:156
+msgid "Ids are unique per kind — a topic and a comment can share one."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:165
+msgid "Topic or comment ID"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:179
+#: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:114
+msgid "Clear"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:187
+msgid "The activity log could not be loaded."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/activity.tsx:188
+#: frontend/admin/src/pages/reports/reports.tsx:144
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:111
+msgid "Something went wrong"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:43
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:197
+msgid "Show all"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:59
+msgid "the reports were dismissed"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:60
+msgid "the content was kept"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:61
+msgid "the content was removed"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:89
+msgid "Deleted content"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:97
+msgid "Deleted comment"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
+msgid "Took"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
+#: frontend/client/src/pages/Post/CommentItem.tsx:387
+msgid "reply"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
+#: frontend/client/src/pages/Post/CommentItem.tsx:387
+msgid "replies"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
+msgid "down with it."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:121
+msgid "report was"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:121
+msgid "reports were"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:122
+msgid "open against it at the time."
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:137
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:82
+msgid "Closed"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:137
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:82
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:119
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:39
+msgid "report"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-detail.tsx:137
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:82
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:119
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:39
+msgid "reports"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:28
+msgid "Automatic"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:30
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:169
+msgid "(deleted account)"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:65
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:95
+#: frontend/admin/src/pages/settings/settings.tsx:148
+msgid "Comment"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:65
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:95
+#: frontend/admin/src/pages/root/internals/RecentLogs.tsx:11
+msgid "Topic"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:121
+msgid "by"
+msgstr ""
+
+#: frontend/admin/src/pages/activity/ui/activity-row.tsx:126
+msgid "gone"
+msgstr ""
+
+#: frontend/admin/src/pages/Error404/Error404.tsx:17
+msgid "Sorry, the page you visited does not exist."
+msgstr ""
+
+#: frontend/admin/src/pages/Error404/Error404.tsx:18
+#: frontend/client/src/pages/Error404/Error404.tsx:32
+msgid "404"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:87
+msgid "Portal slug is required"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:94
+msgid "Saving…"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:107
+msgid "Settings saved successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:114
+msgid ""
+"There is no page at the new address yet. Create one with the shortcode in "
+"it, or rename your community page to match."
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:117
+msgid "Address saved, but no page is there yet"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:121
+msgid "Failed to save settings"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:151
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:29
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:15
+msgid "Branding"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:164
+msgid "Location"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:176
+#: frontend/admin/src/pages/general/internal/access-section.tsx:48
+msgid "Access"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:181
+msgid "Sign in"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:194
+msgid "Sidebar card"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:209
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:26
+msgid "General"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:212
+msgid ""
+"What the portal is called, where it lives, who can see it, and how people "
+"sign in."
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:217
+#: frontend/admin/src/pages/seo/seo.tsx:342
+msgid "Unsaved changes"
+msgstr ""
+
+#: frontend/admin/src/pages/general/general.tsx:225
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:126
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:150
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:66
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:105
+#: frontend/admin/src/pages/notifications/notifications.tsx:73
+#: frontend/admin/src/pages/seo/seo.tsx:350
+#: frontend/admin/src/pages/settings/settings.tsx:217
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
+msgid "Save"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:28
+msgid "Newest, oldest, most active — how the topic list is ordered."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:30
+msgid "Sort"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:33
+msgid "Narrow the list down to one product or department."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:35
+#: frontend/admin/src/pages/products/ui/product-create-modal.tsx:43
+#: frontend/client/src/pages/topics/topics.tsx:396
+msgid "Product"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:38
+msgid "Narrow the list down to a tag."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:40
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:30
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:12
+#: frontend/admin/src/pages/tags/tags.tsx:19
+#: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:144
+#: frontend/client/src/pages/topics/topics.tsx:402
+msgid "Tags"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:48
+msgid "Who can read the portal."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:49
+msgid "Who can see the portal"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:58
+msgid ""
+"Anyone can read topics, and search engines can index them. Posting still "
+"needs an account."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:62
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:118
+msgid "Everyone"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:67
+msgid ""
+"Visitors are sent to sign in first. Nothing in the portal is publicly "
+"readable or indexable."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:71
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:119
+msgid "Logged-in users only"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:81
+msgid ""
+"The controls above the topic list. A hidden filter still applies when its "
+"value is in the URL, so links people have already shared keep working."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:84
+msgid "Topic list filters"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:86
+msgid "Filters visitors can use"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:38
+msgid "Where visitors go when they need an account."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:39
+msgid "Sign-in method"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:41
+msgid "Login and registration form"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:50
+msgid ""
+"People sign in and register on the portal itself. You choose its banner, "
+"heading and wording below."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:54
+msgid "Built-in form"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:59
+msgid ""
+"People are sent to pages you already have — a membership plugin, or your "
+"theme."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:63
+msgid "My own login page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:79
+msgid "What the built-in login and registration page shows."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:80
+msgid "Login page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:83
+msgid "Sits at the top of the form. A wide, transparent image reads best."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:84
+msgid "Banner"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:87
+msgid "Login banner preview"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:94
+msgid "The heading above the form."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:94
+msgid "Title"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:98
+msgid "e.g. Welcome back!"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:103
+msgid "A line or two below the title."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:107
+msgid "e.g. Sign in to join the conversation."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:114
+msgid "Send people straight to the form with these links."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:116
+msgid "Page addresses"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:121
+#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:50
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:33
+#: frontend/client/src/pages/Auth/LoginPage.tsx:59
+#: frontend/client/src/pages/Auth/LoginPage.tsx:110
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:71
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:209
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:303
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:312
+msgid "Login"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:124
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:135
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:74
+#: frontend/admin/src/pages/general/internal/location-section.tsx:247
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:149
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:116
+msgid "Copy"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:132
+#: frontend/client/src/pages/Auth/LoginPage.tsx:122
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:119
+msgid "Registration"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:146
+msgid "What happens when someone registers through the built-in form."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:147
+msgid "New accounts"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:150
+msgid "The WordPress role people get when they register."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:151
+msgid "Registration role"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:158
+msgid "Select a role"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:164
+msgid "New members have to confirm their email address before they can sign in."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:167
+msgid "Require email verification"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:182
+msgid "Where the portal sends people instead of showing its own form."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:183
+msgid "Your login pages"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:185
+msgid "The page people sign in on."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:185
+msgid "Login page URL"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:195
+msgid "The page people create an account on. Leave empty to reuse the login page."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:198
+msgid "Registration page URL"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:28
+msgid "The name and logo the portal shows visitors, and where the logo takes them."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:32
+msgid ""
+"Used for the browser tab, the meta title and the name emails are sent "
+"under. It usually reads best as your site title."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:35
+msgid "Portal title"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:40
+msgid "e.g. Acme Community"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:46
+msgid ""
+"Shown in the portal header. A wide, transparent image reads best — around "
+"480 × 120, or 4:1."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:49
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:71
+msgid "Logo"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:52
+msgid "Site logo preview"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:59
+msgid "Where clicking the logo takes a visitor."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:59
+msgid "Logo link"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:66
+msgid "Portal home"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/branding-section.tsx:67
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:66
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:96
+msgid "Custom URL"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/image-field.tsx:40
+msgid "Choose an image"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/image-field.tsx:50
+msgid "Remove image"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/image-field.tsx:61
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:96
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:112
+msgid "Replace"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:58
+msgid "The community is now your homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:59
+msgid "The community is back on its own page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:63
+msgid "Could not change the community address"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:80
+msgid "Create a page with the slug \"%s\" and the shortcode in it, then try again."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:83
+msgid "Add the shortcode to a page and publish it, then try again."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:84
+msgid "There is no community page yet"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:91
+msgid ""
+"Your current homepage is replaced by the community, and topic links change "
+"from /slug/topic to /topic. Links people already shared will stop working."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:94
+msgid ""
+"The community goes back to yoursite.com/slug and topic links change again. "
+"Your homepage returns to the default WordPress posts page."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:97
+msgid "Yes, make it my homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:97
+msgid "Yes, move it back"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:100
+msgid "Show the community as your homepage?"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:101
+msgid "Move the community back to its own page?"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:113
+msgid "Homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:113
+msgid "Own page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:116
+msgid "Not set up"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:122
+msgid "Your community is at"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:130
+msgid "Edit this page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:136
+msgid "The web address where people find your community."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:139
+msgid "Community address"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:158
+msgid ""
+"No published page at this address — create one with the shortcode in it, or "
+"change the slug below."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:161
+msgid ""
+"No page yet — add the shortcode below to a page and publish it to start the "
+"community."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:182
+msgid ""
+"Your homepage is not the community page — pick it in Settings → Reading, or "
+"turn off \"Show as homepage\"."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:195
+msgid "Not used while the community is your homepage."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:196
+msgid ""
+"The last part of the address, e.g. yoursite.com/community. It must match "
+"the slug of the page that contains the shortcode. Changing it changes every "
+"topic link."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:200
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:119
+msgid "Address slug"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:207
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:128
+msgid "e.g. community"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:213
+msgid ""
+"This page does not contain the [bit-connect] shortcode, so the community "
+"will not show on it."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:222
+msgid ""
+"Show the community at yoursite.com instead of yoursite.com/slug. It "
+"replaces your current homepage — best for a site that is only the community."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:225
+msgid "Show as homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:235
+msgid "Saves right away"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:235
+msgid "Needs the page first"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:241
+msgid ""
+"Put this on any WordPress page to show the community there. If you have no "
+"community page yet, the page you publish with it becomes the community page."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/location-section.tsx:244
+msgid "Shortcode"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-preview.tsx:52
+msgid "Every field is empty, so no card is shown."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-preview.tsx:109
+msgid "The last line is typed out one phrase at a time."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-preview.tsx:110
+msgid "Shown at the foot of the portal sidebar."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:68
+msgid "Show the card"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:76
+msgid ""
+"A small card at the foot of the portal sidebar: a headline, a rotating line "
+"of text, and a link. Off by default — it appears on your public pages, so "
+"it is your call."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:79
+msgid "Sidebar promo card"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:98
+msgid ""
+"Every line is yours to write, and any you leave empty is simply left off "
+"the card. Fill in none of them and no card is shown."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:104
+msgid "Top line"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:109
+msgid "e.g. A Bit Apps product"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:114
+msgid "Headline"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:119
+msgid "e.g. Built with Bit Connect"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:126
+msgid "Stays put while the phrases below are typed out after it."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:127
+msgid "Text before the rotating line"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:133
+msgid "e.g. We also build"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:139
+msgid ""
+"One phrase per line, typed out in turn. Up to 10, and short ones read best "
+"in a narrow sidebar."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:142
+msgid "Rotating text"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:153
+msgid "e.g. smart WordPress forms"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:154
+msgid "no-code automations"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:155
+msgid "communities like this"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:163
+msgid "Link label"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:168
+msgid "e.g. Explore our plugins"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:174
+msgid "Opened in a new tab. Without one the card is plain text rather than a link."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:177
+msgid "Link"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/promo-section.tsx:202
+msgid "The card is hidden. Turn it on to write what it says."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:27
+msgid "Checking…"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:41
+msgid "This is already your community page."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:42
+msgid "A page already exists at %s. Please choose another name."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:47
+msgid "%s is available. Your community page will be created here."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:57
+msgid ""
+"There is no page at %s yet. Create one with the shortcode in it, or rename "
+"your community page to this slug."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:70
+msgid "A page exists here, but it does not contain the [bit-connect] shortcode yet."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:79
+msgid "This is your community page."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/slug-status.tsx:80
+msgid "A page with the shortcode is ready here."
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Layout.tsx:22
+#: frontend/client/src/pages/Layout/ui/Layout.tsx:27
+msgid "Loading"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:25
+msgid "Dashboard"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:27
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:10
+msgid "Stages"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:28
+#: frontend/admin/src/pages/topic-types/topic-types.tsx:17
+msgid "Topic Types"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:29
+#: frontend/admin/src/pages/products/products.tsx:20
+msgid "Products"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:31
+#: frontend/admin/src/pages/status/status.tsx:18
+msgid "Status"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:32
+msgid "Manager"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:35
+#: frontend/admin/src/pages/reports/reports.tsx:105
+msgid "Reports"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
+#: frontend/admin/src/pages/notifications/notifications.tsx:61
+#: frontend/admin/src/pages/notifications/notifications.tsx:82
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:77
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:90
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:126
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:149
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:153
+msgid "Notifications"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:37
+#: frontend/admin/src/pages/seo/seo.tsx:332
+msgid "SEO"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
+#: frontend/admin/src/pages/settings/settings.tsx:209
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
+msgid "Settings"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:41
+msgid "License & Support"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:67
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:70
+msgid "Bit Connect"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:93
+msgid "Product by Bit Apps"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-delete-profile-badge.ts:28
+msgid "Failed to delete the badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-delete-profile-badge.ts:31
+msgid "Badge deleted"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-reorder-profile-badges.ts:32
+msgid "Failed to reorder badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:21
+msgid "Failed to reset capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:24
+msgid "Capabilities reset to role defaults"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-save-profile-badge.ts:43
+msgid "Failed to save the badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-save-profile-badge.ts:47
+msgid "Badge saved"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:20
+msgid "Failed to update capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:25
+msgid "Capabilities updated"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-user-badges.ts:38
+msgid "Failed to update badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-user-badges.ts:41
+msgid "Badges updated"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:28
+msgid "Failed to update user capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:31
+msgid "User capabilities updated"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:52
+msgid "Manage Users"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:55
+msgid ""
+"View all WordPress users, adjust individual forum capabilities and hand out "
+"profile badges. Use Role Capabilities to set defaults per role."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:61
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:46
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:93
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:118
+msgid "Profile Badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:63
+msgid "Role Capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:75
+msgid "Search by name, email or username…"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:87
+msgid "No users found."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:95
+msgid "User"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:96
+#: frontend/admin/src/pages/notifications/notifications.tsx:104
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:135
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:192
+#: frontend/client/src/components/features/share/shared/share-targets.ts:120
+msgid "Email"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:97
+msgid "Roles"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:99
+msgid "Capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/manager.tsx:142
+msgid "No role"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/badges-column-header.free.tsx:22
+#: frontend/admin/src/pages/manager/ui/badges-column-header.pro.tsx:7
+msgid "Badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/badges-column-header.free.tsx:23
+msgid "Profile badges are a Pro feature."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/badges-column-header.free.tsx:30
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:52
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:50
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:46
+#: frontend/admin/src/pages/settings/internal/settings-section.tsx:62
+msgid "Pro"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:30
+msgid ""
+"Per-user capability overrides are a Pro feature. Set defaults per role "
+"instead."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:33
+msgid "Capabilities, set by role"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:18
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:13
+#: frontend/client/src/pages/User/UserProfilePage.tsx:115
+msgid "Posts"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:26
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:21
+msgid "Voting"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:30
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:25
+msgid "Other People’s Content"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:34
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:29
+msgid "Moderation & Admin"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:87
+msgid ""
+"Checked = this user has the capability. Unchecked = revoked even if their "
+"role grants it."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:134
+msgid "Remove all overrides and restore role defaults"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:136
+msgid "Reset to role"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:146
+msgid "User Capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:148
+msgid "Edit user capabilities"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:155
+msgid "caps"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:23
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:118
+msgid "Developer"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:25
+msgid "Group Expert"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:50
+msgid ""
+"Name your people beyond what their permissions make them — Developer, "
+"Support, Group Expert — and hand the badges out per member."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:57
+msgid "For example"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:67
+msgid ""
+"With the Pro add-on you write your own badges — name and colour — and "
+"assign them to members from the Badges column of this screen. Members see "
+"them beside their name across the forum."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:75
+msgid "Authoring and assigning profile badges is a Pro feature."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:78
+msgid "Buy Pro"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:97
+msgid ""
+"Badges you write yourself, for the things permissions cannot say — "
+"Developer, Support, Group Expert. Assign them to members from the user list."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:105
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:216
+msgid "Edit badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:105
+msgid "New badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:111
+msgid "Name"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:126
+msgid "Colour"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:147
+msgid "Delete a badge to add another"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:150
+msgid "Add badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:163
+msgid "Members will see"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:176
+msgid "No badges yet."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:180
+msgid ""
+"A member wearing several shows the first of these beside their name. Move a "
+"badge up to have it win."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:200
+msgid "Move up"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:208
+msgid "Move down"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:224
+msgid "Keep"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:225
+msgid "Everyone wearing it loses it. Members are not otherwise changed."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:226
+#: frontend/admin/src/pages/products/ui/products-table.tsx:61
+#: frontend/admin/src/pages/stages/stages.tsx:135
+#: frontend/admin/src/pages/status/ui/status-table.tsx:105
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:55
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:100
+#: frontend/client/src/pages/Post/CommentItem.tsx:109
+#: frontend/client/src/pages/Post/CommentItem.tsx:167
+#: frontend/client/src/pages/Post/PostHeader.tsx:170
+#: frontend/client/src/pages/Post/PostHeader.tsx:239
+msgid "Delete"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:228
+msgid "Delete this badge?"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:231
+msgid "Delete badge"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:117
+msgid "Forum Capabilities by Role"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:120
+msgid ""
+"Set which forum actions each WordPress role can perform. Changes apply "
+"immediately to all users of that role."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.free.tsx:16
+msgid "No badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:65
+msgid "No badges defined yet. Create one from Profile Badges."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:71
+msgid "Up to %d at once. The first one they wear is what bylines show."
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:122
+msgid "Edit profile badges"
+msgstr ""
+
+#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:127
+msgid "Assign"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:44
+msgid "Could not save notification settings"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:46
+msgid "Notification settings saved"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:73
+msgid "WordPress could not send the message. Check this site's email configuration."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:78
+msgid "Test email sent to"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:79
+msgid "Test email sent"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
+msgid "Who forum email appears to come from."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:46
+msgid "Email delivery"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:35
+msgid "Notifications are sent as"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:40
+msgid ""
+"Taken from your site title and address. A custom sender, and daily or "
+"weekly digests, come with Pro."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:45
+msgid "A custom sender and digest schedule are Pro features."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:69
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:109
+msgid "Send test email"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:73
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:113
+msgid "Sent to your own address, using the settings as last saved."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:45
+msgid "Who forum email appears to come from, and when digests go out."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:51
+msgid "Sender name"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:62
+msgid "Sender address"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:73
+msgid "Default email frequency"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:85
+msgid "Digest send hour"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:25
+msgid "Greeting"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:29
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:30
+msgid "Instant email intro"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:30
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:35
+msgid "Digest intro"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:40
+msgid "Sign-off"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:36
+msgid "The wording around the list of what happened."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:37
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:63
+msgid "Email wording"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:41
+msgid ""
+"Notification emails use the wording below. Rewriting these lines comes with "
+"Pro."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:43
+msgid "Custom email wording is a Pro feature."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:23
+msgid "The first line of every notification email."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:28
+msgid "Introduces a single notification sent immediately."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:33
+msgid "Introduces a daily or weekly digest, which covers several at once."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:38
+msgid "Sits above the link members follow to change these settings."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:62
+msgid "The wording around the list of what happened. Plain text only."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:42
+msgid "Notification settings could not be loaded."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:79
+msgid ""
+"The master switch. Off, the forum writes no notifications and sends no "
+"email at all."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:87
+msgid "Notifications are on"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:87
+msgid "Notifications are off for everyone"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:93
+msgid ""
+"Defaults apply to members who have never opened their own settings. Turn "
+"off \"Member may change\" to make your answer final for everyone."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:96
+msgid "What the forum sends"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:102
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:129
+msgid "Notification"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:103
+msgid "In app"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:106
+msgid "Member may change"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:131
+msgid "This is always delivered in the app."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:157
+msgid "Only moderators receive this, so there is nothing for a member to change."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:191
+msgid ""
+"How long read notifications are kept. Unread ones are never removed by age "
+"— nobody has seen them yet."
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:194
+msgid "Housekeeping"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:198
+msgid "Keep read notifications for"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:201
+msgid "days"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:14
+msgid "Slug & URL"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:14
+msgid "Portal"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:15
+msgid "Title & logo"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:16
+msgid "Login settings"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:16
+msgid "Auth"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:34
+msgid "Welcome to Bit Connect"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/onboarding.tsx:36
+msgid "Let's set up your community portal in a few steps."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:52
+msgid "Authentication"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:54
+msgid "Choose how users will log in and register on your portal."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:60
+msgid "Auth Mode"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:65
+msgid "Plugin Default"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:76
+msgid "Login Page Title"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:84
+msgid "Welcome back!"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:91
+msgid "Login Page Description"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:102
+msgid "Sign in to continue"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:108
+msgid "Require Email Verification"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:121
+msgid "Custom Login URL"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:132
+msgid "Custom Registration URL"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:147
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:125
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:252
+msgid "Back"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:149
+msgid "Finish Setup"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:50
+msgid "Branding & Access"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:53
+msgid "Set your community title, logo, and who can access the portal."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:60
+msgid "Community Title"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:64
+msgid "My Community"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:77
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:96
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:112
+msgid "Upload"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:81
+msgid "https://example.com/logo.png"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:89
+msgid "Logo Link"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:95
+msgid "Default (portal home)"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:112
+msgid "Portal Access"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:127
+msgid "Next"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:48
+msgid "Could not create the page. Please try again."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:58
+msgid ""
+"The page was created, but it could not be set as your homepage. You can "
+"turn that on later in Settings."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:73
+msgid "Where should your community live?"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:76
+msgid "We will create a page for it. You can change this later in Settings."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:85
+msgid "On its own page"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:87
+msgid ""
+"yoursite.com/community — the rest of your website stays as it is. "
+"Recommended."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:97
+msgid "As the homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:99
+msgid "yoursite.com — the community is the first thing visitors see."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:104
+msgid ""
+"Your current homepage is replaced, and topic links use the site root "
+"(yoursite.com/topic-name). Best for a site that is only the community."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:107
+msgid "This replaces your homepage"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:119
+msgid "Page name"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:141
+msgid "Only used as the page name in WordPress — visitors see yoursite.com."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:147
+msgid "Want to use your own page instead?"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:155
+msgid ""
+"Skip this step, paste the shortcode into any page you like, and publish it. "
+"That page becomes your community."
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:162
+msgid "Skip"
+msgstr ""
+
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:169
+msgid "Create page and continue"
+msgstr ""
+
+#: frontend/admin/src/pages/products/data/use-delete-product.ts:27
+msgid "Failed to delete department"
+msgstr ""
+
+#: frontend/admin/src/pages/products/data/use-delete-product.ts:30
+msgid "Department deleted successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/products/data/use-store-product.ts:29
+msgid "Product created successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/products/data/use-update-product.ts:32
+msgid "Failed to update product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/data/use-update-product.ts:35
+msgid "Product updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/products/products.tsx:22
+msgid "Manage your products here"
+msgstr ""
+
+#: frontend/admin/src/pages/products/products.tsx:30
+msgid "Add Product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/product-create-modal.tsx:39
+msgid "Create Product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/product-edit-modal.tsx:72
+#: frontend/admin/src/pages/status/ui/status-edit-modal.tsx:94
+#: frontend/admin/src/pages/tags/ui/tag-edit-modal.tsx:77
+#: frontend/admin/src/pages/topic-types/ui/topic-type-edit-modal.tsx:98
+msgid "Save Changes"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/product-edit-modal.tsx:76
+msgid "Edit Product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/product-form.tsx:17
+#: frontend/admin/src/pages/products/ui/product-form.tsx:18
+#: frontend/admin/src/pages/products/ui/products-table.tsx:39
+msgid "Product Name"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/products-table.tsx:59
+#: frontend/admin/src/pages/stages/stages.tsx:133
+#: frontend/admin/src/pages/status/ui/status-table.tsx:103
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:53
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:98
+msgid "Are you sure to delete?"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/products-table.tsx:63
+#: frontend/admin/src/pages/products/ui/products-table.tsx:66
+msgid "Delete Product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/products-table.tsx:75
+#: frontend/admin/src/pages/stages/stages.tsx:150
+#: frontend/admin/src/pages/status/ui/status-table.tsx:118
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:69
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:108
+msgid "Actions"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:20
+msgid "Awaiting review"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:21
+msgid "Kept"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:22
+msgid "Removed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:23
+msgid "Dismissed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:34
+msgid "items dismissed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:35
+msgid "items awaiting review"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:36
+msgid "items kept"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:37
+msgid "items removed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:41
+msgid "No report has been dismissed yet."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:42
+msgid "Nothing is waiting for review."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:43
+msgid "No reported content has been kept yet."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:44
+msgid "No reported content has been removed yet."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:74
+#: frontend/client/src/pages/User/UserProfilePage.tsx:43
+msgid "Nothing here yet."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:77
+msgid "Reports members file from the forum land here for a decision."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:108
+msgid ""
+"Grouped by what was reported — several people reporting one item is one "
+"decision."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:128
+msgid "items"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:143
+msgid "The report queue could not be loaded."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:153
+msgid ""
+"There are more reports than this screen reads at once. Work through these "
+"and reload."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/reports.tsx:156
+msgid "Showing part of the queue"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:36
+msgid "dismissed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:37
+msgid "kept"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:38
+msgid "removed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:75
+msgid "The content was removed."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:77
+msgid "The content is public again."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:86
+msgid "That could not be saved."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:96
+msgid "(no content)"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:129
+msgid "already removed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:152
+msgid "Open in the forum"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:167
+msgid "Written by"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:183
+msgid "first reported"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:205
+msgid "Why it was reported"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:222
+msgid "What reporters wrote"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:243
+msgid "Reported by"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:254
+msgid "Note (optional) — kept on every report closed"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:268
+msgid "Keep content"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:279
+msgid "The reply and everything posted underneath it are deleted for good."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:280
+msgid "The topic and its replies are deleted for good."
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:283
+msgid "Remove it"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:285
+msgid "Delete this permanently?"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:293
+msgid "Remove content"
+msgstr ""
+
+#: frontend/admin/src/pages/reports/ui/report-card.tsx:304
+msgid "Dismiss"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/RecentLogs.tsx:16
+msgid "Author"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/RecentLogs.tsx:21
+msgid "Votes"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/RecentLogs.tsx:27
+msgid "Date"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/RecentLogs.tsx:33
+msgid "Recent Topics"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/StatCards.tsx:11
+msgid "Total Topics"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/StatCards.tsx:16
+msgid "Total Comments"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/StatCards.tsx:21
+msgid "Total Members"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/StatCards.tsx:26
+msgid "Total Votes"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/TopExecutedFlows.tsx:8
+msgid "Top Topics"
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/TopExecutedFlows.tsx:10
+#: frontend/client/src/pages/User/UserProfilePage.tsx:44
+msgid "No topics yet."
+msgstr ""
+
+#: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:58
+msgid "Monthly Activity"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/data/use-update-seo-settings.ts:30
+#: frontend/admin/src/pages/seo/seo.tsx:358
+msgid "Failed to update SEO settings"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/data/use-update-seo-settings.ts:33
+msgid "SEO settings updated"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:9
+msgid "Departments"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:11
+msgid "Statuses"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:13
+msgid "Topic types"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:20
+msgid "{name}"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:63
+msgid ""
+"A workflow state. Served so visitors can browse it, but left out of the "
+"index by default — nobody searches for \"in progress\", and the listing "
+"changes constantly."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:68
+msgid "workflow"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:73
+msgid "terms"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:77
+msgid "Taxonomy"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:90
+msgid "Serve the archive URL at all. Switching this off makes it a 404."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:91
+msgid "Route"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:100
+msgid "The route is switched off."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:109
+msgid "Offer the archive to search engines rather than marking it noindex."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:110
+msgid "Indexed"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:123
+msgid "Not indexed, so it is never listed — a sitemap asks for indexing."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:139
+msgid "List this taxonomy’s archives in the sitemap."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:140
+msgid "In sitemap"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:19
+msgid "None detected"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:29
+msgid "Current status"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:35
+msgid ""
+"The portal is restricted to logged-in members, so nothing is exposed to "
+"search engines. These settings take effect once the portal is public."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:38
+msgid "Portal is members-only"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:47
+msgid ""
+"Search engines and AI crawlers cannot read the portal, because the content "
+"they receive is generated by the setting below."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:50
+msgid "Content for crawlers is switched off"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:57
+msgid "SEO plugin detected"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:62
+msgid "It prints the portal tags, using our data"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:63
+msgid "Bit Connect prints the portal tags"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:68
+msgid "Portal URL"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:74
+#: frontend/admin/src/pages/seo/seo.tsx:255
+#: frontend/admin/src/pages/seo/seo.tsx:319
+msgid "Sitemap"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:84
+msgid "Published topics"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:88
+msgid "Indexable archive pages"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/internal/seo-status.tsx:93
+msgid "(no archives are indexable)"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:76
+#: frontend/client/src/pages/User/UserProfilePage.tsx:114
+msgid "Overview"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:83
+msgid ""
+"The portal is a JavaScript app. Search engines and AI crawlers do not run "
+"it, so the server sends them plain HTML of the same content."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:86
+msgid "Content for crawlers"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:89
+msgid ""
+"Render topics, replies and archives as plain HTML. Switching this off makes "
+"the portal invisible to anything that does not run JavaScript."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:93
+msgid "Server-rendered content"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:99
+msgid "Topics per rendered page"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:101
+msgid ""
+"How many topics appear in the server-rendered list. Higher values make each "
+"page heavier for every visitor; older topics stay reachable through the "
+"sitemap and the older/newer links."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:116
+msgid "Crawling"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:123
+msgid ""
+"Who prints the page title, canonical URL and social preview tags for portal "
+"routes."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:126
+msgid "Meta tags"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:135
+msgid "Automatic (recommended)"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:137
+msgid ""
+"If an SEO plugin is active it prints the tags, using the portal data Bit "
+"Connect feeds it. Otherwise Bit Connect prints them."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:143
+msgid "Always Bit Connect"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:145
+msgid ""
+"Bit Connect prints the tags even when an SEO plugin is active. Use this if "
+"your SEO plugin is producing wrong tags on portal pages."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:151
+msgid "Always my SEO plugin"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:153
+msgid ""
+"Bit Connect prints no tags of its own. If no supported SEO plugin is "
+"active, portal routes get no title or canonical at all."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:165
+msgid ""
+"Machine-readable descriptions that let search engines show richer results "
+"for discussions."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:168
+msgid "Structured data"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:171
+msgid ""
+"Describe topics as forum discussions with their author, dates and replies, "
+"and lists as collections."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:175
+msgid "Discussion and collection schema"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:179
+msgid ""
+"Show the community as the parent of each topic and archive in search "
+"results."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:183
+msgid "Breadcrumb schema"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:191
+msgid "Meta & schema"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:197
+msgid ""
+"A page per term, listing its topics — the pages that can rank for a subject "
+"rather than for one question about it. Each row is one taxonomy: whether "
+"its archive is served, whether search engines may index it, and whether the "
+"sitemap lists it."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:200
+msgid "Term archives"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:213
+msgid "Archives"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:220
+msgid ""
+"These routes always work for visitors. Indexing them puts thin, "
+"near-identical pages in front of the topics they link to, so they are "
+"excluded by default."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:223
+msgid "What search engines may index"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:226
+msgid ""
+"Member profile pages. These are thin and similar to one another, and "
+"indexing them publishes member names and activity."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:230
+msgid "Index member profiles"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:234
+msgid ""
+"Pages 2, 3, … of the topic list. They exist so crawlers can reach older "
+"topics, not to rank themselves."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:238
+msgid "Index paginated list pages"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:245
+msgid "Indexing"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:252
+msgid ""
+"How search engines discover the portal, including topics no page links to "
+"directly. Archive inclusion is set per taxonomy on the Archives tab."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:258
+msgid ""
+"Publish the portal sitemap at all. Switching this off removes the file and "
+"its robots.txt entry."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:262
+msgid "Portal sitemap"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:266
+msgid ""
+"Announce the sitemap in robots.txt. This is how search engines find it "
+"without you submitting it, and it survives whichever SEO plugin owns the "
+"main sitemap."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:271
+msgid "Announce in robots.txt"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:275
+msgid "List the portal landing page as the entry point of the community."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:278
+msgid "Include portal home"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:282
+msgid ""
+"List every published topic. This is the main way deep topics get found, and "
+"switching it off usually means they will not be."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:287
+msgid "Include topics"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:293
+msgid "URLs per sitemap page"
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:295
+msgid ""
+"Large communities are split across several sitemap pages. The sitemap "
+"standard allows up to 50,000 URLs per page; smaller pages are lighter to "
+"generate."
+msgstr ""
+
+#: frontend/admin/src/pages/seo/seo.tsx:335
+msgid ""
+"How the portal presents itself to search engines, AI crawlers and link "
+"previews. Bit Connect handles this itself — an SEO plugin cannot see portal "
+"routes."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/data/use-update-settings.ts:31
+msgid "Failed to update settings"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/data/use-update-settings.ts:34
+msgid "Settings updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:29
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:28
+msgid "Moderation"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:32
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:31
+msgid "Control what happens to reported content before a moderator has looked at it"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:38
+msgid "Hide content automatically"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:39
+msgid "Hiding content on report count is a Pro feature."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:51
+msgid ""
+"Reported content stays visible until a moderator decides. With Pro, a topic "
+"or reply is taken out of public view once enough different members have "
+"reported it, and comes back if a moderator keeps it."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:37
+msgid "Hide content after"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:49
+msgid ""
+"One report takes a topic or reply out of public view immediately. Anyone "
+"who dislikes a post can hide it on their own until a moderator looks."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:52
+msgid ""
+"A topic or reply is taken out of public view once this many different "
+"members have reported it, and comes back if a moderator keeps it. Content "
+"written by moderators and admins is never hidden this way."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/settings-section.tsx:55
+msgid "Available with Bit Connect Pro."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:44
+msgid "WordPress Media Limits"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:47
+msgid ""
+"These limits are controlled by your server and WordPress. Pasted images "
+"that exceed them are automatically resized before upload."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:52
+msgid "Max upload size"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:55
+msgid "(set by server php.ini via wp_max_upload_size)"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:58
+msgid "Max image dimensions"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:61
+msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:64
+msgid "Allowed file types"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:140
+msgid "On/off your Topic Upvote"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:142
+#: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
+#: frontend/client/src/pages/Post/CommentVoteBox.tsx:51
+#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
+msgid "Upvote"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:146
+msgid "On/off your Comment"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:152
+msgid "On/off your Topic comment Upvote"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:154
+msgid "Comment Upvote"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:163
+msgid "Let authors keep a topic private, visible only to them and the forum team"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:165
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:159
+msgid "Private Topic"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:179
+msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:181
+msgid "Delete Data on Uninstall"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:191
+msgid "Show and require Topic Type when creating a topic"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:193
+msgid "Require Topic Type"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:197
+msgid "Show and require Products/Department when creating a topic"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:199
+msgid "Require Products/Department"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:234
+msgid "Choose what members can do on a topic"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:235
+msgid "Topic Access Settings"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:243
+msgid "Control which fields are shown and required when creating a topic"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:244
+msgid "Topic Form Fields"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:257
+msgid "Manage what data is removed when the plugin is uninstalled"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:258
+msgid "Data Cleanup"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/shared/auth-validation.ts:22
+msgid ""
+"Please enter a valid Custom Login Page URL, for example "
+"https://example.com/login"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/shared/auth-validation.ts:26
+msgid ""
+"Please enter a valid Custom Registration Page URL, for example "
+"https://example.com/register"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/data/use-delete-stage.ts:27
+msgid "Failed to delete stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/data/use-delete-stage.ts:30
+msgid "Stage deleted successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/data/use-save-stage.ts:42
+msgid "Stage created successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/data/use-update-stage.ts:31
+#: frontend/client/src/pages/Post/PostHeader.tsx:160
+msgid "Failed to update stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/data/use-update-stage.ts:34
+#: frontend/client/src/pages/Post/PostHeader.tsx:157
+msgid "Stage updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:85
+msgid "Edit Stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:85
+#: frontend/admin/src/pages/stages/stages.tsx:164
+msgid "Create Stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:90
+#: frontend/admin/src/pages/stages/stages.tsx:107
+msgid "Stage Name"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:92
+msgid "Stage name is required"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:96
+msgid "Enter stage name"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:103
+msgid "Enter stage description (optional)"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:110
+#: frontend/admin/src/pages/status/ui/status-form.tsx:50
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:56
+msgid "Icon (light mode)"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:111
+msgid "Stage icon"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:118
+#: frontend/admin/src/pages/status/ui/status-form.tsx:57
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:63
+msgid "Icon (dark mode)"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:119
+msgid "Stage icon for dark mode"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:112
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:36
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:81
+msgid "No description"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:118
+#: frontend/admin/src/pages/status/ui/status-table.tsx:83
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:76
+msgid "Icon"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:126
+msgid "Edit stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:137
+msgid "Delete Stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:140
+msgid "Delete stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:159
+msgid "Stage"
+msgstr ""
+
+#: frontend/admin/src/pages/stages/stages.tsx:161
+msgid "Manage stages for your project"
+msgstr ""
+
+#: frontend/admin/src/pages/status/data/use-delete-status.ts:27
+msgid "Failed to delete status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/data/use-delete-status.ts:30
+msgid "Status deleted successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/status/data/use-store-status.ts:45
+msgid "Status created successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/status/data/use-update-status.ts:29
+#: frontend/client/src/pages/Post/PostHeader.tsx:148
+msgid "Failed to update status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/data/use-update-status.ts:32
+#: frontend/client/src/pages/Post/PostHeader.tsx:145
+msgid "Status updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/status/status.tsx:20
+msgid "Manage status to organize your content"
+msgstr ""
+
+#: frontend/admin/src/pages/status/status.tsx:30
+msgid "Add Status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-create-modal.tsx:57
+msgid "Create"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-create-modal.tsx:61
+msgid "Create Status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-edit-modal.tsx:98
+msgid "Edit Status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:25
+#: frontend/admin/src/pages/status/ui/status-table.tsx:52
+msgid "Status Name"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:28
+msgid "Write a status here"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:33
+#: frontend/admin/src/pages/status/ui/status-table.tsx:77
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:39
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:70
+msgid "Color"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:51
+msgid "Status icon"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:58
+msgid "Status icon for dark mode"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:63
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:31
+msgid "(For Admin)"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-form.tsx:68
+msgid "Write a description here"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-table.tsx:47
+msgid "Default"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-table.tsx:75
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:68
+msgid "No color"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-table.tsx:107
+msgid "Delete Status"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/data/use-delete-tag.ts:27
+msgid "Failed to delete tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/data/use-delete-tag.ts:30
+msgid "Tag deleted successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/data/use-store-tag.ts:24
+msgid "Tag created successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/data/use-update-tag.ts:32
+msgid "Failed to update tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/data/use-update-tag.ts:35
+msgid "Tag updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/tags.tsx:21
+msgid "Manage tags to organize your content"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/tags.tsx:30
+#: frontend/admin/src/pages/tags/ui/tag-create-modal.tsx:41
+#: frontend/admin/src/pages/tags/ui/tag-create-modal.tsx:45
+msgid "Create Tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tag-edit-modal.tsx:81
+msgid "Edit Tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tag-form.tsx:21
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:30
+msgid "Tag Name"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tag-form.tsx:23
+msgid "Tag name is required"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tag-form.tsx:27
+msgid "Enter tag name"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tag-form.tsx:32
+msgid "Enter description"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:45
+msgid "Edit tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:57
+msgid "Delete Tag"
+msgstr ""
+
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:60
+msgid "Delete tag"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/data/use-delete-topic-type.ts:27
+msgid "Failed to delete topic type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/data/use-delete-topic-type.ts:30
+msgid "Topic type deleted successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/data/use-store-topic-type.ts:46
+msgid "Topic type created successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/data/use-update-topic-type.ts:28
+msgid "Failed to update topic type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/data/use-update-topic-type.ts:31
+msgid "Topic type updated successfully"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/topic-types.tsx:18
+msgid "Manage your topic types here"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/topic-types.tsx:26
+msgid "Add Topic Type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-edit-modal.tsx:102
+msgid "Edit Topic Type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:21
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:45
+msgid "Topic Type Name"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:24
+msgid "Write Topic Title here"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:36
+msgid "Write Description here"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:57
+msgid "Topic type icon"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:64
+msgid "Topic type icon for dark mode"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:54
+#: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:58
+msgid "Create Topic Type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:102
+msgid "Delete Topic Type"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:28
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:30
+msgid "Word document"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:33
+msgid "GIF image"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:34
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:35
+msgid "JPEG image"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:36
+msgid "PDF document"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:37
+msgid "PNG image"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:38
+msgid "WebP image"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/file-uploader.tsx:38
+#: frontend/client/src/components/features/file-uploader/file-uploader.tsx:121
+msgid "Maximum"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/file-uploader.tsx:83
+msgid "Only"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/file-uploader.tsx:114
+#: frontend/client/src/components/features/file-uploader/file-uploader.tsx:122
+msgid "Add Files"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:49
+#: frontend/client/src/pages/Post/CommentEditor.tsx:95
+msgid "Processing…"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:49
+#: frontend/client/src/pages/Post/CommentEditor.tsx:95
+msgid "Uploading"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:75
+msgid "Uploaded"
+msgstr ""
+
+#: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:108
+msgid "Retry"
+msgstr ""
+
+#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:48
+msgid "Log in to join the conversation."
+msgstr ""
+
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:36
+msgid "Create Account"
+msgstr ""
+
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:42
+msgid "Login required"
+msgstr ""
+
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:46
+msgid ""
+"You need to be logged in to perform this action. Please log in or create an "
+"account to continue."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:95
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:109
+msgid "Mark all read"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:121
+msgid "See all notifications"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
+msgid "unread"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-placeholders.tsx:39
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:96
+msgid "You are all caught up"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-placeholders.tsx:39
+msgid "Nothing yet"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-placeholders.tsx:43
+msgid "New replies and mentions will appear here."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-placeholders.tsx:44
+msgid "Replies, mentions and moderation decisions will show up here."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:41
+msgid "Instant"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:42
+msgid "Daily"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:43
+msgid "Weekly"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:44
+msgid "Never"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:74
+msgid "That could not be saved. Please check your connection and try again."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:88
+msgid "Your notification settings could not be loaded."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:95
+msgid "Email frequency"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:98
+msgid ""
+"How often email should arrive. This does not change what you are notified "
+"about — only when it is sent."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:119
+msgid "What you are notified about"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:121
+msgid "Changes save as you make them."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:132
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:178
+msgid "App"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:184
+msgid "This forum always tells you about this."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:185
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:196
+msgid "Your administrator has set this for everyone."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:209
+msgid ""
+"Email is switched off entirely, so the Email column has no effect until you "
+"choose a frequency above."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:28
+msgid "now"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:49
+msgid "The forum"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:49
+msgid "Someone"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:51
+msgid "a topic"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:60
+msgid "You were given the"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:62
+msgid "badge"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:69
+msgid "replied to you in"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:74
+msgid "Something you wrote was removed after review"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:79
+msgid "mentioned you in"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:84
+msgid "A new report is waiting in the moderation queue"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:89
+msgid "A moderator reviewed something you reported"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:97
+msgid "posted a new topic:"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:104
+#: frontend/client/src/pages/User/ui/FeedRow.tsx:80
+msgid "commented on"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:111
+msgid "The status changed on"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:120
+msgid "%d people"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:121
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:125
+msgid "upvoted your post in"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:239
+msgid "No longer available"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:58
+msgid "You will be notified about new replies."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:59
+msgid "You will no longer be notified about this topic."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:66
+msgid "Could not change your follow setting."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:76
+msgid "You are following this because you took part."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:78
+msgid "You chose to follow this topic."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:79
+msgid "You muted this topic."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:81
+msgid "Notify me when someone replies."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:98
+msgid "Unfollow"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:98
+msgid "Follow"
+msgstr ""
+
+#: frontend/client/src/components/features/promo/ui/promo.tsx:135
+msgid "opens in a new tab"
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:71
+msgid "It is now hidden from the forum until a moderator has reviewed it."
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:73
+msgid "Thank you. A moderator will look at this."
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:83
+msgid "Your report could not be sent. Please try again."
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:93
+msgid "Send report"
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:97
+msgid "Report this to a moderator"
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:110
+msgid "The list of reasons could not be loaded, so this cannot be sent right now."
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:117
+msgid "What is wrong with it?"
+msgstr ""
+
+#: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:138
+msgid "Please say what is wrong with it."
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-button.tsx:46
+msgid "Share"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:54
+msgid "Share this reply"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:54
+#: frontend/client/src/pages/Post/ui/PostSidebar.tsx:40
+msgid "Share this topic"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:61
+msgid "Links straight to this reply in"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:96
+msgid "Or copy the link"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:101
+msgid "Link to share"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:116
+msgid "Copied"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-dialog.tsx:122
+#: frontend/client/src/components/features/share/ui/share-row.tsx:76
+#: frontend/client/src/components/features/share/ui/share-row.tsx:78
+msgid "More sharing options"
+msgstr ""
+
+#: frontend/client/src/components/features/share/ui/share-row.tsx:54
+msgid "Share on %s"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/data/use-save-topic.ts:41
+msgid "Could not save the topic. Please check your connection and try again."
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/data/use-save-topic.ts:48
+msgid "Topic created successfully"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/data/use-update-topic.ts:34
+msgid "Could not update topic"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/data/use-update-topic.ts:39
+msgid "Topic updated successfully"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/shared/slug-disclosure.ts:22
+msgid "The link you chose was already taken, so this topic is at /%s"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:109
+msgid "Edit permalink"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:109
+msgid "Set a custom permalink"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:123
+msgid "topic-slug"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:138
+msgid "Links that already point at this topic will stop working."
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:139
+msgid "Letters, numbers and hyphens. Leave blank to build one from the title."
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:147
+msgid "Done"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:171
+msgid "Checking availability…"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:180
+msgid "Available"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:191
+msgid "Already taken — this topic will be saved as"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:76
+#: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:126
+msgid "Uploading files..."
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:76
+msgid "Submit"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:91
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:248
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:265
+msgid "Create New Topic"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:126
+msgid "Update"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:142
+msgid "Edit Topic"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:98
+#: frontend/client/src/pages/Post/CommentEditor.tsx:245
+msgid "Failed to upload image"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:145
+msgid "Public Topic"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:196
+msgid "Topic Title"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:199
+msgid "Please enter a topic title"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:200
+msgid "Topic title cannot exceed 200 characters"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:203
+msgid "Write a post title"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:211
+msgid "Permalink"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:214
+msgid "Slug cannot exceed 200 characters"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:221
+msgid "Slug must contain at least one letter or number"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:251
+msgid "Topic Type"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:253
+msgid "Please select a topic type"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:255
+msgid "Select a Topic Type"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:262
+msgid "Products/Department"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:264
+msgid "Please select a department"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:266
+msgid "All Products/Department"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:276
+msgid "Write Your Topic Description Here"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:287
+msgid "Please enter a description or add an image"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:290
+msgid "Description cannot exceed 10000 characters"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:301
+msgid "Write your topic description..."
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:307
+msgid "Tag"
+msgstr ""
+
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:315
+msgid "Select tags.."
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:265
+msgid "Normal text"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:266
+msgid "Heading"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:267
+msgid "Subheading"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:268
+msgid "Small heading"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:765
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:775
+msgid "Text format"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:791
+msgid "Bulleted list"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:797
+msgid "Numbered list"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:803
+msgid "Code block"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:845
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1043
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1047
+msgid "Attach file"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:899
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:904
+msgid "Bold"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:908
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:913
+msgid "Italic"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:917
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:922
+msgid "Underline"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:943
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:948
+msgid "Apply link"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:952
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:957
+msgid "Cancel link"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:979
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:984
+msgid "Insert link"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1006
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1035
+msgid "Insert image"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1066
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1070
+msgid "More formatting"
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1107
+msgid "Uploading…"
+msgstr ""
+
+#: frontend/client/src/components/utilities/edited-note/edited-note.tsx:41
+msgid "(edited)"
+msgstr ""
+
+#: frontend/client/src/components/utilities/edited-note/edited-note.tsx:48
+msgid "Edited by"
+msgstr ""
+
+#: frontend/client/src/components/utilities/product-filter/product-filter.tsx:33
+msgid "All Products"
+msgstr ""
+
+#: frontend/client/src/components/utilities/search-input/search-input.tsx:77
+msgid "Search topic, tag, etc."
+msgstr ""
+
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:55
+#: frontend/client/src/pages/Post/ui/comment-sort-select.tsx:27
+msgid "Newest"
+msgstr ""
+
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:56
+#: frontend/client/src/pages/topics/topics.tsx:140
+msgid "Oldest"
+msgstr ""
+
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:67
+#: frontend/client/src/pages/topics/topics.tsx:132
+msgid "Private"
+msgstr ""
+
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:69
+#: frontend/client/src/pages/topics/topics.tsx:130
+msgid "My Topics"
+msgstr ""
+
+#: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:101
+msgid "Filter by tag"
+msgstr ""
+
+#: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:111
+msgid "%s selected"
+msgstr ""
+
+#: frontend/client/src/components/utilities/topic-card/topic-card.tsx:149
+msgid "comments"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:30
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:42
+msgid ""
+"If an account exists for that username or email, a password reset link has "
+"been sent. Please check your inbox."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:45
+msgid "Check your email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:52
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:109
+msgid "Back to Login"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:62
+msgid "Forgot Password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:65
+msgid "Enter your username or email and we'll send you a reset link."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:85
+msgid "Username or Email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:87
+#: frontend/client/src/pages/Auth/LoginPage.tsx:75
+msgid "Please enter your username or email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:93
+#: frontend/client/src/pages/Auth/LoginPage.tsx:77
+msgid "Enter your username or email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:99
+msgid "Send Reset Link"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:73
+msgid "Username or email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:83
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:158
+msgid "Password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:88
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:171
+msgid "Forgot password?"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:93
+msgid "Please enter your password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:95
+msgid "Enter your password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:99
+msgid "Remember me"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:117
+msgid "Don't have an account?"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:62
+msgid "New account registration is currently disabled on this site."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:63
+msgid "Registration is closed"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:66
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:204
+msgid "Already have an account?"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:85
+msgid "We sent a verification link to"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:86
+msgid "Click the link in the email to activate your account."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:89
+msgid "Almost there!"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:92
+msgid "Wrong email?"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:94
+#: frontend/client/src/pages/Error404/Error404.tsx:56
+msgid "Go back"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:139
+msgid "Display Name"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:141
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:118
+msgid "Display name must be 60 characters or fewer"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:143
+msgid "Your public display name (optional)"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:147
+msgid "Email Address"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:150
+msgid "Please enter your email address"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:151
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:115
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:154
+msgid "Enter your email address"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:161
+msgid "Please choose a password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:162
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:188
+msgid "Password must be at least 6 characters"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:167
+msgid "Choose a password (min. 6 characters)"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:173
+msgid "Confirm Password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:176
+msgid "Please confirm your password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:182
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:205
+msgid "Passwords do not match"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:187
+msgid "Repeat your password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:198
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:325
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:332
+msgid "Register"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:35
+msgid "Invalid verification link."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:61
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:72
+msgid "Verification failed. Please try again."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:79
+msgid "Email Change"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:79
+msgid "Email Verification"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:83
+msgid "Verifying your email address…"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:96
+msgid "Go to forum"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:102
+msgid "Your account now uses this email address."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:103
+msgid "Your email has been verified. You are now logged in."
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:105
+msgid "Email address updated!"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:105
+msgid "Email verified!"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:116
+msgid "Register again"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:122
+msgid "Could not change your email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:122
+msgid "Verification failed"
+msgstr ""
+
+#: frontend/client/src/pages/Error404/Error404.tsx:35
+msgid "We can’t find that page"
+msgstr ""
+
+#: frontend/client/src/pages/Error404/Error404.tsx:38
+msgid ""
+"The link may be broken, or the topic could have been moved or removed. "
+"Everything else in the community is still here."
+msgstr ""
+
+#: frontend/client/src/pages/Error404/Error404.tsx:53
+msgid "Back to the community"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:88
+msgid "My Profile"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:99
+msgid "Log Out"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:177
+msgid "Open menu"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:266
+msgid "New"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:282
+msgid "Account menu"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/Sidebar/Sidebar.tsx:146
+msgid "Main navigation"
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/Sidebar/Sidebar.tsx:196
+msgid "Close menu"
+msgstr ""
+
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:96
+msgid "%d unread"
+msgstr ""
+
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:129
+msgid "All"
+msgstr ""
+
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:130
+msgid "Unread"
+msgstr ""
+
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:176
+msgid "That is everything."
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentEditor.tsx:219
+msgid "Please log in to upload images."
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentEditor.tsx:272
+msgid "Attachment limit reached (maximum %d files)."
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentEditor.tsx:392
+msgid "Replying to"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:115
+msgid "Delete comment?"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:159
+#: frontend/client/src/pages/Post/PostHeader.tsx:229
+msgid "Edit"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:178
+#: frontend/client/src/pages/Post/PostHeader.tsx:250
+msgid "Report"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:263
+msgid "under review"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:298
+msgid "Out of public view while a moderator reviews a report about it"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:301
+#: frontend/client/src/pages/Post/PostHeader.tsx:536
+msgid "Hidden"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:342
+msgid "Reply"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:361
+#: frontend/client/src/pages/Post/PostHeader.tsx:388
+msgid "More actions"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentItem.tsx:388
+msgid "Hide"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentList.tsx:101
+#: frontend/client/src/pages/topics/topics.tsx:432
+msgid "Loading more..."
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentList.tsx:107
+msgid "🎉 You're all caught up — no more comments"
+msgstr ""
+
+#: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
+#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
+msgid "Remove your upvote"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ContentBox.tsx:299
+msgid "View image full size"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:71
+msgid "Failed to load post"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:80
+msgid "Failed to load settings"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:101
+#: frontend/client/src/pages/topics/topics.tsx:289
+#: frontend/client/src/pages/User/UserProfilePage.tsx:136
+msgid "Failed to vote on post"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:113
+msgid "Failed to vote on comment"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:127
+msgid "Comment posted successfully"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:130
+msgid "Failed to post comment"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:143
+msgid "Reply posted successfully"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:146
+msgid "Failed to post reply"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:162
+msgid "Comment updated successfully"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:165
+msgid "Failed to update comment"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:173
+msgid "Comment deleted successfully"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:176
+msgid "Failed to delete comment"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:320
+msgid "Log in to post a comment."
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:88
+msgid "Failed to load statuses"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:94
+msgid "Failed to load stages"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:168
+msgid "This action cannot be undone. Are you sure you want to delete this post?"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:174
+msgid "Post deleted successfully"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:178
+msgid "Failed to delete post"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:182
+msgid "Delete Post"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:287
+#: frontend/client/src/pages/Post/PostHeader.tsx:293
+msgid "Topic stage"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:300
+#: frontend/client/src/pages/Post/PostHeader.tsx:306
+msgid "Topic status"
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:539
+msgid ""
+"Only you and the moderators can see this while a report is reviewed. "
+"Nothing has been deleted."
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostHeader.tsx:542
+msgid "Out of public view while a report is reviewed."
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:111
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:113
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:144
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:146
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:213
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:219
+msgid "Download"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:133
+msgid "Open"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:175
+msgid "Show less"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/attachment-list.tsx:175
+msgid "more"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:42
+msgid "About the author"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:71
+msgid "Member since"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:88
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:165
+msgid "Upvotes"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/comment-sort-select.tsx:22
+msgid "Sort comments"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/comment-sort-select.tsx:28
+msgid "All comments"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/comment-sort-select.tsx:29
+msgid "Most voted"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/PostSidebar.tsx:41
+msgid "Share on social media"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/PostSidebar.tsx:46
+#: frontend/client/src/pages/Post/ui/PostSidebar.tsx:47
+msgid "Topic details"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/RelatedTopics.tsx:31
+#: frontend/client/src/pages/Post/ui/RelatedTopics.tsx:32
+msgid "Related topics"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:201
+msgid "Failed to load posts"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:218
+msgid "Failed to load more posts"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:305
+#: frontend/client/src/pages/topics/topics.tsx:385
+msgid "Filters"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:345
+msgid "Remove filter"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:377
+msgid "Reset"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:390
+msgid "Sort by"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:411
+msgid "Loading posts..."
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:416
+msgid "No posts found"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:438
+msgid "🎉 You're all caught up — no more topics"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:452
+#: frontend/client/src/pages/topics/topics.tsx:461
+msgid "Back to top"
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-change-password.ts:55
+msgid "Could not change your password. Please try again."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-change-password.ts:62
+msgid "Your password has been changed"
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-request-email-change.ts:51
+msgid "Could not start the email change. Please try again."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-request-email-change.ts:57
+msgid "Open it from that inbox to finish the change."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-request-email-change.ts:58
+msgid "Confirmation link sent"
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-send-password-reset.ts:43
+msgid "Could not send the reset link. Please try again."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-send-password-reset.ts:49
+msgid "Open it to set a new password."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-send-password-reset.ts:50
+msgid "Reset link sent to your email"
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-update-profile.ts:54
+msgid "Could not save your profile. Please check your connection and try again."
+msgstr ""
+
+#: frontend/client/src/pages/User/data/use-update-profile.ts:59
+msgid "Profile updated"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:82
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:86
+msgid "Account and security"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:89
+msgid "Only you can see these. They are never shown on your profile."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:95
+msgid "Open the link we sent to finish the change."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:96
+msgid "Waiting for you to confirm %s"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:110
+msgid "We will email the new address to make sure you can read it."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:111
+msgid "Email address"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:114
+msgid "Please enter an email address"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:120
+msgid "you@example.com"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:127
+msgid "Change email"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:137
+msgid ""
+"You signed in without one, so there is nothing to confirm — just choose a "
+"password below."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:140
+msgid "Your account has no password yet"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:171
+msgid "Sending…"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:174
+msgid "Current password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:176
+msgid "Please enter your current password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:184
+msgid "New password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:187
+msgid "Please enter a new password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:196
+msgid "Confirm new password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:199
+msgid "Please confirm your new password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:216
+msgid "Change password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/account-security-form.tsx:216
+msgid "Set password"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:45
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:43
+msgid "Could not update your picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:48
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:46
+msgid "Profile picture updated"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:54
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:52
+msgid "Could not remove your picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:57
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:55
+msgid "Profile picture removed"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:64
+msgid "Replace picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:64
+msgid "Upload a picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:75
+msgid "Remove picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/AvatarEditor.tsx:106
+msgid "Change profile picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/CommentRow.tsx:22
+msgid "replied to"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:27
+msgid "Could not update your cover"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:30
+msgid "Cover image updated"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:36
+msgid "Could not remove your cover"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:39
+msgid "Cover image removed"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:47
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:51
+msgid "Cover image"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/cover-image-section.tsx:55
+msgid "The strip behind your picture. Wide images work best — up to %s MB."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/FeedRow.tsx:44
+msgid "posted a topic"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:64
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:68
+msgid "Profile picture"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:74
+msgid "Shown beside everything you post. JPG, PNG, GIF or WebP, up to %s MB."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ManageSection.tsx:156
+msgid "Choose what the forum tells you about, and whether it also emails you."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:27
+msgid "allowed"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:27
+msgid "not allowed"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:64
+msgid "Permissions"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:68
+msgid "What you can do"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:68
+msgid "What this member can do"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/PermissionsPanel.tsx:71
+msgid "Set by your role and any per-member overrides an admin has applied."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:42
+msgid "Website"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:43
+msgid "GitHub"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:44
+msgid "X / Twitter"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:45
+msgid "LinkedIn"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:46
+msgid "Mastodon"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:96
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:100
+msgid "Profile details"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:103
+msgid "How you appear across the community."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:114
+msgid "Display name"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:117
+msgid "Please enter a display name"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:121
+msgid "Your name"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:125
+msgid "Links you have already shared keep working — they redirect here."
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:126
+msgid "Profile URL"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:128
+msgid "Please enter a profile URL"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:134
+msgid "Bio"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:136
+msgid "Your bio is too long"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:141
+msgid "A sentence or two about yourself"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:147
+msgid "Links"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/profile-details-form.tsx:156
+msgid "Please enter a valid URL"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:107
+msgid "Profile"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:174
+msgid "Joined"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:179
+msgid "Last active"
+msgstr ""
+
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:206
+msgid "Manage profile"
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:42
+msgid "No comments yet."
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:45
+msgid "No upvoted topics yet."
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:119
+msgid "Upvoted"
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:119
+msgid "Manage"
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:146
+msgid "Back to portal"
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:154
+msgid "This member could not be found."
+msgstr ""
+
+#: frontend/client/src/pages/User/UserProfilePage.tsx:258
+msgid "Profile sections"
+msgstr ""

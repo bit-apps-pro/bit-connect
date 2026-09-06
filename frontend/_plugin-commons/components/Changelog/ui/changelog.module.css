@@ -1,0 +1,13 @@
+.changelog ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.changelog h2 {
+  margin-bottom: 15px;
+}
+
+.changelog h2:first-child {
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+}

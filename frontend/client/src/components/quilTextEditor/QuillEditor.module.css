@@ -1,0 +1,300 @@
+.quillEditorContainer {
+  min-height: 120px;
+}
+
+.quillEditorContainer :global(.ql-container) {
+  border: none;
+  font-size: 14px;
+  background-color: transparent;
+}
+
+.quillEditorContainer :global(.ql-editor) {
+  padding: 16px;
+  min-height: 120px;
+  font-size: 16px;
+}
+
+/* WordPress's emoji script can replace a typed 😀 with a sprite image inside
+   this contenteditable. Those are characters, not pictures: they must not be
+   caught by the photo sizing below, or the composer shows a 360px smiley. The
+   formatters turn them back into text on save (see quill-emoji.ts); this keeps
+   the draft looking right until then. */
+.quillEditorContainer :global(.ql-editor img.emoji),
+.quillEditorContainer :global(.ql-editor img.wp-smiley),
+.quillEditorContainer :global(.ql-editor img[src*='/images/core/emoji/']) {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  max-height: none;
+  margin: 0 0.05em;
+  vertical-align: -0.25em;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Pasted images render at one consistent size instead of whatever the source
+   happened to be, so a draft with several photos stays even and a large one
+   cannot push the rest off-screen. Width is fixed to a ceiling and shrinks with
+   the container; height follows the crop cap. */
+.quillEditorContainer :global(.ql-editor img) {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 360px;
+
+  /* Never crop while composing: the author needs to see what they attached, so
+     the preview keeps the original ratio and is only bounded. */
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 8px 0;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+/* Phones: shorter cap — 360px would be nearly half a phone screen. */
+@media (width < 768px) {
+  .quillEditorContainer :global(.ql-editor img) {
+    max-height: 240px;
+  }
+
+  /* An empty 120px box plus its toolbar pushed the first comment off a phone
+     screen. It still grows with the draft — only the resting height shrinks. */
+  .quillEditorContainer,
+  .quillEditorContainer :global(.ql-editor) {
+    min-height: 76px;
+  }
+
+  .quillEditorContainer :global(.ql-editor) {
+    padding: 12px;
+  }
+}
+
+.quillEditorContainer :global(.ql-image-loading) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 80px;
+  background: var(--bc-surface-sunken);
+  border: 1px dashed var(--bc-line-strong);
+  border-radius: 8px;
+  vertical-align: middle;
+  margin: 8px 0;
+  cursor: default;
+
+  /* stylelint-disable-next-line property-no-vendor-prefix -- Safari still needs the prefix */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.quillEditorContainer :global(.ql-image-loading::after) {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--bc-line-strong);
+  border-top-color: var(--bc-brand);
+  border-radius: 50%;
+  animation: ql-image-spin 0.8s linear infinite;
+}
+
+@keyframes ql-image-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Percentage written by setImageLoadingProgress. Rendered from the attribute so
+   updating it never touches the Quill document — re-rendering the embed would
+   move the caret while the user is still typing. Absent until the first
+   progress event, so the placeholder just spins for uploads too small to
+   report. */
+.quillEditorContainer :global(.ql-image-loading[data-progress])::before {
+  content: attr(data-progress) '%';
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--bc-ink-muted);
+}
+
+/* Thin fill along the bottom edge tracking the same value. */
+.quillEditorContainer :global(.ql-image-loading[data-progress]) {
+  background-image: linear-gradient(var(--bc-brand), var(--bc-brand));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: calc(var(--ql-upload-progress, 0) * 1%) 3px;
+}
+
+.quillEditorContainer :global(.ql-editor strong),
+.quillEditorContainer :global(.ql-editor b) {
+  font-weight: bold;
+}
+
+/* A picked mention, drawn the way it will be drawn once posted (see
+   ContentBox.module.css) so the draft matches the comment. The tint is doing
+   real work here: it is what tells the author the name is one thing rather than
+   ordinary text they can edit a letter out of. */
+.quillEditorContainer :global(.ql-editor a.bc-mention) {
+  padding: 0 3px;
+  font-weight: 500;
+  color: var(--bc-info);
+  text-decoration: none;
+  cursor: default;
+  background: var(--bc-info-soft);
+  border-radius: 4px;
+}
+
+/* Quill's core stylesheet zeroes heading margins and leaves the size to the
+   browser, so a heading picked from the toolbar would be indistinguishable from
+   the surrounding text in a page that resets typography. These sizes are the
+   ones ContentBox renders after publishing, so the draft matches the post.
+   Levels start at h2 — the topic title owns the page's h1. */
+.quillEditorContainer :global(.ql-editor h1),
+.quillEditorContainer :global(.ql-editor h2),
+.quillEditorContainer :global(.ql-editor h3),
+.quillEditorContainer :global(.ql-editor h4),
+.quillEditorContainer :global(.ql-editor h5),
+.quillEditorContainer :global(.ql-editor h6) {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0.7em 0 0.3em;
+}
+
+/* No top margin on the first line: the gap would read as stray padding above
+   an editor that is otherwise empty. */
+.quillEditorContainer :global(.ql-editor > :first-child) {
+  margin-top: 0;
+}
+
+.quillEditorContainer :global(.ql-editor h1),
+.quillEditorContainer :global(.ql-editor h2) {
+  font-size: 1.5em;
+}
+
+.quillEditorContainer :global(.ql-editor h3) {
+  font-size: 1.25em;
+}
+
+.quillEditorContainer :global(.ql-editor h4),
+.quillEditorContainer :global(.ql-editor h5),
+.quillEditorContainer :global(.ql-editor h6) {
+  font-size: 1.1em;
+}
+
+/* The whole editor sits inside one Form.Item, so when the description fails
+   validation antd hands its error status to every control underneath it — and
+   the borderless select paints its label with colorError. The select is toolbar
+   chrome, not the field that failed, so it keeps its own text colour.
+   `inherit` tracks whatever antd's colorText is (dark mode included); the
+   override is forced because antd injects the status rule at runtime, into a
+   stylesheet this one cannot be ordered against. */
+.headingSelect :global(.ant-select-selection-item) {
+  color: inherit !important;
+}
+
+/* Separates the block-format select from the inline buttons. */
+.toolbarDivider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  margin: 0 2px;
+  vertical-align: middle;
+  background: var(--bc-line);
+}
+
+.quillEditorContainer :global(.ql-editor.ql-blank::before) {
+  color: var(--bc-ink-subtle);
+  font-style: normal;
+  left: 16px;
+  top: 16px;
+}
+
+.linkPopoverContent {
+  width: 300px;
+}
+
+.linkSubmitBtn {
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+}
+
+.imageDeleteBtn {
+  position: fixed;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100001;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.imageDeleteBtn:hover {
+  background: #ff4d4f;
+}
+
+/**
+ * The toolbar follows the writer down a long post.
+ *
+ * It sits at the foot of the editor, which is fine until the post outgrows the
+ * screen: the box has a min-height and no ceiling, so it keeps growing and
+ * takes the controls below the fold with it — exactly when a post is long
+ * enough to want them. Sticking it to the bottom of the scrollport keeps them
+ * to hand without moving them out of the box they belong to, and costs nothing
+ * on a short draft, where a sticky element that never reaches its edge just
+ * sits in normal flow.
+ *
+ * Opaque, because the writing scrolls underneath it. The background is the same
+ * token the panel behind the editor paints with, in either theme, so the bar
+ * never shows as a patch of the wrong colour.
+ */
+.stickyToolbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--bc-surface);
+}
+
+/**
+ * The phone's ⋯ menu.
+ *
+ * Rows are left-aligned and full width: a centred label beside a leading icon
+ * reads as a stray pair rather than a list, and the whole row should be the tap
+ * target. The height is set for a finger, not a cursor.
+ */
+.moreMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 190px;
+}
+
+.moreMenu :global(.ant-btn) {
+  justify-content: flex-start;
+  height: 38px;
+}
+
+.moreMenu :global(.ant-select) {
+  margin-bottom: 4px;
+}
+
+.validationErrors {
+  margin: 0;
+  padding: 6px 16px 8px 32px;
+  font-size: 12px;
+  color: var(--bc-negative);
+  border-top: 1px solid var(--bc-line);
+  background: var(--bc-negative-soft);
+  list-style: disc;
+}

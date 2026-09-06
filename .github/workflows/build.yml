@@ -1,0 +1,61 @@
+# The public proof of the claim in readme.txt: that anyone can clone this
+# repository and build the plugin. It runs the same commands a WordPress.org
+# reviewer would, so the claim cannot rot unnoticed.
+
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm ts-check
+
+      - name: Build the plugin
+        run: pnpm build:free
+
+      - name: Assert the build produced the shipped assets
+        run: |
+          test -n "$(find assets -maxdepth 1 -name 'main*.js' -print -quit)"
+          test -d assets/client
+
+      - name: Assert the tree carries free code only
+        run: node scripts/public-repo/assert-no-pro.mjs --tree .
+
+      # Deliberately not `composer analyze`: PHPStan has pre-existing findings
+      # tracked upstream, and a workflow that is red for reasons unrelated to
+      # the build teaches everyone to ignore it. The promise this job keeps is
+      # that the plugin builds from source — keep it answering exactly that.
+      - name: Tests
+        run: pnpm test

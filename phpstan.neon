@@ -1,0 +1,27 @@
+parameters:
+    ignoreErrors:
+        # wp-database's Connection is a facade over $wpdb: __callStatic forwards
+        # any $wpdb method, and none of them are declared or annotated. The
+        # migrations under backend/db use it the same way and only escape this
+        # because excludePaths skips them. Same upstream fix as above.
+        - '#Call to an undefined static method BitApps\\BitConnect\\Deps\\BitApps\\WPDatabase\\Connection::#'
+    level: 5
+    disallowedClasses:
+    treatPhpDocTypesAsCertain: false
+    # Only the shipped sources. The packages' own tests/ carry throwaway
+    # WordPress function and class declarations (wp-kit's tests/bootstrap.php
+    # declares current_time(), flush_rewrite_rules(), WP_Error and more), which
+    # would shadow php-stubs/wordpress-stubs and produce bogus signature errors.
+    scanDirectories:
+        - vendor/bitapps/wp-database/src
+        - vendor/bitapps/wp-kit/src
+        - vendor/bitapps/wp-telemetry/src
+        - vendor/bitapps/wp-validator/src
+
+    paths:
+        - backend
+    excludePaths:
+        - backend/tests/*
+        - backend/vendor/*
+        - backend/hooks/*
+        - backend/db/*

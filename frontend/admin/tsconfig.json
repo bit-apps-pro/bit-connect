@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "typeRoots": ["./src/types", "../../node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["./src/common/*"],
+      "@features/*": ["./src/components/features/*"],
+      "@utilities/*": ["./src/components/utilities/*"],
+      "@components/*": ["./src/components/*"],
+      "@icons/*": ["./src/icons/*"],
+      "@resource/*": ["./src/resource/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@static/*": ["./src/static/*"],
+      "@config/*": ["./src/config/*"],
+      "@/*": ["./src/*"],
+      "@shared/*": ["../shared/*"],
+      "@plugin-commons/*": ["../_plugin-commons/*"]
+    }
+  },
+  "include": ["src/**/*", "../shared/**/*", "../_plugin-commons/**/*"]
+}

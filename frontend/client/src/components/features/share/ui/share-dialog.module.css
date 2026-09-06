@@ -1,0 +1,108 @@
+/* ===== Network grid =====
+   Four to a row, the way an operating system's own share sheet lays them out.
+   A single scrolling line was tried first and read as five networks rather than
+   seven: nothing on a trackpad or a touchscreen says a row can be swiped, and a
+   share sheet that hides half its destinations is worse than one that takes an
+   extra 80px. Seven across cannot work either — the widest label, "WhatsApp",
+   needs more than the ~49px seven columns leave in a 440px dialog. */
+.channels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 4px 0 8px;
+}
+
+/* ===== One network ===== */
+.channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 2px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--bc-ink-muted);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Qualified by the grid rather than written as `.channel:hover`, which loses.
+   These are anchors, and antd's reset styles `a:hover` — an element plus a
+   pseudo-class outranks a bare class, so the label turned antd's link blue on
+   hover while every other word in the dialog stayed ink. Two classes and an
+   element settle it outright instead of relying on which stylesheet the bundler
+   happens to emit last. */
+.channels a.channel:hover,
+.channels a.channel:focus-visible {
+  background-color: var(--bc-surface-hover);
+  color: var(--bc-ink);
+}
+
+/* The glyph's disc. `--share-brand` is set per channel from the target list;
+   it only ever colours the glyph, never a fill behind text, so the brand can
+   never owe the label a contrast ratio it does not have. */
+.channelIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--bc-line);
+  border-radius: 50%;
+  background-color: var(--bc-surface-sunken);
+  color: var(--bc-ink);
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.channel:hover .channelIcon,
+.channel:focus-visible .channelIcon {
+  border-color: var(--share-brand);
+  color: var(--share-brand);
+  transform: translateY(-2px);
+}
+
+/* A brand whose own colour vanishes into a dark surface names a substitute.
+   Written against `:root.dark` — the class applyThemeToDocument() actually
+   sets — because Tailwind's `dark:` variant is inert in this app. */
+:global(:root.dark) .channel:hover .channelIcon,
+:global(:root.dark) .channel:focus-visible .channelIcon {
+  border-color: var(--share-brand-dark, var(--share-brand));
+  color: var(--share-brand-dark, var(--share-brand));
+}
+
+/* The lift is decoration; the colour change carries the same information. */
+@media (prefers-reduced-motion: reduce) {
+  .channelIcon,
+  .channel:hover .channelIcon,
+  .channel:focus-visible .channelIcon {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ===== Link row ===== */
+.linkRow {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+/* The URL is long, monospaced-ish and never edited — it exists to be seen and
+   copied, so it truncates rather than scrolling a caret through it. */
+.linkField {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

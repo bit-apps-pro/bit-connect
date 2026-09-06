@@ -1,0 +1,64 @@
+/* ===== Share row =====
+   The topic's own share affordance, sitting in the page rather than behind a
+   button: in the rail beside the topic from xl, and under the byline below it.
+
+   Bare glyphs, not the filled discs the dialog uses. The dialog is a sheet the
+   reader opened on purpose and can afford to be a grid of destinations; this
+   row shares a 300px card with the author and the tags, where four discs read
+   as a second toolbar competing with the topic itself. */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Rail variant. The glyph sits centred in a box wider than itself, so without
+   the pull the row would start ~8px inside the panel's title and every other
+   line in the card. The boxes hang over the padding by exactly their own inset
+   and the glyphs line up with the words above them. */
+.spread {
+  justify-content: space-between;
+  margin-inline: -8px;
+}
+
+/* ===== One destination =====
+   Sized for the hand first: 34px square is the hit area, and the glyph inside
+   it is 18px. `--share-brand` is set per channel from the target list. */
+.channel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--bc-ink-muted);
+  line-height: 0;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Qualified by the row and the element for the same reason the dialog's are:
+   these are anchors, and antd resets `a:hover` — one element plus a
+   pseudo-class outranks a bare class, so an unqualified rule loses and the
+   glyph turns antd's link blue instead of the brand's own colour. */
+.row a.channel:hover,
+.row a.channel:focus-visible,
+.row button.channel:hover,
+.row button.channel:focus-visible {
+  background-color: var(--bc-surface-hover);
+  color: var(--share-brand, var(--bc-ink));
+}
+
+/* A brand whose own colour vanishes into a dark surface names a substitute.
+   Written against `:root.dark` — the class applyThemeToDocument() actually
+   sets — because Tailwind's `dark:` variant is inert in this app. */
+:global(:root.dark) .row a.channel:hover,
+:global(:root.dark) .row a.channel:focus-visible {
+  color: var(--share-brand-dark, var(--share-brand, var(--bc-ink)));
+}

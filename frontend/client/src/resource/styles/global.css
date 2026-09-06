@@ -1,0 +1,465 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.dark .ql-toolbar .ql-picker-label,
+.dark .ql-editor :is(h1, h2, h3) {
+  color: #fff;
+}
+
+.dark .ql-toolbar .ql-stroke {
+  stroke: #fff;
+}
+
+.h-full-wp {
+  height: calc(100vh - 50px);
+}
+
+/* The full-page portal template (backend/templates/portal-template.php) wraps
+   the app in #bit-connect-portal. Its body showed through the layout's outer
+   margins as a white frame in dark mode, so it takes the backdrop token — the
+   :has() scope keeps shortcode embeds from restyling their theme's body. */
+body:has(#bit-connect-portal) {
+  background-color: var(--bc-surface-sunken);
+}
+
+/* The portal owns its own ink, rather than inheriting the host theme's.
+   WordPress prints Global Styles as an inline <style id="global-styles-inline-css">
+   holding `body{color:var(--wp--preset--color--contrast)}` — #111 in most block
+   themes, and it is not theme-aware. setCascadeLayerToWordpressStyles() cannot
+   demote it: that only re-imports sheets with an href into @layer wp, and an
+   inline block has none, so an unlayered `body` rule outranks everything the
+   portal puts in a layer.
+
+   Both roots are named because neither is what WordPress targets — a direct
+   rule on them beats an inherited one from `body` whatever the layer order,
+   which a `body`-level override could not do.
+
+   This is what kept the header's Login and the Create-new-post buttons black on
+   the first paint of a full page load: an antd Button takes its colour from
+   CSS-in-JS injected when React mounts, and until that lands the label falls
+   back to `color: inherit` from the antd reset — which used to mean #111,
+   black on the blue fill, in both light and dark. */
+#bit-connect-portal,
+#bit-connect-u-root {
+  color: var(--bc-ink);
+}
+
+/* Full-viewport shell for the main portal layout: header keeps its natural
+   height and the ant layout (flex: 1 in Layout.tsx) fills the rest, so the app
+   always reaches the bottom edge regardless of screen height. Scoped with
+   :has(.ant-layout-has-sider) so auth pages (login/register), which render
+   without the sider layout, keep normal document flow. */
+#bit-connect-u-root:has(> .ant-layout-has-sider) {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+::-webkit-datetime-edit {
+  line-height: 1;
+}
+
+body,
+html {
+  font-optical-sizing: auto;
+  height: 100%;
+}
+
+#bit-connect-u-root * {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizelegibility;
+}
+
+/* inputs/textareas: always remove outline (border itself signals focus) */
+#bit-connect-u-root input:focus,
+#bit-connect-u-root input:focus-visible,
+#bit-connect-u-root textarea:focus,
+#bit-connect-u-root textarea:focus-visible,
+#bit-connect-u-root select:focus,
+#bit-connect-u-root select:focus-visible,
+#bit-connect-u-root .ant-input:focus,
+#bit-connect-u-root .ant-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* buttons/links: only remove outline for mouse clicks, keep for keyboard nav */
+#bit-connect-u-root button:focus:not(:focus-visible),
+#bit-connect-u-root .ant-btn:focus:not(:focus-visible),
+#bit-connect-u-root .ant-input-affix-wrapper:focus:not(:focus-visible),
+#bit-connect-u-root .ant-select-selector:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ant Design wrapper focus classes */
+#bit-connect-u-root .ant-input-affix-wrapper-focused,
+#bit-connect-u-root .ant-input-affix-wrapper:focus-within,
+#bit-connect-u-root .ant-select-focused .ant-select-selector {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--bc-line-strong) !important;
+}
+
+svg {
+  pointer-events: none;
+  display: inline-block;
+}
+
+.link-reset:focus {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+.loader {
+  background: var(--bg);
+  background-image: linear-gradient(90deg, var(--bg-5) 0, var(--bg-10) 30px, var(--bg-5) 60px);
+  background-size: 200%;
+  animation: skeleton 1s infinite ease-out;
+}
+
+#bit-connect-u-root {
+  direction: ltr;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  font-size: 16px;
+
+  /* The portal mounts inside the active WordPress theme and inherits whatever
+     that theme sets on <body> — Twenty Twenty-Five ships 300 (Light). Light
+     renders thin or gets synthesised depending on which faces the visitor's
+     font provides, so pin the body weight here; components still override it. */
+  font-weight: 400;
+  overflow: auto;
+  isolation: isolate;
+}
+
+a:focus:not(:focus-visible) {
+  box-shadow: none;
+  outline: none;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 100vw;
+  background-color: #a9a9a9b8;
+}
+
+::-webkit-scrollbar {
+  width: 0.4em;
+  padding: 20px;
+}
+
+.dropDownTippy {
+  background-color: var(--bg) !important;
+  border: 1px solid var(--bg-10) !important;
+}
+
+.sticky-tab > .ant-tabs-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+}
+
+@keyframes skeleton {
+  0% {
+    background-position: calc(100%);
+  }
+
+  60%,
+  100% {
+    background-position: -100%;
+  }
+}
+
+@keyframes animate-stroke {
+  0% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -150px;
+  }
+}
+
+@keyframes gradient-animation {
+  0%,
+  100% {
+    background-position: 0 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.variable-tree .ant-tree-node-content-wrapper {
+  background-color: transparent !important;
+  cursor: auto !important;
+  max-width: 100%;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/* quill editor */
+
+.ql-container.ql-snow {
+  border: none !important;
+}
+
+/* .ql-toolbar.ql-snow {
+  @apply bg-slate-100 dark:border-slate-700 dark:bg-slate-900;
+
+  border: none;
+}
+
+.ql-container.ql-snow {
+  @apply bg-white dark:bg-slate-950;
+  border: none;
+} */
+
+.customAppCollapse .ant-collapse-header {
+  align-items: center !important;
+}
+
+.customAppCollapse .ant-collapse-content-box {
+  padding: 0 !important;
+}
+
+.anticon-plus-square.ant-tree-switcher-line-icon,
+.anticon-minus-square.ant-tree-switcher-line-icon {
+  pointer-events: none;
+}
+
+.copy-to-clipboard-container {
+  margin-top: 0;
+}
+
+/* scroll bar style */
+.scroller {
+  --scrollbar-color-thumb: #c1c1c1;
+  --scrollbar-color-track: transparent;
+  --scrollbar-width: auto;
+  --scrollbar-width-legacy: 0.75rem;
+}
+
+.scroller.thin {
+  --scrollbar-width: thin;
+  --scrollbar-width-legacy: 0.5rem;
+}
+
+[color-scheme='dark'] .scroller {
+  --scrollbar-color-thumb: #686868;
+}
+
+@supports (scrollbar-width: auto) {
+  .scroller {
+    scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+    scrollbar-width: var(--scrollbar-width);
+  }
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .scroller:hover {
+    --safari-fix: ;
+
+    /* This custom property forces Safari to re-render the scrollbars on hover */
+  }
+
+  .scroller::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  .scroller::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroller:hover::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color-thumb);
+  }
+
+  .scroller:hover::-webkit-scrollbar-track {
+    background: var(--scrollbar-color-track);
+  }
+
+  .scroller::-webkit-scrollbar {
+    max-width: var(--scrollbar-width-legacy);
+    max-height: var(--scrollbar-width-legacy);
+  }
+}
+
+.ant-space-compact > *:last-child .mix-tag-input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.drawer-decoration::before {
+  content: '';
+  background: transparent;
+  height: calc(100% - 42px);
+  width: 2em;
+  position: absolute;
+  left: -32px;
+  top: 35px;
+  border-radius: 0 0.6875rem 0.6875rem 0;
+  z-index: -1;
+  border-bottom: 0;
+  border-left: 0;
+  box-shadow: 13px 0 0 0 var(--wp-bg-color);
+}
+
+.drawer-decoration::after {
+  content: '';
+  background: transparent;
+  height: calc(100% - 28px);
+  width: 2em;
+  position: absolute;
+  right: 10px;
+  bottom: 7px;
+  top: 30px;
+  border-radius: 0 0 0.6875rem;
+  z-index: -1;
+  border-bottom: 0;
+  border-right: 0;
+  box-shadow: 17px 0 0 0 var(--wp-bg-color);
+}
+
+/* ===== Toasts =====
+   Notifications render in a portal on <body>, outside #bit-connect-u-root, so
+   they are scoped by the ant class instead. Placement itself is set in
+   useNotificationConfig; this covers the sizing the JS config cannot express. */
+
+/* Phones: antd already centres the top placement, so only constrain the width —
+   overriding its inset positioning pushes the toast off-screen. The container
+   gets the notch/status-bar inset so toasts clear it on devices that have one.
+   The top anchor itself keeps toasts above the on-screen keyboard, which covers
+   the bottom of the viewport exactly while the user is typing. */
+@media (width < 768px) {
+  .ant-notification.ant-notification-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .ant-notification.ant-notification-top .ant-notification-notice {
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* Long filenames and API messages must wrap instead of overflowing the card. */
+.ant-notification-notice-message,
+.ant-notification-notice-description {
+  overflow-wrap: anywhere;
+}
+
+/* ===== Buttons =====
+   One interaction language for every action in the portal. Individual screens
+   should not need to describe hover, focus or press behaviour — when they do,
+   the app ends up with several slightly different definitions of "a button",
+   which is exactly what these rules replace. Colour, size and weight live in
+   the antd Button tokens (config/theme.ts); this file owns the parts antd's
+   token system cannot express. */
+
+/* The rules below intentionally sit after the more specific focus resets
+   earlier in this file, so the descending-specificity check is disabled for
+   the block — reordering them would break the reset. */
+/* stylelint-disable no-descending-specificity */
+
+/* Keyboard focus must always be visible. antd renders no ring of its own on
+   buttons, and a focus outline is the only way a keyboard or switch user can
+   tell where they are — WCAG 2.4.7. `:focus-visible` keeps it off pointer
+   clicks, so it costs the mouse user nothing. */
+#bit-connect-u-root :is(button, a, [role='button']):focus-visible,
+.ant-btn:focus-visible,
+.ant-modal-root :is(button, a, [role='button']):focus-visible,
+.ant-dropdown :is(button, a, [role='button']):focus-visible {
+  outline: 2px solid var(--bc-brand);
+  outline-offset: 2px;
+}
+
+/* A solid button's label is white in static CSS, not only in antd's CSS-in-JS.
+   The fill and the label used to arrive at different times: the fill is painted
+   from the stylesheet, the label colour from the rules antd injects when React
+   mounts. In the gap the label fell back to inherited ink — dark, on a saturated
+   blue fill — so the header's Login and the Create-new-post button flashed black
+   on every full page load. #fff is the same value antd resolves
+   colorTextLightSolid to for this selector, so nothing changes once its styles
+   land; this only removes the window before they do. Disabled buttons are
+   excluded because antd dims their label, and these rules are unlayered — they
+   would otherwise outrank that from @layer antd and leave a disabled solid
+   button with a white label on a grey fill. */
+.ant-btn-variant-solid:not(:disabled, .ant-btn-disabled) {
+  color: #fff;
+}
+
+/* Elevation. Solid and outlined buttons sit on a hairline shadow so they read
+   as raised without announcing it; hover deepens that instead of translating
+   the button upward. The lift this replaces moved every button in the app,
+   including the small ones packed into comment rows and table cells, which made
+   dense areas twitch as the pointer crossed them. Text and link buttons stay
+   completely flat — they are text that happens to be actionable. */
+.ant-btn:not(.ant-btn-link, .ant-btn-text) {
+  box-shadow: 0 1px 2px rgba(2, 13, 39, 6%);
+}
+
+.ant-btn:not(.ant-btn-link, .ant-btn-text, :disabled):hover {
+  box-shadow: 0 2px 6px rgba(2, 13, 39, 10%);
+}
+
+/* Press feedback. A button that visibly gives under the pointer confirms the
+   tap before the network does — worth more on a slow connection than any
+   spinner. Scoped to antd buttons: bespoke buttons (back-to-top, filter pill)
+   position themselves with transforms of their own. */
+.ant-btn:not(:disabled, .ant-btn-loading):active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 2px rgba(2, 13, 39, 6%);
+}
+
+.ant-btn {
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.1s ease;
+}
+
+/* Touch pointers get the full recommended target on icon-only controls, which
+   are otherwise the smallest thing on the page. Pointer-scoped so the desktop
+   layout keeps its compact toolbars. */
+@media (pointer: coarse) {
+  .ant-btn-icon-only:not(.ant-btn-sm) {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* Disabled buttons must read as unavailable rather than merely faint, and must
+   not offer a pointer that promises something will happen. */
+.ant-btn:disabled,
+.ant-btn-disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* A button mid-request is not a button to press again. */
+.ant-btn-loading {
+  cursor: progress;
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ant-btn {
+    transition: none;
+  }
+
+  .ant-btn:not(:disabled):active {
+    transform: none;
+  }
+}
+/* stylelint-enable no-descending-specificity */

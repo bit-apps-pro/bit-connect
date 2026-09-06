@@ -1,0 +1,37 @@
+/* Deliberately unframed: the sidebar and the content panel each draw their own
+   bordered, rounded card, so a third border around the pair only added a box
+   whose corners echoed the two inside it. This is the page backdrop the panels
+   sit on — the dark gradient below, nothing to outline.
+ *
+ * No margin either, now that nothing is being inset from the window: the one
+ * gutter is this element's own padding (`sm:bc-p-5` in Layout.tsx), so all four
+ * sides measure 20px and match the 20px between the sidebar and the content.
+ * The old `3px 10px 7px` sat outside that padding and stacked with it — 23px of
+ * headroom against 27px underneath, and 30px at the sides. It also cost the one
+ * thing a margin cannot paint: the dark gradient stopped at the margin edge, so
+ * a dark portal was ringed by 10px of the page body's white. */
+.layoutWrp {
+  height: 100%;
+  overflow: hidden;
+}
+
+/*
+ * The scroll container reserves ~9px for its own scrollbar, taken from the
+ * right edge only — so a page with symmetric 24px padding still reads as
+ * "more room on the right", and the gap changes as soon as a page grows tall
+ * enough to scroll. Reserving the gutter on both edges keeps the left and
+ * right margins equal and stops the content shifting when the scrollbar
+ * appears. Safari <18.2 ignores this and falls back to the old behaviour.
+ */
+.contentWrp {
+  scrollbar-gutter: stable both-edges;
+}
+
+.layoutWrp[color-scheme='dark'] {
+  background-color: hsla(287deg, 0%, 0%, 100%) !important;
+  background-image:
+    radial-gradient(at 12% 16%, hsla(296deg, 10%, 2%, 100%) 0, transparent 50%),
+    radial-gradient(at 90% 14%, hsla(236deg, 15%, 3%, 100%) 0, transparent 50%),
+    radial-gradient(at 86% 84%, hsla(263deg, 15%, 4%, 100%) 0, transparent 50%),
+    radial-gradient(at 52% 20%, hsla(256deg, 20%, 5%, 100%), transparent 50%) !important;
+}

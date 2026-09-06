@@ -1,0 +1,30 @@
+node_modules/
+vendor/
+docs-local/
+port
+.port
+.env
+.pnpm-store/
+.data
+.data_mysql
+docker-compose.yml
+assets
+.debug.log
+.php-cs-fixer.cache
+.phpunit.result.cache
+QWEN.md
+build
+.playwright-mcp
+# Playwright e2e artifacts (auth state contains session cookies — never commit)
+/playwright/.auth/
+/playwright-report/
+/test-results/
+.claude/settings.json
+/*.png
+
+# Demo-data seeder — local dev tool, not part of the plugin.
+# Includes its state files, which hold dummy logins and application passwords.
+scripts/seed/
+
+# Competitive packaging analysis — internal working document, not shipped.
+docs/packaging-matrix.html

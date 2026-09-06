@@ -1,0 +1,61 @@
+.topic-card {
+  background-color: var(--bc-surface);
+}
+
+.topic-card:hover {
+  background-color: var(--bc-surface-hover);
+
+  /* Hover moved the background only, which on a white page is a very quiet
+     signal that a whole row is clickable. The border carries it too. */
+  border-color: var(--bc-line-strong);
+}
+
+/* Whole-card target: the title link stretches over the card, so the click area
+   is the row rather than one line of text. Anything that needs its own
+   destination (the vote box, the author and tag links) is lifted above it. */
+.topic-card__link {
+  position: static;
+  text-decoration: none;
+}
+
+.topic-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Two lines, like the excerpt. The status badge holds a fixed column on the
+   right, so on a phone a long title had ~230px to wrap into and ran to three
+   lines — every row in the list ended up a different height. */
+.topic-card__title,
+.topic-card__excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+
+  /* stylelint-disable-next-line property-no-vendor-prefix -- no standard
+     equivalent with support outside Chromium; line-clamp is still prefixed. */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.topic-card__meta {
+  position: relative;
+  z-index: 10;
+
+  /* The row is a flex container, so its width is the card's; without this the
+     overlay under it stays clickable everywhere except the links themselves. */
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Keyboard parity with hover: tabbing to the card link has to show where focus
+   landed, and the stretched ::after has no box of its own to outline. */
+.topic-card:focus-within {
+  border-color: var(--bc-brand);
+  box-shadow: 0 0 0 2px rgb(50 102 234 / 25%);
+}
+
+.topic-card a:focus:not(:focus-visible) {
+  outline: none;
+}

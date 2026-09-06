@@ -1,0 +1,49 @@
+{
+  "id": 1,
+  "title": "Face Problem with Conditional Logic",
+  "description": "<strong>Struggling with conditional logic in your forms?</strong> Many <a href='https://bit-social.test/' rel='noopener noreferrer' target='_blank'>link</a>  users face challenges with <em>dynamic fields</em>; <u>conditional logic</u> helps <strong>show or hide fields</strong>, <em>change values</em>, and <u>enhance form functionality and user experience</u>.",
+  "votes": 10,
+  "status": "in_progress",
+  "stage": "question",
+  "author": {
+    "name": "Alex John",
+    "avatar": "/avatars/alex.png"
+  },
+  "date": "20 Nov 2025",
+  "tag": "Suggestion",
+  "attachments": ["Image.png"],
+  "hashtags": ["bit_form", "feature"],
+  "comments": [
+    {
+      "id": 1,
+      "user": "Alex John",
+      "avatar": "/avatars/alex.png",
+      "content": "<strong>Struggling with conditional logic in your forms?</strong>Many users face challenges when implementing dynamic fields based on user selections. Conditional logic allows you to show or hide fields, change field values, and <u>conditional logic</u> forms based on user responses. Understanding how to properly configure these conditions can significantly enhance your form's functionality and user experience.",
+      "votes": 10,
+      "isAdmin": false,
+      "replies": [],
+      "createdAt": "10 mins ago"
+    },
+    {
+      "id": 2,
+      "user": "Abdul Kaioum",
+      "avatar": "/avatars/admin.png",
+      "content": "We are working on improving conditional logic handling. This will make it easier to create dynamic forms with better user experience. Our team is focused on simplifying the process of creating customized",
+      "votes": 0,
+      "isAdmin": true,
+      "replies": [],
+      "createdAt": "5 mins ago",
+      "parentId": 1
+    },
+    {
+      "id": 3,
+      "user": "Jenifa Rexo",
+      "avatar": "/avatars/jenifa.png",
+      "content": "Struggling with conditional logic in your forms? Many users face challenges when implementing dynamic fields based on user selections. Conditional logic allows you to show or hide fields, change field values, and create more interactive forms based on user responses. Understanding how to properly configure these conditions can significantly enhance your form's functionality and user experience.",
+      "votes": 0,
+      "isAdmin": false,
+      "replies": [],
+      "createdAt": "10 mins ago"
+    }
+  ]
+}
