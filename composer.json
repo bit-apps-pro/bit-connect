@@ -15,17 +15,18 @@
     "friendsofphp/php-cs-fixer": "^3",
     "sirbrillig/phpcs-variable-analysis": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-    "phpunit/phpunit": "^9",
+    "phpunit/phpunit": "^11",
     "yoast/phpunit-polyfills": "^4",
     "phpcompatibility/phpcompatibility-wp": "*",
     "spatie/phpunit-watcher": "^1",
-    "nunomaduro/phpinsights": "^2",
+    "nunomaduro/phpinsights": "^2.14",
     "wp-cli/wp-cli-bundle": "^2",
     "szepeviktor/phpstan-wordpress": "^2",
     "phpstan/extension-installer": "^1",
     "spaze/phpstan-disallowed-calls": "^4",
     "rector/rector": "^2",
-    "wp-coding-standards/wpcs": "^3.1"
+    "wp-coding-standards/wpcs": "^3.1",
+    "composer/composer": "^2.10.2"
   },
   "autoload": {
     "psr-4": {
