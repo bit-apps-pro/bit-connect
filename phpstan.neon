@@ -18,6 +18,11 @@ parameters:
         - vendor/bitapps/wp-telemetry/src
         - vendor/bitapps/wp-validator/src
 
+    # WordPress cookie constants are defined inside wp_cookie_constants() rather
+    # than at file scope, so the WordPress stubs do not carry them.
+    scanFiles:
+        - phpstan/wp-cookie-constants.php
+
     paths:
         - backend
     excludePaths:

@@ -584,8 +584,7 @@ final class NotificationService
         return [
             'id'   => (int) $row->id,
             'type' => (string) $row->type,
-            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-            'type_label' => $type ? __($type->label(), 'bit-connect') : (string) $row->type,
+            'type_label' => $type ? NotificationTypes::translatedLabel($type) : (string) $row->type,
             'actor'      => [
                 'id'   => (int) $row->actor_id,
                 'name' => $actor ? $actor->display_name : '',

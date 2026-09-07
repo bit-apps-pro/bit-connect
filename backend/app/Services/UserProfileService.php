@@ -160,8 +160,7 @@ class UserProfileService
 
             $permissions[] = [
                 'key' => $capability->value,
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-                'label' => __($capability->label(), 'bit-connect'),
+                'label' => Capabilities::translatedLabel($capability),
                 'group' => self::CAPABILITY_GROUPS[$capability->value] ?? 'Other',
                 // user_can() rather than current_user_can(): the answer is about
                 // the profile's owner, who may not be the person asking.

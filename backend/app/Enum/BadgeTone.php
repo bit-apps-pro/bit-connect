@@ -52,6 +52,56 @@ enum BadgeTone: string
     case NEUTRAL = 'neutral';
 
     /**
+     * The label, translated.
+     *
+     * A match over literals rather than __($tone->label()): `wp i18n make-pot`
+     * reads source, not runtime, so a __() whose argument is an expression puts
+     * nothing in the catalog — and a lookup the catalog does not hold returns
+     * the English string in every locale. The Pro add-on's badge catalog screen
+     * wrapped `options()` at the read site, which translated none of these.
+     *
+     * The #[Label] attributes above remain the English wording every non-display
+     * reader gets. EnumLabelTranslationTest asserts the two agree case by case,
+     * so a reworded attribute cannot silently leave this behind.
+     *
+     * Static and typed by parameter rather than `self`: the coding standard's
+     * sniff does not treat an enum as class scope.
+     */
+    public static function translatedLabel(BadgeTone $tone): string
+    {
+        return match ($tone) {
+            self::ADMIN     => __('Red', 'bit-connect'),
+            self::MODERATOR => __('Blue', 'bit-connect'),
+            self::GREEN     => __('Green', 'bit-connect'),
+            self::VIOLET    => __('Violet', 'bit-connect'),
+            self::AMBER     => __('Amber', 'bit-connect'),
+            self::TEAL      => __('Teal', 'bit-connect'),
+            self::NEUTRAL   => __('Grey', 'bit-connect'),
+        };
+    }
+
+    /**
+     * Every tone as a value/label pair, with the label translated.
+     *
+     * `EnumHelper::options()` returns the raw #[Label] wording, which is what
+     * non-display readers want. This is the display copy, so the Pro badge
+     * catalog can render the list without wrapping it in a __() the extractor
+     * cannot read.
+     *
+     * @return array<int, array{value: int|string, label: string}>
+     */
+    public static function translatedOptions(): array
+    {
+        return array_map(
+            static fn (self $case): array => [
+                'value' => $case->value,
+                'label' => self::translatedLabel($case),
+            ],
+            self::cases()
+        );
+    }
+
+    /**
      * The tone a badge falls back to when the stored one is unknown.
      *
      * Unknown rather than absent: a badge saved under a tone that a later

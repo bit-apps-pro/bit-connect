@@ -9,6 +9,7 @@ use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use WP_Post;
 
 if (!defined('ABSPATH')) {
@@ -53,7 +54,7 @@ class BaseView
             $slug = Config::SLUG;
             // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Version is embedded in the filename via $codeName for cache busting.
             wp_register_script_module($this->slug . '-MODULE-main', Config::get('ASSET_URI') . "/client/main-{$codeName}.js", ['@wordpress/interactivity'], null);
-            wp_register_style($this->slug . '-styles', Config::get('ASSET_URI') . "/client/main-{$slug}-ba-assets-{$codeName}.css", null, $this->version, 'screen');
+            wp_register_style($this->slug . '-styles', Config::get('ASSET_URI') . "/client/main-{$slug}-ba-assets-{$codeName}.css", [], $this->version, 'screen');
         }
     }
 
@@ -79,7 +80,10 @@ class BaseView
             $currentPostUrl = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
         }
 
-        $currentPath = $currentPostUrl ? trim(wp_parse_url($currentPostUrl, PHP_URL_PATH), '/') : '';
+        // wp_parse_url() returns null for a URL with no path at all — the home
+        // URL of a site installed at the domain root is exactly that — and
+        // trim(null) is deprecated on PHP 8.1+.
+        $currentPath = $currentPostUrl ? trim((string) wp_parse_url($currentPostUrl, PHP_URL_PATH), '/') : '';
 
         if ($currentPath === '') {
             $currentPath = '/';
@@ -163,8 +167,20 @@ class BaseView
         // routed portal pages already register on template_redirect, and
         // registration is idempotent so the shortcode's later call is harmless.
         $post = get_post();
-        if (is_singular() && $post instanceof WP_Post && has_shortcode($post->post_content, 'bit-connect')) {
+        $hasShortcode = is_singular() && $post instanceof WP_Post && has_shortcode($post->post_content, 'bit-connect');
+        if ($hasShortcode) {
             $this->registerAssets();
+        }
+
+        // Pre-mount styles and the crawler/human view toggle. Scoped to the
+        // requests that actually render the portal, because this method runs on
+        // every front-end request: PrePaint puts `bc-js` on `<html>`, which has
+        // no business on a page this plugin does not draw. Both gates resolve on
+        // template_redirect, before wp_head, so both are readable here — the
+        // routers claim the request, and SeoMeta is the belt to that braces for
+        // any route that renders without registering a matching router filter.
+        if ($hasShortcode || ShortCode::isServerRendered() || SeoMeta::meta() !== null) {
+            PrePaint::enqueue();
         }
 
         // The portal's stylesheet asks for the Outfit family, but Head::addHeadScripts()

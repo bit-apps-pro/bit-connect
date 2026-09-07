@@ -158,7 +158,7 @@ final class WpContentFormatterService
         $html = preg_replace_callback(
             '/<pre(\s[^>]*)?>(.*?)<\/pre>/si',
             static function (array $m): string {
-                $attrs = $m[1] ?? '';
+                $attrs = $m[1];
                 $inner = $m[2];
 
                 // Ensure wp-block-code class

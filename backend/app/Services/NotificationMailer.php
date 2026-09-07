@@ -332,8 +332,7 @@ final class NotificationMailer
 
         $type = NotificationTypes::tryFrom((string) $rows[0]->type);
 
-        // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-        $label = $type ? __($type->label(), 'bit-connect') : __('Forum notification', 'bit-connect');
+        $label = $type ? NotificationTypes::translatedLabel($type) : __('Forum notification', 'bit-connect');
 
         if ($site === '') {
             return $label;

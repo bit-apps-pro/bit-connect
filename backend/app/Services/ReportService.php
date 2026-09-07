@@ -274,11 +274,13 @@ final class ReportService
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $status = (string) ($filters['status'] ?? ReportStatus::PENDING->value);
 
-        $rows = (array) Report::where('status', $status)
-            ->orderBy('created_at')
-            ->desc()
-            ->take((string) self::QUEUE_ROW_CAP)
-            ->get();
+        $rows = array_values(
+            (array) Report::where('status', $status)
+                ->orderBy('created_at')
+                ->desc()
+                ->take((string) self::QUEUE_ROW_CAP)
+                ->get()
+        );
 
         // Every name and every reported item is fetched once, up front, instead
         // of one query per row deep inside the loop. A queue of 200 reports over
