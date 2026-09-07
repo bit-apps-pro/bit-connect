@@ -309,21 +309,11 @@ final class SeoMeta
             return '';
         }
 
-        // First-paint styles for the server-rendered body markup. Emitted here
-        // because a <style> element is only conforming HTML in the head, and
-        // this hook fires on exactly the requests that render that markup.
-        $html = SeoContent::criticalCss() . "\n";
-
-        // Running before first paint, this flips the body markup from the
-        // crawler view (content) to the human view (loading spinner) — see the
-        // .bc-js rules in the critical CSS. The timeout is a safety valve: if
-        // the app bundle never mounts, the content is re-revealed rather than
-        // leaving the visitor on an endless spinner. Once React mounts, the
-        // .bc-ssr subtree no longer exists and removing the class is a no-op.
-        $html .= <<<'HTML'
-<script>document.documentElement.classList.add("bc-js");setTimeout(function(){document.documentElement.classList.remove("bc-js")},8000)</script>
-
-HTML;
+        // The first-paint styles and the crawler/human view toggle that used to
+        // be printed here as raw <style>/<script> are enqueued instead — see
+        // PrePaint, enqueued from BaseView on exactly the requests that render
+        // this markup. They still land in the head ahead of <body>.
+        $html = '';
 
         // Robots directives are never delegated: a route we mark noindex must
         // stay out of the index whether or not an SEO plugin is installed, and

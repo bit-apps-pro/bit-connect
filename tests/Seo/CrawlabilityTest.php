@@ -6,6 +6,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\SSR\Seo\SeoContent;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
+use BitApps\BitConnect\Views\PrePaint;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -412,7 +413,7 @@ final class CrawlabilityTest extends TestCase
 
     public function testContentIsVisibleByDefaultAndHiddenOnlyWithJavaScript(): void
     {
-        $css = SeoContent::criticalCss();
+        $css = PrePaint::css();
 
         // Default (no JS, i.e. crawlers): spinner hidden, content shown.
         $this->assertStringContainsString('.bc-ssr-loading{display:none}', $css);
@@ -420,17 +421,35 @@ final class CrawlabilityTest extends TestCase
         // With JS (humans): the bc-js class flips to spinner-only.
         $this->assertStringContainsString('.bc-js .bc-ssr-loading{display:block}', $css);
         $this->assertStringContainsString('.bc-js .bc-ssr{display:none}', $css);
+
+        // The spinner's keyframes ride along here rather than being repeated
+        // inline in each loading template.
+        $this->assertStringContainsString('@keyframes bc-dot', $css);
     }
 
-    public function testHeadTogglesTheHumanViewBeforeFirstPaint(): void
+    public function testTogglesTheHumanViewBeforeFirstPaint(): void
+    {
+        $script = PrePaint::script();
+
+        $this->assertStringContainsString('classList.add("bc-js")', $script);
+
+        // Safety valve: a bundle that never mounts re-reveals the content.
+        $this->assertStringContainsString('classList.remove("bc-js")', $script);
+    }
+
+    /**
+     * The pre-paint CSS and JS go through the enqueue API, not raw tags: the
+     * plugin directory rejects <style>/<script> written straight into output.
+     */
+    public function testPrePaintAssetsAreNotPrintedAsRawTags(): void
     {
         SeoMeta::forTopic($this->topic);
         $head = SeoMeta::head();
 
-        $this->assertStringContainsString('classList.add("bc-js")', $head);
+        $this->assertStringNotContainsString('<style', $head);
+        $this->assertStringNotContainsString('classList.add("bc-js")', $head);
 
-        // Safety valve: a bundle that never mounts re-reveals the content.
-        $this->assertStringContainsString('classList.remove("bc-js")', $head);
+        $this->assertStringNotContainsString('<style', SeoContent::forTopic($this->topic));
     }
 
     public function testContentMarkupItselfDoesNotDependOnJavaScript(): void

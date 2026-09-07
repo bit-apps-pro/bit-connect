@@ -3,7 +3,7 @@
 /**
  * Plugin Name:  Bit Connect
  * Plugin URI:   https://bitapps.pro/bit-connect
- * Description:  A plugin connect user to product development process. User will be able to add feature requests, create issues. Also will be able send feedback. Add ideas on features in roadmap to improve features.
+ * Description:  A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.
  * Version:     1.0.0
  * Author:       Bit Apps
  * Author URI:   https://bitapps.pro

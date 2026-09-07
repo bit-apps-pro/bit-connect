@@ -410,7 +410,6 @@ SVG;
 <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3266EA;margin:0 4px;animation:bc-dot 1.5s infinite ease-in-out;animation-delay:0.4s;"></span>
 <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3266EA;margin:0 4px;animation:bc-dot 1.5s infinite ease-in-out;animation-delay:0.8s;"></span>
 </div>
-<style>@keyframes bc-dot{0%,100%{opacity:.4;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}</style>
 </div>
 HTML,
             ['{{logo}}' => $logoMarkup]
