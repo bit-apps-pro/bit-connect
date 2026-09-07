@@ -27,8 +27,8 @@ use BitApps\BitConnect\Enum\Concerns\EnumHelper;
  * clears the rows earlier builds wrote.
  *
  * Labels live in #[Label] attributes, read through the EnumHelper trait. __()
- * cannot run inside attribute args, so wrap at the read site:
- * __($action->label(), 'bit-connect').
+ * cannot run inside attribute args, so the translated wording lives in
+ * translatedLabel() below — read that for display, label() for the raw English.
  */
 enum ActivityActions: string
 {
@@ -60,6 +60,37 @@ enum ActivityActions: string
 
     #[Label('Reports resolved')]
     case RESOLVE_REPORTS = 'resolve_reports';
+
+    /**
+     * The label, translated.
+     *
+     * A match over literals rather than __($action->label()): `wp i18n make-pot`
+     * reads source, not runtime, so a __() whose argument is an expression puts
+     * nothing in the catalog — and a lookup the catalog does not hold returns
+     * the English string in every locale. Wrapping at the read site translated
+     * none of these; this does.
+     *
+     * The #[Label] attributes above remain the English wording every non-display
+     * reader gets. EnumLabelTranslationTest asserts the two agree case
+     * by case, so a reworded attribute cannot silently leave this behind.
+     *
+     * Static and typed by parameter rather than `self`: the coding standard's
+     * sniff does not treat an enum as class scope.
+     */
+    public static function translatedLabel(ActivityActions $action): string
+    {
+        return match ($action) {
+            self::DELETE_POST     => __('Deleted a topic', 'bit-connect'),
+            self::DELETE_COMMENT  => __('Deleted a comment', 'bit-connect'),
+            self::PIN_POST        => __('Pinned a topic', 'bit-connect'),
+            self::UNPIN_POST      => __('Unpinned a topic', 'bit-connect'),
+            self::LOCK_POST       => __('Locked a topic', 'bit-connect'),
+            self::UNLOCK_POST     => __('Unlocked a topic', 'bit-connect'),
+            self::HIDE            => __('Hidden after a report', 'bit-connect'),
+            self::RESTORE         => __('Restored after review', 'bit-connect'),
+            self::RESOLVE_REPORTS => __('Reports resolved', 'bit-connect'),
+        };
+    }
 
     /**
      * Actions that destroy their target.

@@ -18,8 +18,9 @@ use BitApps\BitConnect\Enum\Concerns\EnumHelper;
  * grant/revoke via CapabilityService settings.
  *
  * Labels live in #[Label] attributes (read via the EnumHelper trait). __()
- * cannot run inside attribute args, so wrap at the read site when a translated
- * string is needed: __($cap->label(), 'bit-connect').
+ * cannot run inside attribute args, so the translated wording lives in
+ * translatedLabel()/translatedLabels() below — read those for display, label()
+ * for the raw English.
  */
 enum Capabilities: string
 {
@@ -99,6 +100,60 @@ enum Capabilities: string
      * granted it before it was withdrawn.
      */
     public const WITHDRAWN_EDIT_ANY = 'forum_edit_any';
+
+    /**
+     * The label, translated.
+     *
+     * A match over literals rather than __($cap->label()): `wp i18n make-pot`
+     * reads source, not runtime, so a __() whose argument is an expression puts
+     * nothing in the catalog — and a lookup the catalog does not hold returns
+     * the English string in every locale. Wrapping at the read site translated
+     * none of these; this does.
+     *
+     * The #[Label] attributes above remain the English wording every non-display
+     * reader gets. EnumLabelTranslationTest asserts the two agree case
+     * by case, so a reworded attribute cannot silently leave this behind.
+     *
+     * Static and typed by parameter rather than `self`: the coding standard's
+     * sniff does not treat an enum as class scope.
+     */
+    public static function translatedLabel(Capabilities $capability): string
+    {
+        return match ($capability) {
+            self::CREATE_POST        => __('Create Topics/Posts', 'bit-connect'),
+            self::EDIT_OWN_POST      => __('Edit Own Posts', 'bit-connect'),
+            self::DELETE_OWN_POST    => __('Delete Own Posts', 'bit-connect'),
+            self::CREATE_COMMENT     => __('Create Comments/Replies', 'bit-connect'),
+            self::EDIT_OWN_COMMENT   => __('Edit Own Comments', 'bit-connect'),
+            self::DELETE_OWN_COMMENT => __('Delete Own Comments', 'bit-connect'),
+            self::VOTE_POST          => __('Vote on Posts', 'bit-connect'),
+            self::VOTE_COMMENT       => __('Vote on Comments', 'bit-connect'),
+            self::DELETE_ANY         => __('Delete Any Content', 'bit-connect'),
+            self::MODERATE           => __('Moderate (Reports, Locked Threads)', 'bit-connect'),
+            self::PIN_POST           => __('Pin/Unpin Topics', 'bit-connect'),
+            self::LOCK_POST          => __('Lock/Unlock Topics', 'bit-connect'),
+            self::MANAGE             => __('Manage Forum Settings', 'bit-connect'),
+        };
+    }
+
+    /**
+     * Map of capability slug => translated label, for every case.
+     *
+     * The display counterpart to labels(), which stays English because its
+     * readers key on it rather than print it.
+     *
+     * @return array<string, string>
+     */
+    public static function translatedLabels(): array
+    {
+        $labels = [];
+
+        foreach (self::cases() as $case) {
+            $labels[$case->value] = self::translatedLabel($case);
+        }
+
+        return $labels;
+    }
 
     /**
      * Capabilities granted to basic forum members.

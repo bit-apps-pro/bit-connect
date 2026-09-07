@@ -105,10 +105,8 @@ final class NotificationSettingsController
         foreach (NotificationTypes::cases() as $type) {
             $catalog[] = [
                 'type' => $type->value,
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-                'label' => __($type->label(), 'bit-connect'),
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- see above
-                'description' => __($type->description(), 'bit-connect'),
+                'label'       => NotificationTypes::translatedLabel($type),
+                'description' => NotificationTypes::translatedDescription($type),
                 // The screen greys the member-override column for these: a
                 // moderator-only type is never on an ordinary member's screen
                 // to be overridden in the first place.

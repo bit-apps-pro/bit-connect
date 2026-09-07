@@ -38,6 +38,32 @@ enum ReportStatus: string
     case DISMISSED = 'dismissed';
 
     /**
+     * The label, translated.
+     *
+     * A match over literals rather than __($status->label()): `wp i18n make-pot`
+     * reads source, not runtime, so a __() whose argument is an expression puts
+     * nothing in the catalog — and a lookup the catalog does not hold returns
+     * the English string in every locale. Wrapping at the read site translated
+     * none of these; this does.
+     *
+     * The #[Label] attributes above remain the English wording every non-display
+     * reader gets. EnumLabelTranslationTest asserts the two agree case
+     * by case, so a reworded attribute cannot silently leave this behind.
+     *
+     * Static and typed by parameter rather than `self`: the coding standard's
+     * sniff does not treat an enum as class scope.
+     */
+    public static function translatedLabel(ReportStatus $status): string
+    {
+        return match ($status) {
+            self::PENDING           => __('Awaiting review', 'bit-connect'),
+            self::RESOLVED_KEPT     => __('Reviewed — content kept', 'bit-connect'),
+            self::RESOLVED_REMOVED  => __('Reviewed — content removed', 'bit-connect'),
+            self::DISMISSED         => __('Dismissed', 'bit-connect'),
+        };
+    }
+
+    /**
      * Statuses that end a report's life in the queue.
      *
      * @return array<int, self>
