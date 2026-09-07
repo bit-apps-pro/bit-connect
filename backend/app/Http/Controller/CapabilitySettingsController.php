@@ -29,12 +29,9 @@ final class CapabilitySettingsController
     public function get(GetCapabilitySettingsRequest $_request) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
     {
         // __() can't run inside enum #[Label] attributes (constant expressions
-        // only), so translate the English labels here at the read site.
-        $capabilityLabels = array_map(
-            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-            static fn (string $label): string => __($label, 'bit-connect'),
-            Capabilities::labels()
-        );
+        // only), so the translated wording lives in a match over literals that
+        // the .pot extractor can actually read. See Capabilities::translatedLabel().
+        $capabilityLabels = Capabilities::translatedLabels();
 
         return Response::success(
             [

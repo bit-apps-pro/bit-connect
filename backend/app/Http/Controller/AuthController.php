@@ -26,7 +26,7 @@ final class AuthController
         }
 
         $user = wp_get_current_user();
-        $roles = \is_array($user->roles ?? null) ? array_values($user->roles) : [];
+        $roles = array_values($user->roles);
 
         $userData = [
             'id'           => $user->ID,

@@ -302,7 +302,7 @@ final class AuthApiController
 
     private static function formatUser(WP_User $user): array
     {
-        $roles = \is_array($user->roles ?? null) ? array_values($user->roles) : [];
+        $roles = array_values($user->roles);
 
         return [
             'id'           => $user->ID,

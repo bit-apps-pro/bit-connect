@@ -230,8 +230,7 @@ final class ActivityLogService
         return [
             'id'     => (int) $row->id,
             'action' => (string) $row->action,
-            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-            'action_label' => $action ? __($action->label(), 'bit-connect') : (string) $row->action,
+            'action_label' => $action ? ActivityActions::translatedLabel($action) : (string) $row->action,
             'actor'        => [
                 'id'   => (int) $row->actor_id,
                 'name' => $actor ? $actor->display_name : '',

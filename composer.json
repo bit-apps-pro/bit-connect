@@ -6,7 +6,7 @@
   "require": {
     "php": ">=8.2",
     "bitapps/wp-validator": "^1",
-    "bitapps/wp-database": "^1",
+    "bitapps/wp-database": "2.0.5",
     "bitapps/wp-telemetry": "^0",
     "bitapps/wp-kit": "^2.4",
     "typisttech/imposter-plugin": "^0.6.2"

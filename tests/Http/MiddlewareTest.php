@@ -193,9 +193,12 @@ final class MiddlewareTest extends TestCase
                 return \array_key_exists($key, $this->fields);
             }
 
-            public function __get($key)
+            // Overriding get() rather than __get() keeps both access styles
+            // working: Request::__get() delegates here, so property-style reads
+            // resolve through this too.
+            public function get($key, $default = null)
             {
-                return $this->fields[$key] ?? null;
+                return $this->fields[$key] ?? $default;
             }
         };
     }
