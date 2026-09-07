@@ -3,6 +3,7 @@
 namespace BitApps\BitConnect\Tests\Enum;
 
 use BitApps\BitConnect\Enum\ActivityActions;
+use BitApps\BitConnect\Enum\BadgeTone;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\ReportStatus;
@@ -97,5 +98,25 @@ class EnumLabelTranslationTest extends TestCase
                 "ReportStatus::{$case->name} label drifted from its #[Label] attribute"
             );
         }
+    }
+
+    public function testBadgeToneLabelsMatchTheirAttributes(): void
+    {
+        foreach (BadgeTone::cases() as $case) {
+            $this->assertSame(
+                $case->label(),
+                BadgeTone::translatedLabel($case),
+                "BadgeTone::{$case->name} label drifted from its #[Label] attribute"
+            );
+        }
+    }
+
+    /**
+     * translatedOptions() is what the Pro badge catalog renders, so it has to
+     * carry the same pairs as the untranslated options() it replaces.
+     */
+    public function testBadgeToneTranslatedOptionsMatchOptions(): void
+    {
+        $this->assertSame(BadgeTone::options(), BadgeTone::translatedOptions());
     }
 }
