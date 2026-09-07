@@ -148,11 +148,36 @@ class PostTypeProvider
      */
     public function registerTaxonomies(): void
     {
-        $this->registerTaxonomy(Taxonomies::TOPIC_TYPES->value, 'Topic Type', 'Topic Types', true);
-        $this->registerTaxonomy(Taxonomies::DEPARTMENTS->value, 'Department', 'Departments', true);
-        $this->registerTaxonomy(Taxonomies::STAGES->value, 'Stage', 'Stages', true);
-        $this->registerTaxonomy(Taxonomies::STATUSES->value, 'Status', 'Statuses', true);
-        $this->registerTaxonomy(Taxonomies::TAGS->value, 'Tag', 'Tags', false);
+        $this->registerTaxonomy(
+            Taxonomies::TOPIC_TYPES->value,
+            _x('Topic Type', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Topic Types', 'Taxonomy General Name', 'bit-connect'),
+            true
+        );
+        $this->registerTaxonomy(
+            Taxonomies::DEPARTMENTS->value,
+            _x('Department', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Departments', 'Taxonomy General Name', 'bit-connect'),
+            true
+        );
+        $this->registerTaxonomy(
+            Taxonomies::STAGES->value,
+            _x('Stage', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Stages', 'Taxonomy General Name', 'bit-connect'),
+            true
+        );
+        $this->registerTaxonomy(
+            Taxonomies::STATUSES->value,
+            _x('Status', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Statuses', 'Taxonomy General Name', 'bit-connect'),
+            true
+        );
+        $this->registerTaxonomy(
+            Taxonomies::TAGS->value,
+            _x('Tag', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Tags', 'Taxonomy General Name', 'bit-connect'),
+            false
+        );
 
         // Create default stages after registration
         $this->createDefaultStages();
@@ -403,18 +428,21 @@ class PostTypeProvider
     /**
      * Register a taxonomy for the bit-connect post type.
      *
+     * $singular and $plural arrive already translated. They cannot be wrapped
+     * here: `wp i18n make-pot` reads source, not runtime, so _x($plural, ...)
+     * would put nothing in the catalog and every locale would get the English
+     * back. Each caller wraps its own literal, where the extractor can see it.
+     *
      * @param string $taxonomy    taxonomy slug/identifier
-     * @param string $singular    singular name for the taxonomy
-     * @param string $plural      plural name for the taxonomy
+     * @param string $singular    translated singular name for the taxonomy
+     * @param string $plural      translated plural name for the taxonomy
      * @param bool   $hierarchical whether the taxonomy is hierarchical
      */
     private function registerTaxonomy(string $taxonomy, string $singular, string $plural, bool $hierarchical): void
     {
         $labels = [
-            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-            'name' => _x($plural, 'Taxonomy General Name', 'bit-connect'),
-            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-            'singular_name' => _x($singular, 'Taxonomy Singular Name', 'bit-connect'),
+            'name'          => $plural,
+            'singular_name' => $singular,
         ];
 
         /**
