@@ -183,6 +183,7 @@ final class PostController
 
         $data = [];
         foreach ($query->posts as $post) {
+            $authorId = (int) $post->post_author;
             $data[] = [
                 'id'            => $post->ID,
                 'title'         => get_the_title($post),
@@ -190,10 +191,10 @@ final class PostController
                 'content'       => get_the_content(null, false, $post),
                 'link'          => get_permalink($post),
                 'date'          => get_the_date('Y-m-d', $post),
-                'author'        => get_the_author_meta('display_name', $post->post_author),
-                'author_email'  => get_the_author_meta('user_email', $post->post_author),
-                'author_avatar' => get_avatar_url($post->post_author),
-                'author_posts'  => get_author_posts_url($post->post_author),
+                'author'        => get_the_author_meta('display_name', $authorId),
+                'author_email'  => get_the_author_meta('user_email', $authorId),
+                'author_avatar' => get_avatar_url($authorId),
+                'author_posts'  => get_author_posts_url($authorId),
             ];
         }
 

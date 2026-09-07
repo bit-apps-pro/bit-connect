@@ -93,7 +93,7 @@ final class LoginController
 
         AuthRateLimiter::forget(AuthRateLimiter::LOGIN, $username);
 
-        $roles = \is_array($user->roles ?? null) ? array_values($user->roles) : [];
+        $roles = array_values($user->roles);
         $redirect = AuthService::getLoginRedirect();
 
         /*

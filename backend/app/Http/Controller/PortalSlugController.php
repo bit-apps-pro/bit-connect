@@ -125,7 +125,7 @@ final class PortalSlugController
         if ($enabled && $page) {
             update_option('show_on_front', 'page');
             update_option('page_on_front', $page->ID);
-        } elseif (!$enabled && $page && (int) get_option('page_on_front') === $page->ID) {
+        } elseif ($page && (int) get_option('page_on_front') === $page->ID) {
             // Only undo the binding this controller created; a front page pointing
             // anywhere else is the administrator's own and is left alone.
             update_option('show_on_front', 'posts');
