@@ -1,7 +1,8 @@
-import { __ } from '../../admin/src/common/helpers/i18nWrap'
-import fbCommunityImg from '../resources/img/fbCommunity.webp'
 import { Button, Flex, theme, Typography } from 'antd'
 import { LuFacebook } from 'react-icons/lu'
+
+import { __ } from '../../admin/src/common/helpers/i18nWrap'
+import fbCommunityImg from '../resources/img/fbCommunity.webp'
 
 interface FBCommunityCardProps {
   facebookCommunityLink: string

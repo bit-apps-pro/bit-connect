@@ -1,22 +1,20 @@
-import { __ } from '../../admin/src/common/helpers/i18nWrap'
-import request from '../../admin/src/common/helpers/request'
-import config from '../../admin/src/config/config'
-import If from '../../admin/src/components/utilities/If'
 import { Badge, Button, Space, Tag, Typography } from 'antd'
 import Title from 'antd/es/typography/Title'
 import { useEffect, useRef } from 'react'
 import { LuBadgeCheck, LuCheck, LuCircleX, LuCrown } from 'react-icons/lu'
 import { useAsync, useSearchParam } from 'react-use'
 
+import { __ } from '../../admin/src/common/helpers/i18nWrap'
+import request from '../../admin/src/common/helpers/request'
+import If from '../../admin/src/components/utilities/If'
+import config from '../../admin/src/config/config'
 import LicenseActivationNotice from './LicenseActivationNotice.pro'
 import CheckNewUpdate from './SupportPage/CheckNewUpdate'
 import pluginInfo from './SupportPage/data/pluginInfoData'
+import { licenseValidityStorageKey } from './SupportPage/data/useCheckLicenseValidity'
 
-const SUBS_URL =
-  `h_t_tps_:/_/subscription_.bitapps_.pro/wp/activateLicense/?slug=${config.PRO_SLUG}&redirect=${encodeURIComponent(window.location.href)}`.replaceAll(
-    '_',
-    ''
-  )
+/** Where a licence is activated. Written out plainly — see RecommendedPlugins. */
+const SUBS_URL = `https://subscription.bitapps.pro/wp/activateLicense/?slug=${config.PRO_SLUG}&redirect=${encodeURIComponent(window.location.href)}`
 
 const SITE_BASE_URL = config.SITE_BASE_URL?.endsWith('/')
   ? config.SITE_BASE_URL.slice(0, -1)
@@ -55,11 +53,7 @@ export default function License({ pluginSlug }: { pluginSlug: string }) {
     return text
   })
 
-  // Only ask when there is a pro plugin to ask about. Without the guard
-  // PRO_SLUG is undefined on a free-only install and this fetches
-  // `/wp-content/plugins/undefined/...`, which 404s twice on every visit.
   const proBuildCodeName = useAsync(async () => {
-    if (!config.PRO_SLUG) return ''
     const res = await fetch(`/wp-content/plugins/${config.PRO_SLUG}/assets/build-code-name.txt`)
     const text = await res.text()
     return text
@@ -92,7 +86,7 @@ export default function License({ pluginSlug }: { pluginSlug: string }) {
     await request('pro_license/activate', { licenseKey: licenseKey.current })
 
     //remote validity check data from local storage
-    localStorage.removeItem(btoa(`${config.PRO_SLUG}-check-validity`))
+    localStorage.removeItem(licenseValidityStorageKey(config.PRO_SLUG))
 
     window.close()
   }

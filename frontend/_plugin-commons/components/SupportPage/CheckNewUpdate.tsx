@@ -1,9 +1,9 @@
 import { SyncOutlined } from '@ant-design/icons'
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
-import config from '../../../admin/src/config/config'
 import { Space, theme, Tooltip } from 'antd'
 import { LuCircleCheck, LuInfo } from 'react-icons/lu'
 
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
+import config from '../../../admin/src/config/config'
 import { versionCompare } from '../../utils/utils'
 import useCheckUpdate from './data/useCheckUpdate'
 

@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
+import { IS_PRO_ACTIVE, SHOW_PRO_UPSELL } from '@common/helpers/pro-access'
 import { Alert, Button, Descriptions, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,6 +8,7 @@ import useUpdateSettings from './data/use-update-settings'
 import { type ErrorResponse } from './data/use-update-settings'
 import ModerationSection from './internal/moderation-section'
 import SettingsSection from './internal/settings-section'
+import TopicAccessProNote from './internal/topic-access-pro-note'
 import {
   type CleanupSettings,
   type SettingsFormData,
@@ -148,27 +149,29 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      {
-        description: __('On/off your Topic comment Upvote'),
-        key: 'commentUpvote',
-        label: __('Comment Upvote'),
-        // Same shape as Private Topic below: not a code split, because the
-        // control is identical either way and only held off. The server is the
-        // real gate — it reports this setting as false and refuses the vote
-        // unless pro is licensed.
-        proOnly: !IS_PRO_ACTIVE,
-        value: form.topicAccess.commentUpvote ?? false
-      },
-      {
-        description: __('Let authors keep a topic private, visible only to them and the forum team'),
-        key: 'privateTopic',
-        label: __('Private Topic'),
-        // Not a code split: the control is the same either way, only held off.
-        // The server is the real gate — it reports this setting as false and
-        // refuses a private topic unless pro is licensed.
-        proOnly: !IS_PRO_ACTIVE,
-        value: form.topicAccess.privateTopic ?? false
-      }
+      // Present only where the feature is: `IS_PRO_ACTIVE` is a compile-time
+      // `false` in the free bundle, so these two rows are dropped from it
+      // rather than rendered switched off. TopicAccessProNote says what they
+      // are in their place — see the note there for why a disabled switch is
+      // not an option.
+      ...(IS_PRO_ACTIVE
+        ? [
+            {
+              description: __('On/off your Topic comment Upvote'),
+              key: 'commentUpvote',
+              label: __('Comment Upvote'),
+              value: form.topicAccess.commentUpvote ?? false
+            },
+            {
+              description: __(
+                'Let authors keep a topic private, visible only to them and the forum team'
+              ),
+              key: 'privateTopic',
+              label: __('Private Topic'),
+              value: form.topicAccess.privateTopic ?? false
+            }
+          ]
+        : [])
     ]
   }, [form])
 
@@ -234,6 +237,7 @@ export default function Settings() {
           subtitle={__('Choose what members can do on a topic')}
           title={__('Topic Access Settings')}
         />
+        {SHOW_PRO_UPSELL && <TopicAccessProNote />}
         <SettingsSection
           disabled={isUpdatingSettings}
           onChange={(key, value) =>
