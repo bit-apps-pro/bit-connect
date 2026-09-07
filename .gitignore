@@ -28,3 +28,5 @@ scripts/seed/
 
 # Competitive packaging analysis — internal working document, not shipped.
 docs/packaging-matrix.html
+
+.phpunit.cache
