@@ -1,5 +1,4 @@
 import { XOutlined } from '@ant-design/icons'
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import { Flex, theme, Typography } from 'antd'
 import React from 'react'
 import {
@@ -14,6 +13,7 @@ import {
   LuYoutube
 } from 'react-icons/lu'
 
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import pluginInfoData from './data/pluginInfoData'
 
 const { Link, Text, Title } = Typography

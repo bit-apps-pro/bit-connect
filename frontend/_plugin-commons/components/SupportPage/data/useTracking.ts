@@ -1,5 +1,6 @@
-import request from '../../../../admin/src/common/helpers/request'
 import { useQuery } from '@tanstack/react-query'
+
+import request from '../../../../admin/src/common/helpers/request'
 
 interface Tracking {
   allowTracking: boolean

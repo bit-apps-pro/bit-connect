@@ -1,6 +1,6 @@
 {
   "name": "bitapps/bit-connect",
-  "description": "A plugin connect user to product development process. User will be able to add feature requests, create issues. Also will be able send feedback. Add ideas on features in roadmap to improve features.",
+  "description": "A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
   "require": {
