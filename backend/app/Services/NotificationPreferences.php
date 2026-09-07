@@ -126,10 +126,8 @@ final class NotificationPreferences
 
             $types[] = [
                 'type' => $type->value,
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-                'label' => __($type->label(), 'bit-connect'),
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- see above
-                'description' => __($type->description(), 'bit-connect'),
+                'label'       => NotificationTypes::translatedLabel($type),
+                'description' => NotificationTypes::translatedDescription($type),
                 'inapp'       => self::wantsInApp($userId, $type),
                 'email'       => self::resolve($userId, $type, self::CHANNEL_EMAIL),
                 // Two separate reasons a switch is not the member's to move, and

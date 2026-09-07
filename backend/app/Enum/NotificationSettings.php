@@ -243,7 +243,8 @@ enum NotificationSettings: string
      */
     public static function mailGreeting($settings): string
     {
-        return self::template($settings, 'mailGreeting', 'Hello {name},');
+        // translators: {name} is replaced with the member's display name.
+        return self::template($settings, 'mailGreeting', __('Hello {name},', 'bit-connect'));
     }
 
     /**
@@ -253,7 +254,7 @@ enum NotificationSettings: string
      */
     public static function mailIntro($settings): string
     {
-        return self::template($settings, 'mailIntro', 'Here is what happened:');
+        return self::template($settings, 'mailIntro', __('Here is what happened:', 'bit-connect'));
     }
 
     /**
@@ -263,7 +264,7 @@ enum NotificationSettings: string
      */
     public static function mailDigestIntro($settings): string
     {
-        return self::template($settings, 'mailDigestIntro', 'Here is what you missed:');
+        return self::template($settings, 'mailDigestIntro', __('Here is what you missed:', 'bit-connect'));
     }
 
     /**
@@ -276,7 +277,7 @@ enum NotificationSettings: string
         return self::template(
             $settings,
             'mailFooter',
-            'Change what you are emailed about in your forum profile:'
+            __('Change what you are emailed about in your forum profile:', 'bit-connect')
         );
     }
 
@@ -344,6 +345,11 @@ enum NotificationSettings: string
      * with a hole in it — a blank greeting reads as a bug in the forum, not as
      * a deliberate choice.
      *
+     * $default arrives already translated. It cannot be translated here: `wp
+     * i18n make-pot` reads source, not runtime, so __($default) would put
+     * nothing in the catalog and every locale would get the English back. Each
+     * caller wraps its own literal instead, where the extractor can see it.
+     *
      * @param mixed $settings the stored notification_settings option
      */
     private static function template($settings, string $key, string $default): string
@@ -353,8 +359,7 @@ enum NotificationSettings: string
             ? trim($stored[$key])
             : '';
 
-        // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- defaults are English literals defined at the call sites above; translated here at the single read site
-        return $value === '' ? __($default, 'bit-connect') : $value;
+        return $value === '' ? $default : $value;
     }
 
     /**

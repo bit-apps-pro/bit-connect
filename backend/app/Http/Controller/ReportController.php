@@ -360,8 +360,7 @@ final class ReportController
             $snapshot,
             [
                 'decision' => $status->value,
-                // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- labels are English literals defined in #[Label] attributes; translated here at the read site
-                'decision_label' => __($status->label(), 'bit-connect'),
+                'decision_label' => ReportStatus::translatedLabel($status),
                 'note'           => $note,
             ]
         );
