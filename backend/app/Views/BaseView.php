@@ -53,7 +53,7 @@ class BaseView
             $slug = Config::SLUG;
             // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Version is embedded in the filename via $codeName for cache busting.
             wp_register_script_module($this->slug . '-MODULE-main', Config::get('ASSET_URI') . "/client/main-{$codeName}.js", ['@wordpress/interactivity'], null);
-            wp_register_style($this->slug . '-styles', Config::get('ASSET_URI') . "/client/main-{$slug}-ba-assets-{$codeName}.css", null, $this->version, 'screen');
+            wp_register_style($this->slug . '-styles', Config::get('ASSET_URI') . "/client/main-{$slug}-ba-assets-{$codeName}.css", [], $this->version, 'screen');
         }
     }
 

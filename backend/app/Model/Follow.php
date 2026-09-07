@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
-use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
 
 /**
  * Follow Model.
@@ -27,8 +26,6 @@ use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
  */
 class Follow extends Model
 {
-    use Relations;
-
     public const TARGET_TOPIC = 'topic';
 
     public const TARGET_DEPARTMENT = 'department';

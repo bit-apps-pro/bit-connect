@@ -37,7 +37,7 @@ final class AdminNonceCheckerMiddleware
         $nonce = '';
 
         if ($request->has('_ajax_nonce')) {
-            $nonce = sanitize_key($request->_ajax_nonce);
+            $nonce = sanitize_key($request->get('_ajax_nonce'));
         } elseif (isset($_SERVER['HTTP_X_WP_NONCE'])) {
             $nonce = sanitize_key(wp_unslash($_SERVER['HTTP_X_WP_NONCE']));
         }
