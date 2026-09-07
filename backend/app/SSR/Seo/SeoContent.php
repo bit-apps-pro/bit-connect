@@ -261,40 +261,6 @@ HTML,
     }
 
     /**
-     * Minimal inline styles for the pre-mount first paint.
-     *
-     * In dev every stylesheet arrives through the JS bundle, and even the
-     * production CSS can lag the HTML — so without this the server markup
-     * renders completely unstyled until React mounts. ~1 KB, scoped under
-     * `.bc-ssr`, values matched to the Tailwind theme.
-     *
-     * Printed from SeoMeta's wp_head hook rather than inline with the body
-     * markup — a `<style>` inside a `<div>` is non-conforming HTML, and the
-     * head fires on exactly the requests that render this content. After React
-     * mounts, no `.bc-ssr` element exists, so the rules match nothing.
-     */
-    public static function criticalCss(): string
-    {
-        return <<<'HTML'
-<style>
-.bc-ssr{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;max-width:960px;margin:0 auto;padding:1rem;color:#374151;line-height:1.5}
-.bc-ssr h1{font-size:1.25rem;font-weight:600;margin:0 0 1rem}
-.bc-ssr ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.75rem}
-.bc-ssr li,.bc-ssr>article{border:1px solid #e5e7eb;border-radius:.5625rem;padding:.75rem}
-.bc-ssr h2{font-size:1rem;font-weight:600;margin:0;line-height:1.375}
-.bc-ssr a{color:#3266EA;text-decoration:none}
-.bc-ssr p{margin:.25rem 0 0}
-.bc-ssr li p{font-size:.875rem}
-.bc-ssr time,.bc-ssr li p:last-child,.bc-ssr>article>p:first-of-type{color:#6b7280;font-size:.8125rem}
-.bc-ssr section h2{margin-bottom:.5rem}
-.bc-ssr-loading{display:none}
-.bc-js .bc-ssr-loading{display:block}
-.bc-js .bc-ssr{display:none}
-</style>
-HTML;
-    }
-
-    /**
      * Previous/next links for the list route.
      *
      * The server list is capped at a screenful, so without these a crawler can

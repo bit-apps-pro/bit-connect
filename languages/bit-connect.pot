@@ -29,11 +29,6 @@ msgstr ""
 msgid "https://bitapps.pro/bit-connect"
 msgstr ""
 
-#. Description of the plugin
-#: bit-connect.php
-msgid "A plugin connect user to product development process. User will be able to add feature requests, create issues. Also will be able send feedback. Add ideas on features in roadmap to improve features."
-msgstr ""
-
 #. Author of the plugin
 #: bit-connect.php
 msgid "Bit Apps"
@@ -1197,6 +1192,8 @@ msgstr ""
 msgid "is up to date"
 msgstr ""
 
+#. Description of the plugin
+#: bit-connect.php
 #: build/free-source/languages/frontend-extracted-strings.php:70
 #: languages/frontend-extracted-strings.php:70
 msgid "A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next."
