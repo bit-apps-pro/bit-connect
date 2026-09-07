@@ -814,8 +814,8 @@ class TopicService
                 'author_avatar'      => get_avatar_url($comment->user_id ?: $comment->comment_author_email),
                 // Empty for guest comments (user_id 0), which have no profile.
                 'author_slug' => ProfileSlugService::slugFor((int) $comment->user_id),
-                'vote'        => self::getCommentVoteStatus($comment->comment_ID),
-                'attachments' => self::formatCommentAttachments($comment->comment_ID),
+                'vote'        => self::getCommentVoteStatus((int) $comment->comment_ID),
+                'attachments' => self::formatCommentAttachments((int) $comment->comment_ID),
                 // The topic page reads its comments from here, not from the
                 // comments endpoint, so a badge missing from this shape is a
                 // badge nobody sees: post-commons.ts defaults the absent field

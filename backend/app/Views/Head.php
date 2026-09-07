@@ -85,7 +85,7 @@ class Head
             $codeName = Config::get('BUILD_CODE_NAME');
             // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Version is embedded in the filename via $codeName for cache busting.
             wp_enqueue_script_module($slug . '-index-MODULE', Config::get('ASSET_URI') . "/main-{$codeName}.js", [], null);
-            wp_enqueue_style($slug . '-styles', Config::get('ASSET_URI') . "/main-{$slug}-ba-assets-{$codeName}.css", null, $version, 'screen');
+            wp_enqueue_style($slug . '-styles', Config::get('ASSET_URI') . "/main-{$slug}-ba-assets-{$codeName}.css", [], $version, 'screen');
         }
 
         // wp_localize_script(Config::SLUG . '-index-MODULE', Config::VAR_PREFIX, self::createConfigVariable());

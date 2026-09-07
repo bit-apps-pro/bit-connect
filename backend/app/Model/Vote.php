@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
-use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
 
 /**
  * Vote Model.
@@ -30,8 +29,6 @@ use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
  */
 class Vote extends Model
 {
-    use Relations;
-
     protected $prefix = Config::VAR_PREFIX;
 
     protected $fillable = [

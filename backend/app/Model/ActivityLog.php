@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
-use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
 
 /**
  * ActivityLog Model.
@@ -23,8 +22,6 @@ use BitApps\BitConnect\Deps\BitApps\WPDatabase\Relations;
  */
 class ActivityLog extends Model
 {
-    use Relations;
-
     protected $prefix = Config::VAR_PREFIX;
 
     protected $fillable = [
