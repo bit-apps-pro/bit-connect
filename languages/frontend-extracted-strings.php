@@ -593,7 +593,9 @@ return [
 
     'Settings' => __('Settings', 'bit-connect'),
 
-    'License & Support' => __('License & Support', 'bit-connect'),
+    'Support' => __('Support', 'bit-connect'),
+
+    'Support & License' => __('Support & License', 'bit-connect'),
 
     'Bit Connect' => __('Bit Connect', 'bit-connect'),
 

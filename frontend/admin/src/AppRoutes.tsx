@@ -38,7 +38,7 @@ const Notifications = lazy(() => import('./pages/notifications'))
 const Onboarding = lazy(() => import('./pages/onboarding/onboarding'))
 const Settings = lazy(() => import('./pages/settings'))
 const Seo = lazy(() => import('./pages/seo'))
-const License = lazy(() => import('./pages/license/license'))
+const Support = lazy(() => import('./pages/support/support'))
 
 const { darkAlgorithm, defaultAlgorithm } = theme
 
@@ -117,10 +117,14 @@ export default function AppRoutes() {
               <Route element={<Notifications />} path="notifications" />
               <Route element={<Seo />} path="seo" />
               <Route element={<Settings />} path="settings" />
-              {/* Registered in both builds. The free half sells the add-on; the
-                  pro half activates it. It carries no menu entry — the plugin
-                  row's Support link and the upsell modal are how people arrive. */}
-              <Route element={<License />} path="license" />
+              {/* Registered in both builds. In this one it is support, the
+                  changelog and what the add-on adds; in the pro build the same
+                  screen also activates a licence. */}
+              <Route element={<Support />} path="support" />
+              {/* The screen was at `#/license` until it was renamed, and that
+                  hash is in bookmarks, in old plugin-row links and in the
+                  READMEs of released versions. Redirect rather than 404. */}
+              <Route element={<Navigate replace to="../support" />} path="license" />
               <Route element={<Tags />} path="tags" />
               <Route element={<Products />} path="products" />
               <Route element={<Status />} path="status" />

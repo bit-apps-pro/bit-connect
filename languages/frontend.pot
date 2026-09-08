@@ -1402,8 +1402,12 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:41
-msgid "License & Support"
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
+msgid "Support"
+msgstr ""
+
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
+msgid "Support & License"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:67

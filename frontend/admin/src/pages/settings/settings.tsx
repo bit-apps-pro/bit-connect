@@ -8,6 +8,7 @@ import useUpdateSettings from './data/use-update-settings'
 import { type ErrorResponse } from './data/use-update-settings'
 import ModerationSection from './internal/moderation-section'
 import SettingsSection from './internal/settings-section'
+import TopicAccessProNote from './internal/topic-access-pro-note'
 import {
   type CleanupSettings,
   type SettingsFormData,
@@ -148,27 +149,29 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      {
-        description: __('On/off your Topic comment Upvote'),
-        key: 'commentUpvote',
-        label: __('Comment Upvote'),
-        // Same shape as Private Topic below: not a code split, because the
-        // control is identical either way and only held off. The server is the
-        // real gate — it reports this setting as false and refuses the vote
-        // unless pro is licensed.
-        proOnly: !IS_PRO_ACTIVE,
-        value: form.topicAccess.commentUpvote ?? false
-      },
-      {
-        description: __('Let authors keep a topic private, visible only to them and the forum team'),
-        key: 'privateTopic',
-        label: __('Private Topic'),
-        // Not a code split: the control is the same either way, only held off.
-        // The server is the real gate — it reports this setting as false and
-        // refuses a private topic unless pro is licensed.
-        proOnly: !IS_PRO_ACTIVE,
-        value: form.topicAccess.privateTopic ?? false
-      }
+      // Rows for the two add-on features are added only when the add-on is
+      // there to answer for them. A row rendered switched-off-and-disabled is
+      // a control for something this plugin cannot do, which reads as a
+      // built-in feature held back pending payment — see TopicAccessProNote,
+      // which says the same thing in words instead.
+      ...(IS_PRO_ACTIVE
+        ? [
+            {
+              description: __('On/off your Topic comment Upvote'),
+              key: 'commentUpvote',
+              label: __('Comment Upvote'),
+              value: form.topicAccess.commentUpvote ?? false
+            },
+            {
+              description: __(
+                'Let authors keep a topic private, visible only to them and the forum team'
+              ),
+              key: 'privateTopic',
+              label: __('Private Topic'),
+              value: form.topicAccess.privateTopic ?? false
+            }
+          ]
+        : [])
     ]
   }, [form])
 
@@ -227,6 +230,7 @@ export default function Settings() {
       <div className="bc-px-5">
         <SettingsSection
           disabled={isUpdatingSettings}
+          note={IS_PRO_ACTIVE ? undefined : <TopicAccessProNote />}
           onChange={(key, value) =>
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }

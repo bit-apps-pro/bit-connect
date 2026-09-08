@@ -22,11 +22,13 @@ Bit Connect turns your site into a public product forum. Your users open topics 
 * **A front-end portal** — served at your site root or on a page of its own, with server-side rendering and SEO metadata so topics are indexable.
 * **Roles and capabilities** — a per-role capability matrix decides who can post, comment, vote and moderate.
 * **Email notifications** — tell members when their topic moves, when someone replies, or when a moderator steps in.
-* **Reports and moderation** — members flag content, moderators review it, and content can auto-hide once enough people report it.
+* **Reports and moderation** — members flag content and moderators review it from a queue. Reported content stays visible until a moderator decides.
 
 = Pro add-on =
 
 Some features are provided by a separate **Bit Connect Pro** add-on, which is not hosted on WordPress.org. Everything described above works in this plugin without it. See [bitapps.pro/bit-connect](https://bitapps.pro/bit-connect) for what the add-on adds.
+
+This plugin contains no licence key, no activation step and no licence check of any kind. Nothing in it is switched off, limited by time or usage, or waiting to be unlocked. The add-on's features are not present here in a disabled form — the code that implements them is in the add-on, and installing it is what adds them.
 
 == Development ==
 
@@ -56,15 +58,15 @@ If serving fonts from Google is not acceptable for your site — some jurisdicti
 
 = Bit Apps plugin catalogue =
 
-On the **Bit Connect → License & Support** screen, your browser requests `https://wp-api.bitapps.pro/public/plugins-info` to display the plugin's current version and the list of other Bit Apps plugins shown on that page.
+On the **Bit Connect → Support** screen, your browser requests `https://wp-api.bitapps.pro/public/plugins-info` to display the list of other Bit Apps plugins shown at the bottom of that page.
 
 * **What is sent:** nothing beyond an ordinary web request. No site content, user data, email addresses or settings are transmitted. As with any web request, the receiving server sees your IP address and the referring admin URL.
-* **When:** only while the License & Support screen is open. Never on the front end, and never on other admin screens.
+* **When:** only while the Support screen is open. Never on the front end, and never on other admin screens.
 * **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
 
 = Optional diagnostic reporting =
 
-Separately, the plugin can send diagnostic data to Bit Apps to help improve it. This is **off by default**. Nothing is sent unless you opt in — including if you decline: refusing the invitation stores your answer locally and makes no request at all. You opt in either from the one-time notice or from the *Improvement* toggle on the License & Support screen, and you can turn it back off there at any time.
+Separately, the plugin can send diagnostic data to Bit Apps to help improve it. This is **off by default**. Nothing is sent unless you opt in — including if you decline: refusing the invitation stores your answer locally and makes no request at all. You opt in either from the one-time notice or from the *Improvement* toggle on the Support screen, and you can turn it back off there at any time.
 
 * **What is sent, if you opt in:** your site URL and name, WordPress and server versions, your site's language, the number of registered users, and the number of active and inactive plugins. Alongside that, a description of how the forum itself is set up and used: where the portal is served from, whether it is open to everyone or to members only, how people sign in, how many topics, replies, votes, follows and reports exist, how many terms each vocabulary holds, how many roles take part in or moderate the forum, which notification channels and SEO options are switched on, and whether the Pro add-on is present.
 * **What is never sent:** your email address, your name, any member's details, any IP address, and any content — no topic, reply, comment or setting value beyond the on/off states listed above.
@@ -99,7 +101,7 @@ No. Bit Connect is a complete forum on its own. The Pro add-on is a separate plu
 
 = Does the plugin contact any external servers? =
 
-Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the License & Support screen. Diagnostic reporting is separate, off by default, and sends nothing at all until you opt in — declining makes no request either.
+Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. Diagnostic reporting is separate, off by default, and sends nothing at all until you opt in — declining makes no request either.
 
 == Other plugins by Bit Apps ==
 
