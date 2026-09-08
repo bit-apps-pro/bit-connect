@@ -977,7 +977,11 @@ msgstr ""
 #: build/free-source/backend/app/Views/PluginPageActions.php:32
 #: build/free-source/languages/frontend-extracted-strings.php:586
 #: languages/frontend-extracted-strings.php:586
-msgid "License & Support"
+msgid "Support"
+msgstr ""
+
+#: languages/frontend-extracted-strings.php:588
+msgid "Support & License"
 msgstr ""
 
 #: build/bit-connect-pro/backend/app/Http/Middleware/AdminNonceMiddleware.php:30

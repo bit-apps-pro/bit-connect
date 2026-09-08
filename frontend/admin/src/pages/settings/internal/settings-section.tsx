@@ -1,9 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
-import { Switch, Tag, Tooltip, Typography } from 'antd'
-import { useSetAtom } from 'jotai'
-import { LuCrown } from 'react-icons/lu'
-
-import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
+import { Switch, Typography } from 'antd'
+import { type ReactNode } from 'react'
 
 const { Text, Title } = Typography
 
@@ -11,29 +7,37 @@ interface SettingItem {
   description: string
   key: string
   label: string
-  /** Marks the row as a pro feature: the switch is held off and a Pro tag
-      opens the upsell instead. */
-  proOnly?: boolean
   value: boolean
 }
 
 interface SettingsSectionProps {
   disabled?: boolean
+  /** Rendered under the grid. Used to say what an edition does not have. */
+  note?: ReactNode
   onChange: (key: string, value: boolean) => void
   settings: SettingItem[]
   subtitle: string
   title: string
 }
 
+/**
+ * A grid of on/off settings.
+ *
+ * Every switch here is real: it is bound to a stored value and the forum acts
+ * on it. There is deliberately no "pro" variant of a row — a switch rendered
+ * forced-off with a crown beside it is a control for something this plugin
+ * cannot do, and WordPress.org reads that as a built-in feature held back
+ * pending payment (Plugin Directory guideline 6). A caller that wants to say
+ * what the add-on adds passes `note` and says it in words instead.
+ */
 export default function SettingsSection({
   disabled = false,
+  note,
   onChange,
   settings,
   subtitle,
   title
 }: SettingsSectionProps) {
-  const setBuyProOpen = useSetAtom($isBuyProModalOpen)
-
   return (
     <div className="bc-bg-surface bc-p-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-mb-6">
       <div className="bc-mb-4">
@@ -50,28 +54,11 @@ export default function SettingsSection({
           >
             <div className="bc-flex bc-items-center bc-justify-between bc-mb-4">
               <Typography.Text strong>{setting.label}</Typography.Text>
-              <div className="bc-flex bc-items-center bc-justify-end bc-gap-2">
-                {setting.proOnly && (
-                  <Tooltip title={__('Available with Bit Connect Pro.')}>
-                    <Tag
-                      className="bc-m-0 bc-cursor-pointer"
-                      color="gold"
-                      icon={<LuCrown className="bc-mr-1 bc-inline" size={12} />}
-                      onClick={() => setBuyProOpen(true)}
-                    >
-                      {__('Pro')}
-                    </Tag>
-                  </Tooltip>
-                )}
-                <Switch
-                  // A pro row is shown switched off whatever is stored: the
-                  // server reports the effective value, and letting the control
-                  // look on while the feature is inert is worse than honest.
-                  checked={setting.proOnly ? false : setting.value}
-                  disabled={disabled || setting.proOnly}
-                  onChange={checked => onChange(setting.key, checked)}
-                />
-              </div>
+              <Switch
+                checked={setting.value}
+                disabled={disabled}
+                onChange={checked => onChange(setting.key, checked)}
+              />
             </div>
             <Text className="bc-text-sm" type="secondary">
               {setting.description}
@@ -79,6 +66,8 @@ export default function SettingsSection({
           </div>
         ))}
       </div>
+
+      {note && <div className="bc-mt-4">{note}</div>}
     </div>
   )
 }
