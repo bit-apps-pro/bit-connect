@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
@@ -176,6 +177,36 @@ final class ReportService
     }
 
     /**
+     * Whatever a report query answered, as a plain list of rows.
+     *
+     * Lives here rather than on the model because every caller is in this
+     * class, and because the test double replaces Report wholesale — a helper
+     * on the model would be invisible to it.
+     *
+     * get() answers with a Collection, and with a bare Model when a limit of
+     * one matched exactly one row. Casting either to an array yields its own
+     * properties rather than the rows: the queue grouped that single bogus
+     * element into one all-zero card — "Topic #0", written by "(deleted
+     * account)" — and every real report vanished from the moderation screen.
+     *
+     * @param mixed $rows
+     *
+     * @return array<int, object>
+     */
+    private static function asList($rows): array
+    {
+        if ($rows instanceof Collection) {
+            return array_values($rows->all());
+        }
+
+        if ($rows instanceof Model) {
+            return [$rows];
+        }
+
+        return \is_array($rows) ? array_values($rows) : [];
+    }
+
+    /**
      * Everyone still waiting to hear what happened to one target.
      *
      * Must be read *before* resolveTarget(): pendingFor() answers with open
@@ -190,14 +221,15 @@ final class ReportService
     {
         $rows = Report::pendingFor($targetType, $targetId);
 
-        // get() answers with a bare Model instead of a list when a limit of one
-        // matched exactly one row. pendingFor() sets no limit, so this is a
-        // guard rather than a live case — but casting a Model to an array yields
-        // the model's own properties ($table, $casts…) and not the row, and the
-        // failure mode would be an empty recipient list that looks deliberate.
-        $rows = $rows instanceof Model ? [$rows] : (array) $rows;
-
-        $ids = array_map(static fn ($row): int => (int) $row->reporter_id, $rows);
+        // get() answers with a Collection, and a bare Model when a limit of one
+        // matched exactly one row. Casting either to an array yields its own
+        // properties rather than the rows, and the failure mode here is an
+        // empty recipient list that looks deliberate — nobody is told their
+        // report was decided. self::asList() unwraps both.
+        $ids = array_map(
+            static fn ($row): int => (int) $row->reporter_id,
+            self::asList($rows)
+        );
 
         return array_values(array_unique(array_filter($ids, static fn (int $id): bool => $id > 0)));
     }
@@ -218,7 +250,10 @@ final class ReportService
         }
 
         $pending = Report::pendingFor($targetType, $targetId);
-        $count = \count((array) $pending);
+        // Not count((array) $pending): a Collection casts to a one-element
+        // array whatever it holds, so an empty queue counted as one and the
+        // early return below never fired.
+        $count = \count(self::asList($pending));
 
         if ($count === 0) {
             return 0;
@@ -274,8 +309,8 @@ final class ReportService
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $status = (string) ($filters['status'] ?? ReportStatus::PENDING->value);
 
-        $rows = array_values(
-            (array) Report::where('status', $status)
+        $rows = self::asList(
+            Report::where('status', $status)
                 ->orderBy('created_at')
                 ->desc()
                 ->take((string) self::QUEUE_ROW_CAP)
