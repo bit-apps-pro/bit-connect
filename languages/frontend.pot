@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Sat Sep 05 2026 19:01:46 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Tue Sep 08 2026 17:57:26 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -10,101 +10,28 @@ msgstr ""
 msgid "Changelog"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:51
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:52
 msgid "Join Our Facebook Community"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:54
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:55
 msgid "Connect, share, and grow with like-minded individuals"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:58
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:59
 msgid "Exclusive Content"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:59
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:60
 msgid "Daily Discussion"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:60
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:61
 msgid "Special Events"
 msgstr ""
 
-#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:77
+#: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:78
 msgid "Join Now"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:112
-msgid "License & Activation"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:116
-msgid "Dev Version On"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:121
-msgid "Version"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:124
-#: frontend/_plugin-commons/components/License.pro.tsx:162
-msgid "Code Name:"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:137
-#: frontend/_plugin-commons/components/License.pro.tsx:159
-msgid "Pro Version"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:137
-msgid "Not Activated"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:147
-msgid "Buy Pro Version"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:185
-msgid "Deactivate License"
-msgstr ""
-
-#: frontend/_plugin-commons/components/License.pro.tsx:198
-msgid "Activate License"
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:15
-msgid ""
-"Please ensure that your product subscription is valid. If needed, try "
-"deactivating and reactivating your license."
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:19
-msgid ""
-"For further assistance, feel free to reach out to our live support or email "
-"us at support@bitapps.pro ."
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx:24
-msgid "Your license is invalid, try reactivate"
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:23
-msgid "Manage license"
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:27
-msgid ""
-"Please update your license to ensure you receive the latest security "
-"updates and bug fixes. \n"
-"          Using an outdated or unofficial license may leave your system "
-"vulnerable to security breaches and data leaks. \n"
-"          We cannot take responsibility for issues arising from such "
-"scenarios. For your safety, always download from the official Bit Apps "
-"server."
-msgstr ""
-
-#: frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx:32
-msgid "Your license is invalid"
 msgstr ""
 
 #: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:60
@@ -125,41 +52,23 @@ msgstr ""
 msgid "Update Now"
 msgstr ""
 
-#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:22
-msgid "Checking updates"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:34
-msgid "New version available"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:37
-msgid ""
-"Please update to the latest version to ensure plugin security and optimal "
-"performance. Stay safe and enjoy the enhanced features!"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx:54
-msgid "is up to date"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:15
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:11
 msgid ""
 "A community forum for WordPress where users raise feature requests, report "
 "issues, send feedback and vote on what gets built next."
 msgstr ""
 
-#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:26
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:22
 msgid ""
 "WordPress CRM to manage contacts, leads, deals, and invoices and run your "
 "whole sales pipeline right from your WordPress dashboard."
 msgstr ""
 
-#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:37
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:33
 msgid "Zapier Alternative in WordPress Unlimited Task."
 msgstr ""
 
-#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:46
+#: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:42
 msgid ""
 "An social media management plugin for WordPress, that allows you to share "
 "your post to different social media platform, schedule post, manage social "
@@ -222,17 +131,15 @@ msgstr ""
 msgid "for more information."
 msgstr ""
 
-#: frontend/_plugin-commons/components/SupportPage/RecommendedPlugins.tsx:44
+#: frontend/_plugin-commons/components/SupportPage/RecommendedPlugins.tsx:45
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:56
 msgid "Recommended Plugins"
 msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
 #: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:24
 msgid "Support"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/SupportPage.tsx:41
-msgid "About"
 msgstr ""
 
 #: frontend/admin/src/common/helpers/i18nWrap.test.ts:26
@@ -247,7 +154,6 @@ msgstr ""
 
 #: frontend/admin/src/common/helpers/i18nWrap.test.ts:40
 #: frontend/admin/src/pages/general/internal/location-section.tsx:89
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:154
 #: frontend/admin/src/pages/products/ui/product-create-modal.tsx:37
 #: frontend/admin/src/pages/products/ui/product-edit-modal.tsx:70
 #: frontend/admin/src/pages/products/ui/products-table.tsx:58
@@ -307,6 +213,7 @@ msgid "Maybe later"
 msgstr ""
 
 #: frontend/admin/src/components/buy-pro.tsx:69
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:48
 msgid "Get Bit Connect Pro"
 msgstr ""
 
@@ -494,7 +401,7 @@ msgid "Rows appear when someone acts on content they did not write."
 msgstr ""
 
 #: frontend/admin/src/pages/activity/activity.tsx:100
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:34
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:35
 msgid "Activity"
 msgstr ""
 
@@ -525,7 +432,6 @@ msgid "Topics"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/activity.tsx:146
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:22
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:17
 #: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:46
 #: frontend/client/src/pages/Post/PostDetailsPage.tsx:311
@@ -625,14 +531,12 @@ msgstr ""
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:137
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:82
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:119
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:39
 msgid "report"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:137
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:82
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:119
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:39
 msgid "reports"
 msgstr ""
 
@@ -647,7 +551,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-row.tsx:65
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:95
-#: frontend/admin/src/pages/settings/settings.tsx:148
+#: frontend/admin/src/pages/settings/settings.tsx:149
 msgid "Comment"
 msgstr ""
 
@@ -724,7 +628,7 @@ msgid "Sidebar card"
 msgstr ""
 
 #: frontend/admin/src/pages/general/general.tsx:209
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:26
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:27
 msgid "General"
 msgstr ""
 
@@ -740,13 +644,10 @@ msgid "Unsaved changes"
 msgstr ""
 
 #: frontend/admin/src/pages/general/general.tsx:225
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:126
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:150
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:66
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:105
 #: frontend/admin/src/pages/notifications/notifications.tsx:73
 #: frontend/admin/src/pages/seo/seo.tsx:350
-#: frontend/admin/src/pages/settings/settings.tsx:217
+#: frontend/admin/src/pages/settings/settings.tsx:220
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
 msgid "Save"
 msgstr ""
@@ -774,7 +675,7 @@ msgid "Narrow the list down to a tag."
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:40
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:30
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:31
 #: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:12
 #: frontend/admin/src/pages/tags/tags.tsx:19
 #: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:144
@@ -1345,40 +1246,40 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:25
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:26
 msgid "Dashboard"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:27
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:28
 #: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:10
 msgid "Stages"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:28
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:29
 #: frontend/admin/src/pages/topic-types/topic-types.tsx:17
 msgid "Topic Types"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:29
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:30
 #: frontend/admin/src/pages/products/products.tsx:20
 msgid "Products"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:31
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:32
 #: frontend/admin/src/pages/status/status.tsx:18
 msgid "Status"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:32
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:33
 msgid "Manager"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:35
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
 #: frontend/admin/src/pages/reports/reports.tsx:105
 msgid "Reports"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:37
 #: frontend/admin/src/pages/notifications/notifications.tsx:61
 #: frontend/admin/src/pages/notifications/notifications.tsx:82
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:77
@@ -1391,83 +1292,51 @@ msgstr ""
 msgid "Notifications"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:37
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
 #: frontend/admin/src/pages/seo/seo.tsx:332
 msgid "SEO"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
-#: frontend/admin/src/pages/settings/settings.tsx:209
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:39
+#: frontend/admin/src/pages/settings/settings.tsx:212
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
 msgid "Settings"
-msgstr ""
-
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
-msgid "Support"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
 msgid "Support & License"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:67
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:70
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:75
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:78
 msgid "Bit Connect"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:93
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:101
 msgid "Product by Bit Apps"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-delete-profile-badge.ts:28
-msgid "Failed to delete the badge"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-delete-profile-badge.ts:31
-msgid "Badge deleted"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-reorder-profile-badges.ts:32
-msgid "Failed to reorder badges"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:21
+#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:22
 msgid "Failed to reset capabilities"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:24
+#: frontend/admin/src/pages/manager/data/use-reset-user-capabilities.ts:25
 msgid "Capabilities reset to role defaults"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-save-profile-badge.ts:43
-msgid "Failed to save the badge"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-save-profile-badge.ts:47
-msgid "Badge saved"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:20
+#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:22
 msgid "Failed to update capabilities"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:25
+#: frontend/admin/src/pages/manager/data/use-update-role-capabilities.ts:27
 msgid "Capabilities updated"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-update-user-badges.ts:38
-msgid "Failed to update badges"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-update-user-badges.ts:41
-msgid "Badges updated"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:28
+#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:29
 msgid "Failed to update user capabilities"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:31
+#: frontend/admin/src/pages/manager/data/use-update-user-capabilities.ts:32
 msgid "User capabilities updated"
 msgstr ""
 
@@ -1483,8 +1352,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/manager/manager.tsx:61
 #: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:46
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:93
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:118
 msgid "Profile Badges"
 msgstr ""
 
@@ -1525,7 +1392,6 @@ msgid "No role"
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/badges-column-header.free.tsx:22
-#: frontend/admin/src/pages/manager/ui/badges-column-header.pro.tsx:7
 msgid "Badges"
 msgstr ""
 
@@ -1537,69 +1403,21 @@ msgstr ""
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:52
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:50
 #: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:46
-#: frontend/admin/src/pages/settings/internal/settings-section.tsx:62
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:42
 msgid "Pro"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:30
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:29
 msgid ""
 "Per-user capability overrides are a Pro feature. Set defaults per role "
 "instead."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:33
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:32
 msgid "Capabilities, set by role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:18
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:13
-#: frontend/client/src/pages/User/UserProfilePage.tsx:115
-msgid "Posts"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:26
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:21
-msgid "Voting"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:30
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:25
-msgid "Other People’s Content"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:34
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:29
-msgid "Moderation & Admin"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:87
-msgid ""
-"Checked = this user has the capability. Unchecked = revoked even if their "
-"role grants it."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:134
-msgid "Remove all overrides and restore role defaults"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:136
-msgid "Reset to role"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:146
-msgid "User Capabilities"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:148
-msgid "Edit user capabilities"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/capability-popover.pro.tsx:155
-msgid "caps"
-msgstr ""
-
 #: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:23
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:118
 msgid "Developer"
 msgstr ""
 
@@ -1632,86 +1450,21 @@ msgstr ""
 msgid "Buy Pro"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:97
-msgid ""
-"Badges you write yourself, for the things permissions cannot say — "
-"Developer, Support, Group Expert. Assign them to members from the user list."
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:13
+#: frontend/client/src/pages/User/UserProfilePage.tsx:115
+msgid "Posts"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:105
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:216
-msgid "Edit badge"
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:21
+msgid "Voting"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:105
-msgid "New badge"
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:25
+msgid "Other People’s Content"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:111
-msgid "Name"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:126
-msgid "Colour"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:147
-msgid "Delete a badge to add another"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:150
-msgid "Add badge"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:163
-msgid "Members will see"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:176
-msgid "No badges yet."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:180
-msgid ""
-"A member wearing several shows the first of these beside their name. Move a "
-"badge up to have it win."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:200
-msgid "Move up"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:208
-msgid "Move down"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:224
-msgid "Keep"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:225
-msgid "Everyone wearing it loses it. Members are not otherwise changed."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:226
-#: frontend/admin/src/pages/products/ui/products-table.tsx:61
-#: frontend/admin/src/pages/stages/stages.tsx:135
-#: frontend/admin/src/pages/status/ui/status-table.tsx:105
-#: frontend/admin/src/pages/tags/ui/tags-table.tsx:55
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:100
-#: frontend/client/src/pages/Post/CommentItem.tsx:109
-#: frontend/client/src/pages/Post/CommentItem.tsx:167
-#: frontend/client/src/pages/Post/PostHeader.tsx:170
-#: frontend/client/src/pages/Post/PostHeader.tsx:239
-msgid "Delete"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:228
-msgid "Delete this badge?"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.pro.tsx:231
-msgid "Delete badge"
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:29
+msgid "Moderation & Admin"
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:117
@@ -1726,22 +1479,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/user-badges-popover.free.tsx:16
 msgid "No badges"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:65
-msgid "No badges defined yet. Create one from Profile Badges."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:71
-msgid "Up to %d at once. The first one they wear is what bylines show."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:122
-msgid "Edit profile badges"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx:127
-msgid "Assign"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:44
@@ -1769,7 +1506,6 @@ msgid "Who forum email appears to come from."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:46
 msgid "Email delivery"
 msgstr ""
 
@@ -1788,52 +1524,26 @@ msgid "A custom sender and digest schedule are Pro features."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:69
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:109
 msgid "Send test email"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:73
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:113
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:45
-msgid "Who forum email appears to come from, and when digests go out."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:51
-msgid "Sender name"
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:62
-msgid "Sender address"
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:73
-msgid "Default email frequency"
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx:85
-msgid "Digest send hour"
-msgstr ""
-
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:25
 msgid "Greeting"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:29
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:30
 msgid "Instant email intro"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:30
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:35
 msgid "Digest intro"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:40
 msgid "Sign-off"
 msgstr ""
 
@@ -1842,7 +1552,6 @@ msgid "The wording around the list of what happened."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:37
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:63
 msgid "Email wording"
 msgstr ""
 
@@ -1854,26 +1563,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:43
 msgid "Custom email wording is a Pro feature."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:23
-msgid "The first line of every notification email."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:28
-msgid "Introduces a single notification sent immediately."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:33
-msgid "Introduces a daily or weekly digest, which covers several at once."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:38
-msgid "Sits above the link members follow to change these settings."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx:62
-msgid "The wording around the list of what happened. Plain text only."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/notifications.tsx:42
@@ -2194,6 +1883,18 @@ msgstr ""
 #: frontend/admin/src/pages/tags/ui/tags-table.tsx:53
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:98
 msgid "Are you sure to delete?"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/products-table.tsx:61
+#: frontend/admin/src/pages/stages/stages.tsx:135
+#: frontend/admin/src/pages/status/ui/status-table.tsx:105
+#: frontend/admin/src/pages/tags/ui/tags-table.tsx:55
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:100
+#: frontend/client/src/pages/Post/CommentItem.tsx:109
+#: frontend/client/src/pages/Post/CommentItem.tsx:167
+#: frontend/client/src/pages/Post/PostHeader.tsx:170
+#: frontend/client/src/pages/Post/PostHeader.tsx:239
+msgid "Delete"
 msgstr ""
 
 #: frontend/admin/src/pages/products/ui/products-table.tsx:63
@@ -2798,12 +2499,10 @@ msgid "Settings updated successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:29
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:28
 msgid "Moderation"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:32
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:31
 msgid "Control what happens to reported content before a moderator has looked at it"
 msgstr ""
 
@@ -2822,134 +2521,124 @@ msgid ""
 "reported it, and comes back if a moderator keeps it."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:37
-msgid "Hide content after"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:49
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:31
 msgid ""
-"One report takes a topic or reply out of public view immediately. Anyone "
-"who dislikes a post can hide it on their own until a moderator looks."
+"Members can upvote topics and reply to them. Upvoting individual replies, "
+"and letting an author keep a topic private so only they and the forum team "
+"can see it, come with Bit Connect Pro — a separate add-on."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx:52
-msgid ""
-"A topic or reply is taken out of public view once this many different "
-"members have reported it, and comes back if a moderator keeps it. Content "
-"written by moderators and admins is never hidden this way."
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:35
+msgid "Comment Upvote and Private Topic are Pro features."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/settings-section.tsx:55
-msgid "Available with Bit Connect Pro."
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:44
+#: frontend/admin/src/pages/settings/settings.tsx:45
 msgid "WordPress Media Limits"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:47
+#: frontend/admin/src/pages/settings/settings.tsx:48
 msgid ""
 "These limits are controlled by your server and WordPress. Pasted images "
 "that exceed them are automatically resized before upload."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:52
+#: frontend/admin/src/pages/settings/settings.tsx:53
 msgid "Max upload size"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:55
+#: frontend/admin/src/pages/settings/settings.tsx:56
 msgid "(set by server php.ini via wp_max_upload_size)"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:58
+#: frontend/admin/src/pages/settings/settings.tsx:59
 msgid "Max image dimensions"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:61
+#: frontend/admin/src/pages/settings/settings.tsx:62
 msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:64
+#: frontend/admin/src/pages/settings/settings.tsx:65
 msgid "Allowed file types"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:140
+#: frontend/admin/src/pages/settings/settings.tsx:141
 msgid "On/off your Topic Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:142
+#: frontend/admin/src/pages/settings/settings.tsx:143
 #: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
 #: frontend/client/src/pages/Post/CommentVoteBox.tsx:51
 #: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
 msgid "Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:146
+#: frontend/admin/src/pages/settings/settings.tsx:147
 msgid "On/off your Comment"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:152
+#: frontend/admin/src/pages/settings/settings.tsx:160
 msgid "On/off your Topic comment Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:154
+#: frontend/admin/src/pages/settings/settings.tsx:162
 msgid "Comment Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:163
+#: frontend/admin/src/pages/settings/settings.tsx:166
 msgid "Let authors keep a topic private, visible only to them and the forum team"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:165
+#: frontend/admin/src/pages/settings/settings.tsx:170
 #: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:159
 msgid "Private Topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:179
+#: frontend/admin/src/pages/settings/settings.tsx:182
 msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:181
+#: frontend/admin/src/pages/settings/settings.tsx:184
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:191
+#: frontend/admin/src/pages/settings/settings.tsx:194
 msgid "Show and require Topic Type when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:193
+#: frontend/admin/src/pages/settings/settings.tsx:196
 msgid "Require Topic Type"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:197
+#: frontend/admin/src/pages/settings/settings.tsx:200
 msgid "Show and require Products/Department when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:199
+#: frontend/admin/src/pages/settings/settings.tsx:202
 msgid "Require Products/Department"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:234
+#: frontend/admin/src/pages/settings/settings.tsx:238
 msgid "Choose what members can do on a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:235
+#: frontend/admin/src/pages/settings/settings.tsx:239
 msgid "Topic Access Settings"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:243
+#: frontend/admin/src/pages/settings/settings.tsx:247
 msgid "Control which fields are shown and required when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:244
+#: frontend/admin/src/pages/settings/settings.tsx:248
 msgid "Topic Form Fields"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:257
+#: frontend/admin/src/pages/settings/settings.tsx:261
 msgid "Manage what data is removed when the plugin is uninstalled"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:258
+#: frontend/admin/src/pages/settings/settings.tsx:262
 msgid "Data Cleanup"
 msgstr ""
 
@@ -3151,6 +2840,22 @@ msgstr ""
 
 #: frontend/admin/src/pages/status/ui/status-table.tsx:107
 msgid "Delete Status"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:32
+msgid "Version"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:35
+msgid "Installed version"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
+msgid "Looking for more? Bit Connect Pro is a separate add-on."
+msgstr ""
+
+#: frontend/admin/src/pages/support/support.tsx:56
+msgid "About"
 msgstr ""
 
 #: frontend/admin/src/pages/tags/data/use-delete-tag.ts:27

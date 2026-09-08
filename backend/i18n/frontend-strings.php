@@ -21,40 +21,6 @@ return [
 
     'Join Now' => __('Join Now', 'bit-connect'),
 
-    'License & Activation' => __('License & Activation', 'bit-connect'),
-
-    'Dev Version On' => __('Dev Version On', 'bit-connect'),
-
-    'Version' => __('Version', 'bit-connect'),
-
-    'Code Name:' => __('Code Name:', 'bit-connect'),
-
-    'Pro Version' => __('Pro Version', 'bit-connect'),
-
-    'Not Activated' => __('Not Activated', 'bit-connect'),
-
-    'Buy Pro Version' => __('Buy Pro Version', 'bit-connect'),
-
-    'Deactivate License' => __('Deactivate License', 'bit-connect'),
-
-    'Activate License' => __('Activate License', 'bit-connect'),
-
-    'Please ensure that your product subscription is valid. If needed, try deactivating and reactivating your license.' => __('Please ensure that your product subscription is valid. If needed, try deactivating and reactivating your license.', 'bit-connect'),
-
-    'For further assistance, feel free to reach out to our live support or email us at support@bitapps.pro .' => __('For further assistance, feel free to reach out to our live support or email us at support@bitapps.pro .', 'bit-connect'),
-
-    'Your license is invalid, try reactivate' => __('Your license is invalid, try reactivate', 'bit-connect'),
-
-    'Manage license' => __('Manage license', 'bit-connect'),
-
-    'Please update your license to ensure you receive the latest security updates and bug fixes. 
-          Using an outdated or unofficial license may leave your system vulnerable to security breaches and data leaks. 
-          We cannot take responsibility for issues arising from such scenarios. For your safety, always download from the official Bit Apps server.' => __('Please update your license to ensure you receive the latest security updates and bug fixes. 
-          Using an outdated or unofficial license may leave your system vulnerable to security breaches and data leaks. 
-          We cannot take responsibility for issues arising from such scenarios. For your safety, always download from the official Bit Apps server.', 'bit-connect'),
-
-    'Your license is invalid' => __('Your license is invalid', 'bit-connect'),
-
     /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
     'Plugin Update Required (%s)' => __('Plugin Update Required (%s)', 'bit-connect'),
 
@@ -63,14 +29,6 @@ return [
     'Updating...' => __('Updating...', 'bit-connect'),
 
     'Update Now' => __('Update Now', 'bit-connect'),
-
-    'Checking updates' => __('Checking updates', 'bit-connect'),
-
-    'New version available' => __('New version available', 'bit-connect'),
-
-    'Please update to the latest version to ensure plugin security and optimal performance. Stay safe and enjoy the enhanced features!' => __('Please update to the latest version to ensure plugin security and optimal performance. Stay safe and enjoy the enhanced features!', 'bit-connect'),
-
-    'is up to date' => __('is up to date', 'bit-connect'),
 
     'A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.' => __('A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.', 'bit-connect'),
 
@@ -110,8 +68,6 @@ return [
     'Recommended Plugins' => __('Recommended Plugins', 'bit-connect'),
 
     'Support' => __('Support', 'bit-connect'),
-
-    'About' => __('About', 'bit-connect'),
 
     'Save changes' => __('Save changes', 'bit-connect'),
 
@@ -593,35 +549,19 @@ return [
 
     'Settings' => __('Settings', 'bit-connect'),
 
-    'Support' => __('Support', 'bit-connect'),
-
     'Support & License' => __('Support & License', 'bit-connect'),
 
     'Bit Connect' => __('Bit Connect', 'bit-connect'),
 
     'Product by Bit Apps' => __('Product by Bit Apps', 'bit-connect'),
 
-    'Failed to delete the badge' => __('Failed to delete the badge', 'bit-connect'),
-
-    'Badge deleted' => __('Badge deleted', 'bit-connect'),
-
-    'Failed to reorder badges' => __('Failed to reorder badges', 'bit-connect'),
-
     'Failed to reset capabilities' => __('Failed to reset capabilities', 'bit-connect'),
 
     'Capabilities reset to role defaults' => __('Capabilities reset to role defaults', 'bit-connect'),
 
-    'Failed to save the badge' => __('Failed to save the badge', 'bit-connect'),
-
-    'Badge saved' => __('Badge saved', 'bit-connect'),
-
     'Failed to update capabilities' => __('Failed to update capabilities', 'bit-connect'),
 
     'Capabilities updated' => __('Capabilities updated', 'bit-connect'),
-
-    'Failed to update badges' => __('Failed to update badges', 'bit-connect'),
-
-    'Badges updated' => __('Badges updated', 'bit-connect'),
 
     'Failed to update user capabilities' => __('Failed to update user capabilities', 'bit-connect'),
 
@@ -659,26 +599,6 @@ return [
 
     'Capabilities, set by role' => __('Capabilities, set by role', 'bit-connect'),
 
-    'Posts' => __('Posts', 'bit-connect'),
-
-    'Voting' => __('Voting', 'bit-connect'),
-
-    'Other People’s Content' => __('Other People’s Content', 'bit-connect'),
-
-    'Moderation & Admin' => __('Moderation & Admin', 'bit-connect'),
-
-    'Checked = this user has the capability. Unchecked = revoked even if their role grants it.' => __('Checked = this user has the capability. Unchecked = revoked even if their role grants it.', 'bit-connect'),
-
-    'Remove all overrides and restore role defaults' => __('Remove all overrides and restore role defaults', 'bit-connect'),
-
-    'Reset to role' => __('Reset to role', 'bit-connect'),
-
-    'User Capabilities' => __('User Capabilities', 'bit-connect'),
-
-    'Edit user capabilities' => __('Edit user capabilities', 'bit-connect'),
-
-    'caps' => __('caps', 'bit-connect'),
-
     'Developer' => __('Developer', 'bit-connect'),
 
     'Group Expert' => __('Group Expert', 'bit-connect'),
@@ -693,54 +613,19 @@ return [
 
     'Buy Pro' => __('Buy Pro', 'bit-connect'),
 
-    'Badges you write yourself, for the things permissions cannot say — Developer, Support, Group Expert. Assign them to members from the user list.' => __('Badges you write yourself, for the things permissions cannot say — Developer, Support, Group Expert. Assign them to members from the user list.', 'bit-connect'),
+    'Posts' => __('Posts', 'bit-connect'),
 
-    'Edit badge' => __('Edit badge', 'bit-connect'),
+    'Voting' => __('Voting', 'bit-connect'),
 
-    'New badge' => __('New badge', 'bit-connect'),
+    'Other People’s Content' => __('Other People’s Content', 'bit-connect'),
 
-    'Name' => __('Name', 'bit-connect'),
-
-    'Colour' => __('Colour', 'bit-connect'),
-
-    'Delete a badge to add another' => __('Delete a badge to add another', 'bit-connect'),
-
-    'Add badge' => __('Add badge', 'bit-connect'),
-
-    'Members will see' => __('Members will see', 'bit-connect'),
-
-    'No badges yet.' => __('No badges yet.', 'bit-connect'),
-
-    'A member wearing several shows the first of these beside their name. Move a badge up to have it win.' => __('A member wearing several shows the first of these beside their name. Move a badge up to have it win.', 'bit-connect'),
-
-    'Move up' => __('Move up', 'bit-connect'),
-
-    'Move down' => __('Move down', 'bit-connect'),
-
-    'Keep' => __('Keep', 'bit-connect'),
-
-    'Everyone wearing it loses it. Members are not otherwise changed.' => __('Everyone wearing it loses it. Members are not otherwise changed.', 'bit-connect'),
-
-    'Delete' => __('Delete', 'bit-connect'),
-
-    'Delete this badge?' => __('Delete this badge?', 'bit-connect'),
-
-    'Delete badge' => __('Delete badge', 'bit-connect'),
+    'Moderation & Admin' => __('Moderation & Admin', 'bit-connect'),
 
     'Forum Capabilities by Role' => __('Forum Capabilities by Role', 'bit-connect'),
 
     'Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.' => __('Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.', 'bit-connect'),
 
     'No badges' => __('No badges', 'bit-connect'),
-
-    'No badges defined yet. Create one from Profile Badges.' => __('No badges defined yet. Create one from Profile Badges.', 'bit-connect'),
-
-    /* translators: %d — value(s) inserted by the plugin; keep them in the translation. */
-    'Up to %d at once. The first one they wear is what bylines show.' => __('Up to %d at once. The first one they wear is what bylines show.', 'bit-connect'),
-
-    'Edit profile badges' => __('Edit profile badges', 'bit-connect'),
-
-    'Assign' => __('Assign', 'bit-connect'),
 
     'Could not save notification settings' => __('Could not save notification settings', 'bit-connect'),
 
@@ -766,16 +651,6 @@ return [
 
     'Sent to your own address, using the settings as last saved.' => __('Sent to your own address, using the settings as last saved.', 'bit-connect'),
 
-    'Who forum email appears to come from, and when digests go out.' => __('Who forum email appears to come from, and when digests go out.', 'bit-connect'),
-
-    'Sender name' => __('Sender name', 'bit-connect'),
-
-    'Sender address' => __('Sender address', 'bit-connect'),
-
-    'Default email frequency' => __('Default email frequency', 'bit-connect'),
-
-    'Digest send hour' => __('Digest send hour', 'bit-connect'),
-
     'Greeting' => __('Greeting', 'bit-connect'),
 
     'Instant email intro' => __('Instant email intro', 'bit-connect'),
@@ -791,16 +666,6 @@ return [
     'Notification emails use the wording below. Rewriting these lines comes with Pro.' => __('Notification emails use the wording below. Rewriting these lines comes with Pro.', 'bit-connect'),
 
     'Custom email wording is a Pro feature.' => __('Custom email wording is a Pro feature.', 'bit-connect'),
-
-    'The first line of every notification email.' => __('The first line of every notification email.', 'bit-connect'),
-
-    'Introduces a single notification sent immediately.' => __('Introduces a single notification sent immediately.', 'bit-connect'),
-
-    'Introduces a daily or weekly digest, which covers several at once.' => __('Introduces a daily or weekly digest, which covers several at once.', 'bit-connect'),
-
-    'Sits above the link members follow to change these settings.' => __('Sits above the link members follow to change these settings.', 'bit-connect'),
-
-    'The wording around the list of what happened. Plain text only.' => __('The wording around the list of what happened. Plain text only.', 'bit-connect'),
 
     'Notification settings could not be loaded.' => __('Notification settings could not be loaded.', 'bit-connect'),
 
@@ -947,6 +812,8 @@ return [
     'Product Name' => __('Product Name', 'bit-connect'),
 
     'Are you sure to delete?' => __('Are you sure to delete?', 'bit-connect'),
+
+    'Delete' => __('Delete', 'bit-connect'),
 
     'Delete Product' => __('Delete Product', 'bit-connect'),
 
@@ -1224,13 +1091,9 @@ return [
 
     'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.' => __('Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.', 'bit-connect'),
 
-    'Hide content after' => __('Hide content after', 'bit-connect'),
+    'Members can upvote topics and reply to them. Upvoting individual replies, and letting an author keep a topic private so only they and the forum team can see it, come with Bit Connect Pro — a separate add-on.' => __('Members can upvote topics and reply to them. Upvoting individual replies, and letting an author keep a topic private so only they and the forum team can see it, come with Bit Connect Pro — a separate add-on.', 'bit-connect'),
 
-    'One report takes a topic or reply out of public view immediately. Anyone who dislikes a post can hide it on their own until a moderator looks.' => __('One report takes a topic or reply out of public view immediately. Anyone who dislikes a post can hide it on their own until a moderator looks.', 'bit-connect'),
-
-    'A topic or reply is taken out of public view once this many different members have reported it, and comes back if a moderator keeps it. Content written by moderators and admins is never hidden this way.' => __('A topic or reply is taken out of public view once this many different members have reported it, and comes back if a moderator keeps it. Content written by moderators and admins is never hidden this way.', 'bit-connect'),
-
-    'Available with Bit Connect Pro.' => __('Available with Bit Connect Pro.', 'bit-connect'),
+    'Comment Upvote and Private Topic are Pro features.' => __('Comment Upvote and Private Topic are Pro features.', 'bit-connect'),
 
     'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
 
@@ -1371,6 +1234,14 @@ return [
     'No color' => __('No color', 'bit-connect'),
 
     'Delete Status' => __('Delete Status', 'bit-connect'),
+
+    'Version' => __('Version', 'bit-connect'),
+
+    'Installed version' => __('Installed version', 'bit-connect'),
+
+    'Looking for more? Bit Connect Pro is a separate add-on.' => __('Looking for more? Bit Connect Pro is a separate add-on.', 'bit-connect'),
+
+    'About' => __('About', 'bit-connect'),
 
     'Failed to delete tag' => __('Failed to delete tag', 'bit-connect'),
 

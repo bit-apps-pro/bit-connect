@@ -170,8 +170,15 @@ class Head
             ]
         );
 
-        if (get_locale() !== 'en_US' && file_exists(Config::get('ROOT_DIR') . '/languages/frontend-extracted-strings.php')) {
-            $frontendVars['translations'] = include Config::get('ROOT_DIR') . '/languages/frontend-extracted-strings.php';
+        // `backend/i18n/`, not `languages/`. The catalogue is plugin source — a
+        // generated list of `__()` calls that `wp i18n make-pot` reads and that
+        // this line executes to hand the frontend bundle its translations. It is
+        // not a compiled translation, and a `.php` sitting in `languages/` reads
+        // as one to the directory's scanners.
+        $frontendStrings = Config::get('ROOT_DIR') . '/backend/i18n/frontend-strings.php';
+
+        if (get_locale() !== 'en_US' && file_exists($frontendStrings)) {
+            $frontendVars['translations'] = include $frontendStrings;
         }
 
         return $frontendVars;
