@@ -66,6 +66,30 @@ function toQueryParam(filters: ActivityFilters): QueryParam {
   return query
 }
 
+/**
+ * The response, with the parts the screen walks guaranteed to be walkable.
+ *
+ * `data` is grouped by day and then mapped into rows, and `pagination` is read
+ * a field at a time without a guard of its own, so a body of any other shape
+ * has to become an empty log here. The failure this prevents is not a missing
+ * row: an object where the list belongs throws on the first `for…of` and takes
+ * the whole screen down with it, which is a blank page rather than an empty one.
+ */
+function asLog(response: ResponseType<ActivityLogResponse>): ActivityLogResponse {
+  const body = response?.data
+  const pagination = body?.pagination
+
+  return {
+    data: Array.isArray(body?.data) ? body.data : [],
+    pagination: {
+      current_page: Number(pagination?.current_page) || 1,
+      per_page: Number(pagination?.per_page) || 20,
+      total: Number(pagination?.total) || 0,
+      total_pages: Number(pagination?.total_pages) || 0
+    }
+  }
+}
+
 export default function useActivityLog(filters: ActivityFilters) {
   const { data, isError, isFetching } = useQuery<
     ResponseType<ActivityLogResponse>,
@@ -83,7 +107,7 @@ export default function useActivityLog(filters: ActivityFilters) {
       }),
     queryKey: ['activity-log', filters],
     retry: false,
-    select: response => response?.data
+    select: asLog
   })
 
   return {

@@ -48,7 +48,7 @@ final class Menu
             'Activity'    => self::getActivityMenuAttributes(),
             'Reports'     => self::getReportsMenuAttributes(),
             'Settings'    => self::getSettingsMenuAttributes(),
-            'License'     => self::getLicenseMenuAttributes(),
+            'Support'     => self::getSupportMenuAttributes(),
         ];
     }
 
@@ -230,21 +230,29 @@ final class Menu
     }
 
     /**
-     * License, updates and support.
+     * Support, and in the add-on's edition the licence too.
      *
      * Present in both editions and last in the list. It is the one entry here
-     * about the plugin rather than about the forum, and in the free edition it
-     * is where somebody goes to find out what Pro is — so hiding it when no
-     * licence exists would hide the only route to buying one.
+     * about the plugin rather than about the forum, and in this edition it is
+     * where somebody goes to find out what Pro is — so hiding it would hide the
+     * only route to buying one.
+     *
+     * Named "Support", not "License & Support": this plugin holds no licence to
+     * manage. There is no key, no activation and no validity check anywhere in
+     * it, so naming the screen after one would advertise a mechanism that is
+     * not here — and a licence surface inside a plugin hosted on WordPress.org
+     * is exactly what Plugin Directory guideline 6 refuses. The add-on renames
+     * this entry to "Support & License" through the `admin_sidebar_menu`
+     * filter, which is where anything about the add-on belongs.
      */
-    private static function getLicenseMenuAttributes()
+    private static function getSupportMenuAttributes()
     {
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'License & Support',
+            'name'       => 'Support',
             'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/license',
+            'slug'       => Config::SLUG . '#/support',
         ];
     }
 }

@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import { LuEyeOff } from 'react-icons/lu'
 import { Link } from 'react-router'
 
-import { timeAgo } from '@/common/helpers/globalHelpers'
+import { parseMaybeGmt, timeAgo } from '@/common/helpers/globalHelpers'
 import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import { useAuthStore } from '@/store/auth.zustand'
 import { type Comment } from '@/types/post'
@@ -269,7 +269,7 @@ export default function CommentItem({
                       // floor for body text. #65676b at 12px clears it and
                       // matches the action row beneath.
                       className="bc-text-ink-muted bc-text-[12px] bc-leading-tight"
-                      title={new Date(comment.createdAt).toLocaleString('en-US', {
+                      title={parseMaybeGmt(comment.createdAt).toLocaleString('en-US', {
                         day: 'numeric',
                         hour: 'numeric',
                         hour12: true,

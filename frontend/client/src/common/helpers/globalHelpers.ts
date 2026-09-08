@@ -63,9 +63,23 @@ export const sortArrOfObj = (data: any, sortLabel: string) =>
     return 0
   })
 
+/**
+ * Parses a timestamp that is GMT but may not say so.
+ *
+ * The REST layer answers with `2026-09-08 12:20:20` — GMT, no zone marker —
+ * and a browser is free to read that as local time, which showed every comment
+ * six hours old for a reader east of London and "just now" forever for one to
+ * the west. A value that already carries `Z` or an offset is left alone, which
+ * is why the tests here (all ISO) never caught it.
+ *
+ * The admin bundle solved this in `utils/format.ts`; this is the client twin.
+ */
+export const parseMaybeGmt = (value: string): Date =>
+  /(?:[+-]\d{2}:?\d{2}|[Zz])$/.test(value) ? new Date(value) : new Date(`${value.replace(' ', 'T')}Z`)
+
 export const timeAgo = (dateString: string): string => {
   const now = new Date()
-  const date = new Date(dateString)
+  const date = parseMaybeGmt(dateString)
 
   if (date.toString() === 'Invalid Date') return dateString
 

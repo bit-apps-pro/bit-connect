@@ -84,6 +84,43 @@ describe('reading the log', () => {
     await waitFor(() => expect(result.current.activityLog?.data).toHaveLength(1))
   })
 
+  // The shape that blanked the screen: the server sent the paginator's
+  // Collection object where the list belongs, and `for…of` over an object
+  // throws mid-render rather than showing an empty log.
+  it('reads a body that is not a list as an empty log', async () => {
+    vi.mocked(request).mockResolvedValue({
+      code: 'SUCCESS',
+      data: {
+        data: { '\u0000*\u0000items': { action: '', id: 0 } },
+        pagination: { current_page: 1, per_page: 20, total: 1, total_pages: 1 }
+      },
+      status: 'success'
+    } as never)
+    const { wrapper } = createQueryWrapper()
+
+    const { result } = renderHook(() => useActivityLog({}), { wrapper })
+
+    await waitFor(() => expect(result.current.activityLog?.data).toEqual([]))
+  })
+
+  // The screen reads pagination a field at a time, so a body missing it would
+  // throw on the first access.
+  it('fills in a pagination the server left out', async () => {
+    vi.mocked(request).mockResolvedValue({ code: 'SUCCESS', data: {}, status: 'success' } as never)
+    const { wrapper } = createQueryWrapper()
+
+    const { result } = renderHook(() => useActivityLog({}), { wrapper })
+
+    await waitFor(() =>
+      expect(result.current.activityLog?.pagination).toEqual({
+        current_page: 1,
+        per_page: 20,
+        total: 0,
+        total_pages: 0
+      })
+    )
+  })
+
   it('reports a failure rather than an empty log', async () => {
     vi.mocked(request).mockRejectedValue(new Error('Network down'))
     const { wrapper } = createQueryWrapper()
