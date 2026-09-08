@@ -55,11 +55,7 @@ export default function License({ pluginSlug }: { pluginSlug: string }) {
     return text
   })
 
-  // Only ask when there is a pro plugin to ask about. Without the guard
-  // PRO_SLUG is undefined on a free-only install and this fetches
-  // `/wp-content/plugins/undefined/...`, which 404s twice on every visit.
   const proBuildCodeName = useAsync(async () => {
-    if (!config.PRO_SLUG) return ''
     const res = await fetch(`/wp-content/plugins/${config.PRO_SLUG}/assets/build-code-name.txt`)
     const text = await res.text()
     return text
