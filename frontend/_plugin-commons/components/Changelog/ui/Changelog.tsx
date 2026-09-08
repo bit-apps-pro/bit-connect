@@ -1,9 +1,9 @@
+import { __ } from '../../../../admin/src/common/helpers/i18nWrap'
 import { Button, Drawer } from 'antd'
 import { LuFileClock } from 'react-icons/lu'
 import { useToggle } from 'react-use'
 import { twMerge } from 'tailwind-merge'
 
-import { __ } from '../../../../admin/src/common/helpers/i18nWrap'
 import ChangelogContent from './ChangelogContent'
 
 const drawerClassNames =

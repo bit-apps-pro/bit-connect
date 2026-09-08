@@ -1,6 +1,6 @@
+import { __ } from '../../admin/src/common/helpers/i18nWrap'
 import { Alert } from 'antd'
 
-import { __ } from '../../admin/src/common/helpers/i18nWrap'
 import useCheckLicenseValidity from './SupportPage/data/useCheckLicenseValidity'
 
 export default function LicenseActivationNotice() {

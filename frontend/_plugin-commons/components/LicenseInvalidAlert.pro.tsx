@@ -1,8 +1,8 @@
+import { __ } from '../../admin/src/common/helpers/i18nWrap'
 import { Alert } from 'antd'
 import { LuMoveUpRight } from 'react-icons/lu'
 import { Link } from 'react-router'
 
-import { __ } from '../../admin/src/common/helpers/i18nWrap'
 import useCheckLicenseValidity from './SupportPage/data/useCheckLicenseValidity'
 
 export default function LicenseInvalidAlert({

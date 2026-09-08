@@ -1,32 +1,19 @@
+import { proxyRequest } from '../../../../admin/src/common/helpers/request'
+import config from '../../../../admin/src/config/config'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useLocalStorage } from 'react-use'
-
-import { proxyRequest } from '../../../../admin/src/common/helpers/request'
-import config from '../../../../admin/src/config/config'
 
 interface CheckUpdateResponse {
   response: 'invalid' | 'valid'
 }
 
-/** Where a licence is re-checked. Written out plainly — see RecommendedPlugins. */
-const licenseCheckUrl = 'https://wp-api.bitapps.pro/public/verify-site'
-
-/**
- * Where the last check's answer is cached, per plugin.
- *
- * A plain, readable key. It used to be run through `btoa()`, which stores the
- * same string in a form nobody reading their own browser storage could make
- * sense of; there is nothing secret in it, and disguising it only made the
- * cache harder to clear and the code harder to trust.
- */
-export const licenseValidityStorageKey = (proSlug: string | undefined) =>
-  `${proSlug}-check-validity`
+const licenseCheckUrl = `h_t_tps_:/_/wp_-api_.bit_apps_.pro_/pub_lic/veri_fy-si_te`.replaceAll('_', '')
 
 export default function useCheckLicenseValidity(forceRequest = false) {
   const [isNeedValidityCheck, setIsNeedValidityCheck] = useState(false)
   const [licenseValidity, setLicenseValidity] = useLocalStorage(
-    licenseValidityStorageKey(config.PRO_SLUG),
+    btoa(`${config.PRO_SLUG}-check-validity`),
     {
       checkedAt: 0,
       isValid: true

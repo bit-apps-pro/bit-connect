@@ -1,6 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
 import request from '../../../admin/src/common/helpers/request'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export default function useUpdatePlugin() {
   const queryClient = useQueryClient()

@@ -1,7 +1,7 @@
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import { Col, Row, theme, Typography } from 'antd'
 import { type ReactNode } from 'react'
 
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import Changelog from '../Changelog'
 import FacebookCommunityCard from '../FacebookCommunityCard'
 import License from '../License.pro'

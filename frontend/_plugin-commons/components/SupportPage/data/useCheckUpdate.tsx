@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-
 import queryRequest from '../../../../admin/src/common/helpers/request'
 import config from '../../../../admin/src/config/config'
+import { useQuery } from '@tanstack/react-query'
 
 interface CheckUpdateResponse {
   latest_version: string
