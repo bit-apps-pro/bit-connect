@@ -1,9 +1,10 @@
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
-import config from '../../../admin/src/config/config'
 import { useQuery } from '@tanstack/react-query'
 import { Avatar, Card, Flex, Skeleton, theme, Typography } from 'antd'
 import { useState } from 'react'
 import { LuMoveUpRight } from 'react-icons/lu'
+
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
+import config from '../../../admin/src/config/config'
 
 interface Plugin {
   description: string

@@ -75,6 +75,25 @@ describe('timeAgo', () => {
   it('returns the original string for an invalid date', () => {
     expect(timeAgo('not-a-date')).toBe('not-a-date')
   })
+
+  // The REST layer answers with `2026-09-08 12:20:20` — GMT with no zone
+  // marker. Read as local time that is hours out either way, which is what put
+  // "6 hours ago" under a comment posted a minute earlier. Every case above
+  // uses toISOString(), so none of them saw this shape.
+  it('reads a zoneless timestamp as GMT, not local time', () => {
+    const gmt = new Date(Date.now() - 90 * 1000)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ')
+
+    expect(timeAgo(gmt)).toBe('1 min ago')
+  })
+
+  it('still honours a timestamp that states its own zone', () => {
+    const iso = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
+
+    expect(timeAgo(iso)).toBe('3 hours ago')
+  })
 })
 
 describe('assign', () => {

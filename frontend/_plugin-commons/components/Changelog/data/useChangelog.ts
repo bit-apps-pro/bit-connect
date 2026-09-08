@@ -1,5 +1,6 @@
-import config from '../../../../admin/src/config/config'
 import { useQuery } from '@tanstack/react-query'
+
+import config from '../../../../admin/src/config/config'
 
 const importReadmeFile = async () => {
   const response = await fetch(`${config.ROOT_URL}/readme.txt`)

@@ -52,7 +52,7 @@ final class ReportFilingTest extends TestCase
         $GLOBALS['__wp_comments'] = [self::COMMENT => $this->comment()];
         $GLOBALS['wpdb']->failWrites = false;
 
-        unset($GLOBALS['__bc_report_insert_fails']);
+        unset($GLOBALS['__bc_report_insert_fails'], $GLOBALS['__bc_reports_as_collection']);
 
         // Auto-hiding is a pro feature. Licensed here so the threshold logic is
         // what these cases exercise; the gate itself has its own tests below.
@@ -64,6 +64,8 @@ final class ReportFilingTest extends TestCase
 
     protected function tearDown(): void
     {
+        unset($GLOBALS['__bc_reports_as_collection']);
+
         $GLOBALS['__bc_reports'] = [];
         $GLOBALS['__wp_posts'] = [];
         $GLOBALS['__wp_comments'] = [];
@@ -316,6 +318,44 @@ final class ReportFilingTest extends TestCase
     public function testSomethingNobodyReportedHasNobodyWaiting(): void
     {
         $this->assertSame([], ReportService::pendingReporterIds(ReportService::TARGET_POST, self::TOPIC));
+    }
+
+    /**
+     * The shape wp-database actually answers with since 2.0.5.
+     *
+     * Casting a Collection to an array yields its protected $items under a
+     * mangled key rather than the rows, so this read every reporter id as 0 and
+     * told nobody their report had been decided — a silence that looks exactly
+     * like "there was nobody to tell".
+     */
+    public function testReportersAreFoundWhenTheQueryAnswersWithACollection(): void
+    {
+        ReportService::file(ReportService::TARGET_POST, self::TOPIC, 'spam');
+        $GLOBALS['__wp_current_user_id'] = 4;
+        ReportService::file(ReportService::TARGET_POST, self::TOPIC, 'abuse');
+
+        $GLOBALS['__bc_reports_as_collection'] = true;
+
+        $this->assertSame([self::REPORTER, 4], ReportService::pendingReporterIds(ReportService::TARGET_POST, self::TOPIC));
+    }
+
+    /**
+     * An empty Collection counts as one row when cast, so the "nothing pending"
+     * early return never fired and the service went on to write anyway.
+     *
+     * Asserted through a failing write rather than the return value, which is
+     * 0 either way: with the cast the update is attempted and raises, without
+     * it the method is already back before the database is touched.
+     */
+    public function testClosingACollectionWithNothingPendingWritesNothing(): void
+    {
+        $GLOBALS['__bc_reports_as_collection'] = true;
+        $GLOBALS['wpdb']->failWrites = true;
+
+        $this->assertSame(
+            0,
+            ReportService::resolveTarget(ReportService::TARGET_POST, self::TOPIC, ReportStatus::RESOLVED_KEPT)
+        );
     }
 
     // -----------------------------------------------------------------------

@@ -1,9 +1,9 @@
-import { __, sprintf } from '../../../admin/src/common/helpers/i18nWrap'
-import config from '../../../admin/src/config/config'
 import { Badge, Button } from 'antd'
 import Link from 'antd/es/typography/Link'
 import { LuDollarSign } from 'react-icons/lu'
 
+import { __, sprintf } from '../../../admin/src/common/helpers/i18nWrap'
+import config from '../../../admin/src/config/config'
 import pluginInfoData from './data/pluginInfoData'
 
 export default function GiveReview({ pluginSlug }: { pluginSlug: string }) {

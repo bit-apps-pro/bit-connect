@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Model\ActivityLog;
 
@@ -168,7 +169,7 @@ final class ActivityLogService
         $result = $query->orderBy('created_at')->desc()->paginate($page, $perPage);
 
         return [
-            'data'       => array_map([self::class, 'format'], (array) ($result['data'] ?? [])),
+            'data'       => array_map([self::class, 'format'], self::asList($result['data'] ?? [])),
             'pagination' => [
                 'total'        => (int) ($result['total'] ?? 0),
                 'per_page'     => $perPage,
@@ -176,6 +177,28 @@ final class ActivityLogService
                 'total_pages'  => (int) ($result['pages'] ?? 0),
             ],
         ];
+    }
+
+    /**
+     * Whatever paginate() answered, as a plain list of rows.
+     *
+     * get() always answers with a Collection, and casting one to array yields
+     * its protected $items under a mangled key rather than the rows inside it.
+     * The feed therefore serialised as an object holding a single all-zero row
+     * — not a list the admin screen can iterate, so Activity rendered blank.
+     * all() unwraps it; the array branch covers a builder that answers plainly.
+     *
+     * @param mixed $rows
+     *
+     * @return array<int, object>
+     */
+    private static function asList($rows): array
+    {
+        if ($rows instanceof Collection) {
+            return array_values($rows->all());
+        }
+
+        return \is_array($rows) ? array_values($rows) : [];
     }
 
     /**
@@ -228,8 +251,8 @@ final class ActivityLogService
         $context = \is_string($row->context) ? json_decode($row->context, true) : null;
 
         return [
-            'id'     => (int) $row->id,
-            'action' => (string) $row->action,
+            'id'           => (int) $row->id,
+            'action'       => (string) $row->action,
             'action_label' => $action ? ActivityActions::translatedLabel($action) : (string) $row->action,
             'actor'        => [
                 'id'   => (int) $row->actor_id,
