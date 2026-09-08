@@ -4,11 +4,11 @@
 */
 
 import { SyncOutlined } from '@ant-design/icons'
-import { __, sprintf } from '../../admin/src/common/helpers/i18nWrap'
 import { Button } from 'antd'
 import { type CSSProperties } from 'react'
 import { useState } from 'react'
 
+import { __, sprintf } from '../../admin/src/common/helpers/i18nWrap'
 import pluginInfoData from './SupportPage/data/pluginInfoData'
 import useUpdatePlugin from './VersionMismatchedNotice/useUpdatePlugin'
 
