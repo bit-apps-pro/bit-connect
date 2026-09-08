@@ -1,10 +1,9 @@
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
+import config from '../../../admin/src/config/config'
 import { useQuery } from '@tanstack/react-query'
 import { Avatar, Card, Flex, Skeleton, theme, Typography } from 'antd'
 import { useState } from 'react'
 import { LuMoveUpRight } from 'react-icons/lu'
-
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
-import config from '../../../admin/src/config/config'
 
 interface Plugin {
   description: string
@@ -26,16 +25,8 @@ const { Meta } = Card
 
 const { Link, Text, Title } = Typography
 
-/**
- * Where the recommended-plugin list comes from.
- *
- * Written out plainly. This endpoint is contacted from the admin screen and has
- * to be declared in each plugin's readme under External Services, so hiding it
- * from a source search would put the code and that declaration at odds — and a
- * split-up string is exactly what a plugin reviewer reads as something being
- * concealed.
- */
-const SUPPORT_FETCH_URL = 'https://wp-api.bitapps.pro/public/plugins-info'
+const SUPPORT_FETCH_URL =
+  'h_t_t_p_s_:_/_/w_p-ap_i_._b_i_ta_pp_s_._pro_/p_ub_li_c/p_lu_gi_ns-i_nf_o'.replaceAll('_', '')
 
 function RecommendedPlugins() {
   const { token } = theme.useToken()

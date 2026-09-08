@@ -1,7 +1,7 @@
+import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import { Checkbox, theme, Typography } from 'antd'
 import { type CheckboxChangeEvent } from 'antd/es/checkbox'
 
-import { __ } from '../../../admin/src/common/helpers/i18nWrap'
 import useTracking from './data/useTracking'
 import useTrackingUpdate from './data/useTrackingUpdate'
 
