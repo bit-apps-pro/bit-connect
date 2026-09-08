@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
 
@@ -251,6 +252,13 @@ class Notification extends Model
      */
     public static function asList($result): array
     {
+        // get() answers with a Collection, which is neither a Model nor an
+        // array — so every row fell through to the is_array() branch below and
+        // a full page came back as an empty list. all() unwraps it.
+        if ($result instanceof Collection) {
+            return array_values($result->all());
+        }
+
         if ($result instanceof Model) {
             return [$result];
         }
