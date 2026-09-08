@@ -2,6 +2,7 @@
 
 namespace BitApps\BitConnect\Model;
 
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
 
 /**
@@ -41,7 +42,15 @@ class Report extends Model
     /**
      * Every open report on one target.
      *
-     * @return array<int, object>
+     * Answers with a plain array by default, and with a Collection when
+     * `$GLOBALS['__bc_reports_as_collection']` is set — which is what the real
+     * model does, because wp-database's get() has returned a Collection since
+     * 2.0.5. Casting one of those to an array yields its protected $items
+     * under a mangled key rather than the rows, and the moderation queue showed
+     * a single all-zero card as a result. Tests that want the production shape
+     * turn the flag on.
+     *
+     * @return array<int, object>|Collection
      */
     public static function pendingFor(string $targetType, int $targetId)
     {
@@ -57,12 +66,14 @@ class Report extends Model
             }
         }
 
-        return $rows;
+        return empty($GLOBALS['__bc_reports_as_collection']) ? $rows : new Collection($rows);
     }
 
     public static function pendingCount(string $targetType, int $targetId): int
     {
-        return \count(self::pendingFor($targetType, $targetId));
+        $rows = self::pendingFor($targetType, $targetId);
+
+        return $rows instanceof Collection ? \count($rows->all()) : \count($rows);
     }
 
     public static function alreadyReported(int $reporterId, string $targetType, int $targetId): bool
