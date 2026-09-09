@@ -186,7 +186,7 @@ final class TelemetryService
         $cached = get_transient($cacheKey);
 
         if (\is_array($cached)) {
-            return $cached;
+            return self::extend($cached);
         }
 
         $notifications = Config::getOption(NotificationSettings::OPTION_NAME->value, []);
@@ -213,15 +213,11 @@ final class TelemetryService
                 'meta_owner'       => SeoSettings::metaOwner(),
                 'index_profiles'   => SeoSettings::bool('indexProfiles'),
             ],
-            'edition' => [
-                'pro_installed' => Config::isProInstalled(),
-                'pro_licensed'  => Config::isProActivated(),
-            ],
         ];
 
         set_transient($cacheKey, $profile, DAY_IN_SECONDS);
 
-        return $profile;
+        return self::extend($profile);
     }
 
     /**
@@ -230,6 +226,26 @@ final class TelemetryService
     public static function forgetProfile(): void
     {
         delete_transient(Config::VAR_PREFIX . 'telemetry_profile');
+    }
+
+    /**
+     * Let the add-on describe itself.
+     *
+     * This plugin has no edition and no licence, so it reports on neither. The
+     * `bit_connect_telemetry_profile` filter is where the add-on adds an
+     * `edition` section of its own; a report from a site without the add-on
+     * simply has none. Applied outside the cache, so what the add-on says is
+     * never a day stale and the transient holds only this plugin's own data.
+     *
+     * @param array<string, mixed> $profile
+     *
+     * @return array<string, mixed>
+     */
+    private static function extend(array $profile): array
+    {
+        $extended = Hooks::applyFilter(Config::withPrefix('telemetry_profile'), $profile);
+
+        return \is_array($extended) ? $extended : $profile;
     }
 
     /**

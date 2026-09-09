@@ -29,6 +29,7 @@ final class TelemetryServiceTest extends TestCase
     {
         $GLOBALS['__wp_options'] = [];
         $GLOBALS['__wp_transients'] = [];
+        $GLOBALS['__wp_filters'] = [];
     }
 
     // -----------------------------------------------------------------------
@@ -119,10 +120,10 @@ final class TelemetryServiceTest extends TestCase
     public static function personalFieldProvider(): array
     {
         return [
-            'admin email'      => ['admin_email'],
-            'first name'       => ['first_name'],
-            'last name'        => ['last_name'],
-            'server ip'        => ['ip_address'],
+            'admin email' => ['admin_email'],
+            'first name'  => ['first_name'],
+            'last name'   => ['last_name'],
+            'server ip'   => ['ip_address'],
         ];
     }
 
@@ -133,9 +134,58 @@ final class TelemetryServiceTest extends TestCase
         $this->assertArrayHasKey('forum', $reshaped);
         $this->assertSame(2, $reshaped['forum']['schema']);
 
-        foreach (['placement', 'access', 'auth', 'content', 'taxonomy', 'roles', 'notifications', 'seo', 'edition'] as $section) {
+        foreach (['placement', 'access', 'auth', 'content', 'taxonomy', 'roles', 'notifications', 'seo'] as $section) {
             $this->assertArrayHasKey($section, $reshaped['forum'], "The forum profile lost its '{$section}' section.");
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Editions and licences are the add-on's to report, not this plugin's
+    // -----------------------------------------------------------------------
+
+    public function testTheReportSaysNothingAboutEditionsOrLicences(): void
+    {
+        $reshaped = TelemetryService::reshapeReport(['url' => 'https://example.com']);
+
+        $this->assertArrayNotHasKey('edition', $reshaped['forum']);
+
+        array_walk_recursive(
+            $reshaped['forum'],
+            function ($value, $key): void {
+                $this->assertDoesNotMatchRegularExpression(
+                    '/(^|_)pro(_|$)|licen[cs]e/i',
+                    (string) $key,
+                    "forum.{$key}: this plugin has no licence, so its report must not describe one."
+                );
+            }
+        );
+    }
+
+    public function testTheAddOnExtendsTheReportThroughTheProfileFilter(): void
+    {
+        $GLOBALS['__wp_filters'][Config::withPrefix('telemetry_profile')] = static fn (array $profile): array => $profile + ['edition' => ['pro_installed' => true, 'pro_licensed' => false]];
+
+        $reshaped = TelemetryService::reshapeReport(['url' => 'https://example.com']);
+
+        $this->assertSame(['pro_installed' => true, 'pro_licensed' => false], $reshaped['forum']['edition']);
+        $this->assertSame(2, $reshaped['forum']['schema'], 'The filter extends the profile; it does not replace it.');
+    }
+
+    public function testTheProfileFilterIsAppliedOnTopOfTheCachedProfile(): void
+    {
+        // Warm the cache with nothing hooked, then hook: what the add-on says
+        // must reach the report at once, not after the day-long cache expires.
+        TelemetryService::reshapeReport(['url' => 'https://example.com']);
+        $GLOBALS['__wp_filters'][Config::withPrefix('telemetry_profile')] = static fn (array $profile): array => $profile + ['edition' => ['pro_installed' => true, 'pro_licensed' => true]];
+
+        $reshaped = TelemetryService::reshapeReport(['url' => 'https://example.com']);
+
+        $this->assertTrue($reshaped['forum']['edition']['pro_licensed']);
+        $this->assertArrayNotHasKey(
+            'edition',
+            $GLOBALS['__wp_transients'][Config::VAR_PREFIX . 'telemetry_profile'],
+            'The transient holds only this plugin\'s own data.'
+        );
     }
 
     public function testTheReportCarriesOnlyScalarsAndCounts(): void
