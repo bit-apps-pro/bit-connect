@@ -18,7 +18,7 @@ The compiled JavaScript and CSS under `assets/` are **not committed** — they a
 generated. To produce them:
 
 ```bash
-git clone https://github.com/heyKhoaiz/bit-connect.git
+git clone https://github.com/bit-apps-pro/bit-connect.git
 cd bit-connect
 composer install
 pnpm install
@@ -81,7 +81,7 @@ install you can run locally:
 
 ```bash
 cd wp-content/plugins
-git clone https://github.com/heyKhoaiz/bit-connect.git
+git clone https://github.com/bit-apps-pro/bit-connect.git
 cd bit-connect
 composer install && pnpm install
 pnpm build:free      # once, so the plugin has assets to activate with
