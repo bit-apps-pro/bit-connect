@@ -52,7 +52,7 @@ directory name has to be `bit-connect`:
 
 ```bash
 cd wp-content/plugins
-git clone https://github.com/heyKhoaiz/bit-connect.git
+git clone https://github.com/bit-apps-pro/bit-connect.git
 cd bit-connect
 ```
 
