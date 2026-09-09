@@ -26,8 +26,11 @@ jobs:
           php-version: '8.2'
           tools: composer
 
+      # `--no-dev`, as `scripts/build-plugin.mjs` installs for the release zip.
+      # The plugin itself runs on PHP 8.2; the dev toolchain (phpinsights,
+      # symfony 8) needs 8.3+, and nothing after this step uses it.
       - name: Install PHP dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --no-dev --prefer-dist --no-progress
 
       - uses: pnpm/action-setup@v4
 

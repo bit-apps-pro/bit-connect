@@ -69,8 +69,21 @@ async function walk(directory, keep = () => true) {
     const relative = path.join(directory, entry.name)
 
     // Never audit dependency trees: they are installed, not published, and
-    // vendored packages legitimately contain the word "pro".
-    if (entry.name === 'node_modules' || entry.name === 'vendor') continue
+    // vendored packages legitimately contain the word "pro". `.git` is skipped
+    // for size — it holds packed objects, not publishable source.
+    //
+    // `build` is packaging output: it holds a *copy* of the tree, so every
+    // allowlisted path appears there under a second name and reads as a
+    // violation. What it contains came from the source this is already
+    // auditing, and it is gitignored, so it is never published.
+    if (
+      entry.name === 'node_modules' ||
+      entry.name === 'vendor' ||
+      entry.name === '.git' ||
+      entry.name === 'build'
+    ) {
+      continue
+    }
 
     if (entry.isDirectory()) {
       found.push(...(await walk(relative, keep)))
@@ -127,7 +140,12 @@ for (const stub of STUBBED_MODULES) {
 }
 
 // 3. No PHP names the pro namespace outside free's own detection gates.
-const phpFiles = await walk('backend', relative => relative.endsWith('.php'))
+//
+//    The whole tree, not just `backend/`. Narrowing it to the plugin's own
+//    source once let eight files under `tests/` reach the public repository
+//    naming `BitApps\BitConnectPro` — they were pro-dependent tests, and the
+//    audit that was supposed to catch exactly that was not looking at them.
+const phpFiles = await walk('.', relative => relative.endsWith('.php'))
 
 for (const relative of phpFiles) {
   const normalized = relative.split(path.sep).join('/')
@@ -196,6 +214,58 @@ if (markersFrom && (await fse.pathExists(assetsDirectory))) {
   console.log(`  scanned the bundle for ${markers.length} pro-only strings`)
 } else if (markersFrom) {
   console.log('  no assets/ in the tree — skipping the bundle scan')
+}
+
+// 5. The built bundle carries no licence machinery.
+//
+//    Gate 4 cannot catch this and never could: it derives its markers from
+//    modules that are absent from the published tree, and the licence
+//    components are *present* in it — they are shared Bit Apps commons, mirrored
+//    verbatim from a public submodule and so unstubbable here. What matters is
+//    not whether the source is in the repository but whether it was compiled
+//    into the plugin WordPress.org hosts.
+//
+//    Plugin Directory guideline 6 is the rule being kept: a hosted plugin may
+//    not carry a mechanism that decides whether its own features may be used.
+//    Every string below belongs to such a mechanism — the activation and
+//    deactivation calls, the 24-hour check against the Bit Apps licence server,
+//    and the `h_t_tps` idiom that hid its address from a source search. If one
+//    of them turns up in `assets/`, something is importing the commons
+//    `License.pro`, `LicenseInvalidAlert.pro` or `SupportPage` again.
+//
+//    Unlike gate 4 this needs no `--markers-from`: the strings are fixed, so the
+//    public repository's own workflow runs it too.
+const LICENCE_MARKERS = [
+  'pro_license/activate',
+  'pro_license/deactivate',
+  'activateLicense',
+  'hmac_decrypt',
+  'check-validity',
+  'verify-site',
+  'Deactivate License',
+  'Activate License',
+  // The obfuscation idiom itself, in both spellings the commons uses. Its
+  // presence means an assembled-at-runtime URL shipped, whatever it points at.
+  'h_t_tps',
+  'h_t_t_p_s'
+]
+
+if (await fse.pathExists(assetsDirectory)) {
+  let builtText = ''
+
+  for (const relative of await walk('assets', relative => relative.endsWith('.js'))) {
+    builtText += await fse.readFile(path.resolve(treeRoot, relative), 'utf8')
+  }
+
+  for (const marker of LICENCE_MARKERS) {
+    if (builtText.includes(marker)) {
+      fail(`licence machinery reached the built bundle: ${JSON.stringify(marker)}`)
+    }
+  }
+
+  console.log(`  scanned the bundle for ${LICENCE_MARKERS.length} licence-machinery strings`)
+} else {
+  console.log('  no assets/ in the tree — skipping the licence-machinery scan')
 }
 
 if (failures.length > 0) {
