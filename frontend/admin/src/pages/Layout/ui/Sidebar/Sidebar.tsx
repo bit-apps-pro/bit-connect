@@ -61,7 +61,9 @@ export default function Sidebar() {
         // bc-bg-surface (over the Sider theme's own paint) keeps the panel on
         // the same neutral scale as the content area — antd's dark Sider is
         // navy, which read as a second colour scheme inside the same screen.
-        'bc-px-4 bc-flex bc-h-full bc-flex-col bc-justify-center bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface',
+        // Overflow is clipped at the card edge, so on a short viewport the
+        // nav scrolls inside it rather than spilling past it.
+        'bc-px-4 bc-flex bc-h-full bc-flex-col bc-overflow-hidden bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface',
         '[&>.ant-layout-sider-children]:bc-contents'
       ])}
       collapsed={false}
@@ -78,18 +80,18 @@ export default function Sidebar() {
         <Typography.Title level={3}>{__('Bit Connect')}</Typography.Title>
       </Link>
 
-      <nav
-        className={cn([
-          'bc-mt-1 bc-flex bc-h-[calc(100%-58px)] bc-w-full bc-flex-col bc-justify-between'
-        ])}
-      >
-        <div className="bc-space-y-1">
+      {/* The list grows to fill the column instead of claiming a set slice of
+          it: the theme toggle and credit are real siblings, so on a short
+          viewport the list yields height and scrolls rather than pushing them
+          out of the card. Same shape as the client sidebar. */}
+      <nav className="bc-mt-1 bc-flex bc-min-h-0 bc-w-full bc-flex-1 bc-flex-col bc-justify-between">
+        <div className="scroller thin bc-min-h-0 bc-flex-1 bc-space-y-1 bc-overflow-y-auto">
           {visibleNavItems.map(link => (
             <SidebarNavItem key={link.label} props={link} />
           ))}
         </div>
 
-        <div>
+        <div className="bc-shrink-0 bc-pt-2">
           <ThemeToggle block />
 
           <a
