@@ -62,3 +62,27 @@ jobs:
       # that the plugin builds from source — keep it answering exactly that.
       - name: Tests
         run: pnpm test
+
+      # The same staging `pnpm prod:free-zip` does locally, minus the frontend
+      # build (`--nobuild`) this job has already run and asserted. The script
+      # ends by reinstalling dev Composer deps to restore the working tree;
+      # COMPOSER_NO_DEV keeps that on the runtime set, which is all PHP 8.2
+      # can install (see "Install PHP dependencies" above) and all a zip needs.
+      - name: Zip the plugin
+        env:
+          COMPOSER_NO_DEV: '1'
+        run: |
+          node scripts/build-plugin.mjs --slug bit-connect --outdir build --nobuild --noi18n
+          node scripts/prune-build.mjs --slug bit-connect --outdir build
+          (cd build && zip -rq bit-connect.zip bit-connect)
+          node scripts/rename-build-zip.mjs --slug bit-connect --outdir build
+
+      # Downloadable from the run's "Artifacts" section for 14 days — enough
+      # to install a build of any PR or main commit without a local toolchain.
+      - name: Upload the zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: bit-connect-zip
+          path: build/bit-connect-*.zip
+          if-no-files-found: error
+          retention-days: 14
