@@ -67,7 +67,7 @@ final class Plugin
      */
     public function loaded()
     {
-        Hooks::doAction(Config::withPrefix('loaded'));
+        Hooks::doAction('bit_connect_loaded');
         new PreInitHookProvider();
 
         Hooks::addAction('init', [$this, 'registerProviders'], 8);

@@ -51,7 +51,7 @@ final class ReportService
     /**
      * Transient holding the queue badge's count.
      */
-    private const PENDING_COUNT_KEY = 'bc_reports_pending_targets';
+    private const PENDING_COUNT_KEY = 'bit_connect_reports_pending_targets';
 
     /**
      * How many pending reports it takes to hide something automatically.
@@ -174,36 +174,6 @@ final class ReportService
     public static function shouldAutoHide(string $targetType, int $targetId, int $author, ?int $pending = null): bool
     {
         return ProFeatures::autoHideOnReports($targetType, $targetId, $author, $pending);
-    }
-
-    /**
-     * Whatever a report query answered, as a plain list of rows.
-     *
-     * Lives here rather than on the model because every caller is in this
-     * class, and because the test double replaces Report wholesale — a helper
-     * on the model would be invisible to it.
-     *
-     * get() answers with a Collection, and with a bare Model when a limit of
-     * one matched exactly one row. Casting either to an array yields its own
-     * properties rather than the rows: the queue grouped that single bogus
-     * element into one all-zero card — "Topic #0", written by "(deleted
-     * account)" — and every real report vanished from the moderation screen.
-     *
-     * @param mixed $rows
-     *
-     * @return array<int, object>
-     */
-    private static function asList($rows): array
-    {
-        if ($rows instanceof Collection) {
-            return array_values($rows->all());
-        }
-
-        if ($rows instanceof Model) {
-            return [$rows];
-        }
-
-        return \is_array($rows) ? array_values($rows) : [];
     }
 
     /**
@@ -437,6 +407,36 @@ final class ReportService
     public static function isValidTargetType(string $targetType): bool
     {
         return \in_array($targetType, [self::TARGET_POST, self::TARGET_COMMENT], true);
+    }
+
+    /**
+     * Whatever a report query answered, as a plain list of rows.
+     *
+     * Lives here rather than on the model because every caller is in this
+     * class, and because the test double replaces Report wholesale — a helper
+     * on the model would be invisible to it.
+     *
+     * get() answers with a Collection, and with a bare Model when a limit of
+     * one matched exactly one row. Casting either to an array yields its own
+     * properties rather than the rows: the queue grouped that single bogus
+     * element into one all-zero card — "Topic #0", written by "(deleted
+     * account)" — and every real report vanished from the moderation screen.
+     *
+     * @param mixed $rows
+     *
+     * @return array<int, object>
+     */
+    private static function asList($rows): array
+    {
+        if ($rows instanceof Collection) {
+            return array_values($rows->all());
+        }
+
+        if ($rows instanceof Model) {
+            return [$rows];
+        }
+
+        return \is_array($rows) ? array_values($rows) : [];
     }
 
     /**

@@ -38,8 +38,8 @@ class EmailChangeServiceTest extends TestCase
 
         $this->assertCount(1, $GLOBALS['__wp_mail']);
         $this->assertSame('new@example.com', $GLOBALS['__wp_mail'][0]['to']);
-        $this->assertStringContainsString('bc_email_token=', $GLOBALS['__wp_mail'][0]['message']);
-        $this->assertStringContainsString('bc_uid=1', $GLOBALS['__wp_mail'][0]['message']);
+        $this->assertStringContainsString('bit_connect_email_token=', $GLOBALS['__wp_mail'][0]['message']);
+        $this->assertStringContainsString('bit_connect_uid=1', $GLOBALS['__wp_mail'][0]['message']);
     }
 
     public function testRejectsAnInvalidAddress(): void

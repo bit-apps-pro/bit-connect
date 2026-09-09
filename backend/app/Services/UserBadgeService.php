@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\BadgeTone;
 use BitApps\BitConnect\Enum\Capabilities;
@@ -162,7 +161,7 @@ final class UserBadgeService
          * @param list<array{id: null|string, label: string, tone: string}> $badges assigned badges, highest priority first
          * @param int                                                       $userId the member being labelled
          */
-        $badges = Hooks::applyFilter(Config::withPrefix('assigned_member_badges'), [], $userId);
+        $badges = Hooks::applyFilter('bit_connect_assigned_member_badges', [], $userId);
         $badges = self::sanitizeList($badges);
 
         if ($badges === []) {

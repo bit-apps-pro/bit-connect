@@ -182,8 +182,8 @@ class EmailChangeService
     private static function sendConfirmation(int $userId, string $email, string $token): void
     {
         $confirmUrl = AuthService::getForumPageUrl()
-            . '?bc_email_token=' . rawurlencode($token)
-            . '&bc_uid=' . $userId;
+            . '?bit_connect_email_token=' . rawurlencode($token)
+            . '&bit_connect_uid=' . $userId;
 
         $subject = __('Confirm your new email address', 'bit-connect');
         $message = \sprintf(

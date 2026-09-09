@@ -46,7 +46,7 @@ final class AuthRateLimiter
      * Transient key prefix. Short by necessity — an option name is capped at
      * 191 characters and the identifier is hashed into this.
      */
-    private const KEY_PREFIX = 'bc_arl_';
+    private const KEY_PREFIX = 'bit_connect_arl_';
 
     /**
      * Attempts allowed per window: [per identifier, per address, window seconds].

@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use WP_User;
 
@@ -57,7 +56,7 @@ final class ProFeatures
     public static function autoHideOnReports(string $targetType, int $targetId, int $author, ?int $pending = null): bool
     {
         return (bool) Hooks::applyFilter(
-            Config::withPrefix('should_auto_hide'),
+            'bit_connect_should_auto_hide',
             false,
             $targetType,
             $targetId,
@@ -76,7 +75,7 @@ final class ProFeatures
      */
     public static function privateTopics(): bool
     {
-        return (bool) Hooks::applyFilter(Config::withPrefix('private_topics_available'), false);
+        return (bool) Hooks::applyFilter('bit_connect_private_topics_available', false);
     }
 
     /**
@@ -84,7 +83,7 @@ final class ProFeatures
      */
     public static function commentUpvotes(): bool
     {
-        return (bool) Hooks::applyFilter(Config::withPrefix('comment_upvotes_available'), false);
+        return (bool) Hooks::applyFilter('bit_connect_comment_upvotes_available', false);
     }
 
     /**
@@ -96,7 +95,7 @@ final class ProFeatures
      */
     public static function notificationDelivery(): bool
     {
-        return (bool) Hooks::applyFilter(Config::withPrefix('custom_notification_delivery'), false);
+        return (bool) Hooks::applyFilter('bit_connect_custom_notification_delivery', false);
     }
 
     /**
@@ -107,7 +106,7 @@ final class ProFeatures
      */
     public static function notificationWording(): bool
     {
-        return (bool) Hooks::applyFilter(Config::withPrefix('custom_notification_wording'), false);
+        return (bool) Hooks::applyFilter('bit_connect_custom_notification_wording', false);
     }
 
     /**
@@ -133,7 +132,7 @@ final class ProFeatures
      */
     public static function perUserCapabilities(): bool
     {
-        return (bool) Hooks::applyFilter(Config::withPrefix('per_user_capabilities_available'), false);
+        return (bool) Hooks::applyFilter('bit_connect_per_user_capabilities_available', false);
     }
 
     /**
@@ -154,7 +153,7 @@ final class ProFeatures
     public static function applyUserCapabilities(WP_User $user, array $capabilities): bool
     {
         return Hooks::applyFilter(
-            Config::withPrefix('apply_user_capabilities'),
+            'bit_connect_apply_user_capabilities',
             false,
             $user,
             $capabilities

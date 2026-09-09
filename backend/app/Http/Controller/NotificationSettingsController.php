@@ -104,7 +104,7 @@ final class NotificationSettingsController
 
         foreach (NotificationTypes::cases() as $type) {
             $catalog[] = [
-                'type' => $type->value,
+                'type'        => $type->value,
                 'label'       => NotificationTypes::translatedLabel($type),
                 'description' => NotificationTypes::translatedDescription($type),
                 // The screen greys the member-override column for these: a

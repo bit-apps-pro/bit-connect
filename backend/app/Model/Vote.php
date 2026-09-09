@@ -23,7 +23,7 @@ use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
  * by unique DB indexes.  To change vote direction, the existing row is updated.
  * To remove a vote, the row is deleted.
  *
- * Cached totals (_bc_upvote_count, _bc_downvote_count) are stored in
+ * Cached totals (_bit_connect_vote_count, see VoteService::META_VOTE_COUNT) are stored in
  * wp_postmeta / wp_commentmeta by VoteService and are authoritative for reads.
  * This table is the source of truth for user vote history and direction.
  */

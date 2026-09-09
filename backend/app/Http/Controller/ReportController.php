@@ -359,7 +359,7 @@ final class ReportController
         $context = array_merge(
             $snapshot,
             [
-                'decision' => $status->value,
+                'decision'       => $status->value,
                 'decision_label' => ReportStatus::translatedLabel($status),
                 'note'           => $note,
             ]

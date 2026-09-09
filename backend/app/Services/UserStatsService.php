@@ -79,7 +79,7 @@ class UserStatsService
         $user = get_userdata($userId);
 
         if (!$user) {
-            return null;
+            return;
         }
 
         $cacheKey = Config::VAR_PREFIX . 'user_stats_' . $userId;

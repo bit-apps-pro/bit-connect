@@ -22,7 +22,7 @@ use BitApps\BitConnect\Model\Vote;
  * Features added over the legacy implementation:
  *   - Capability checks via current_user_can()
  *   - Rate limiting via VoteRateLimiter
- *   - Cached totals in postmeta / commentmeta (_bc_vote_count)
+ *   - Cached totals in postmeta / commentmeta (_bit_connect_vote_count)
  *   - Dropping the author's cached profile totals, since a vote moves the
  *     "Upvotes" figure on their card and nothing in core announces one
  */
@@ -31,7 +31,7 @@ class VoteService
     /**
      * Meta key used in postmeta and commentmeta for the cached vote total.
      */
-    public const META_VOTE_COUNT = '_bc_vote_count';
+    public const META_VOTE_COUNT = '_bit_connect_vote_count';
 
     // -------------------------------------------------------------------------
     // Post voting

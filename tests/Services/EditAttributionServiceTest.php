@@ -76,7 +76,7 @@ final class EditAttributionServiceTest extends TestCase
     public function testARecordMissingItsEditorIsNotReported(): void
     {
         $this->seedPost(10, authorId: 3);
-        $GLOBALS['__wp_post_meta'][10]['_bc_edited_at'] = self::NOW;
+        $GLOBALS['__wp_post_meta'][10]['_bit_connect_edited_at'] = self::NOW;
 
         $this->assertNull(EditAttributionService::forPost(10));
     }
@@ -84,7 +84,7 @@ final class EditAttributionServiceTest extends TestCase
     public function testARecordMissingItsTimestampIsNotReported(): void
     {
         $this->seedPost(10, authorId: 3);
-        $GLOBALS['__wp_post_meta'][10]['_bc_edited_by'] = 3;
+        $GLOBALS['__wp_post_meta'][10]['_bit_connect_edited_by'] = 3;
 
         $this->assertNull(EditAttributionService::forPost(10));
     }

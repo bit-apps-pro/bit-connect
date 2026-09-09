@@ -73,7 +73,7 @@ final class AuthService
 
     public const MODERATOR_ROLE = 'bit_connect_moderator';
 
-    private const PENDING_TRANSIENT_PREFIX = 'bc_pending_reg_';
+    private const PENDING_TRANSIENT_PREFIX = 'bit_connect_pending_reg_';
 
     // -------------------------------------------------------------------------
     // Settings helpers
@@ -546,7 +546,7 @@ final class AuthService
 
         set_transient(self::PENDING_TRANSIENT_PREFIX . $token, $data, DAY_IN_SECONDS);
 
-        $verifyUrl = self::getForumPageUrl() . '?bc_token=' . rawurlencode($token);
+        $verifyUrl = self::getForumPageUrl() . '?bit_connect_token=' . rawurlencode($token);
 
         $subject = __('Verify your email address', 'bit-connect');
         $message = \sprintf(
