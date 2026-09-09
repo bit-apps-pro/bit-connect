@@ -39,10 +39,10 @@ class ReportRateLimiterTest extends TestCase
     public function testConsumeStartsAndIncrementsTheCounter(): void
     {
         ReportRateLimiter::consume(42);
-        $this->assertSame(1, $GLOBALS['__wp_transients']['bc_rrl_42']['count']);
+        $this->assertSame(1, $GLOBALS['__wp_transients']['bit_connect_rrl_42']['count']);
 
         ReportRateLimiter::consume(42);
-        $this->assertSame(2, $GLOBALS['__wp_transients']['bc_rrl_42']['count']);
+        $this->assertSame(2, $GLOBALS['__wp_transients']['bit_connect_rrl_42']['count']);
     }
 
     public function testUserIsBlockedOnceTheLimitIsReached(): void
@@ -114,12 +114,12 @@ class ReportRateLimiterTest extends TestCase
      */
     public function testACountStoredByAnOlderBuildIsStillCounted(): void
     {
-        $GLOBALS['__wp_transients']['bc_rrl_42'] = 5;
+        $GLOBALS['__wp_transients']['bit_connect_rrl_42'] = 5;
 
         $this->assertFalse(ReportRateLimiter::isAllowed(42));
 
         ReportRateLimiter::consume(42);
-        $this->assertSame(6, $GLOBALS['__wp_transients']['bc_rrl_42']['count']);
+        $this->assertSame(6, $GLOBALS['__wp_transients']['bit_connect_rrl_42']['count']);
     }
 
     public function testLimitIsConfigurableViaFilter(): void

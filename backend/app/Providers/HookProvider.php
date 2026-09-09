@@ -125,11 +125,11 @@ class HookProvider
 
     public function registerQueryVars($vars)
     {
-        $vars[] = 'bc_token';
+        $vars[] = 'bit_connect_token';
         // Confirmation link for an email change. Registered for the same reason
-        // as bc_token: WordPress strips unknown query vars, and the SPA reads
+        // as bit_connect_token: WordPress strips unknown query vars, and the SPA reads
         // this one to know which flow the visitor arrived in.
-        $vars[] = 'bc_email_token';
+        $vars[] = 'bit_connect_email_token';
 
         return $vars;
     }

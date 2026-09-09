@@ -125,7 +125,7 @@ final class NotificationPreferences
             $mandatory = NotificationTypes::isMandatoryInApp($type);
 
             $types[] = [
-                'type' => $type->value,
+                'type'        => $type->value,
                 'label'       => NotificationTypes::translatedLabel($type),
                 'description' => NotificationTypes::translatedDescription($type),
                 'inapp'       => self::wantsInApp($userId, $type),

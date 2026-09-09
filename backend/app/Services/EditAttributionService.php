@@ -32,9 +32,9 @@ use WP_Post;
  */
 final class EditAttributionService
 {
-    private const META_AT = '_bc_edited_at';
+    private const META_AT = '_bit_connect_edited_at';
 
-    private const META_BY = '_bc_edited_by';
+    private const META_BY = '_bit_connect_edited_by';
 
     /**
      * Marks a topic as edited by the given user, now.

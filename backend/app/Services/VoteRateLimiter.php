@@ -24,7 +24,7 @@ final class VoteRateLimiter
     /**
      * Transient key prefix.
      */
-    private const KEY_PREFIX = 'bc_vrl_';
+    private const KEY_PREFIX = 'bit_connect_vrl_';
 
     /**
      * Maximum number of votes allowed in the time window.

@@ -182,7 +182,7 @@ final class ActivityLogService
     /**
      * Whatever paginate() answered, as a plain list of rows.
      *
-     * get() always answers with a Collection, and casting one to array yields
+     * A get() call always answers with a Collection, and casting one to array yields
      * its protected $items under a mangled key rather than the rows inside it.
      * The feed therefore serialised as an object holding a single all-zero row
      * — not a list the admin screen can iterate, so Activity rendered blank.

@@ -81,9 +81,9 @@ export const routeList: {
 function VerifyEmailRedirect() {
   const [params] = useSearchParams()
   const { pathname } = useLocation()
-  const token = params.get('bc_token')
-  const emailToken = params.get('bc_email_token')
-  const uid = params.get('bc_uid')
+  const token = params.get('bit_connect_token')
+  const emailToken = params.get('bit_connect_email_token')
+  const uid = params.get('bit_connect_uid')
 
   if (pathname === '/verify-email') return
 

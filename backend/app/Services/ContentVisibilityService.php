@@ -33,7 +33,7 @@ final class ContentVisibilityService
      *
      * Registered as non-public, so WP_Query excludes it unless asked by name.
      */
-    public const HIDDEN_STATUS = 'bc_hidden';
+    public const HIDDEN_STATUS = 'bit_connect_hidden';
 
     /**
      * Where the pre-hide state is kept, on the post or the comment.
@@ -42,7 +42,7 @@ final class ContentVisibilityService
      * reported from one held because the site moderates every new comment —
      * the second kind must not be given a "removed by a moderator" tombstone.
      */
-    public const PREV_STATUS_META = '_bc_hidden_prev_status';
+    public const PREV_STATUS_META = '_bit_connect_hidden_prev_status';
 
     /**
      * Registers the hidden post status. Called from PostTypeProvider.

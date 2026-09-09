@@ -582,8 +582,8 @@ final class NotificationService
         $context = \is_string($row->context) ? json_decode($row->context, true) : null;
 
         return [
-            'id'   => (int) $row->id,
-            'type' => (string) $row->type,
+            'id'         => (int) $row->id,
+            'type'       => (string) $row->type,
             'type_label' => $type ? NotificationTypes::translatedLabel($type) : (string) $row->type,
             'actor'      => [
                 'id'   => (int) $row->actor_id,

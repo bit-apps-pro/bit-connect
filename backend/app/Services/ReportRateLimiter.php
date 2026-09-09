@@ -29,7 +29,7 @@ final class ReportRateLimiter
     /**
      * Transient key prefix.
      */
-    private const KEY_PREFIX = 'bc_rrl_';
+    private const KEY_PREFIX = 'bit_connect_rrl_';
 
     /**
      * Maximum number of reports allowed in the time window.

@@ -134,7 +134,7 @@ class Head
         }
 
         $frontendVars = Hooks::applyFilter(
-            Config::withPrefix('localized_script'),
+            'bit_connect_localized_script',
             [
                 'nonce'             => wp_create_nonce('wp_rest'),
                 'rootURL'           => Config::get('ROOT_URI'),

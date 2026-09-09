@@ -92,16 +92,16 @@ enum NotificationTypes: string
     public static function translatedLabel(NotificationTypes $type): string
     {
         return match ($type) {
-            self::TOPIC_REPLY           => __('Someone comments on your topic', 'bit-connect'),
-            self::COMMENT_REPLY         => __('Someone replies to your comment', 'bit-connect'),
-            self::TOPIC_NEW             => __('A new topic is posted', 'bit-connect'),
-            self::MENTION               => __('Someone mentions you', 'bit-connect'),
-            self::VOTE_RECEIVED         => __('Someone upvotes your post', 'bit-connect'),
-            self::REPORT_RESOLVED       => __('Your report is reviewed', 'bit-connect'),
-            self::CONTENT_ACTIONED      => __('Your content is moderated', 'bit-connect'),
-            self::BADGE_AWARDED         => __('You are given a badge', 'bit-connect'),
-            self::TOPIC_STATUS_CHANGED  => __('A topic you follow changes status', 'bit-connect'),
-            self::REPORT_FILED          => __('A new report needs review', 'bit-connect'),
+            self::TOPIC_REPLY          => __('Someone comments on your topic', 'bit-connect'),
+            self::COMMENT_REPLY        => __('Someone replies to your comment', 'bit-connect'),
+            self::TOPIC_NEW            => __('A new topic is posted', 'bit-connect'),
+            self::MENTION              => __('Someone mentions you', 'bit-connect'),
+            self::VOTE_RECEIVED        => __('Someone upvotes your post', 'bit-connect'),
+            self::REPORT_RESOLVED      => __('Your report is reviewed', 'bit-connect'),
+            self::CONTENT_ACTIONED     => __('Your content is moderated', 'bit-connect'),
+            self::BADGE_AWARDED        => __('You are given a badge', 'bit-connect'),
+            self::TOPIC_STATUS_CHANGED => __('A topic you follow changes status', 'bit-connect'),
+            self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
         };
     }
 
@@ -111,16 +111,16 @@ enum NotificationTypes: string
     public static function translatedDescription(NotificationTypes $type): string
     {
         return match ($type) {
-            self::TOPIC_REPLY           => __('A new top-level comment on a topic you wrote or follow.', 'bit-connect'),
-            self::COMMENT_REPLY         => __('A direct reply to something you wrote in a thread.', 'bit-connect'),
-            self::TOPIC_NEW             => __('A topic appears under a product or tag you follow.', 'bit-connect'),
-            self::MENTION               => __('Your name is used in a topic or comment.', 'bit-connect'),
-            self::VOTE_RECEIVED         => __('Collapsed into one entry per item, so a popular post is one line and not fifty.', 'bit-connect'),
-            self::REPORT_RESOLVED       => __('A moderator reaches a decision on something you reported.', 'bit-connect'),
-            self::CONTENT_ACTIONED      => __('Something you wrote was hidden or removed after review.', 'bit-connect'),
-            self::BADGE_AWARDED         => __('An admin awards you a profile badge.', 'bit-connect'),
-            self::TOPIC_STATUS_CHANGED  => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
-            self::REPORT_FILED          => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
+            self::TOPIC_REPLY          => __('A new top-level comment on a topic you wrote or follow.', 'bit-connect'),
+            self::COMMENT_REPLY        => __('A direct reply to something you wrote in a thread.', 'bit-connect'),
+            self::TOPIC_NEW            => __('A topic appears under a product or tag you follow.', 'bit-connect'),
+            self::MENTION              => __('Your name is used in a topic or comment.', 'bit-connect'),
+            self::VOTE_RECEIVED        => __('Collapsed into one entry per item, so a popular post is one line and not fifty.', 'bit-connect'),
+            self::REPORT_RESOLVED      => __('A moderator reaches a decision on something you reported.', 'bit-connect'),
+            self::CONTENT_ACTIONED     => __('Something you wrote was hidden or removed after review.', 'bit-connect'),
+            self::BADGE_AWARDED        => __('An admin awards you a profile badge.', 'bit-connect'),
+            self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
+            self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
         };
     }
 

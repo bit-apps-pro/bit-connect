@@ -30,7 +30,7 @@ final class Layout
      */
     public function sideBarMenuItem()
     {
-        $menus = Hooks::applyFilter(Config::withPrefix('admin_sidebar_menu'), Config::get('SIDE_BAR_MENU'));
+        $menus = Hooks::applyFilter('bit_connect_admin_sidebar_menu', Config::get('SIDE_BAR_MENU'));
         global $submenu;
 
         foreach ($menus as $menu) {

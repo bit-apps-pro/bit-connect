@@ -150,7 +150,7 @@ final class VoteServiceTest extends TestCase
      */
     public function testSomeoneVotingTooFastIsThrottledRatherThanErrored(): void
     {
-        set_transient('bc_vrl_' . self::VOTER, 1000, 60);
+        set_transient('bit_connect_vrl_' . self::VOTER, 1000, 60);
 
         $result = $this->votes->togglePostVote(self::VOTER, self::TOPIC);
 

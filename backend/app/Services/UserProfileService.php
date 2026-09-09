@@ -159,7 +159,7 @@ class UserProfileService
             }
 
             $permissions[] = [
-                'key' => $capability->value,
+                'key'   => $capability->value,
                 'label' => Capabilities::translatedLabel($capability),
                 'group' => self::CAPABILITY_GROUPS[$capability->value] ?? 'Other',
                 // user_can() rather than current_user_can(): the answer is about

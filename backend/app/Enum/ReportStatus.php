@@ -56,10 +56,10 @@ enum ReportStatus: string
     public static function translatedLabel(ReportStatus $status): string
     {
         return match ($status) {
-            self::PENDING           => __('Awaiting review', 'bit-connect'),
-            self::RESOLVED_KEPT     => __('Reviewed — content kept', 'bit-connect'),
-            self::RESOLVED_REMOVED  => __('Reviewed — content removed', 'bit-connect'),
-            self::DISMISSED         => __('Dismissed', 'bit-connect'),
+            self::PENDING          => __('Awaiting review', 'bit-connect'),
+            self::RESOLVED_KEPT    => __('Reviewed — content kept', 'bit-connect'),
+            self::RESOLVED_REMOVED => __('Reviewed — content removed', 'bit-connect'),
+            self::DISMISSED        => __('Dismissed', 'bit-connect'),
         };
     }
 

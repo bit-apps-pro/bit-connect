@@ -194,8 +194,8 @@ final class TopicServiceWriteTest extends TestCase
 
         $this->topics->updateTopic(20, ['post_content' => 'Rewritten body']);
 
-        $this->assertSame('2026-08-27 09:30:00', $GLOBALS['__wp_post_meta'][20]['_bc_edited_at']);
-        $this->assertSame(self::EDITOR, $GLOBALS['__wp_post_meta'][20]['_bc_edited_by']);
+        $this->assertSame('2026-08-27 09:30:00', $GLOBALS['__wp_post_meta'][20]['_bit_connect_edited_at']);
+        $this->assertSame(self::EDITOR, $GLOBALS['__wp_post_meta'][20]['_bit_connect_edited_by']);
     }
 
     /**

@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Enum\Capabilities;
@@ -148,7 +147,7 @@ final class UserManagementController
          * @param list<string> $ids    assigned badge ids
          * @param int          $userId the member in this row
          */
-        $badges = Hooks::applyFilter(Config::withPrefix('assigned_badge_ids'), [], $user->ID);
+        $badges = Hooks::applyFilter('bit_connect_assigned_badge_ids', [], $user->ID);
         $badges = array_values(array_filter((array) $badges, 'is_string'));
 
         return [
