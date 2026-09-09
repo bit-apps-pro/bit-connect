@@ -56,7 +56,14 @@ push to `main` and every pull request, then uploads the result. Open a run under
 [Actions → build](https://github.com/bit-apps-pro/bit-connect/actions/workflows/build.yml)
 and download **bit-connect-zip** from its *Artifacts* section; it holds the same
 `bit-connect-<version>.zip` you would get locally. Artifacts are kept for 14
-days, and WordPress.org releases are still cut from a local `pnpm prod:free-zip`.
+days.
+
+Pushing a `v<version>` tag — `v1.0.0`, matching the `Version:` header — runs the
+same build and then publishes that zip as a
+[GitHub Release](https://github.com/bit-apps-pro/bit-connect/releases), which is
+the durable place to fetch a given version. The workflow refuses a tag whose
+version disagrees with the header. WordPress.org itself is still updated from a
+local `pnpm prod:free-zip`.
 
 ### How the build is wired
 
