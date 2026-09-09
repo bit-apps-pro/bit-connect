@@ -35,7 +35,7 @@ This plugin contains no licence key, no activation step and no licence check of 
 Bit Connect is developed in the open. The complete, unminified source of the free plugin — including the TypeScript and React sources that the compiled JavaScript and CSS under `assets/` are built from — lives in its public GitHub repository:
 
 * Free source repository: [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/)
-* Build: `composer install && pnpm install && pnpm build:free`
+* Build: `composer install --no-dev && pnpm install && pnpm build:free`
 
 Issues and pull requests are welcome there.
 
