@@ -58,7 +58,8 @@ export const STUBBED_MODULES = [
   'frontend/admin/src/pages/manager/ui/user-badges-popover.pro.tsx',
   'frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx',
   'frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx',
-  'frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx'
+  'frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx',
+  'frontend/admin/src/pages/support/internal/version-panel.pro.tsx'
 ]
 
 /**
@@ -73,6 +74,18 @@ export const STUBBED_MODULES = [
  * and this is what catches it. Gate 4 also lifts its marker strings from them.
  */
 export const PRO_ONLY_MODULES = [
+  // The commons licence closure. Not Bit Connect pro code, but licence machinery
+  // all the same, and `scripts/route-commons-pro.mjs` moves the whole of it into
+  // the overlay on every commons sync. Nothing free imports any of it — the two
+  // commons components that did are pruned by the same script — so none of it
+  // needs a stub, and this list is what asserts it stayed gone.
+  'frontend/_plugin-commons/components/License.pro.tsx',
+  'frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx',
+  'frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx',
+  'frontend/_plugin-commons/components/SupportPage/CheckNewUpdate.tsx',
+  'frontend/_plugin-commons/components/SupportPage/data/useCheckLicenseValidity.tsx',
+  'frontend/_plugin-commons/components/SupportPage/data/useCheckUpdate.tsx',
+
   'frontend/admin/src/pages/manager/data/use-delete-profile-badge.ts',
   'frontend/admin/src/pages/manager/data/use-profile-badges.ts',
   'frontend/admin/src/pages/manager/data/use-reorder-profile-badges.ts',
@@ -83,17 +96,18 @@ export const PRO_ONLY_MODULES = [
 /**
  * `.pro`-suffixed files that are published deliberately.
  *
- * These are shared Bit Apps commons, not Bit Connect pro code: they already
- * live in the public `Bit-Apps-Pro/_bitapps-plugin-commons` repository, and
- * `SupportPage.tsx` and `AllPluginEssentials.tsx` import them *unconditionally*
- * — so they are compiled into the shipped free `assets/`, and WordPress.org
- * requires the source of everything in that bundle.
+ * Empty, and kept as the place to record an exception if one is ever justified.
+ *
+ * It used to hold the three commons licence components, on the reasoning that
+ * `frontend/_plugin-commons` is a verbatim copy of a public submodule which
+ * `pnpm plugin:commons:sync` empties and re-writes, so a local edit could not
+ * survive the next sync. That is no longer true: `scripts/route-commons-pro.mjs`
+ * runs as part of the sync and moves the licence closure into the overlay, so
+ * its source never reaches the public repository at all. It is listed in
+ * `PRO_ONLY_MODULES` now, and gate 5 of `assert-no-pro.mjs` stays as the second
+ * line of defence over the built bundle.
  */
-export const PUBLISHED_PRO_SUFFIXED = [
-  'frontend/_plugin-commons/components/License.pro.tsx',
-  'frontend/_plugin-commons/components/LicenseActivationNotice.pro.tsx',
-  'frontend/_plugin-commons/components/LicenseInvalidAlert.pro.tsx'
-]
+export const PUBLISHED_PRO_SUFFIXED = []
 
 /**
  * The only PHP files in the free plugin allowed to name the pro namespace.
