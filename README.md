@@ -1,5 +1,7 @@
 # Bit Connect
 
+[![build](https://github.com/bit-apps-pro/bit-connect/actions/workflows/build.yml/badge.svg)](https://github.com/bit-apps-pro/bit-connect/actions/workflows/build.yml)
+
 A community forum for WordPress. Your users open topics for feature requests,
 bug reports and feedback; everyone else upvotes and comments; and you move each
 topic through the stages of your roadmap so people can see what you are actually
@@ -46,6 +48,15 @@ shipped files, strips development artefacts, and writes
 `build/bit-connect-<version>.zip`. The version comes from the `Version:` header
 in [bit-connect.php](bit-connect.php). Your working tree is left as it was —
 development dependencies are reinstalled once the staging copy has been taken.
+
+#### Without a local toolchain
+
+The [build workflow](.github/workflows/build.yml) runs those same steps on every
+push to `main` and every pull request, then uploads the result. Open a run under
+[Actions → build](https://github.com/bit-apps-pro/bit-connect/actions/workflows/build.yml)
+and download **bit-connect-zip** from its *Artifacts* section; it holds the same
+`bit-connect-<version>.zip` you would get locally. Artifacts are kept for 14
+days, and WordPress.org releases are still cut from a local `pnpm prod:free-zip`.
 
 ### How the build is wired
 
