@@ -34,7 +34,7 @@ This plugin contains no licence key, no activation step and no licence check of 
 
 Bit Connect is developed in the open. The complete, unminified source of the free plugin — including the TypeScript and React sources that the compiled JavaScript and CSS under `assets/` are built from — lives in its public GitHub repository:
 
-* Free source repository: [github.com/heykhoaiz/bit-connect](https://github.com/heykhoaiz/bit-connect/)
+* Free source repository: [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/)
 * Build: `composer install && pnpm install && pnpm build:free`
 
 Issues and pull requests are welcome there.
@@ -93,7 +93,7 @@ Alternatively, you can download the plugin zip file from [wp.org](https://wordpr
 
 = Where is the source code? =
 
-The free plugin is fully open source at [github.com/heykhoaiz/bit-connect](https://github.com/heykhoaiz/bit-connect/). Everything shipped in this plugin, including the sources behind the compiled `assets/` bundle, is in that repository. See *Development* above for the build command.
+The free plugin is fully open source at [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/). Everything shipped in this plugin, including the sources behind the compiled `assets/` bundle, is in that repository. See *Development* above for the build command.
 
 = Do I need the Pro add-on? =
 
@@ -125,6 +125,6 @@ Two, both described under *External Services* above: Google Fonts, which serves 
 * First stable release.
 * Split into two editions: the free plugin, and Bit Connect Pro as a separate add-on.
 
-= v0.1.0
+= 0.1.0 =
 * Initial Beta release
 
