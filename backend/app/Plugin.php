@@ -12,8 +12,6 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Migration\MigrationHelper;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
-use BitApps\BitConnect\Deps\BitApps\WPTelemetry\Telemetry\Telemetry;
-use BitApps\BitConnect\Deps\BitApps\WPTelemetry\Telemetry\TelemetryConfig;
 use BitApps\BitConnect\Http\Middleware\AdminCheckerMiddleware;
 use BitApps\BitConnect\Http\Middleware\AdminNonceCheckerMiddleware;
 use BitApps\BitConnect\Http\Middleware\LoggedInMiddleware;
@@ -22,7 +20,6 @@ use BitApps\BitConnect\Providers\HookProvider;
 use BitApps\BitConnect\Providers\InstallerProvider;
 use BitApps\BitConnect\Providers\PreInitHookProvider;
 use BitApps\BitConnect\Services\CapabilityService;
-use BitApps\BitConnect\Services\TelemetryService;
 use BitApps\BitConnect\Views\HtmlTagModifier;
 use BitApps\BitConnect\Views\Layout;
 use BitApps\BitConnect\Views\PluginPageActions;
@@ -50,10 +47,6 @@ final class Plugin
         $this->registerInstaller();
 
         Hooks::addAction('plugins_loaded', [$this, 'loaded']);
-
-        if (!Config::getEnv('DEV')) {
-            $this->initWPTelemetry();
-        }
     }
 
     public function registerInstaller()
@@ -75,28 +68,6 @@ final class Plugin
         Hooks::addFilter('plugin_action_links_' . Config::get('BASENAME'), [new PluginPageActions(), 'renderActionLinks']);
 
         $this->maybeMigrateDB();
-    }
-
-    public function initWPTelemetry()
-    {
-        TelemetryConfig::setSlug(Config::SLUG);
-        TelemetryConfig::setTitle(Config::TITLE);
-        TelemetryConfig::setVersion(Config::VERSION);
-        TelemetryConfig::setPrefix(Config::VAR_PREFIX);
-
-        TelemetryConfig::setServerBaseUrl(Config::TELEMETRY_SERVER_URL);
-        TelemetryConfig::setTermsUrl(Config::TERMS_URL);
-        TelemetryConfig::setPolicyUrl(Config::PRIVACY_POLICY_URL);
-
-        // Registered before the package, not after: TelemetryService decides
-        // what may be sent and what the payload says, and left to itself the
-        // package reports the administrator's name, email and IP — and reports
-        // the fact that they declined. See the class for why this lives here
-        // rather than in vendor/.
-        TelemetryService::register();
-
-        Telemetry::report()->init();
-        Telemetry::feedback()->init();
     }
 
     public function middlewares()
@@ -164,6 +135,32 @@ final class Plugin
         // the revoke has taken. They are independent and each runs once.
         CapabilityService::migrateModerateSplit();
         CapabilityService::revokeEditAny();
+
+        self::forgetDiagnosticReporting();
+    }
+
+    /**
+     * Remove what the diagnostic reporting of earlier builds left behind.
+     *
+     * Earlier builds bundled `bitapps/wp-telemetry`, which kept its consent
+     * answer in four options and, once opted in, scheduled a weekly send. The
+     * package is gone, so nothing answers that event any more — but WordPress
+     * would keep firing it, and the options would keep saying the site had
+     * consented to a report that no longer exists. Cleared once, guarded by the
+     * option that was always written first.
+     */
+    public static function forgetDiagnosticReporting(): void
+    {
+        if (get_option(Config::withPrefix('tracking_notice_dismissed'), null) === null
+            && get_option(Config::withPrefix('allow_tracking'), null) === null) {
+            return;
+        }
+
+        foreach (['allow_tracking', 'tracking_notice_dismissed', 'tracking_skipped', 'tracking_last_sended_at'] as $option) {
+            delete_option(Config::withPrefix($option));
+        }
+
+        wp_clear_scheduled_hook(Config::withPrefix('send_tracking_event'));
     }
 
     /**

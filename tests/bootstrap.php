@@ -78,6 +78,26 @@ function update_option(string $key, $value): void
     $GLOBALS['__wp_options'][$key] = $value;
 }
 
+if (!function_exists('delete_option')) {
+    function delete_option(string $key): bool
+    {
+        $existed = array_key_exists($key, $GLOBALS['__wp_options'] ?? []);
+        unset($GLOBALS['__wp_options'][$key]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('wp_clear_scheduled_hook')) {
+    function wp_clear_scheduled_hook($hook, $args = [])
+    {
+        $GLOBALS['__wp_cleared_hooks'][] = $hook;
+        unset($GLOBALS['__wp_scheduled'][$hook]);
+
+        return 0;
+    }
+}
+
 if (!function_exists('status_header')) {
     function status_header($code): void
     {
@@ -1620,9 +1640,8 @@ if (!function_exists('get_site_option')) {
     }
 }
 
-// Counting APIs used by the telemetry profile. Each answers the shape core
-// answers with, so the code under test takes its normal path rather than a
-// defensive one.
+// Counting and scheduling APIs. Each answers the shape core answers with, so
+// the code under test takes its normal path rather than a defensive one.
 if (!function_exists('wp_count_posts')) {
     function wp_count_posts($postType = 'post', $perm = '')
     {

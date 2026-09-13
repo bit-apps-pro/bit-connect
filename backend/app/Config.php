@@ -62,20 +62,6 @@ class Config
     public const PRO_PLUGIN_NAMESPACE = 'BitApps\BitConnectPro\\';
 
     /**
-     * Where the optional diagnostic report goes.
-     *
-     * Named here rather than inline at the one call site because
-     * TelemetryService has to recognise a request to it in `pre_http_request`,
-     * and the two must not drift — a base URL that no longer matches would
-     * silently stop refusing unconsented sends.
-     */
-    public const TELEMETRY_SERVER_URL = 'https://wp-api.bitapps.pro/public/';
-
-    public const TERMS_URL = 'https://bitapps.pro/terms-of-service/';
-
-    public const PRIVACY_POLICY_URL = 'https://bitapps.pro/privacy-policy/';
-
-    /**
      * Provides configuration for plugin.
      *
      * @param string $type    Type of conf

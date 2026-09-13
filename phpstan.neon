@@ -15,7 +15,6 @@ parameters:
     scanDirectories:
         - vendor/bitapps/wp-database/src
         - vendor/bitapps/wp-kit/src
-        - vendor/bitapps/wp-telemetry/src
         - vendor/bitapps/wp-validator/src
 
     # WordPress cookie constants are defined inside wp_cookie_constants() rather

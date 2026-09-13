@@ -64,16 +64,6 @@ On the **Bit Connect → Support** screen, your browser requests `https://wp-api
 * **When:** only while the Support screen is open. Never on the front end, and never on other admin screens.
 * **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
 
-= Optional diagnostic reporting =
-
-Separately, the plugin can send diagnostic data to Bit Apps to help improve it. This is **off by default**. Nothing is sent unless you opt in — including if you decline: refusing the invitation stores your answer locally and makes no request at all. You opt in either from the one-time notice or from the *Improvement* toggle on the Support screen, and you can turn it back off there at any time.
-
-* **What is sent, if you opt in:** your site URL and name, WordPress and server versions, your site's language, the number of registered users, and the number of active and inactive plugins. Alongside that, a description of how the forum itself is set up and used: where the portal is served from, whether it is open to everyone or to members only, how people sign in, how many topics, replies, votes, follows and reports exist, how many terms each vocabulary holds, how many roles take part in or moderate the forum, which notification channels and SEO options are switched on, and whether the Pro add-on is present.
-* **What is never sent:** your email address, your name, any member's details, any IP address, and any content — no topic, reply, comment or setting value beyond the on/off states listed above.
-* **When:** on opt-in, and weekly thereafter. Never on the front end.
-* **Endpoint:** `https://wp-api.bitapps.pro/public/`.
-* **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
-
 == Installation ==
 
 = Automated Installation =
@@ -101,7 +91,7 @@ No. Bit Connect is a complete forum on its own. The Pro add-on is a separate plu
 
 = Does the plugin contact any external servers? =
 
-Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. Diagnostic reporting is separate, off by default, and sends nothing at all until you opt in — declining makes no request either.
+Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Other plugins by Bit Apps ==
 

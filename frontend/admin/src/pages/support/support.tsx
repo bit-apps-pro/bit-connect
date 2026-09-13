@@ -3,7 +3,6 @@ import config from '@config/config'
 import Changelog from '@plugin-commons/components/Changelog'
 import FacebookCommunityCard from '@plugin-commons/components/FacebookCommunityCard'
 import pluginInfoData from '@plugin-commons/components/SupportPage/data/pluginInfoData'
-import Improvement from '@plugin-commons/components/SupportPage/Imporvement'
 import SupportLinks from '@plugin-commons/components/SupportPage/SupportLinks'
 import { Col, Row, theme, Typography } from 'antd'
 
@@ -59,15 +58,6 @@ export default function Support() {
           </div>
 
           <VersionPanel pluginSlug={config.PLUGIN_SLUG} />
-
-          {/*
-            Always shown, unlike the other Bit Apps plugins, which gate this on
-            the pro plugin existing. Bit Connect reports from the *free* plugin
-            (Plugin::initWPTelemetry), so consent has to be reachable whether or
-            not pro is installed — hiding it would mean reporting with no way to
-            see that or stop it.
-          */}
-          <Improvement />
 
           <Changelog />
 

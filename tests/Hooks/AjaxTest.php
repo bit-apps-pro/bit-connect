@@ -66,7 +66,6 @@ namespace BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router {
 namespace BitApps\BitConnect\Tests\Hooks {
     use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Route;
     use BitApps\BitConnect\Http\Controller\LoginController;
-    use BitApps\BitConnect\Http\Controller\PluginImprovementController;
     use PHPUnit\Framework\TestCase;
 
     class AjaxTest extends TestCase
@@ -77,9 +76,9 @@ namespace BitApps\BitConnect\Tests\Hooks {
             require __DIR__ . '/../../backend/hooks/ajax.php';
         }
 
-        public function testRegistersExactlyFourRoutes(): void
+        public function testRegistersExactlyTwoRoutes(): void
         {
-            $this->assertCount(4, Route::$registered);
+            $this->assertCount(2, Route::$registered);
         }
 
         public function testRegistersLoginRoute(): void
@@ -96,43 +95,6 @@ namespace BitApps\BitConnect\Tests\Hooks {
                 ['method' => 'post', 'path' => 'ajax_logout', 'action' => [LoginController::class, 'logout']],
                 Route::$registered
             );
-        }
-
-        /**
-         * The `pro_` prefix is deliberate and easy to mistake for a stray pro
-         * route. The shared support screen asks for `pro_plugin-improvement`,
-         * and this router prefixes with the free plugin's own `bit_connect_`,
-         * so renaming it here silently breaks the consent checkbox.
-         */
-        public function testRegistersTelemetryConsentRoutesUnderTheNameTheSharedScreenAsksFor(): void
-        {
-            $this->assertContains(
-                [
-                    'method' => 'get',
-                    'path'   => 'pro_plugin-improvement',
-                    'action' => [PluginImprovementController::class, 'getData'],
-                ],
-                Route::$registered
-            );
-            $this->assertContains(
-                [
-                    'method' => 'post',
-                    'path'   => 'pro_plugin-improvement',
-                    'action' => [PluginImprovementController::class, 'createOrUpdate'],
-                ],
-                Route::$registered
-            );
-        }
-
-        /**
-         * Consent is a setting an administrator owns, and the write endpoint
-         * changes it — so neither half may be reachable without the capability
-         * and a nonce.
-         */
-        public function testTelemetryConsentRoutesAreGuarded(): void
-        {
-            $this->assertSame(['adminNonce'], Route::$middleware['get pro_plugin-improvement'] ?? []);
-            $this->assertSame(['adminNonce'], Route::$middleware['post pro_plugin-improvement'] ?? []);
         }
 
         /**
