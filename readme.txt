@@ -94,8 +94,8 @@ It can work as a traditional forum, but it can also serve as a product community
 * [**Bit Integrations:**](https://bit-integrations.com/) Connect WordPress plugins and site data with external apps and services.
 * [**Bit Flows:**](https://bit-flows.com/) Visual multi-step workflow automation for WordPress.
 * [**Bit Social:**](https://bit-social.com/) Social media auto-posting and scheduling for WordPress content.
-* [**Bit Assist:**](https://bitapps.pro/bit-assist/) Floating multi-channel contact and support widget for WordPress.
-* [**Bit SMTP:**](https://bitapps.pro/bit-smtp/) SMTP email delivery plugin for WordPress.
+* [**Bit Assist:**](https://bitassist.co/) Floating multi-channel contact and support widget for WordPress.
+* [**Bit SMTP:**](https://bit-smtp.com/) SMTP email delivery plugin for WordPress.
 * [**Bit CRM:**](https://bit-crm.com/) CRM for managing leads, contacts, deals, invoices and sales activity.
 
 = Useful Links =
