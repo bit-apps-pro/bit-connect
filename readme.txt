@@ -167,15 +167,6 @@ Yes. Members can create profiles and receive supported in-app and email notifica
 
 Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
-= Where is the source code? =
-
-The free plugin is fully open source at [github.com/bit-apps-pro/bit-connect](https://github.com/bit-apps-pro/bit-connect/). Everything shipped in this plugin, including the sources behind the compiled `assets/` bundle, is in that repository.
-
-= Where can I get support or help? =
-
-- [Live Chat Support](https://tawk.to/chat/60eac4b6d6e7610a49aab375/1faah0r3e)
-- [Facebook Community](https://www.facebook.com/groups/3308027439209387)
-
 == Changelog ==
 
 = 1.0.0 =
