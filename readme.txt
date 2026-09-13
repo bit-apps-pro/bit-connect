@@ -171,7 +171,6 @@ Two, both described under *External Services* above: Google Fonts, which serves 
 
 = 1.0.0 =
 * First stable release.
-* Split into two editions: the free plugin, and Bit Connect Pro as a separate add-on.
 
 = 0.1.0 =
 * Initial Beta release
