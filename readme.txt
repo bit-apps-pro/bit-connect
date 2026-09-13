@@ -56,7 +56,7 @@ Give every member a clear identity inside your community. Users can add a profil
 
 = Organized Discussions and Engagement =
 
-Create an easy-to-follow WordPress discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while useful community discussions stay easier to find, follow and revisit.
+Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while useful community discussions stay easier to find, follow and revisit.
 
 = Feature Requests and Public Roadmaps =
 
@@ -68,7 +68,7 @@ Keep members connected to the conversations that matter. Users can follow topics
 
 = Moderation and Role Permissions =
 
-Keep your WordPress forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content, pin useful topics and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community.
+Keep your forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content, pin useful topics and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community.
 
 = SEO-Ready Community Content =
 
@@ -86,7 +86,7 @@ Make the community feel like part of your own site. Set the community title and 
 
 Bit Connect is built for product and service providers, SaaS teams, LMS platforms, WooCommerce stores, membership sites, support communities, creators, agencies, project teams, community owners and individuals who want to keep discussions, feedback and member activity on WordPress.
 
-It can work as a traditional WordPress forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
+It can work as a traditional forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
 
 = Other Products by Bit Apps =
 
@@ -139,7 +139,7 @@ Alternatively, you can download the plugin zip file from [wp.org](https://wordpr
 
 == Frequently Asked Questions ==
 
-= Is Bit Connect a WordPress forum plugin or community plugin? =
+= Is Bit Connect a forum plugin or community plugin? =
 
 Both. Bit Connect includes forum-style topics, comments and threaded replies while also supporting customer communities, product discussions, feature requests, feedback and public roadmaps.
 
