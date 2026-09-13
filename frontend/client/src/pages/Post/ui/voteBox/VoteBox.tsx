@@ -22,6 +22,7 @@ export default function VoteBox({ isVote = false, onVote, votes }: VoteBoxProps)
       className={`${styles.voteBox}${isVote ? ` ${styles.voted}` : ''}`}
       disabled={!onVote}
       onClick={onVote}
+      title={onVote ? undefined : __('Voting is not available to you')}
       type="button"
     >
       <svg

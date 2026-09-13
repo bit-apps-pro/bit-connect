@@ -26,7 +26,10 @@ interface HeaderProps {
 export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) {
   const { setCreateModalOpen } = useTopicModalStore()
   const location = useLocation()
-  const { checkAuth, isLoggedIn, logout, user } = useAuthStore()
+  const { can, checkAuth, isLoggedIn, logout, user } = useAuthStore()
+  // The server refuses the topic anyway; a button that only ever answers
+  // "not authorized" is worse than no button.
+  const canCreatePost = can('forum_create_post')
   const { fetchSettings } = useAdminSettingsStore()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
@@ -211,7 +214,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                 notifications, and an empty bell invites a click that can only
                 disappoint. */}
             {isLoggedIn && <NotificationBell />}
-            {isLoggedIn && (
+            {isLoggedIn && canCreatePost && (
               // The label steps up with the room to hold it: a plus alone on a
               // phone, "New" once a wide phone can carry a word, the whole
               // sentence on desktop. It used to keep antd's sentence-sized

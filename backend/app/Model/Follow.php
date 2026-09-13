@@ -146,7 +146,14 @@ class Follow extends Model
         // $casts, $fillable…) and not the row, so every column read off it comes
         // back empty: a muted follow read as unmuted and the button said Unfollow
         // on a thread the member had already silenced.
-        return $found instanceof Model ? $found : null;
+        // get() always hands back a Collection now — an empty one for no match —
+        // so the row is its first item. The bare-Model branch is kept for a
+        // query builder that still answers a one-row match with the model itself.
+        if ($found instanceof Model) {
+            return $found;
+        }
+
+        return $found instanceof Collection ? ($found->first() ?: null) : null;
     }
 
     /**

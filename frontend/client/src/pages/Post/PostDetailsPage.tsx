@@ -61,7 +61,7 @@ export default function PostDetailsPage() {
     transformedComments,
     updateComment
   } = useSinglePostStore()
-  const { isLoggedIn } = useAuthStore()
+  const { can, isLoggedIn } = useAuthStore()
   const { open: openLoginWarning } = useLoginWarningStore()
 
   useEffect(() => {
@@ -198,6 +198,12 @@ export default function PostDetailsPage() {
     upvote: canPostUpvote
   } = settings.topicAccess
 
+  // A member the role settings deny cannot vote; a disabled control says so up
+  // front rather than a 400 after the click. A guest keeps a live control, and
+  // the click asks them to sign in.
+  const memberMayVotePost = !isLoggedIn || can('forum_vote_post')
+  const memberMayVoteComment = !isLoggedIn || can('forum_vote_comment')
+
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
   // in-app history and navigate(-1) becomes a cross-document navigation — a
@@ -228,7 +234,7 @@ export default function PostDetailsPage() {
   const postVoteBox = (
     <VoteBox
       isVote={post.vote.hasVoted}
-      onVote={canPostUpvote ? handlePostVote : undefined}
+      onVote={canPostUpvote && memberMayVotePost ? handlePostVote : undefined}
       votes={post.vote.total}
     />
   )
@@ -331,7 +337,7 @@ export default function PostDetailsPage() {
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
               onReply={handleReply}
-              onVote={canCommentUpvote ? handleCommentVote : undefined}
+              onVote={canCommentUpvote && memberMayVoteComment ? handleCommentVote : undefined}
               sortOption={sortOption}
               topicSlug={post.post_name}
               topicTitle={post.post_title}

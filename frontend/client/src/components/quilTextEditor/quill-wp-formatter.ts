@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign -- every transform below rewrites the DOM
+   node it is handed in place; that mutation is the function's whole contract. */
 /**
  * Quill → WordPress HTML formatter.
  *
@@ -98,7 +100,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     case 'b':
     case 'strong': {
       // Normalise <b> → <strong> (Quill emits <strong>, but pastes from Docs may use <b>)
-      if (tag === 'b') renameElement(element, 'strong', parent)
+      if (tag === 'b') renameElement(element, 'strong')
       break
     }
     case 'blockquote': {
@@ -111,7 +113,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     }
     case 'em':
     case 'i': {
-      if (tag === 'i') renameElement(element, 'em', parent)
+      if (tag === 'i') renameElement(element, 'em')
       break
     }
     case 'h1':
@@ -361,7 +363,7 @@ function unwrapElement(element: Element, parent: Element): void {
   element.remove()
 }
 
-function renameElement(element: HTMLElement, newTag: string, _parent?: Element): void {
+function renameElement(element: HTMLElement, newTag: string): void {
   const replacement = element.ownerDocument.createElement(newTag)
   for (const attribute of element.attributes) {
     replacement.setAttribute(attribute.name, attribute.value)

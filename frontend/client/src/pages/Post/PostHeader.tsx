@@ -9,7 +9,7 @@ import EditIcon from '@icons/EditIcon'
 import { pickThemedIcon } from '@shared/theme/themed-icon'
 import EditedNote from '@utilities/edited-note'
 import UserLink from '@utilities/user-link'
-import { Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
+import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
 import { useAtomValue } from 'jotai'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { LuClock, LuEllipsisVertical, LuEyeOff, LuFlag, LuTrash } from 'react-icons/lu'
@@ -63,6 +63,7 @@ export default function PostHeader({
   const { openEditModal } = useTopicModalStore()
   const { open: openReport } = useReportModalStore()
   const { open: openLoginWarning } = useLoginWarningStore()
+  const app = AntApp.useApp()
   const navigate = useNavigate()
 
   // These are capabilities, not roles: Manager can grant any of them to any
@@ -163,7 +164,9 @@ export default function PostHeader({
   }
 
   const handleDelete = useCallback(() => {
-    Modal.confirm({
+    // See CommentItem: the context-aware modal follows the portal theme.
+    const confirm = app.modal?.confirm ?? Modal.confirm
+    confirm({
       cancelText: __('Cancel'),
       content: __('This action cannot be undone. Are you sure you want to delete this post?'),
       okButtonProps: { danger: true, loading: isDeleting },
@@ -182,7 +185,7 @@ export default function PostHeader({
       title: __('Delete Post'),
       type: 'warning'
     })
-  }, [deletePost, isDeleting, navigate, post.ID])
+  }, [app.modal, deletePost, isDeleting, navigate, post.ID])
 
   const handleEdit = useCallback(() => {
     openEditModal(post.ID)

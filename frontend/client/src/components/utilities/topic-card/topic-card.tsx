@@ -7,6 +7,7 @@ import { LuClock, LuMessageCircle } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
+import { useAuthStore } from '@/store/auth.zustand'
 import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
@@ -64,6 +65,10 @@ export default function TopicCard({
   const formattedDate = relativeTime(postDateGmt)
   const { settings } = useAdminSettingsStore()
   const canComment = settings.topicAccess.comment
+  const { can, isLoggedIn } = useAuthStore()
+  // Same rule as the topic page: a member without the capability gets a
+  // disabled control, a guest a live one that asks them to sign in.
+  const memberMayVote = !isLoggedIn || can('forum_vote_post')
   const { chipTagProps } = useChipProps()
 
   const handlePostVote = async () => {
@@ -74,7 +79,7 @@ export default function TopicCard({
     <div className="topic-card bc-relative bc-flex bc-max-w-full bc-gap-3 bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-3 bc-transition-all lg:bc-gap-4 lg:bc-p-4">
       {/* Above the card link overlay so voting never navigates. */}
       <div className="bc-relative bc-z-10">
-        <VoteBox isVote={hasVoted} onVote={handlePostVote} votes={total} />
+        <VoteBox isVote={hasVoted} onVote={memberMayVote ? handlePostVote : undefined} votes={total} />
       </div>
 
       <div className="bc-flex bc-min-w-0 bc-max-w-full bc-flex-1 bc-flex-col">

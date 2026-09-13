@@ -1,11 +1,23 @@
 import { type EditAttributionResponse } from '@/types/edit-attribution'
 import { type MemberBadge } from '@/types/member-badge'
 
+/**
+ * Term meta as the server sends it. The keys the portal reads are typed; the
+ * rest is whatever the admin screens have stored against the term.
+ */
+export interface TermMeta {
+  [key: string]: unknown
+  color?: string
+  icon?: string
+  is_default?: boolean
+  order?: number
+}
+
 export interface Term {
   count: number
   description: string
   filter: string
-  meta: Record<string, any>
+  meta: TermMeta
   name: string
   parent: number
   slug: string

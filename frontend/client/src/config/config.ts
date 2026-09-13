@@ -2,7 +2,7 @@
 import { type CapabilityMap } from '@/store/helper/capabilities'
 
 if (typeof window === 'undefined') {
-  // @ts-ignore
+  // @ts-expect-error -- Node's `global` does not declare the page global BaseView.php prints.
   global.SERVER_VARIABLES = {}
 } else {
   // In built code every bare SERVER_VARIABLES read below is `define`d to
@@ -10,7 +10,7 @@ if (typeof window === 'undefined') {
   // BaseView.php prints before this module runs. This assignment only seeds
   // contexts without that define (tests, the SSR prerender), where the global
   // is absent and an empty object keeps the fallbacks in charge.
-  // @ts-ignore
+  // @ts-expect-error -- `window` does not declare the page global BaseView.php prints.
   window.SERVER_VARIABLES = (window as { bit_connect_?: typeof SERVER_VARIABLES }).bit_connect_ ?? {}
 }
 type GetServerVariableType = <K extends keyof typeof SERVER_VARIABLES>(
@@ -132,6 +132,9 @@ const config = {
   CAN_REGISTER:
     getServerVariable('canRegister', false) === true || getServerVariable('canRegister', false) === '1',
   COMMUNITY_TITLE: getServerVariable('communityTitle', '') ?? '',
+  // The server prints `null` for a signed-out visitor, and the auth store's
+  // `User | null` contract carries that value as it is.
+  // eslint-disable-next-line unicorn/no-null
   CURRENT_USER: (getServerVariable('currentUser', null) as null | UserInfo) ?? null,
   CURRENT_USER_AVATAR: getServerVariable('currentUserAvatar', ''),
   CUSTOM_LOGIN_URL: getServerVariable('customLoginUrl', '') ?? '',

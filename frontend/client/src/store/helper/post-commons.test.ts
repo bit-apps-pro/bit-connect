@@ -17,6 +17,8 @@ const makeComment = (overrides: Partial<Comment> & Pick<Comment, 'id'>): Comment
 })
 
 const makeTopicComment = (overrides: Partial<TopicComment>): TopicComment => ({
+  // The server sends `null` for a comment without replies; the type keeps it.
+  // eslint-disable-next-line unicorn/no-null
   children: null,
   comment_approved: '1',
   comment_author: 'author',

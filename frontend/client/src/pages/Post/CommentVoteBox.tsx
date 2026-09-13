@@ -24,6 +24,7 @@ export default function CommentVoteBox({ isVote = false, onVote, votes }: VoteBo
       className={`${baseClasses} ${isVote ? 'bc-text-primary' : 'bc-text-ink-muted hover:bc-text-ink'}`}
       disabled={!onVote}
       onClick={onVote}
+      title={onVote ? undefined : __('Voting is not available to you')}
       type="button"
       whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
     >

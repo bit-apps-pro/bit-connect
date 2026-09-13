@@ -65,6 +65,7 @@ declare const SERVER_VARIABLES: {
   portalAccess?: 'everyone' | 'logged_in'
   portalFilters?: { product?: boolean; sort?: boolean; tags?: boolean }
   postURL: string
+  proApiURL: string
   promo?: {
     cta?: string
     enabled?: boolean
@@ -74,7 +75,6 @@ declare const SERVER_VARIABLES: {
     prefix?: string
     url?: string
   }
-  proApiURL: string
   proPluginVersion?: string
   proSlug?: string
   redirectUri: string

@@ -45,7 +45,8 @@ final class CommentController
         $postId = $request->id;
 
         $post = get_post($postId);
-        if (!$post) {
+        // The replies under a private topic are as private as the topic.
+        if (!$post || !PermissionService::canViewPost($post)) {
             return Response::error('Post not found', 404);
         }
 

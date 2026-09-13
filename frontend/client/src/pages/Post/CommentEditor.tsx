@@ -19,7 +19,7 @@ import {
 } from '@components/quilTextEditor/quill-comment-formatter'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
-import { Button, List, Progress, Space, Typography } from 'antd'
+import { Alert, Button, List, Progress, Space, Typography } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
@@ -148,7 +148,7 @@ export default function CommentEditor({
   replyTo,
   submitButtonText
 }: CommentEditorProps) {
-  const { isLoggedIn } = useAuthStore()
+  const { can, isLoggedIn } = useAuthStore()
   const { open: openLoginWarning } = useLoginWarningStore()
   const { notificationApi } = useContext(NotifyContext)
   const [key, setKey] = useState(0)
@@ -384,6 +384,16 @@ export default function CommentEditor({
       revokeAllUrls()
     }
   }, [revokeAllUrls])
+
+  // The server refuses the comment anyway; an editor shown to a member the role
+  // settings deny only sets up a 400 after they have written their reply.
+  if (isLoggedIn && !can('forum_create_comment')) {
+    return (
+      <div className={styles.commentEditorWrapper}>
+        <Alert message={__('Your account does not have permission to comment.')} showIcon type="info" />
+      </div>
+    )
+  }
 
   return (
     <div className={styles.commentEditorWrapper}>

@@ -45,6 +45,12 @@ function shortAgo(iso: string): string {
  * prose the client cannot restyle or translate in the reader's locale — and the
  * mail has to work with no client at all.
  */
+/** `post_upvote` -> `Post upvote`. Only for a type nothing else can name. */
+function humanizeType(type: string): string {
+  const words = type.replaceAll(/[_-]+/g, ' ').trim()
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
 function describe(item: NotificationItem) {
   const who = item.actor.is_system ? __('The forum') : item.actor.name || __('Someone')
   const title = item.context.topic_title
@@ -127,7 +133,10 @@ function describe(item: NotificationItem) {
       )
     }
     default: {
-      return <>{item.type_label}</>
+      // Rows written by an older build carry type names the switch above does
+      // not know. The label the server sends is that raw slug, so turn it into
+      // words rather than printing `post_upvote` to a member.
+      return <>{humanizeType(item.type_label || item.type)}</>
     }
   }
 }

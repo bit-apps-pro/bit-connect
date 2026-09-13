@@ -44,7 +44,7 @@ export async function resizeImageIfNeeded(file: File): Promise<ResizeResult> {
     img = await new Promise<HTMLImageElement>((resolve, reject) => {
       const element = new Image()
       element.addEventListener('load', () => resolve(element))
-      element.onerror = () => reject(new Error('Could not read image'))
+      element.addEventListener('error', () => reject(new Error('Could not read image')))
       element.src = objectUrl
     })
   } finally {

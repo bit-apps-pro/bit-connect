@@ -419,7 +419,7 @@ function QuillEditorInner({
       '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
     document.body.append(deleteBtn)
 
-    let hoveredImg: HTMLImageElement | null = null
+    let hoveredImg: HTMLImageElement | undefined
 
     const showDeleteBtn = (img: HTMLImageElement) => {
       hoveredImg = img
@@ -430,7 +430,7 @@ function QuillEditorInner({
     }
 
     const hideDeleteBtn = () => {
-      hoveredImg = null
+      hoveredImg = undefined
       deleteBtn.style.display = 'none'
     }
 
@@ -970,9 +970,9 @@ function QuillEditorInner({
                   }
                 }}
                 open={linkPopoverOpen}
-                overlayInnerStyle={{ padding: '10px 12px' }}
                 overlayStyle={{ boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
                 placement="bottomLeft"
+                styles={{ body: { padding: '10px 12px' } }}
                 trigger={[]}
               >
                 <Button
@@ -1057,8 +1057,8 @@ function QuillEditorInner({
                 content={moreMenu}
                 onOpenChange={setMoreOpen}
                 open={moreOpen}
-                overlayInnerStyle={{ padding: 6 }}
                 placement="bottomRight"
+                styles={{ body: { padding: 6 } }}
                 trigger="click"
               >
                 <Button

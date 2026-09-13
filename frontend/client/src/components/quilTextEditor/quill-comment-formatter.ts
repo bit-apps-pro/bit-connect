@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign -- every transform below rewrites the DOM
+   node it is handed in place; that mutation is the function's whole contract. */
 /**
  * Quill → WordPress comment HTML formatter.
  *
@@ -126,7 +128,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
       break
     }
     case 'b': {
-      renameElement(element, 'strong', parent)
+      renameElement(element, 'strong')
       break
     }
     case 'blockquote': {
@@ -156,7 +158,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     case 'h4':
     case 'h5':
     case 'h6': {
-      demoteHeading(element, parent)
+      demoteHeading(element)
       break
     }
     case 'hr':
@@ -170,11 +172,11 @@ function transformElement(element: HTMLElement, parent: Element): void {
       break
     }
     case 'i': {
-      renameElement(element, 'em', parent)
+      renameElement(element, 'em')
       break
     }
     case 'img': {
-      transformImage(element, parent)
+      transformImage(element)
       break
     }
     case 'li': {
@@ -226,7 +228,7 @@ function transformParagraph(element: HTMLElement): void {
  * would cause wp_kses to strip the tags but keep the text — ugly.
  * Converting to bold preserves the author's intent while staying compatible.
  */
-function demoteHeading(element: HTMLElement, _parent: Element): void {
+function demoteHeading(element: HTMLElement): void {
   const p = element.ownerDocument.createElement('p')
   const strong = element.ownerDocument.createElement('strong')
   strong.innerHTML = element.innerHTML
@@ -326,7 +328,7 @@ function flattenSpan(element: HTMLElement, parent: Element): void {
   }
 }
 
-function transformImage(element: HTMLElement, _parent: Element): void {
+function transformImage(element: HTMLElement): void {
   const source = element.getAttribute('src') || ''
   const alt = element.getAttribute('alt') || ''
   // Only keep https/http images — strip data: URIs and anything unsafe
@@ -346,7 +348,7 @@ function unwrapElement(element: Element, parent: Element): void {
   element.remove()
 }
 
-function renameElement(element: HTMLElement, newTag: string, _parent: Element): void {
+function renameElement(element: HTMLElement, newTag: string): void {
   const replacement = element.ownerDocument.createElement(newTag)
   replacement.innerHTML = element.innerHTML
   element.replaceWith(replacement)

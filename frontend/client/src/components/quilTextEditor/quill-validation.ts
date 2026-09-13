@@ -247,7 +247,7 @@ function unwrapElement(element: Element): void {
  */
 export function sanitizeNode(node: Node, depth = 0): void {
   if (depth > CONTENT_LIMITS.MAX_NESTING_DEPTH) {
-    node.parentNode?.removeChild(node)
+    (node as ChildNode).remove()
     return
   }
 
@@ -296,7 +296,7 @@ export function sanitizeNode(node: Node, depth = 0): void {
   // Remove img elements whose src was stripped — a srcless img is broken and
   // likely had a data: URI that isSafeUrl rejected above.
   if (tag === 'img' && !element.getAttribute('src')) {
-    node.parentNode?.removeChild(node)
+    (node as ChildNode).remove()
     return
   }
 
@@ -327,7 +327,7 @@ export function sanitizeNode(node: Node, depth = 0): void {
   // Remove hidden elements used for tracking
   const computedDisplay = (element as HTMLElement).style?.display
   if (computedDisplay === 'none') {
-    node.parentNode?.removeChild(node)
+    (node as ChildNode).remove()
   }
 }
 
@@ -366,7 +366,7 @@ export function sanitizeHtml(html: string): string {
 function htmlToPlainText(html: string): string {
   const tmp = document.createElement('div')
   tmp.innerHTML = html
-  return tmp.textContent || tmp.innerText || ''
+  return tmp.textContent || ''
 }
 
 /**

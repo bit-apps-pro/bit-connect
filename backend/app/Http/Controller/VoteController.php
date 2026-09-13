@@ -12,6 +12,7 @@ use BitApps\BitConnect\Http\Requests\GetCommentVotesRequest;
 use BitApps\BitConnect\Http\Requests\GetPostVotesRequest;
 use BitApps\BitConnect\Http\Requests\ToggleCommentVoteRequest;
 use BitApps\BitConnect\Http\Requests\TogglePostVoteRequest;
+use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\VoteService;
 
 final class VoteController
@@ -61,6 +62,11 @@ final class VoteController
 
     public function getPostVotes(GetPostVotesRequest $request)
     {
+        // Even a count says a private topic exists; answer as for a missing one.
+        if (!PermissionService::canViewPost((int) $request->id)) {
+            return Response::error('Post not found', 404);
+        }
+
         return Response::success(
             $this->voteService->getPostVoteStatus((int) $request->id, get_current_user_id())
         );

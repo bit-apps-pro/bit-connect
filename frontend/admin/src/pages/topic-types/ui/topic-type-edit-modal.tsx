@@ -94,6 +94,10 @@ export default function TopicTypeEditModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isUpdatingTopicType}
+      // Mount the body before the first open, and keep it mounted after a
+      // close, so the Form instance created above is always connected to a
+      // <Form>; antd warns otherwise when fields are reset while it is closed.
+      forceRender
       loading={isTopicTypeFetching}
       okText={__('Save Changes')}
       onCancel={handleCancel}

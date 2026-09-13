@@ -38,6 +38,9 @@ export default function TagCreateModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isStoringTag}
+      // Mount the body before the first open so the Form instance created above
+      // is connected to a <Form>; antd warns otherwise.
+      forceRender
       okText={__('Create Tag')}
       onCancel={handleCancel}
       onOk={handleOk}

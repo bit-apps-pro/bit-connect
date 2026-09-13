@@ -49,7 +49,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const search = searchParams.get('search') || ''
   const sortBy = searchParams.get('sort') || 'newest'
   const product = searchParams.get('product') || ''
-  const stages = searchParams.get('stage') || config.DEFAULT_STAGE_SLUG
   const visibility = searchParams.get('visibility') || ''
   const myTopics = searchParams.get('my_topics') || ''
   const topicType = searchParams.get('topic-types') || ''
@@ -57,6 +56,16 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // Normalised back to the wire format, so a re-render with an equivalent URL
   // (`tags=a,,a`) doesn't look like a new filter to the fetch effect below.
   const tags = tagSlugs.join(',')
+
+  // The listing shows one stage at a time — the sidebar's stages are its
+  // primary navigation, so a bare `/` is the default stage. A search, a tag
+  // filter or a term archive is a question about the whole forum, though: the
+  // tag picker counts topics across every stage, and "no posts found" under a
+  // tag that plainly has three is the answer the old stage default gave. Those
+  // span all stages unless the URL names one, and `?stage=` still wins.
+  const stageParam = searchParams.get('stage') || ''
+  const spansAllStages = search !== '' || tags !== '' || archiveFilter !== undefined
+  const stages = stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
 
   // Each filter control can be switched off per-site (admin → General → Portal
   // Filters). Hiding one removes its control, its chip and its share of the

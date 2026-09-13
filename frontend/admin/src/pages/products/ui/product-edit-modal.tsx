@@ -69,6 +69,10 @@ export default function ProductEditModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isUpdatingProduct}
+      // Mount the body before the first open, and keep it mounted after a
+      // close, so the Form instance created above is always connected to a
+      // <Form>; antd warns otherwise when fields are reset while it is closed.
+      forceRender
       okText={__('Save Changes')}
       onCancel={handleCancel}
       onOk={handleOk}

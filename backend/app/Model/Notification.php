@@ -141,7 +141,14 @@ class Notification extends Model
         // would read as empty and every vote would write a new row while
         // reporting that it had collapsed. Follow::findFor() carries the same
         // guard for the same reason.
-        return $found instanceof Model ? $found : null;
+        // get() always hands back a Collection now — an empty one for no match —
+        // so the row is its first item. The bare-Model branch is kept for a
+        // query builder that still answers a one-row match with the model itself.
+        if ($found instanceof Model) {
+            return $found;
+        }
+
+        return $found instanceof Collection ? ($found->first() ?: null) : null;
     }
 
     /**

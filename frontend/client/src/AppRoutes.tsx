@@ -5,7 +5,7 @@ import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { externalLoginUrl } from '@utils/auth-urls'
 import { createAntDesignStyleContainer } from '@utils/themeUtils'
-import { ConfigProvider, notification, theme } from 'antd'
+import { App as AntApp, ConfigProvider, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router'
@@ -170,6 +170,11 @@ export default function AppRoutes() {
             the portal never injects — rendering it here only dragged the admin
             app's config into the public bundle. It lives in the admin app. */}
         {/* // TODO: separate the context providers into different component for performance */}
+        {/* Gives the imperative dialogs (modal.confirm in the post and comment
+            menus) the theme above; antd's static Modal.confirm cannot see a
+            ConfigProvider and warns about it. component={false} so no wrapper
+            element lands between StyleProvider and the routes. */}
+        <AntApp component={false}>
         <NotifyContext.Provider value={notifyContextValue}>
           {contextHolderNotification}
           <VerifyEmailRedirect />
@@ -195,6 +200,7 @@ export default function AppRoutes() {
             </Route>
           </Routes>
         </NotifyContext.Provider>
+        </AntApp>
       </StyleProvider>
     </ConfigProvider>
   )

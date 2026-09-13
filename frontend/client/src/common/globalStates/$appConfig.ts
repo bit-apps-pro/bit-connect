@@ -35,7 +35,7 @@ const $appConfig = atomWithStorage<AppConfigType>(
     // value the server cannot know, so it must not influence server markup or
     // hydration would mismatch on every visitor who changed it.
     getItem: (key: string) => {
-      const value = hasLocalStorage() ? localStorage.getItem(key) : null
+      const value = hasLocalStorage() ? localStorage.getItem(key) : undefined
       const savedValue = value ? JSON.parse(value) : undefined
 
       return {

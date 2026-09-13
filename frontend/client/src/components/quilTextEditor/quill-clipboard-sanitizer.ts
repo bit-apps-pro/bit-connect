@@ -140,7 +140,9 @@ class ClipboardSanitizerModule {
         const delta = this.quill.clipboard.convert({ html: sanitizedHtml })
 
         this.quill.updateContents(
-          // Delete selected text, then insert pasted content
+          // Delete selected text, then insert pasted content. This is
+          // Delta#concat, not Array#concat — there is no spread equivalent.
+          // eslint-disable-next-line unicorn/prefer-spread
           new DeltaCtor().retain(range.index).delete(range.length).concat(delta),
           'user'
         )

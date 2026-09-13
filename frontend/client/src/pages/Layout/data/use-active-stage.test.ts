@@ -4,8 +4,10 @@ import { type ActiveTopic, resolveActiveStage } from './use-active-stage'
 
 const DEFAULT_STAGE = 'questions'
 
-const resolve = (pathname: string, options: { stageParam?: string; topic?: ActiveTopic } = {}) =>
-  resolveActiveStage({ defaultStage: DEFAULT_STAGE, pathname, ...options })
+const resolve = (
+  pathname: string,
+  options: { spansAllStages?: boolean; stageParam?: string; topic?: ActiveTopic } = {}
+) => resolveActiveStage({ defaultStage: DEFAULT_STAGE, pathname, ...options })
 
 const publishTopic = { post_name: 'qa-test-topic', stage: 'publish' }
 
@@ -45,8 +47,23 @@ describe('resolveActiveStage', () => {
   })
 
   it('leaves the default stage marked on the pages that are not stages', () => {
-    expect(resolve('/tag/api')).toBe(DEFAULT_STAGE)
     expect(resolve('/user/someone')).toBe(DEFAULT_STAGE)
+  })
+
+  // A tag or type archive lists that term across every stage, so no stage is
+  // the one the reader is in.
+  it('marks nothing on a term archive that is not a stage', () => {
+    expect(resolve('/tag/api')).toBeUndefined()
+    expect(resolve('/topic/question')).toBeUndefined()
+  })
+
+  it('marks nothing while the listing is searching or filtering by tag', () => {
+    expect(resolve('/', { spansAllStages: true })).toBeUndefined()
+    expect(resolve('/page/2', { spansAllStages: true })).toBeUndefined()
+  })
+
+  it('prefers an explicit stage filter over a search', () => {
+    expect(resolve('/', { spansAllStages: true, stageParam: 'publish' })).toBe('publish')
   })
 
   it('prefers an explicit stage filter over the archive path', () => {

@@ -248,6 +248,49 @@ final class PermissionService
     }
 
     // -------------------------------------------------------------------------
+    // Reading
+    // -------------------------------------------------------------------------
+
+    /**
+     * Whether the current visitor may read this topic at all.
+     *
+     * Listings answer this in SQL, through the status list and `perm =>
+     * readable`. Every single-topic path — by slug, by id, and the post, comment
+     * and vote endpoints — has to ask it explicitly, because a bare get_post()
+     * applies no status rule and would hand a private topic to anyone holding
+     * its URL.
+     *
+     * - published: everyone
+     * - hidden by a report: the author and moderators, see ContentVisibilityService
+     * - private, or any other status (draft, pending, trash): the author and
+     *   moderators, who are the "forum team" a private topic is shared with
+     *
+     * @param int|WP_Post $post
+     */
+    public static function canViewPost($post): bool
+    {
+        if (!$post instanceof WP_Post) {
+            $post = get_post((int) $post);
+        }
+
+        if (!$post instanceof WP_Post) {
+            return false;
+        }
+
+        if ($post->post_status === 'publish') {
+            return true;
+        }
+
+        $authorId = (int) $post->post_author;
+
+        if ($post->post_status === ContentVisibilityService::HIDDEN_STATUS) {
+            return ContentVisibilityService::isPostViewableWhileHidden($authorId);
+        }
+
+        return self::canModerate() || ContentVisibilityService::isOwnContent($authorId);
+    }
+
+    // -------------------------------------------------------------------------
     // Ownership helpers
     // -------------------------------------------------------------------------
 

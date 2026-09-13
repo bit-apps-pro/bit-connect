@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\Requests\FilterPostRequest;
 use BitApps\BitConnect\Http\Requests\GetAllPostsRequest;
 use BitApps\BitConnect\Http\Requests\GetPostRequest;
 use BitApps\BitConnect\Model\Vote;
+use BitApps\BitConnect\Services\PermissionService;
 use WP_Query;
 
 final class PostController
@@ -82,7 +83,9 @@ final class PostController
         $postId = $request->id;
 
         $post = get_post($postId);
-        if (!$post) {
+        // A private or hidden topic answers exactly like a missing one, so the
+        // response does not confirm that there is something behind the id.
+        if (!$post || !PermissionService::canViewPost($post)) {
             return Response::error('Post not found', 404);
         }
 

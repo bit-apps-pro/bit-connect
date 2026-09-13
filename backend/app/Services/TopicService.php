@@ -158,15 +158,14 @@ class TopicService
         }
 
         // get_page_by_path() matches on slug and post type alone — it applies no
-        // status filter at all. Without this, a topic hidden from every listing
-        // would still be served in full to anyone holding its URL.
+        // status filter at all. Without this, a topic hidden from every listing,
+        // or a private one the listing query had just refused, would still be
+        // served in full to anyone holding its URL: this is the fallback
+        // getAllTopics() reaches for when its own query answers nothing.
         //
         // The author is not a stranger to their own topic: they keep the URL,
         // marked as hidden, while it stays out of every listing for everyone.
-        $isHiddenFromViewer = $post->post_status === ContentVisibilityService::HIDDEN_STATUS
-            && !ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
-
-        if ($isHiddenFromViewer) {
+        if (!PermissionService::canViewPost($post)) {
             return null;
         }
 
@@ -181,6 +180,11 @@ class TopicService
         $post = get_post($id);
 
         if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value) {
+            return null;
+        }
+
+        // Same rule as the slug lookup: an id is as easy to hold as a URL.
+        if (!PermissionService::canViewPost($post)) {
             return null;
         }
 

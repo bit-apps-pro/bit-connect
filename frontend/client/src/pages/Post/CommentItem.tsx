@@ -7,7 +7,7 @@ import { commentAnchorId, ShareButton } from '@features/share'
 import EditedNote from '@utilities/edited-note'
 import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
-import { Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
+import { App as AntApp, Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { LuEyeOff } from 'react-icons/lu'
@@ -77,6 +77,8 @@ export default function CommentItem({
     ? { duration: 0 }
     : { height: { duration: 0.25, ease: 'easeInOut' }, opacity: { duration: 0.2 } }
 
+  const app = AntApp.useApp()
+
   const handleReply = (content: string, attachments?: WPAttachmentData[]) => {
     if (onReply) {
       onReply(replyParentId ?? comment.id, content, attachments)
@@ -102,7 +104,10 @@ export default function CommentItem({
   }
 
   const handleDelete = () => {
-    Modal.confirm({
+    // The context-aware modal follows the portal theme; the static one is the
+    // fallback for a render outside AppRoutes (tests), where no App exists.
+    const confirm = app.modal?.confirm ?? Modal.confirm
+    confirm({
       cancelText: __('Cancel'),
       content: 'This will permanently delete this comment and all its replies.',
       okButtonProps: { danger: true },

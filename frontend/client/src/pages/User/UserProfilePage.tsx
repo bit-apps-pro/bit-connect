@@ -252,7 +252,9 @@ export default function UserProfilePage() {
           <div className="lg:bc-sticky lg:bc-top-4">{identityCard}</div>
         </aside>
 
-        <main className="bc-flex bc-min-w-0 bc-flex-1 bc-flex-col bc-gap-4 lg:bc-order-1">
+        {/* The page already sits inside the layout's <main>; a second one would give
+            assistive tech two main landmarks to choose between. */}
+        <section className="bc-flex bc-min-w-0 bc-flex-1 bc-flex-col bc-gap-4 lg:bc-order-1">
           <TabNav
             activeKey={view}
             ariaLabel={__('Profile sections')}
@@ -288,7 +290,7 @@ export default function UserProfilePage() {
               </>
             )}
           </div>
-        </main>
+        </section>
       </div>
     </div>
   )
