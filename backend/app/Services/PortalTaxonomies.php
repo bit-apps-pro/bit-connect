@@ -65,9 +65,12 @@ final class PortalTaxonomies
      * Set per segment on the SEO screen. The shipped defaults index the subject
      * taxonomies — topic type, department, tag — because those are what people
      * search for and their archives are the cluster pages worth ranking, and
-     * leave the workflow ones (stage, status) out: nobody searches "in progress"
-     * or "needs approval", and an archive per workflow state is a thin,
-     * constantly-churning listing of topics already indexed individually.
+     * stage, because the sidebar navigates by it: those archives are the pages
+     * every other page in the portal links to, so they carry the internal
+     * linking that makes a page rankable in the first place. `status` stays
+     * out — nobody searches "needs approval", and nothing links to it, so an
+     * archive per status is a thin, constantly-churning listing of topics
+     * already indexed individually.
      *
      * Every archive still works for visitors either way — indexing is a separate
      * switch from whether the route is served.
@@ -79,6 +82,21 @@ final class PortalTaxonomies
             SeoSettings::archiveIndexable($segment),
             $segment
         );
+    }
+
+    /**
+     * Whether a segment's archives belong in the sitemap.
+     *
+     * Reads the *filtered* indexability rather than the stored setting, so the
+     * two answers cannot disagree: a site that opens stage archives through
+     * `bit_connect_archive_indexable` gets them advertised as well as indexed,
+     * and one that closes a subject taxonomy through the same filter drops out
+     * of the sitemap instead of being listed as a URL the head marks noindex.
+     */
+    public static function isSitemapListed(string $segment): bool
+    {
+        return self::isIndexable($segment)
+            && SeoSettings::sitemapArchiveEnabled($segment);
     }
 
     /**

@@ -70,7 +70,7 @@ final class SeoSettingsTest extends TestCase
         // Routes that were never indexed stay that way.
         $this->assertFalse(SeoSettings::bool('indexProfiles'));
         $this->assertFalse(SeoSettings::bool('indexPagination'));
-        $this->assertFalse(SeoSettings::archiveIndexable('stage'));
+        $this->assertFalse(SeoSettings::archiveIndexable('status'));
     }
 
     public function testASettingSavedBeforeANewOneExistedStillGetsTheNewDefault(): void
@@ -222,7 +222,7 @@ final class SeoSettingsTest extends TestCase
         $this->assertTrue($data['schemaDiscussion']);
         $this->assertTrue($data['archives']['tag']);
         $this->assertTrue($data['indexArchives']['topic']);
-        $this->assertFalse($data['indexArchives']['stage']);
+        $this->assertFalse($data['indexArchives']['status']);
         $this->assertSame(2000, $data['sitemap']['urlsPerPage']);
         $this->assertSame(30, $data['ssrTopicLimit']);
     }
@@ -255,8 +255,8 @@ final class SeoSettingsTest extends TestCase
     {
         $this->store(['sitemap' => ['archives' => ['tag' => false]]]);
 
-        $this->assertFalse(SeoSettings::sitemapArchive('tag'));
-        $this->assertTrue(SeoSettings::sitemapArchive('topic'));
+        $this->assertFalse(PortalTaxonomies::isSitemapListed('tag'));
+        $this->assertTrue(PortalTaxonomies::isSitemapListed('topic'));
     }
 
     public function testANoindexArchiveIsNeverListedInTheSitemap(): void
@@ -269,7 +269,33 @@ final class SeoSettingsTest extends TestCase
             'sitemap'       => ['archives' => ['stage' => true]],
         ]);
 
-        $this->assertFalse(SeoSettings::sitemapArchive('stage'));
+        $this->assertFalse(PortalTaxonomies::isSitemapListed('stage'));
+    }
+
+    public function testTheIndexableFilterAlsoDecidesTheSitemap(): void
+    {
+        // The head and the sitemap have to give the same answer. Opening stage
+        // archives through the filter without this listed them as indexable
+        // pages that no sitemap advertised.
+        $this->store([
+            'indexArchives' => ['stage' => false],
+            'sitemap'       => ['archives' => ['stage' => true]],
+        ]);
+
+        $GLOBALS['__wp_filters']['bit_connect_archive_indexable'] = static fn ($indexable, $segment)
+            => $segment === 'stage' ? true : $indexable;
+
+        $this->assertTrue(PortalTaxonomies::isIndexable('stage'));
+        $this->assertTrue(PortalTaxonomies::isSitemapListed('stage'));
+    }
+
+    public function testTheIndexableFilterCanAlsoCloseAnArchive(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_archive_indexable'] = static fn ($indexable, $segment)
+            => $segment === 'tag' ? false : $indexable;
+
+        $this->assertFalse(PortalTaxonomies::isIndexable('tag'));
+        $this->assertFalse(PortalTaxonomies::isSitemapListed('tag'));
     }
 
     public function testAPartialSitemapPayloadKeepsItsArchiveDefaults(): void

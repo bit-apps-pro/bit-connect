@@ -85,16 +85,18 @@ final class TermArchiveTest extends TestCase
         }
     }
 
-    public function testWorkflowArchivesAreServedButNotIndexedByDefault(): void
+    public function testStatusArchivesAreServedButNotIndexedByDefault(): void
     {
         // Served, so a visitor following one gets the topics…
         $this->assertSame(Taxonomies::STATUSES->value, PortalTaxonomies::taxonomyFor('status'));
         $this->assertSame(Taxonomies::STAGES->value, PortalTaxonomies::taxonomyFor('stage'));
 
-        // …but not offered to the index, because nobody searches for a workflow
-        // state and the listing churns constantly.
+        // …but status is not offered to the index: nothing links to it, so it
+        // is a filter rather than a page the portal navigates by.
         $this->assertFalse(PortalTaxonomies::isIndexable('status'));
-        $this->assertFalse(PortalTaxonomies::isIndexable('stage'));
+
+        // Stage is the exception — the sidebar navigates by it.
+        $this->assertTrue(PortalTaxonomies::isIndexable('stage'));
     }
 
     public function testAnUnknownSegmentResolvesToNothing(): void
@@ -237,22 +239,39 @@ final class TermArchiveTest extends TestCase
     // Workflow taxonomies are routes, not index entries.
     // -----------------------------------------------------------------------
 
-    public function testStageArchivesAreKeptOutOfTheIndex(): void
+    public function testStageArchivesAreIndexedBecauseTheSidebarNavigatesByThem(): void
     {
         $term = $this->makeTerm('in-progress', 'In Progress', Taxonomies::STAGES->value);
 
         SeoMeta::forArchive($term, [$this->makeTopic()]);
         $head = SeoMeta::head();
 
-        // Nobody searches "in progress", and an archive per workflow state is a
-        // thin, churning listing of topics that are already indexed on their own.
+        // Every page in the portal links here, so keeping it out of the index
+        // would spend that internal linking on a page that cannot rank.
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString('application/ld+json', $head);
+
+        $this->assertStringContainsString(
+            '<link rel="canonical" href="https://example.com/community/stage/in-progress" />',
+            $head
+        );
+    }
+
+    public function testStatusArchivesAreKeptOutOfTheIndex(): void
+    {
+        $term = $this->makeTerm('needs-approval', 'Needs Approval', Taxonomies::STATUSES->value);
+
+        SeoMeta::forArchive($term, [$this->makeTopic()]);
+        $head = SeoMeta::head();
+
+        // Nobody searches "needs approval", and nothing links to it.
         $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', $head);
         $this->assertStringNotContainsString('application/ld+json', $head);
 
         // Still self-canonical: a noindex page pointing its canonical somewhere
         // else can carry the noindex across to the target.
         $this->assertStringContainsString(
-            '<link rel="canonical" href="https://example.com/community/stage/in-progress" />',
+            '<link rel="canonical" href="https://example.com/community/status/needs-approval" />',
             $head
         );
     }
@@ -262,7 +281,7 @@ final class TermArchiveTest extends TestCase
         $this->assertTrue(PortalTaxonomies::isIndexable('topic'));
         $this->assertTrue(PortalTaxonomies::isIndexable('tag'));
         $this->assertTrue(PortalTaxonomies::isIndexable('department'));
-        $this->assertFalse(PortalTaxonomies::isIndexable('stage'));
+        $this->assertFalse(PortalTaxonomies::isIndexable('status'));
     }
 
     // -----------------------------------------------------------------------

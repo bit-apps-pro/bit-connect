@@ -1,4 +1,5 @@
 import { cn } from '@common/helpers/globalHelpers'
+import config from '@config/config'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
 import { theme } from 'antd'
@@ -35,6 +36,18 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
   // reader's stage has to be recovered from the topic itself. See the hook.
   const isActive = useActiveStage() === path
 
+  // The stage archive's own path, not `/?stage=`: the sidebar is the portal's
+  // primary navigation, so the URLs it hands out are the ones that get shared,
+  // crawled and ranked — and a path segment is a page in its own right, where a
+  // query string is a filtered view of the portal page that canonicalises away.
+  //
+  // The default stage is the exception: `/stage/questions` lists exactly what
+  // `/` already lists, so pointing at it would put the portal's busiest page
+  // behind a second URL. The server 301s that archive back here, and this keeps
+  // the nav from relying on the redirect. `?stage=` still works for links
+  // already shared — see pages/topics/topics.tsx.
+  const to = path === config.DEFAULT_STAGE_SLUG ? '/' : `/stage/${path}`
+
   return (
     <NavLink
       className={cn([
@@ -42,7 +55,7 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
         'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-cursor-pointer bc-items-center bc-gap-2 bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none'
       ])}
       style={navItemStyle({ isActive, token })}
-      to={`/?stage=${path}`}
+      to={to}
     >
       {icon && brokenIcon !== icon ? (
         <img

@@ -65,14 +65,21 @@ enum SeoSettings: string
             ],
 
             // Which archives are offered to the index. Subject taxonomies are
-            // what people search for; stage and status are workflow states
-            // nobody looks up, and their archives churn constantly.
+            // what people search for, and stage is what the sidebar navigates
+            // by; status is a workflow state nobody looks up and nothing links
+            // to, and its archives churn constantly.
             'indexArchives' => [
                 'topic'      => true,
                 'department' => true,
                 'tag'        => true,
-                'stage'      => false,
-                'status'     => false,
+                // The sidebar navigates by stage, so these are the portal's
+                // primary browse pages rather than a workflow filter nobody
+                // links to — every page in the portal points at them, and
+                // keeping them out of the index would spend that internal
+                // linking on pages that cannot rank. `status` stays out: it is
+                // still only a filter, with no navigation pointing at it.
+                'stage'  => true,
+                'status' => false,
             ],
 
             // Routes that exist for people but not for the index.
@@ -197,15 +204,16 @@ enum SeoSettings: string
     }
 
     /**
-     * Whether a taxonomy's archives are listed in the sitemap.
+     * The sitemap's own per-taxonomy toggle, on its own.
      *
-     * Indexability wins: a sitemap is a list of URLs asking to be indexed, so
-     * advertising one that carries `noindex` asks for two opposite things.
+     * Deliberately *not* the whole answer: a noindex archive must never be
+     * listed, but that guard belongs where the `bit_connect_archive_indexable`
+     * filter can be read — see PortalTaxonomies::isSitemapListed(). Reading
+     * this alone would advertise an archive the head marks noindex.
      */
-    public static function sitemapArchive(string $segment): bool
+    public static function sitemapArchiveEnabled(string $segment): bool
     {
-        return self::archiveIndexable($segment)
-            && (bool) (self::all()['sitemap']['archives'][$segment] ?? false);
+        return (bool) (self::all()['sitemap']['archives'][$segment] ?? false);
     }
 
     /**

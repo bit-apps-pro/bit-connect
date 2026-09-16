@@ -8,7 +8,9 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\TopicsView;
@@ -45,6 +47,17 @@ class TopicArchiveController
         // otherwise every mistyped term URL becomes an indexable blank page.
         if ($term === null) {
             return (new NotFoundController())->index($request);
+        }
+
+        // The default stage's archive lists exactly what the portal root lists,
+        // so it is the same page under a second URL. Redirecting rather than
+        // canonicalising keeps one address in circulation: the sidebar already
+        // links the default stage to the root, and this catches the links that
+        // were shared before it did.
+        if ($segment === 'stage' && $termSlug === StageService::defaultStageSlug()) {
+            wp_safe_redirect(PortalLocation::url(), 301);
+
+            exit;
         }
 
         $topicsView = new TopicsView();

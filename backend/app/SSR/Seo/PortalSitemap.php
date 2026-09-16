@@ -9,6 +9,7 @@ use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\StageService;
 use WP_Post_Type;
 use WP_Query;
 use WP_Sitemaps_Provider;
@@ -456,7 +457,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         $urls = [];
 
         foreach (PortalTaxonomies::map() as $segment => $taxonomy) {
-            if (!SeoSettings::sitemapArchive($segment)) {
+            if (!PortalTaxonomies::isSitemapListed($segment)) {
                 continue;
             }
 
@@ -472,7 +473,15 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 continue;
             }
 
+            $defaultStage = $segment === 'stage' ? StageService::defaultStageSlug() : '';
+
             foreach ($terms as $slug) {
+                // The default stage's archive 301s to the portal root, so
+                // listing it would advertise a redirect as a destination.
+                if ($defaultStage !== '' && (string) $slug === $defaultStage) {
+                    continue;
+                }
+
                 $urls[] = PortalTaxonomies::url($segment, (string) $slug);
             }
         }
