@@ -57,6 +57,22 @@ body:has(#bit-connect-portal) {
   height: 100dvh;
 }
 
+/* ...and the document behind that shell must not scroll. The shell is exactly
+   one viewport tall and scrolls its own content pane (`overflow: auto` on the
+   ant Content), so any scroll range on the window is stray: it drags the whole
+   fixed frame upward and reveals nothing but backdrop underneath, because the
+   layout wrapper has already clipped the pane. Locking it here states the
+   invariant in one place rather than hunting whichever descendant leaked.
+
+   Scoped through the same `> .ant-layout-has-sider` test as the rule above, so
+   the auth pages (login/register) — which share this template but render as a
+   normal, document-scrolled page — keep their scrollbar. */
+html:has(#bit-connect-u-root > .ant-layout-has-sider),
+body:has(#bit-connect-u-root > .ant-layout-has-sider) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 ::-webkit-datetime-edit {
   line-height: 1;
 }
