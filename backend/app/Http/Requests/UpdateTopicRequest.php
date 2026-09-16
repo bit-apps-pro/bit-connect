@@ -23,6 +23,7 @@ use BitApps\BitConnect\Services\PermissionService;
  * @property null|array $stages
  * @property null|array $statuses
  * @property null|array $tags
+ * @property null|array $seo
  */
 final class UpdateTopicRequest extends Request
 {
@@ -67,6 +68,9 @@ final class UpdateTopicRequest extends Request
             'tags.*'      => ['nullable', 'integer'],
             'is_pinned'   => ['nullable', 'boolean'],
             'is_locked'   => ['nullable', 'boolean'],
+            // Search appearance: title, description and image. Sanitised field
+            // by field in TopicSeoService, which also owns the length caps.
+            'seo' => ['nullable', 'array'],
         ];
     }
 

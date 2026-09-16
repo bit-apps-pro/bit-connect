@@ -25,6 +25,7 @@ use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TopicSeoService;
 use BitApps\BitConnect\Services\TopicService;
 use InvalidArgumentException;
 
@@ -170,6 +171,10 @@ final class TopicController
             $topicData['post_name'] = $validatedData['post_name'];
         }
 
+        if (isset($validatedData['seo']) && \is_array($validatedData['seo'])) {
+            $topicData['seo'] = TopicSeoService::sanitize($validatedData['seo']);
+        }
+
         // By flag, not by slug — an admin can rename either default term.
         $defaultStage = StageService::defaultStage();
         $defaultStatus = StatusService::defaultStatus();
@@ -310,6 +315,16 @@ final class TopicController
             if (isset($validatedData['attachments'])) {
                 $updateData['attachments'] = $validatedData['attachments'];
             }
+        }
+
+        // Search appearance is presentation, not the words: how the site shows
+        // this topic to a search engine. The author owns it like the rest of
+        // the topic, and a manager may correct it site-wide without that
+        // reopening the content branch above. A moderator who is neither sends
+        // it and it is dropped, the same way a title from them is.
+        if (isset($validatedData['seo']) && \is_array($validatedData['seo'])
+            && ($isOwner || PermissionService::canManage())) {
+            $updateData['seo'] = TopicSeoService::sanitize($validatedData['seo']);
         }
 
         if (empty($updateData)) {

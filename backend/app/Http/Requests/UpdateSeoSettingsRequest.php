@@ -44,16 +44,25 @@ final class UpdateSeoSettingsRequest extends Request
     public function rules()
     {
         return [
-            'serverRendering'   => ['nullable'],
-            'ssrTopicLimit'     => ['nullable'],
-            'metaOwner'         => ['nullable', 'string'],
-            'schemaDiscussion'  => ['nullable'],
-            'schemaBreadcrumbs' => ['nullable'],
-            'archives'          => ['nullable', 'array'],
-            'indexArchives'     => ['nullable', 'array'],
-            'indexProfiles'     => ['nullable'],
-            'indexPagination'   => ['nullable'],
-            'sitemap'           => ['nullable', 'array'],
+            'serverRendering'       => ['nullable', 'boolean'],
+            'ssrTopicLimit'         => ['nullable', 'integer', 'min:1', 'max:200'],
+            'metaOwner'             => ['nullable', 'string'],
+            'schemaDiscussion'      => ['nullable', 'boolean'],
+            'schemaBreadcrumbs'     => ['nullable', 'boolean'],
+            'archives'              => ['nullable', 'array'],
+            'archives.*'            => ['nullable', 'boolean'],
+            'indexArchives'         => ['nullable', 'array'],
+            'indexArchives.*'       => ['nullable', 'boolean'],
+            'indexProfiles'         => ['nullable', 'boolean'],
+            'indexPagination'       => ['nullable', 'boolean'],
+            'sitemap'               => ['nullable', 'array'],
+            'sitemap.enabled'       => ['nullable', 'boolean'],
+            'sitemap.inRobotsTxt'   => ['nullable', 'boolean'],
+            'sitemap.includeHome'   => ['nullable', 'boolean'],
+            'sitemap.includeTopics' => ['nullable', 'boolean'],
+            'sitemap.urlsPerPage'   => ['nullable', 'integer', 'min:100', 'max:50000'],
+            'sitemap.archives'      => ['nullable', 'array'],
+            'sitemap.archives.*'    => ['nullable', 'boolean'],
         ];
     }
 
