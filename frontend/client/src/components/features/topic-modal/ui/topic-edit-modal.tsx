@@ -1,6 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useFileStore from '@features/file-uploader/state/use-file-store'
-import { normalizeAttachments } from '@features/topic-modal/shared/type'
+import { BLANK_TOPIC_SEO, normalizeAttachments } from '@features/topic-modal/shared/type'
 import { decodeSlug, slugRedirectPath } from '@utils/slug'
 import { Button, Form, Modal } from 'antd'
 import { useEffect, useRef } from 'react'
@@ -89,6 +89,7 @@ export default function TopicEditModal() {
         post_name: decodeSlug(post.post_name ?? ''),
         post_status: post.post_status,
         post_title: post.post_title,
+        seo: { ...BLANK_TOPIC_SEO, ...post.seo },
         tags: post.terms?.tags?.map(tag => tag.term_id) || [],
         'topic-types': post.terms?.topic_types?.term_id
       })

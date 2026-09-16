@@ -52,6 +52,18 @@ export function normalizeAttachments(attachments: unknown): TopicAttachmentInfo[
   return []
 }
 
+/**
+ * How a topic asks to appear in search results and link previews. Every field
+ * is optional; blank means the value is derived from the topic itself.
+ */
+export interface TopicSeo {
+  description: string
+  image: string
+  title: string
+}
+
+export const BLANK_TOPIC_SEO: TopicSeo = { description: '', image: '', title: '' }
+
 export interface SaveTopicPayload {
   attachments: number[]
   departments?: number
@@ -60,6 +72,8 @@ export interface SaveTopicPayload {
   post_name?: string
   post_status?: string
   post_title: string
+  /** Omitted, the topic keeps whatever search appearance it has. */
+  seo?: TopicSeo
   tags?: number[]
   'topic-types'?: number
   topic_id?: number
@@ -121,6 +135,8 @@ export interface Topic {
   post_status: string
   post_title: string
   post_type: string
+  /** Blank in every field for a topic that has never customised it. */
+  seo?: TopicSeo
   // A topic need not have a term in every taxonomy — the server sends null for
   // the ones it has none in, including in the SSR state the first render uses.
   terms: {

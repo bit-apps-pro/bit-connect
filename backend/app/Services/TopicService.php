@@ -212,6 +212,10 @@ class TopicService
         if (is_wp_error($postId)) {
             return null;
         }
+
+        if (isset($data['seo']) && \is_array($data['seo'])) {
+            TopicSeoService::save((int) $postId, $data['seo']);
+        }
         // Set taxonomy terms if provided
         if (isset($data['topic_types'])) {
             $res = wp_set_post_terms($postId, $data['topic_types'], Taxonomies::TOPIC_TYPES->value); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
@@ -293,6 +297,11 @@ class TopicService
         // meta has to be written deliberately.
         if ($contentChanged) {
             EditAttributionService::recordPost($id, get_current_user_id());
+        }
+
+        // Not an edit of the words either — see above.
+        if (isset($data['seo']) && \is_array($data['seo'])) {
+            TopicSeoService::save($id, $data['seo']);
         }
 
         // Pin/unpin: WordPress sticky posts list
@@ -634,6 +643,11 @@ class TopicService
             'vote'           => self::getPostVoteStatus($post->ID),
             'terms'          => $this->getTopicTerms($post->ID),
             'attachments'    => $this->formatAttachments($post->ID),
+            // How the topic asks to appear in search, blank where it has not
+            // said. Carried on the listing cards as well as the single view:
+            // it is one post-meta read, answered from the cache WP_Query primes
+            // for every post it returns, so it costs the listing no query.
+            'seo' => TopicSeoService::forPost((int) $post->ID),
         ];
 
         if ($includeComments) {

@@ -18,7 +18,9 @@ import { LuGlobe, LuLock } from 'react-icons/lu'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
+import { BLANK_TOPIC_SEO, type TopicSeo } from '../shared/type'
 import PermalinkField from './permalink-field'
+import SearchAppearanceField, { isUsableImageUrl } from './search-appearance-field'
 
 const stripHtml = (html: string) =>
   html
@@ -45,6 +47,9 @@ export default function TopicForm({
   // Lives here rather than in the field: the Form.Item owns the label, and a
   // closed permalink should not put a "Permalink" heading on the modal.
   const [isPermalinkOpen, setIsPermalinkOpen] = useState(false)
+  const [isSearchAppearanceOpen, setIsSearchAppearanceOpen] = useState(false)
+  // The search title's placeholder names what a blank one falls back to.
+  const watchedTitle = Form.useWatch('post_title', form) as string | undefined
 
   // Either taxonomy can be switched off by an admin, and the row's layout
   // depends on how many survive.
@@ -313,6 +318,34 @@ export default function TopicForm({
           optionFilterProp="label"
           options={tagOptions}
           placeholder={__('Select tags..')}
+        />
+      </Form.Item>
+
+      {/* Same disclosure as the permalink: a registered field whose UI is a
+          single line until asked for. Registered rather than mounted on open,
+          so a value set and then folded away still travels with the save. */}
+      <Form.Item
+        className={isSearchAppearanceOpen ? 'bc-mb-4' : 'bc-mb-3'}
+        initialValue={BLANK_TOPIC_SEO}
+        label={isSearchAppearanceOpen ? __('Search appearance') : undefined}
+        name="seo"
+        rules={[
+          {
+            validator: (_, value?: TopicSeo) => {
+              if (value && !isUsableImageUrl(value.image.trim())) {
+                return Promise.reject(
+                  new Error(__('The preview image must be a full web address starting with http:// or https://'))
+                )
+              }
+              return Promise.resolve()
+            }
+          }
+        ]}
+      >
+        <SearchAppearanceField
+          isOpen={isSearchAppearanceOpen}
+          onOpenChange={setIsSearchAppearanceOpen}
+          titleFallback={watchedTitle ?? ''}
         />
       </Form.Item>
 
