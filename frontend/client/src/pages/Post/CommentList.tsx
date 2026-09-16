@@ -20,6 +20,8 @@ interface CommentListProps {
   onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
   onVote?: (commentId: number) => void
   sortOption: 'all' | 'mostVoted' | 'newest'
+  /** Who opened the topic — the only member who may pin a reply in it. */
+  topicAuthorId: number
   topicSlug: string
   topicTitle: string
 }
@@ -35,6 +37,7 @@ export default function CommentList({
   onReply,
   onVote,
   sortOption,
+  topicAuthorId,
   topicSlug,
   topicTitle
 }: CommentListProps) {
@@ -86,6 +89,7 @@ export default function CommentList({
               onEdit={onEdit}
               onReply={onReply}
               onVote={onVote}
+              topicAuthorId={topicAuthorId}
               topicSlug={topicSlug}
               topicTitle={topicTitle}
             />

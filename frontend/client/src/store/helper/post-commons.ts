@@ -55,6 +55,7 @@ const topicCommentToAppComment = (topicComment: TopicComment): Comment => {
     id: Number.parseInt(topicComment.comment_ID, 10),
     isAdmin: topicComment.isAdmin ?? false,
     parentId: Number.isNaN(parentId) ? 0 : parentId,
+    pinned: topicComment.pinned ?? false,
     replies: [],
     user: topicComment.comment_author,
     userId: Number.isNaN(userId) ? 0 : userId,
@@ -69,6 +70,27 @@ const topicCommentToAppComment = (topicComment: TopicComment): Comment => {
 export const transformTopicCommentsToComments = (topicComments: TopicComment[]): Comment[] => {
   const flatComments = topicComments.map(topicCommentToAppComment)
   return buildCommentTree(flatComments)
+}
+
+/**
+ * Lift the pinned reply to the front, whatever the sort said.
+ *
+ * The twin of the hoist CommentController does server-side, and it has to
+ * exist on both sides: the topic page builds its thread from the topic payload
+ * and sorts it here, while paginating hits the comments endpoint and gets the
+ * order from there. One without the other means the pinned reply jumps as soon
+ * as the reader scrolls.
+ *
+ * Moves rather than copies, so the thread still appears exactly once, and
+ * leaves the array alone when the pin is already first or there is no pin —
+ * which is every topic on a forum without the add-on.
+ */
+const hoistPinned = (comments: Comment[]): Comment[] => {
+  const index = comments.findIndex(comment => comment.pinned)
+  if (index <= 0) return comments
+
+  const pinned = comments[index]!
+  return [pinned, ...comments.slice(0, index), ...comments.slice(index + 1)]
 }
 
 /**
@@ -100,5 +122,5 @@ export const sortHierarchicalComments = (comments: Comment[], sortOption: SortOp
     })
   }
 
-  return sorted
+  return hoistPinned(sorted)
 }

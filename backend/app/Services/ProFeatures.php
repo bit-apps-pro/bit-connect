@@ -159,4 +159,42 @@ final class ProFeatures
             $capabilities
         ) === true;
     }
+
+    /**
+     * Whether the author of a topic can single out one reply as the answer.
+     *
+     * This plugin has no pin action anywhere — no route, no capability, no
+     * menu entry. What it has is the reading half: a comment carries a
+     * `pinned` flag and the list puts a pinned reply first, both of which are
+     * inert until something answers pinnedCommentId() with an id. Without the
+     * add-on that is never, so the flag is false on every comment and the
+     * ordering is the ordering the reader asked for.
+     */
+    public static function commentPinning(): bool
+    {
+        return (bool) Hooks::applyFilter('bit_connect_comment_pinning_available', false);
+    }
+
+    /**
+     * The reply pinned to a topic, or 0 when none is.
+     *
+     * Asked once per request and compared against each comment in turn, rather
+     * than asked per comment: the listener reads post meta, and a filter call
+     * for every reply on a three-hundred-reply topic would be three hundred
+     * reads to answer one question.
+     *
+     * The listener is responsible for the id still being pinnable — a pinned
+     * reply that has since been deleted, unapproved or hidden by a report must
+     * come back as 0, or the portal would hoist a tombstone to the top of the
+     * thread. This plugin cannot check that itself without knowing what the
+     * add-on stored, and does not try: whatever id comes back is trusted to the
+     * extent that it is matched against comments already filtered for
+     * visibility, and a stale one simply matches nothing.
+     *
+     * @param int $topicId the topic whose pin is being asked about
+     */
+    public static function pinnedCommentId(int $topicId): int
+    {
+        return (int) Hooks::applyFilter('bit_connect_pinned_comment', 0, $topicId);
+    }
 }

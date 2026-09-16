@@ -6,14 +6,17 @@ import { type QueryParam, type ResponseType } from './types'
 export async function request<PAYLOAD, RESPONSE_DATA>(
   uri: string,
   options?: Omit<Partial<RequestInit>, 'body'> & {
+    /** Override the REST namespace. Defaults to the free plugin's. */
+    baseUrl?: string
     body?: PAYLOAD
     headers?: Record<string, string>
     method: string
     queryParam?: QueryParam
   }
 ): Promise<ResponseType<RESPONSE_DATA>> {
-  const { body, headers, method, queryParam, ...rest } = options || {}
-  const url = new URL(`${config.API_URL.replace(/\/$/, '')}${uri.startsWith('/') ? uri : `/${uri}`}`)
+  const { baseUrl, body, headers, method, queryParam, ...rest } = options || {}
+  const base = (baseUrl || config.API_URL).replace(/\/$/, '')
+  const url = new URL(`${base}${uri.startsWith('/') ? uri : `/${uri}`}`)
   if (queryParam) {
     for (const key in queryParam) {
       if (key) {

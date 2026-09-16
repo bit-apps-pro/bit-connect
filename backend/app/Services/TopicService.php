@@ -799,6 +799,11 @@ class TopicService
 
         $canViewHidden = ContentVisibilityService::canViewHidden();
 
+        // Once for the topic, not once per reply — the listener reads post
+        // meta. 0 on a forum without the add-on, which makes every comparison
+        // below a miss and every `pinned` false.
+        $pinnedId = ProFeatures::pinnedCommentId($postId);
+
         $formattedComments = [];
         foreach ($comments as $comment) {
             $authorBadge = UserBadgeService::for((int) $comment->user_id);
@@ -847,6 +852,16 @@ class TopicService
                 // underneath. "Out of public view", not "you may read this", so
                 // it is true on a tombstone as well.
                 'hidden' => $isHidden,
+                // The reply the topic's author singled out. The topic page
+                // reads its comments from here rather than from the comments
+                // endpoint, so a pin missing from this shape is a pin nobody
+                // sees until the reader paginates — the same trap the
+                // author_badge note above records. Replies cannot be pinned,
+                // hence the parent check: a stale id naming one matches
+                // nothing.
+                'pinned' => $pinnedId > 0
+                    && (int) $comment->comment_ID === $pinnedId
+                    && (int) $comment->comment_parent === 0,
             ];
         }
 

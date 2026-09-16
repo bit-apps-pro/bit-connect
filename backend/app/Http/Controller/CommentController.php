@@ -30,6 +30,7 @@ use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\ProFeatures;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
 use BitApps\BitConnect\Services\TopicService;
@@ -86,7 +87,12 @@ final class CommentController
             }
         }
 
-        $topLevel = $this->sortTopLevelComments($topLevel, $sort);
+        // Asked once, here, and carried through both the ordering and the
+        // formatting below. Without the add-on this is 0 and every use of it is
+        // a comparison that never matches.
+        $pinnedId = ProFeatures::pinnedCommentId((int) $postId);
+
+        $topLevel = $this->sortTopLevelComments($topLevel, $sort, $pinnedId);
 
         $total = \count($topLevel);
         $totalPages = max(1, (int) ceil($total / $perPage));
@@ -120,8 +126,8 @@ final class CommentController
         $currentUserId = get_current_user_id();
 
         $formattedComments = [];
-        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent, $votesTable, $currentUserId) {
-            $formattedComments[] = $this->formatComment($comment, $votesTable, $currentUserId);
+        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent, $votesTable, $currentUserId, $pinnedId) {
+            $formattedComments[] = $this->formatComment($comment, $votesTable, $currentUserId, $pinnedId);
             $children = $childrenByParent[(int) $comment->comment_ID] ?? [];
             foreach ($children as $child) {
                 $appendThread($child);
@@ -321,7 +327,15 @@ final class CommentController
         }
 
         $votesTable = $this->getVotesTable();
-        $formattedComment = $this->formatComment($updatedComment, $votesTable, $currentUser->ID);
+        // Resolved rather than defaulted: the author of a pinned reply editing
+        // a typo in it gets the comment back, and a `pinned` of false here
+        // would take the marker off the row until the next full load.
+        $formattedComment = $this->formatComment(
+            $updatedComment,
+            $votesTable,
+            $currentUser->ID,
+            ProFeatures::pinnedCommentId((int) $comment->comment_post_ID)
+        );
 
         return Response::success($formattedComment);
     }
@@ -498,12 +512,56 @@ final class CommentController
      * Sort top-level comments by the requested key. Vote counts are
      * precomputed once (avoiding a query per comparison) for "mostVoted".
      *
+     * A pinned reply is then lifted to the front, whatever the sort said. That
+     * is the point of pinning it: the topic's author has marked one reply as
+     * the one to read, and a reader who switched to "oldest first" has asked
+     * about the other two hundred, not about that one. It moves rather than
+     * being duplicated, so the thread still appears exactly once.
+     *
+     * The lift happens here rather than at the call site so it lands before
+     * pagination and before pageOfComment() resolves a `#comment-N` link —
+     * both of which read the array this returns, and both of which would
+     * otherwise answer for an order the reader never sees.
+     *
      * @param WP_Comment[] $topLevel
      * @param string        $sort      one of newest|all|mostVoted
+     * @param int           $pinnedId  the pinned reply, or 0 when none is
      *
      * @return WP_Comment[]
      */
-    private function sortTopLevelComments($topLevel, $sort)
+    private function sortTopLevelComments($topLevel, $sort, $pinnedId = 0)
+    {
+        $topLevel = $this->applySort($topLevel, $sort);
+
+        if ($pinnedId <= 0) {
+            return $topLevel;
+        }
+
+        foreach ($topLevel as $index => $comment) {
+            if ((int) $comment->comment_ID === $pinnedId) {
+                // Already first under the reader's own sort: leave the array
+                // alone rather than splicing it apart and back together.
+                if ($index > 0) {
+                    array_splice($topLevel, $index, 1);
+                    array_unshift($topLevel, $comment);
+                }
+
+                break;
+            }
+        }
+
+        return $topLevel;
+    }
+
+    /**
+     * The reader's chosen ordering, before pinning has its say.
+     *
+     * @param WP_Comment[] $topLevel
+     * @param string        $sort     one of newest|all|mostVoted
+     *
+     * @return WP_Comment[]
+     */
+    private function applySort($topLevel, $sort)
     {
         if ($sort === 'mostVoted') {
             $voteCounts = [];
@@ -594,7 +652,7 @@ final class CommentController
         return Config::withDBPrefix('votes');
     }
 
-    private function formatComment($comment, $votesTable, $currentUserId)
+    private function formatComment($comment, $votesTable, $currentUserId, $pinnedId = 0)
     {
         $authorId = (int) $comment->user_id;
         $authorBadge = UserBadgeService::for($authorId);
@@ -652,6 +710,14 @@ final class CommentController
             // Who last edited this and when, or null if nobody has. `by_author`
             // separates the plain "(edited)" from a colleague's byline.
             'edited' => EditAttributionService::forComment((int) $comment->comment_ID),
+            // The one reply the topic's author singled out, or false on every
+            // reply when nothing is pinned — which is every reply on a forum
+            // without the add-on, since nothing here can write a pin. Replies
+            // are never pinned: only a top-level comment can be, so the
+            // comparison below cannot match one even if a stale id named it.
+            'pinned' => $pinnedId > 0
+                && (int) $comment->comment_ID === $pinnedId
+                && (int) $comment->comment_parent === 0,
             // Superseded by author_badge; kept until the portal stops reading it,
             // because post-commons.ts defaults a missing value to false and would
             // silently un-badge every staff comment. Note this now answers true

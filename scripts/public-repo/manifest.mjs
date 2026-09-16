@@ -59,7 +59,8 @@ export const STUBBED_MODULES = [
   'frontend/admin/src/pages/notifications/internal/email-delivery-section.pro.tsx',
   'frontend/admin/src/pages/notifications/internal/email-wording-section.pro.tsx',
   'frontend/admin/src/pages/settings/internal/moderation-section.pro.tsx',
-  'frontend/admin/src/pages/support/internal/version-panel.pro.tsx'
+  'frontend/admin/src/pages/support/internal/version-panel.pro.tsx',
+  'frontend/client/src/pages/Post/data/use-comment-pin-item.pro.ts'
 ]
 
 /**

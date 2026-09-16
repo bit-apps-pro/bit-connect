@@ -314,6 +314,40 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
   setError: error => set({ error }),
   setLoading: isLoading => set({ isLoading }),
   setPost: post => set({ post }),
+  // Move the pin, in one pass over the loaded list.
+  //
+  // Pinning touches two comments — the one gaining the marker and the one
+  // losing it — and there is no ordering of two single-comment updates that
+  // does not briefly show two pinned replies or none. Rewriting the whole flat
+  // list from one id is both, atomically, and re-runs the transform so the
+  // newly pinned thread is lifted to the front the same way a fresh fetch
+  // would lift it.
+  //
+  // Refetching page 1 would do the same and throw away every page the reader
+  // has scrolled through to get here, which on a long topic is the entire
+  // reason they are looking at this reply at all.
+  //
+  // Free ships the setter and never calls it: nothing in this plugin can write
+  // a pin. Its only caller is the add-on, which reaches it through the store
+  // rather than by reaching into the list itself.
+  setPinnedComment: commentId => {
+    set(state => {
+      const pinnedId = commentId ?? 0
+      const updatedComments = state.comments.map(comment =>
+        comment.pinned === (Number.parseInt(comment.comment_ID, 10) === pinnedId)
+          ? comment
+          : { ...comment, pinned: Number.parseInt(comment.comment_ID, 10) === pinnedId }
+      )
+
+      return {
+        comments: updatedComments,
+        transformedComments: sortHierarchicalComments(
+          transformTopicCommentsToComments(updatedComments),
+          state.sortOption
+        )
+      }
+    })
+  },
   // Changing the sort changes which threads belong on each page. Apply the new
   // sort locally first (so the already-loaded comments reorder immediately),
   // then re-fetch page 1 from the server with that sort.

@@ -78,6 +78,7 @@ interface ConfigType {
   PORTAL_ACCESS: 'everyone' | 'logged_in'
   PORTAL_FILTERS: { product: boolean; sort: boolean; tags: boolean }
   POST_URL: string
+  PRO_API_URL: string
   PRODUCT_NAME: string
   /**
    * The sidebar promo card: the admin's opt-in and every word on it. An empty
@@ -175,6 +176,11 @@ const config = {
     tags: portalFilters.tags !== false
   },
   POST_URL: getServerVariable('postURL', ''),
+  // Pro routes register under their own REST namespace (bit-connect-pro/v1),
+  // so they cannot be addressed through API_URL, which names the free
+  // plugin's. Sent by the pro plugin; the fallback only matters before it has
+  // loaded, when nothing is calling a pro route anyway.
+  PRO_API_URL: getServerVariable('proApiURL', `${siteURL}/wp-json/bit-connect-pro/v1`),
   PRODUCT_NAME: 'Bit Connect',
   PROMO: {
     cta: promo.cta ?? '',

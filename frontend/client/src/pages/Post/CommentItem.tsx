@@ -10,7 +10,7 @@ import { userProfilePath } from '@utilities/user-link'
 import { App as AntApp, Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { LuEyeOff } from 'react-icons/lu'
+import { LuEyeOff, LuPin } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { parseMaybeGmt, timeAgo } from '@/common/helpers/globalHelpers'
@@ -23,6 +23,7 @@ import CommentEditor from './CommentEditor'
 import styles from './CommentThread.module.css'
 import CommentVoteBox from './CommentVoteBox'
 import ContentBox from './ContentBox'
+import useCommentPinItem from './data/use-comment-pin-item'
 import AttachmentList from './ui/attachment-list'
 
 interface CommentItemProps {
@@ -35,6 +36,8 @@ interface CommentItemProps {
   onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
   onVote?: (commentId: number) => void
   replyParentId?: number
+  /** Who opened the topic — the only member who may pin a reply in it. */
+  topicAuthorId: number
   topicSlug: string
   topicTitle: string
 }
@@ -48,6 +51,7 @@ export default function CommentItem({
   onReply,
   onVote,
   replyParentId,
+  topicAuthorId,
   topicSlug,
   topicTitle
 }: CommentItemProps) {
@@ -155,9 +159,22 @@ export default function CommentItem({
       ? mentionHtml({ name: comment.user, slug: comment.userSlug })
       : undefined
 
+  // Nothing on a free install: the dispatch resolves to an implementation that
+  // returns no entry at all. Called unconditionally and before the menu is
+  // assembled, because it is a hook — which implementation runs is fixed at
+  // build time, but that it runs cannot be.
+  const pinMenuItem = useCommentPinItem({ comment, topicAuthorId })
+
   // On mobile, Edit/Delete are collapsed into a single "More" (⋯) menu
   // (text-only items, no icons).
   const moreMenuItems: MenuProps['items'] = []
+
+  // First in the menu. Pinning is the topic author's own judgement about their
+  // own thread, and it sits above the entries that act on the reply itself.
+  if (pinMenuItem) {
+    moreMenuItems.push(pinMenuItem)
+  }
+
   if (canEdit) {
     moreMenuItems.push({
       key: 'edit',
@@ -266,6 +283,32 @@ export default function CommentItem({
                   {comment.hidden && (
                     <span className="bc-shrink-0 bc-rounded-full bc-bg-surface-sunken bc-px-1.5 bc-py-px bc-text-[10px] bc-font-semibold bc-leading-none bc-text-ink-muted">
                       {__('under review')}
+                    </span>
+                  )}
+                  {/* Why this reply is sitting at the top of the thread when the
+                      reader asked for oldest-first. Without it the ordering
+                      looks broken rather than deliberate.
+
+                      Shown to everyone, including readers of a forum that has
+                      no pinning: `pinned` is false on every comment there, so
+                      this never renders. Rendering a flag the server sent is
+                      not the same as holding the feature — nothing in this
+                      plugin can set it. */}
+                  {comment.pinned && (
+                    <span
+                      // The word is dropped on a phone and the pin stands on
+                      // its own — the byline row is avatar, name, badge, chip
+                      // and timestamp, and that is already more than fits.
+                      // `aria-label` carries what the hidden word said:
+                      // `bc-hidden` takes the text from a screen reader too, so
+                      // without it the icon would announce as nothing at the
+                      // width where it is the only thing left.
+                      aria-label={__('Pinned')}
+                      className="bc-inline-flex bc-shrink-0 bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-1.5 bc-py-0.5 bc-text-[11px] bc-font-medium bc-text-ink sm:bc-px-2"
+                      title={__('Singled out by the author of this topic')}
+                    >
+                      <LuPin size={12} />
+                      <span className="bc-hidden sm:bc-inline">{__('Pinned')}</span>
                     </span>
                   )}
                   {comment.createdAt && (
@@ -454,6 +497,7 @@ export default function CommentItem({
                       onReply={onReply}
                       onVote={onVote}
                       replyParentId={childrenAtMaxDepth ? comment.id : undefined}
+                      topicAuthorId={topicAuthorId}
                       topicSlug={topicSlug}
                       topicTitle={topicTitle}
                     />

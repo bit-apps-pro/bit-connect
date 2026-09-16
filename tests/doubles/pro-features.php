@@ -31,6 +31,7 @@ function bc_test_install_pro_addon(array $features = []): void
         'notification_wording',
         'per_user_capabilities',
         'auto_hide',
+        'comment_pinning',
     ];
 
     $features = $features === [] ? $all : $features;
@@ -41,6 +42,7 @@ function bc_test_install_pro_addon(array $features = []): void
         'notification_delivery' => 'bit_connect_custom_notification_delivery',
         'notification_wording'  => 'bit_connect_custom_notification_wording',
         'per_user_capabilities' => 'bit_connect_per_user_capabilities_available',
+        'comment_pinning'       => 'bit_connect_comment_pinning_available',
     ];
 
     foreach ($features as $feature) {
@@ -70,12 +72,37 @@ function bc_test_uninstall_pro_addon(): void
             'bit_connect_custom_notification_delivery',
             'bit_connect_custom_notification_wording',
             'bit_connect_per_user_capabilities_available',
+            'bit_connect_comment_pinning_available',
+            'bit_connect_pinned_comment',
             'bit_connect_should_auto_hide',
             'bit_connect_apply_user_capabilities',
         ] as $tag
     ) {
         unset($GLOBALS['__wp_filters'][$tag]);
     }
+}
+
+/**
+ * Pin a reply to a topic, the way the add-on's service does.
+ *
+ * The add-on stores the pin as post meta on the topic and answers the
+ * `bit_connect_pinned_comment` filter from it. Reproduced rather than answered
+ * with a fixed id so a test can pin, unpin and re-pin and watch the free side
+ * follow, which is the behaviour that actually matters.
+ *
+ * @param int $topicId   the topic being pinned in
+ * @param int $commentId the reply, or 0 to clear the pin
+ */
+function bc_test_pro_pin_comment(int $topicId, int $commentId): void
+{
+    if ($commentId > 0) {
+        update_post_meta($topicId, '_bit_connect_pinned_comment', $commentId);
+    } else {
+        delete_post_meta($topicId, '_bit_connect_pinned_comment');
+    }
+
+    $GLOBALS['__wp_filters']['bit_connect_pinned_comment']
+        = static fn ($pinned, $topic) => (int) get_post_meta((int) $topic, '_bit_connect_pinned_comment', true);
 }
 
 /**

@@ -59,6 +59,42 @@ describe('sortHierarchicalComments', () => {
     expect(result.map(c => c.id)).toEqual([3, 2, 1])
   })
 
+  // The twin of the lift CommentController does server-side. Both halves have
+  // to exist: the topic page sorts here, paginating takes the server's order,
+  // and one without the other makes the pinned reply jump as the reader scrolls.
+  it('lifts the pinned reply to the front whatever the sort said', () => {
+    const pinned = makeComment({ createdAt: '2023-01-01T00:00:00Z', id: 1, pinned: true, votes: 0 })
+
+    expect(sortHierarchicalComments([pinned, newer, newest], 'newest').map(c => c.id)).toEqual([
+      1, 3, 2
+    ])
+    expect(sortHierarchicalComments([pinned, newer, newest], 'mostVoted').map(c => c.id)).toEqual([
+      1, 3, 2
+    ])
+  })
+
+  it('leaves the order alone when the pinned reply already sorts first', () => {
+    const pinned = makeComment({ createdAt: '2023-12-02T00:00:00Z', id: 4, pinned: true })
+
+    expect(sortHierarchicalComments([older, pinned, newer], 'newest').map(c => c.id)).toEqual([
+      4, 2, 1
+    ])
+  })
+
+  // A pin moves; it is not a copy. A thread appearing twice would double every
+  // reply under it.
+  it('does not duplicate the pinned reply', () => {
+    const pinned = makeComment({ id: 2, pinned: true })
+
+    expect(sortHierarchicalComments([older, pinned, newest], 'all')).toHaveLength(3)
+  })
+
+  it('changes nothing when no reply is pinned', () => {
+    expect(sortHierarchicalComments([older, newest, newer], 'newest').map(c => c.id)).toEqual([
+      3, 2, 1
+    ])
+  })
+
   it('does not mutate the input array', () => {
     const input = [newest, older, newer]
     const snapshot = input.map(c => c.id)
@@ -86,6 +122,16 @@ describe('transformTopicCommentsToComments', () => {
       userId: 42,
       votes: 9
     })
+  })
+
+  it('carries the pinned flag through, defaulting to false', () => {
+    const [pinned, plain] = transformTopicCommentsToComments([
+      makeTopicComment({ comment_ID: '1', pinned: true }),
+      makeTopicComment({ comment_ID: '2' })
+    ])
+
+    expect(pinned.pinned).toBe(true)
+    expect(plain.pinned).toBe(false)
   })
 
   it('nests replies under their parent via comment_parent', () => {

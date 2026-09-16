@@ -339,6 +339,7 @@ export default function PostDetailsPage() {
               onReply={handleReply}
               onVote={canCommentUpvote && memberMayVoteComment ? handleCommentVote : undefined}
               sortOption={sortOption}
+              topicAuthorId={Number(post.post_author) || 0}
               topicSlug={post.post_name}
               topicTitle={post.post_title}
             />
