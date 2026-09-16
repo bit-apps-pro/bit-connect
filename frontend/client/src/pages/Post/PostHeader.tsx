@@ -6,7 +6,7 @@ import { ShareButton } from '@features/share'
 import { type Topic } from '@features/topic-modal/shared/type'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import EditIcon from '@icons/EditIcon'
-import { pickThemedIcon } from '@shared/theme/themed-icon'
+import { pickThemedIcon, type ThemedIconMeta } from '@shared/theme/themed-icon'
 import EditedNote from '@utilities/edited-note'
 import UserLink from '@utilities/user-link'
 import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
@@ -38,7 +38,7 @@ export default function PostHeader({
   voteBox?: React.ReactNode
 }) {
   const {
-    terms: { statuses, topic_types: topicTypes }
+    terms: { statuses, stages: postStage, topic_types: topicTypes }
   } = post
   const postDate = formattedDate(post.post_date_gmt)
   const { chipTagProps } = useChipProps()
@@ -101,43 +101,76 @@ export default function PostHeader({
   // same information as plain text in a grey dropdown, so the one group that
   // acts on status had the weakest signal of what it currently is. The colour
   // and icon are already on the term — they were simply never rendered here.
-  const statusOptions = useMemo(
-    () =>
-      allStatuses.map(status => ({
+  // While `allStatuses`/`stages` are still loading, the current term's own
+  // name and colour already sit on `post.terms` — synthesizing an option from
+  // them keeps the select's label matching its value on the very first
+  // render, instead of falling back to the raw numeric id until the full
+  // list arrives.
+  const statusOptions = useMemo(() => {
+    const options = allStatuses.map(status => ({
+      label: (
+        <span className="bc-flex bc-items-center bc-gap-2">
+          <span
+            aria-hidden
+            className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
+            style={{ backgroundColor: status.meta?.color || '#d9d9d9' }}
+          />
+          {status.name}
+        </span>
+      ),
+      value: status.id
+    }))
+
+    if (statuses && !options.some(option => option.value === statuses.term_id)) {
+      options.unshift({
         label: (
           <span className="bc-flex bc-items-center bc-gap-2">
             <span
               aria-hidden
               className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
-              style={{ backgroundColor: status.meta?.color || '#d9d9d9' }}
+              style={{ backgroundColor: statuses.meta?.color || '#d9d9d9' }}
             />
-            {status.name}
+            {statuses.name}
           </span>
         ),
-        value: status.id
-      })),
-    [allStatuses]
-  )
+        value: statuses.term_id
+      })
+    }
 
-  const stageOptions = useMemo(
-    () =>
-      stages.map(stage => {
-        const icon = pickThemedIcon(stage.meta, isDarkTheme)
+    return options
+  }, [allStatuses, statuses])
 
-        return {
-          label: (
-            <span className="bc-flex bc-items-center bc-gap-2">
-              {icon && (
-                <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />
-              )}
-              {stage.name}
-            </span>
-          ),
-          value: stage.id
-        }
-      }),
-    [stages, isDarkTheme]
-  )
+  const stageOptions = useMemo(() => {
+    const options = stages.map(stage => {
+      const icon = pickThemedIcon(stage.meta, isDarkTheme)
+
+      return {
+        label: (
+          <span className="bc-flex bc-items-center bc-gap-2">
+            {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
+            {stage.name}
+          </span>
+        ),
+        value: stage.id
+      }
+    })
+
+    if (postStage && !options.some(option => option.value === postStage.term_id)) {
+      const icon = pickThemedIcon(postStage.meta as ThemedIconMeta | undefined, isDarkTheme)
+
+      options.unshift({
+        label: (
+          <span className="bc-flex bc-items-center bc-gap-2">
+            {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
+            {postStage.name}
+          </span>
+        ),
+        value: postStage.term_id
+      })
+    }
+
+    return options
+  }, [stages, isDarkTheme, postStage])
 
   const handleStatusChange = async (termId: number) => {
     try {
