@@ -4,12 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import useSeoSettings from './data/use-seo-settings'
 import useUpdateSeoSettings, { type ErrorResponse } from './data/use-update-seo-settings'
-import ArchiveMatrix from './internal/archive-matrix'
+import ArchiveRows, { type ArchiveVisibility, VISIBILITY_FLAGS } from './internal/archive-rows'
 import SeoFieldRows from './internal/seo-field-rows'
 import SeoSection from './internal/seo-section'
 import SeoStatus from './internal/seo-status'
 import SitemapUrlNotice from './internal/sitemap-url-notice'
-import { DEFAULT_SEO_SETTINGS, type MetaOwner, type SeoSettings } from './shared/types'
+import {
+  type ArchiveSegment,
+  DEFAULT_SEO_SETTINGS,
+  type MetaOwner,
+  type SeoSettings
+} from './shared/types'
 
 const { Title } = Typography
 
@@ -49,26 +54,33 @@ export default function Seo() {
     []
   )
 
-  const setArchive = useMemo(() => setGroup('archives'), [setGroup])
-  const setIndexArchive = useMemo(() => setGroup('indexArchives'), [setGroup])
   const setSitemap = useMemo(() => setGroup('sitemap'), [setGroup])
+
+  /**
+   * One taxonomy's archive visibility, written across the three flags it maps
+   * to. Set together rather than one at a time: the three are a chain, and the
+   * combinations that are not on it are ones the backend refuses to honour.
+   */
+  const setArchiveVisibility = useCallback((segment: ArchiveSegment, visibility: ArchiveVisibility) => {
+    const flags = VISIBILITY_FLAGS[visibility]
+
+    setIsDirty(true)
+    setForm(previous => ({
+      ...previous,
+      archives: { ...previous.archives, [segment]: flags.route },
+      indexArchives: { ...previous.indexArchives, [segment]: flags.index },
+      sitemap: {
+        ...previous.sitemap,
+        archives: { ...previous.sitemap.archives, [segment]: flags.sitemap }
+      }
+    }))
+  }, [])
 
   const setSitemapUrlsPerPage = useCallback((value: number) => {
     setIsDirty(true)
     setForm(previous => ({
       ...previous,
       sitemap: { ...previous.sitemap, urlsPerPage: value }
-    }))
-  }, [])
-
-  const setSitemapArchive = useCallback((segment: string, value: boolean) => {
-    setIsDirty(true)
-    setForm(previous => ({
-      ...previous,
-      sitemap: {
-        ...previous.sitemap,
-        archives: { ...previous.sitemap.archives, [segment]: value }
-      }
     }))
   }, [])
 
@@ -205,17 +217,15 @@ export default function Seo() {
         <SeoSection
           disabled={disabled}
           subtitle={__(
-            'A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each row is one taxonomy: whether its archive is served, whether search engines may index it, and whether the sitemap lists it.'
+            'A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each step below adds to the one before it: an archive has to be served to be indexed, and indexed to be worth listing in the sitemap.'
           )}
           title={__('Term archives')}
         >
-          <ArchiveMatrix
+          <ArchiveRows
             diagnostics={diagnostics}
             disabled={disabled}
             form={form}
-            onArchive={setArchive}
-            onIndex={setIndexArchive}
-            onSitemap={setSitemapArchive}
+            onChange={setArchiveVisibility}
           />
         </SeoSection>
       ),
@@ -291,9 +301,7 @@ export default function Seo() {
               },
               {
                 control: 'switch',
-                description: __(
-                  'List the portal landing page as the entry point of the community.'
-                ),
+                description: __('List the portal landing page as the entry point of the community.'),
                 disabled: !form.sitemap.enabled,
                 key: 'includeHome',
                 label: __('Include portal home'),

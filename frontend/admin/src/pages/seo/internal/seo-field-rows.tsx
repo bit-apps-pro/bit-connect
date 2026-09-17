@@ -1,5 +1,5 @@
 import { cn } from '@common/helpers/globalHelpers'
-import { InputNumber, Switch, Typography } from 'antd'
+import { InputNumber, Select, Switch, Typography } from 'antd'
 
 const { Text } = Typography
 
@@ -28,7 +28,14 @@ export interface SeoNumberField extends FieldBase {
   value: number
 }
 
-export type SeoField = SeoNumberField | SeoSwitchField
+export interface SeoSelectField extends FieldBase {
+  control: 'select'
+  onChange: (value: string) => void
+  options: { label: string; value: string }[]
+  value: string
+}
+
+export type SeoField = SeoNumberField | SeoSelectField | SeoSwitchField
 
 interface SeoFieldRowsProps {
   disabled?: boolean
@@ -77,6 +84,18 @@ export default function SeoFieldRows({ disabled = false, fields }: SeoFieldRowsP
 }
 
 function FieldControl({ disabled, field }: { disabled: boolean; field: SeoField }) {
+  if (field.control === 'select') {
+    return (
+      <Select
+        className="bc-w-60"
+        disabled={disabled}
+        onChange={field.onChange}
+        options={field.options}
+        value={field.value}
+      />
+    )
+  }
+
   if (field.control === 'number') {
     return (
       <InputNumber
