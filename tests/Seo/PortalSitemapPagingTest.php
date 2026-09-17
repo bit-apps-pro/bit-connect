@@ -334,8 +334,111 @@ final class PortalSitemapPagingTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
+    // The browser view.
+    // -----------------------------------------------------------------------
+
+    /**
+     * Both documents must name the stylesheet, or following one of these URLs
+     * shows the raw document tree and Firefox's "does not appear to have any
+     * style information" banner.
+     */
+    public function testBothDocumentShapesPointAtTheStylesheet(): void
+    {
+        $GLOBALS['__wp_post_counts'] = ['publish' => 1];
+        $this->seedTags(1);
+
+        $expected = '<?xml-stylesheet type="text/xsl" href="https://example.com/bit-connect-sitemap.xsl" ?>';
+
+        $this->assertStringContainsString($expected, $this->render('index'));
+        $this->assertStringContainsString($expected, $this->render('feed', 'tag'));
+    }
+
+    public function testTheStylesheetIsServedAtItsOwnRoute(): void
+    {
+        PortalSitemap::registerFeedRewrite();
+
+        $this->assertSame(
+            'index.php?bit_connect_sitemap_xsl=1',
+            $GLOBALS['__wp_added_rewrite_rules']['^bit-connect-sitemap\.xsl$'] ?? ''
+        );
+        $this->assertContains('bit_connect_sitemap_xsl', PortalSitemap::addFeedQueryVar([]));
+    }
+
+    public function testTheStylesheetIsWellFormedXml(): void
+    {
+        $document = new \DOMDocument();
+
+        $this->assertTrue($document->loadXML($this->stylesheet()));
+    }
+
+    /**
+     * The real proof: run the stylesheet over each document shape and check a
+     * table of links comes out. A stylesheet that parses but selects nothing —
+     * the usual outcome of getting the sitemap namespace prefix wrong — would
+     * render an empty page and pass a well-formedness check.
+     */
+    public function testTheStylesheetRendersTheIndexAsLinks(): void
+    {
+        $GLOBALS['__wp_post_counts'] = ['publish' => 2];
+        $this->seedTags(1);
+
+        $html = $this->transform($this->render('index'));
+
+        $this->assertStringContainsString('<table', $html);
+        $this->assertStringContainsString(
+            '<a href="https://example.com/bit-connect-sitemap-tag-1.xml">',
+            $html
+        );
+    }
+
+    public function testTheStylesheetRendersAUrlsetAsLinks(): void
+    {
+        $this->seedTags(2);
+
+        $html = $this->transform($this->render('feed', 'tag'));
+
+        $this->assertStringContainsString('<a href="https://example.com/community/tag/tag-1">', $html);
+        $this->assertStringContainsString('<a href="https://example.com/community/tag/tag-2">', $html);
+    }
+
+    // -----------------------------------------------------------------------
     // Helpers.
     // -----------------------------------------------------------------------
+
+    /**
+     * The XML the feed would serve, without going through template_redirect.
+     */
+    private function render(string $shape, string $subtype = ''): string
+    {
+        $method = new \ReflectionMethod(PortalSitemap::class, $shape === 'index' ? 'renderIndex' : 'renderFeed');
+        $method->setAccessible(true);
+
+        return $shape === 'index'
+            ? $method->invoke(null)
+            : $method->invoke(null, PortalSitemap::urls($subtype, 1));
+    }
+
+    private function stylesheet(): string
+    {
+        $method = new \ReflectionMethod(PortalSitemap::class, 'renderStylesheet');
+        $method->setAccessible(true);
+
+        return $method->invoke(null);
+    }
+
+    private function transform(string $xml): string
+    {
+        $stylesheet = new \DOMDocument();
+        $stylesheet->loadXML($this->stylesheet());
+
+        $source = new \DOMDocument();
+        $source->loadXML($xml);
+
+        $processor = new \XSLTProcessor();
+        $processor->importStylesheet($stylesheet);
+
+        return (string) $processor->transformToXml($source);
+    }
 
     /**
      * @param array<string, mixed> $settings
