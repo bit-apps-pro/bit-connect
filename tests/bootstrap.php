@@ -154,6 +154,63 @@ if (!function_exists('get_posts')) {
     }
 }
 
+// The query object, over the same $GLOBALS['__wp_posts'] that get_posts() reads.
+//
+// Honours only what the plugin queries with, but honours `offset` and
+// `orderby => modified` in particular: the sitemap pages its topics by explicit
+// offset rather than by `paged`, and a stub that ignored it would have every
+// page return the same rows and still look like it worked.
+if (!class_exists('WP_Query')) {
+    #[\AllowDynamicProperties]
+    class WP_Query
+    {
+        /** @var array<int, WP_Post> */
+        public $posts = [];
+
+        /**
+         * @param array<string, mixed> $args
+         */
+        public function __construct(array $args = [])
+        {
+            $matches = array_values(
+                array_filter(
+                    $GLOBALS['__wp_posts'] ?? [],
+                    static function ($post) use ($args) {
+                        foreach (['post_type' => 'post_type', 'post_status' => 'post_status'] as $arg => $field) {
+                            if (isset($args[$arg]) && $args[$arg] !== 'any' && ($post->{$field} ?? null) !== $args[$arg]) {
+                                return false;
+                            }
+                        }
+
+                        if (isset($args['post_name__in'])
+                            && !\in_array($post->post_name ?? '', (array) $args['post_name__in'], true)) {
+                            return false;
+                        }
+
+                        return true;
+                    }
+                )
+            );
+
+            if (($args['orderby'] ?? '') === 'modified') {
+                usort(
+                    $matches,
+                    static fn ($a, $b) => strcmp((string) ($b->post_modified_gmt ?? ''), (string) ($a->post_modified_gmt ?? ''))
+                );
+
+                if (strtoupper((string) ($args['order'] ?? 'DESC')) === 'ASC') {
+                    $matches = array_reverse($matches);
+                }
+            }
+
+            $offset = (int) ($args['offset'] ?? 0);
+            $limit = (int) ($args['posts_per_page'] ?? -1);
+
+            $this->posts = \array_slice($matches, $offset, $limit > 0 ? $limit : null);
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // i18n / filters
 // ---------------------------------------------------------------------------
@@ -353,9 +410,12 @@ if (!class_exists('WP_Term')) {
     }
 }
 
-// The base class core's sitemap providers extend. Only the two properties the
-// constructor sets and the two methods subclasses override — the tests exercise
-// the subclass's own answers, never core's dispatch.
+// The base class core's sitemap providers extend.
+//
+// get_sitemap_entries() and its two helpers mirror core's own, because a
+// subclass that overrides the entry list can still defer to the default one —
+// a stub that omitted them would make `parent::get_sitemap_entries()` fatal and
+// leave that branch untestable.
 if (!class_exists('WP_Sitemaps_Provider')) {
     #[\AllowDynamicProperties]
     abstract class WP_Sitemaps_Provider
@@ -367,6 +427,54 @@ if (!class_exists('WP_Sitemaps_Provider')) {
         abstract public function get_url_list($pageNum, $objectSubtype = '');
 
         abstract public function get_max_num_pages($objectSubtype = '');
+
+        public function get_object_subtypes()
+        {
+            return [];
+        }
+
+        /**
+         * One record per sitemap this provider exposes: its subtype and page count.
+         */
+        public function get_sitemap_type_data()
+        {
+            $subtypes = $this->get_object_subtypes();
+
+            if (empty($subtypes)) {
+                return [['name' => '', 'pages' => $this->get_max_num_pages()]];
+            }
+
+            $data = [];
+
+            foreach (array_keys($subtypes) as $name) {
+                $data[] = ['name' => (string) $name, 'pages' => $this->get_max_num_pages((string) $name)];
+            }
+
+            return $data;
+        }
+
+        /**
+         * A loc per page of each sitemap, which is what the index is built from.
+         */
+        public function get_sitemap_entries()
+        {
+            $entries = [];
+
+            foreach ($this->get_sitemap_type_data() as $type) {
+                for ($page = 1; $page <= $type['pages']; ++$page) {
+                    $entries[] = ['loc' => $this->get_sitemap_url($type['name'], $page)];
+                }
+            }
+
+            return $entries;
+        }
+
+        public function get_sitemap_url($name, $page)
+        {
+            $parts = array_filter([$this->name, $name, $page]);
+
+            return home_url('/wp-sitemap-' . implode('-', $parts) . '.xml');
+        }
     }
 }
 

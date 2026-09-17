@@ -288,6 +288,51 @@ final class PortalSitemapPagingTest extends TestCase
         $this->assertSame('tag', $subtypes['tag']->name);
     }
 
+    /**
+     * The whole portal is one line in `wp-sitemap.xml`, pointing at its own
+     * index, rather than a `wp-sitemap-bitconnectportal-*` line per type among
+     * core's posts, pages and users.
+     */
+    public function testTheWordPressIndexGetsOneGroupedEntry(): void
+    {
+        $GLOBALS['__wp_post_counts'] = ['publish' => 4];
+        $this->seedTags(2);
+
+        $entries = (new PortalSitemap())->get_sitemap_entries();
+
+        $this->assertCount(1, $entries);
+        $this->assertSame('https://example.com/bit-connect-sitemap.xml', $entries[0]['loc']);
+        $this->assertArrayHasKey('lastmod', $entries[0]);
+    }
+
+    public function testTheGroupedEntryIsOmittedWhenThePortalPublishesNothing(): void
+    {
+        $this->store(['sitemap' => ['includeHome' => false, 'includeTopics' => false]]);
+
+        $this->assertSame([], (new PortalSitemap())->get_sitemap_entries());
+    }
+
+    /**
+     * Grouping nests a sitemap index inside one, which no specification
+     * documents either way. The filter is the way back to a flat listing.
+     */
+    public function testTheFlatPerTypeListingIsAvailableThroughAFilter(): void
+    {
+        $GLOBALS['__wp_post_counts'] = ['publish' => 4];
+        $this->seedTags(2);
+        $GLOBALS['__wp_filters']['bit_connect_sitemap_index_grouped'] = false;
+
+        $locs = array_column((new PortalSitemap())->get_sitemap_entries(), 'loc');
+
+        $this->assertSame(
+            [
+                'https://example.com/wp-sitemap-bitconnectportal-topics-1.xml',
+                'https://example.com/wp-sitemap-bitconnectportal-tag-1.xml',
+            ],
+            $locs
+        );
+    }
+
     // -----------------------------------------------------------------------
     // Helpers.
     // -----------------------------------------------------------------------

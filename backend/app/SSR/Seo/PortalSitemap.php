@@ -509,6 +509,48 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
+     * What the portal contributes to the WordPress sitemap index: one entry.
+     *
+     * The default implementation lists a URL per type per page, which put four
+     * `wp-sitemap-bitconnectportal-*` lines in `wp-sitemap.xml` among core's own
+     * posts, pages and users. One grouped entry instead, pointing at the
+     * portal's own index, which lists the types.
+     *
+     * That makes the entry a sitemap index inside a sitemap index. Neither
+     * sitemaps.org nor Google documents whether a listed Sitemap may itself be
+     * an index — the protocol only bounds how many a index may list — so this is
+     * undocumented rather than forbidden, and crawlers have been known to treat
+     * it inconsistently. It is a deliberate choice of a tidy index over a
+     * guaranteed-flat one; `bit_connect_sitemap_index_grouped` returns the flat
+     * per-type listing for anyone who would rather not take that bet.
+     *
+     * The per-type URLs stay routable either way — they are simply no longer
+     * advertised here. The portal's own index advertises its own copies.
+     *
+     * Method name is fixed by the WP_Sitemaps_Provider contract.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public function get_sitemap_entries() // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    {
+        if (!Hooks::applyFilter('bit_connect_sitemap_index_grouped', true)) {
+            return parent::get_sitemap_entries();
+        }
+
+        // Nothing to list rather than an entry pointing at an empty index.
+        if (self::subtypes() === []) {
+            return [];
+        }
+
+        return [
+            [
+                'loc'     => self::feedUrl(),
+                'lastmod' => self::latestModified(),
+            ],
+        ];
+    }
+
+    /**
      * 301 a theme term archive to the portal's own archive for that term.
      */
     public static function redirectTermArchive(): void
