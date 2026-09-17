@@ -353,6 +353,23 @@ if (!class_exists('WP_Term')) {
     }
 }
 
+// The base class core's sitemap providers extend. Only the two properties the
+// constructor sets and the two methods subclasses override — the tests exercise
+// the subclass's own answers, never core's dispatch.
+if (!class_exists('WP_Sitemaps_Provider')) {
+    #[\AllowDynamicProperties]
+    abstract class WP_Sitemaps_Provider
+    {
+        public $name = '';
+
+        public $object_type = '';
+
+        abstract public function get_url_list($pageNum, $objectSubtype = '');
+
+        abstract public function get_max_num_pages($objectSubtype = '');
+    }
+}
+
 if (!function_exists('get_term_by')) {
     /**
      * Resolves against $GLOBALS['__wp_terms'], a list of WP_Term objects.
@@ -1065,8 +1082,20 @@ if (!function_exists('get_terms')) {
         );
 
         $limit = (int) ($args['number'] ?? 0);
+        $matches = $limit > 0 ? \array_slice($matches, 0, $limit) : $matches;
 
-        return $limit > 0 ? \array_slice($matches, 0, $limit) : $matches;
+        // Core returns scalars rather than objects for these, and callers that
+        // ask for them cast the result — so a stub that always answered with
+        // WP_Term would send them down a path core never does.
+        if (($args['fields'] ?? '') === 'slugs') {
+            return array_map(static fn ($term) => $term->slug, $matches);
+        }
+
+        if (($args['fields'] ?? '') === 'ids') {
+            return array_map(static fn ($term) => (int) $term->term_id, $matches);
+        }
+
+        return $matches;
     }
 }
 
@@ -1646,6 +1675,22 @@ if (!function_exists('wp_count_posts')) {
     function wp_count_posts($postType = 'post', $perm = '')
     {
         return (object) ($GLOBALS['__wp_post_counts'] ?? ['publish' => 0, 'private' => 0, 'draft' => 0]);
+    }
+}
+
+// Rewrite rules. Recorded rather than applied: what the tests care about is
+// which patterns a feature registers and whether it asked for a flush.
+if (!function_exists('add_rewrite_rule')) {
+    function add_rewrite_rule($regex, $query, $after = 'bottom')
+    {
+        $GLOBALS['__wp_added_rewrite_rules'][$regex] = $query;
+    }
+}
+
+if (!function_exists('flush_rewrite_rules')) {
+    function flush_rewrite_rules($hard = true)
+    {
+        $GLOBALS['__wp_rewrite_flushes'] = (int) ($GLOBALS['__wp_rewrite_flushes'] ?? 0) + 1;
     }
 }
 

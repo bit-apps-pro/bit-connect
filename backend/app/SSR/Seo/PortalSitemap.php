@@ -33,7 +33,39 @@ if (!defined('ABSPATH')) {
  */
 final class PortalSitemap extends WP_Sitemaps_Provider
 {
+    /**
+     * The sitemap of topics, as opposed to one of a taxonomy's archives.
+     *
+     * Plural, and distinct from the `topic` taxonomy segment, which is the
+     * topic *type* archive — they would otherwise collide in the URL.
+     */
+    public const SUBTYPE_TOPICS = 'topics';
+
     private const FEED_QUERY_VAR = 'bit_connect_sitemap';
+
+    private const FEED_PAGE_QUERY_VAR = 'bit_connect_sitemap_page';
+
+    private const FEED_TYPE_QUERY_VAR = 'bit_connect_sitemap_type';
+
+    /**
+     * Term archive URLs per taxonomy segment, for one request.
+     *
+     * Each sitemap is asked for its size and then for its contents, and the
+     * index asks every type for its size before any of it is rendered. Without
+     * this that is a get_terms() per taxonomy per question, and a type that
+     * counted differently on two of them would advertise pages that do not line
+     * up with what it serves.
+     *
+     * @var array<string, array<int, string>>
+     */
+    private static $archiveUrls = [];
+
+    /**
+     * The index's type list, memoised alongside the URLs above.
+     *
+     * @var null|array<int, string>
+     */
+    private static $subtypes;
 
     public function __construct()
     {
@@ -91,25 +123,72 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
+     * Absolute URL of one page of one of the standalone sitemaps.
+     *
+     * Named after the content it lists — `bit-connect-sitemap-tag-1.xml` — so
+     * the index reads as a table of contents rather than as a numbered pile,
+     * mirroring core's own `wp-sitemap-posts-post-1.xml`.
+     */
+    public static function feedPageUrl(string $subtype, int $page): string
+    {
+        return home_url('/bit-connect-sitemap-' . $subtype . '-' . max(1, $page) . '.xml');
+    }
+
+    /**
+     * Drop the memoised type list and archive URLs.
+     *
+     * A live request renders one sitemap and stops, so nothing in production
+     * needs this. A test that changes the settings between two calls does.
+     */
+    public static function flushCache(): void
+    {
+        self::$archiveUrls = [];
+        self::$subtypes = null;
+    }
+
+    /**
      * Serve the standalone feed at a real `.xml` path.
      */
     public static function registerFeedRewrite(): void
     {
-        $regex = '^bit-connect-sitemap\.xml$';
+        // Two rules: the index, and the per-type pages it links to. Without the
+        // second `urlsPerPage` would silently *cap* the feed rather than page
+        // it, because there would be no URL at which a second page could be
+        // served — and on an install where an SEO plugin owns `wp-sitemap.xml`,
+        // these are the only sitemaps the portal has.
+        //
+        // The type pattern matches core's own (`[a-z\d_-]`), so a segment that
+        // is a legal sitemap name here is one there too.
+        $rules = [
+            '^bit-connect-sitemap\.xml$'                       => 'index.php?' . self::FEED_QUERY_VAR . '=1',
+            '^bit-connect-sitemap-([a-z\d_-]+)-([0-9]+)\.xml$' => 'index.php?' . self::FEED_QUERY_VAR . '=1'
+                . '&' . self::FEED_TYPE_QUERY_VAR . '=$matches[1]'
+                . '&' . self::FEED_PAGE_QUERY_VAR . '=$matches[2]',
+        ];
 
-        add_rewrite_rule($regex, 'index.php?' . self::FEED_QUERY_VAR . '=1', 'top');
+        foreach ($rules as $regex => $target) {
+            add_rewrite_rule($regex, $target, 'top');
+        }
 
         // Same one-time persistence as the profile rewrite: a rule added at
         // runtime stays inert until the option is rebuilt.
         $stored = get_option('rewrite_rules');
 
-        if (\is_array($stored) && !isset($stored[$regex])) {
-            flush_rewrite_rules(false);
+        if (!\is_array($stored)) {
+            return;
+        }
+
+        foreach (array_keys($rules) as $regex) {
+            if (!isset($stored[$regex])) {
+                flush_rewrite_rules(false);
+
+                return;
+            }
         }
     }
 
     /**
-     * Allow the feed marker through WordPress's query var allow-list.
+     * Allow the feed markers through WordPress's query var allow-list.
      *
      * @param array<int, string> $vars
      *
@@ -118,6 +197,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     public static function addFeedQueryVar($vars)
     {
         $vars[] = self::FEED_QUERY_VAR;
+        $vars[] = self::FEED_TYPE_QUERY_VAR;
+        $vars[] = self::FEED_PAGE_QUERY_VAR;
 
         return $vars;
     }
@@ -137,12 +218,33 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             exit;
         }
 
-        $page = max(1, (int) get_query_var('paged'));
+        $subtype = (string) get_query_var(self::FEED_TYPE_QUERY_VAR);
+
+        // The unnumbered URL is always the index — a table of contents of the
+        // per-type sitemaps, like `wp-sitemap.xml` is of core's. Keeping it an
+        // index whatever the portal's size means the URL in robots.txt and the
+        // one submitted to Search Console never change shape.
+        if ($subtype === '') {
+            $body = self::renderIndex();
+        } else {
+            $requested = max(1, (int) get_query_var(self::FEED_PAGE_QUERY_VAR));
+
+            // A type that lists nothing, or a page past its end, is not an
+            // empty sitemap — it is a URL that does not exist. Saying so keeps
+            // a stale index entry from looking valid.
+            if ($requested > self::pageCount($subtype)) {
+                status_header(404);
+
+                exit;
+            }
+
+            $body = self::renderFeed(self::urls($subtype, $requested));
+        }
 
         header('Content-Type: application/xml; charset=UTF-8', true);
         status_header(200);
 
-        echo self::renderFeed(self::urls($page)); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo $body; // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
 
         exit;
     }
@@ -273,7 +375,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
-     * Portal URLs for one sitemap page: the landing page plus published topics.
+     * Portal URLs for one page of one sitemap.
      *
      * Method name is fixed by the WP_Sitemaps_Provider contract.
      *
@@ -282,13 +384,13 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      *
      * @return array<int, array<string, string>>
      */
-    public function get_url_list($pageNum, $objectSubtype = '') // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+    public function get_url_list($pageNum, $objectSubtype = '') // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     {
-        return self::urls((int) $pageNum);
+        return self::urls((string) $objectSubtype, (int) $pageNum);
     }
 
     /**
-     * Portal URLs for one sitemap page: the landing page plus published topics.
+     * Portal URLs for one page of one sitemap.
      *
      * Shared by the core sitemap provider and the standalone feed so both
      * advertise exactly the same set — two sitemaps disagreeing about which
@@ -296,14 +398,49 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      *
      * @return array<int, array<string, string>>
      */
-    public static function urls(int $pageNum): array
+    public static function urls(string $subtype, int $pageNum): array
     {
+        if (!\in_array($subtype, self::subtypes(), true)) {
+            return [];
+        }
+
+        $pageNum = max(1, $pageNum);
+        $perPage = SeoSettings::sitemapUrlsPerPage();
+
+        // The type's fixed head — the landing page, or every term archive of
+        // one taxonomy — then, for the topics sitemap, the topics. Cut into
+        // pages of `urlsPerPage`: the leading entries used to be added to page 1
+        // *on top of* a full page of topics, so a site with a large vocabulary
+        // served a first page well over the configured size, and over the 50,000
+        // a sitemap may legally carry.
+        $leading = self::leadingUrls($subtype);
+        $leadCount = \count($leading);
+        $offset = ($pageNum - 1) * $perPage;
+
+        $urls = [];
+
+        // Archives are hubs rather than leaves — advertising them is what gets
+        // the clusters crawled, not just the individual topics.
+        foreach (\array_slice($leading, $offset, $perPage) as $leadingUrl) {
+            $urls[] = ['loc' => $leadingUrl];
+        }
+
+        $remaining = $perPage - \count($urls);
+
+        if ($remaining < 1 || self::topicCount($subtype) < 1) {
+            return $urls;
+        }
+
         $query = new WP_Query(
             [
-                'post_type'              => PostTypes::BIT_CONNECT->value,
-                'post_status'            => 'publish',
-                'posts_per_page'         => SeoSettings::sitemapUrlsPerPage(),
-                'paged'                  => max(1, (int) $pageNum),
+                'post_type'      => PostTypes::BIT_CONNECT->value,
+                'post_status'    => 'publish',
+                'posts_per_page' => $remaining,
+                // Topics start where the leading entries end, so the first page
+                // that carries any takes only what is left of its budget and
+                // the next one resumes exactly there. `paged` cannot express
+                // that, because the offset is not a multiple of the page size.
+                'offset'                 => max(0, $offset - $leadCount),
                 'orderby'                => 'modified',
                 'order'                  => 'DESC',
                 'no_found_rows'          => true,
@@ -311,21 +448,6 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 'update_post_term_cache' => false,
             ]
         );
-
-        $urls = [];
-
-        // The portal landing page and the term archives lead the first sitemap
-        // page. Archives are hubs rather than leaves — advertising them is what
-        // gets the clusters crawled, not just the individual topics.
-        if ((int) $pageNum === 1) {
-            if (SeoSettings::sitemap('includeHome')) {
-                $urls[] = ['loc' => SeoContent::portalUrl()];
-            }
-
-            foreach (self::archiveUrls() as $archiveUrl) {
-                $urls[] = ['loc' => $archiveUrl];
-            }
-        }
 
         // In root mode a topic shares the URL space with pages and posts, and
         // they win. Advertising a shadowed topic would point crawlers at a URL
@@ -335,7 +457,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             : [];
 
         foreach ($query->posts as $post) {
-            if (!SeoSettings::sitemap('includeTopics') || isset($shadowed[$post->post_name])) {
+            if (isset($shadowed[$post->post_name])) {
                 continue;
             }
 
@@ -352,7 +474,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
-     * Number of sitemap pages needed for the published topics.
+     * Number of pages one of the sitemaps needs.
      *
      * Method name is fixed by the WP_Sitemaps_Provider contract.
      *
@@ -360,12 +482,30 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      *
      * @return int
      */
-    public function get_max_num_pages($objectSubtype = '') // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+    public function get_max_num_pages($objectSubtype = '') // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     {
-        $counts = wp_count_posts(PostTypes::BIT_CONNECT->value);
-        $published = (int) ($counts->publish ?? 0);
+        return self::pageCount((string) $objectSubtype);
+    }
 
-        return max(1, (int) ceil($published / SeoSettings::sitemapUrlsPerPage()));
+    /**
+     * The sitemaps this provider exposes, keyed by name.
+     *
+     * Core reads the *keys* and ignores the values, but passes each value to
+     * `wp_sitemaps_index_entry` subscribers, so the name goes in both.
+     *
+     * Method name is fixed by the WP_Sitemaps_Provider contract.
+     *
+     * @return array<string, object>
+     */
+    public function get_object_subtypes() // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    {
+        $subtypes = [];
+
+        foreach (self::subtypes() as $name) {
+            $subtypes[$name] = (object) ['name' => $name];
+        }
+
+        return $subtypes;
     }
 
     /**
@@ -396,6 +536,109 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         wp_safe_redirect($url, 301);
 
         exit;
+    }
+
+    /**
+     * The sitemaps the portal publishes, in index order.
+     *
+     * One per content type rather than a single combined list: a reader — human
+     * or crawler — opening the index wants to see "these are the tags, those are
+     * the topics", and a 50,000-line list of everything mixed together answers
+     * no question anyone has. It is also how core splits its own sitemaps
+     * (`wp-sitemap-posts-post-1.xml`) and how every SEO plugin splits theirs.
+     *
+     * A type with nothing in it is left out entirely, so the index never
+     * advertises a sitemap that renders an empty urlset.
+     *
+     * @return array<int, string>
+     */
+    public static function subtypes(): array
+    {
+        if (self::$subtypes !== null) {
+            return self::$subtypes;
+        }
+
+        $subtypes = [];
+
+        // Topics lead, with the portal landing page at their head — the same
+        // place core puts the front page, in the sitemap of the content it
+        // introduces rather than in one of its own.
+        if (self::typeTotal(self::SUBTYPE_TOPICS) > 0) {
+            $subtypes[] = self::SUBTYPE_TOPICS;
+        }
+
+        foreach (PortalTaxonomies::segments() as $segment) {
+            if (self::typeTotal($segment) > 0) {
+                $subtypes[] = $segment;
+            }
+        }
+
+        self::$subtypes = $subtypes;
+
+        return $subtypes;
+    }
+
+    /**
+     * The fixed entries at the head of one sitemap.
+     *
+     * For the topics sitemap that is the portal landing page; for a taxonomy it
+     * is every one of its term archives. Topics are not included — they are
+     * counted and queried separately, because there can be far too many to hold
+     * in memory at once.
+     *
+     * @return array<int, string>
+     */
+    private static function leadingUrls(string $subtype): array
+    {
+        if ($subtype !== self::SUBTYPE_TOPICS) {
+            return self::archiveUrls($subtype);
+        }
+
+        return SeoSettings::sitemap('includeHome') ? [SeoContent::portalUrl()] : [];
+    }
+
+    /**
+     * How many published topics this sitemap is willing to advertise.
+     *
+     * Only the topics sitemap carries any; a taxonomy's sitemap is its archives
+     * and nothing else.
+     */
+    private static function topicCount(string $subtype): int
+    {
+        if ($subtype !== self::SUBTYPE_TOPICS || !SeoSettings::sitemap('includeTopics')) {
+            return 0;
+        }
+
+        $counts = wp_count_posts(PostTypes::BIT_CONNECT->value);
+
+        return (int) ($counts->publish ?? 0);
+    }
+
+    /**
+     * Total URLs in one sitemap, across all of its pages.
+     */
+    private static function typeTotal(string $subtype): int
+    {
+        return \count(self::leadingUrls($subtype)) + self::topicCount($subtype);
+    }
+
+    /**
+     * Pages needed for one sitemap.
+     *
+     * Zero when the type has nothing to list, which is what keeps it out of the
+     * index — sizing this from the raw post count instead made an index that
+     * listed pages 2…N as existing when every one of them would have rendered
+     * an empty urlset.
+     */
+    private static function pageCount(string $subtype): int
+    {
+        $total = self::typeTotal($subtype);
+
+        if ($total < 1) {
+            return 0;
+        }
+
+        return max(1, (int) ceil($total / SeoSettings::sitemapUrlsPerPage()));
     }
 
     /**
@@ -443,7 +686,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
-     * Portal URLs of every term archive that has topics in it.
+     * Portal URLs of one taxonomy's term archives.
      *
      * Filtered per taxonomy by the SEO settings, and never listing an archive
      * that carries `noindex`. Empty archives are left out too: a hub with
@@ -452,41 +695,45 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      *
      * @return array<int, string>
      */
-    private static function archiveUrls(): array
+    private static function archiveUrls(string $segment): array
     {
-        $urls = [];
-
-        foreach (PortalTaxonomies::map() as $segment => $taxonomy) {
-            if (!PortalTaxonomies::isSitemapListed($segment)) {
-                continue;
-            }
-
-            $terms = get_terms(
-                [
-                    'taxonomy'   => $taxonomy,
-                    'hide_empty' => true,
-                    'fields'     => 'slugs',
-                ]
-            );
-
-            if (is_wp_error($terms) || !\is_array($terms)) {
-                continue;
-            }
-
-            $defaultStage = $segment === 'stage' ? StageService::defaultStageSlug() : '';
-
-            foreach ($terms as $slug) {
-                // The default stage's archive 301s to the portal root, so
-                // listing it would advertise a redirect as a destination.
-                if ($defaultStage !== '' && (string) $slug === $defaultStage) {
-                    continue;
-                }
-
-                $urls[] = PortalTaxonomies::url($segment, (string) $slug);
-            }
+        if (isset(self::$archiveUrls[$segment])) {
+            return self::$archiveUrls[$segment];
         }
 
-        return $urls;
+        $taxonomy = PortalTaxonomies::taxonomyFor($segment);
+
+        if ($taxonomy === '' || !PortalTaxonomies::isSitemapListed($segment)) {
+            return self::$archiveUrls[$segment] = [];
+        }
+
+        $terms = get_terms(
+            [
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => true,
+                'fields'     => 'slugs',
+            ]
+        );
+
+        if (is_wp_error($terms) || !\is_array($terms)) {
+            return self::$archiveUrls[$segment] = [];
+        }
+
+        $defaultStage = $segment === 'stage' ? StageService::defaultStageSlug() : '';
+
+        $urls = [];
+
+        foreach ($terms as $slug) {
+            // The default stage's archive 301s to the portal root, so
+            // listing it would advertise a redirect as a destination.
+            if ($defaultStage !== '' && (string) $slug === $defaultStage) {
+                continue;
+            }
+
+            $urls[] = PortalTaxonomies::url($segment, (string) $slug);
+        }
+
+        return self::$archiveUrls[$segment] = $urls;
     }
 
     /**
@@ -514,6 +761,32 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         }
 
         return $xml . '</urlset>';
+    }
+
+    /**
+     * A sitemapindex document listing every type's pages, in order.
+     *
+     * Served at the unnumbered URL, so the `Sitemap:` line in robots.txt and
+     * the entry in an SEO plugin's index stay valid however large the community
+     * gets and whichever types it happens to use.
+     */
+    private static function renderIndex(): string
+    {
+        $lastmod = esc_html(self::latestModified());
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+            . '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+        foreach (self::subtypes() as $subtype) {
+            $pages = self::pageCount($subtype);
+
+            for ($page = 1; $page <= $pages; ++$page) {
+                $xml .= '<sitemap><loc>' . esc_url(self::feedPageUrl($subtype, $page)) . '</loc>'
+                    . '<lastmod>' . $lastmod . '</lastmod></sitemap>' . "\n";
+            }
+        }
+
+        return $xml . '</sitemapindex>';
     }
 
     /**
