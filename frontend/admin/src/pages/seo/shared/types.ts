@@ -55,7 +55,10 @@ export interface SeoSettingsResponse {
 
 export const DEFAULT_SEO_SETTINGS: SeoSettings = {
   archives: { department: true, stage: true, status: true, tag: true, topic: true },
-  indexArchives: { department: true, stage: false, status: false, tag: true, topic: true },
+  // Mirrors SeoSettings::defaults() — `stage` is the portal's primary browse
+  // axis, so its archives are indexed; `status` is a workflow filter nothing
+  // links to.
+  indexArchives: { department: true, stage: true, status: false, tag: true, topic: true },
   indexPagination: false,
   indexProfiles: false,
   metaOwner: 'auto',

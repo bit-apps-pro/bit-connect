@@ -5,8 +5,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSeoSettings from './data/use-seo-settings'
 import useUpdateSeoSettings, { type ErrorResponse } from './data/use-update-seo-settings'
 import ArchiveMatrix from './internal/archive-matrix'
+import SeoFieldRows from './internal/seo-field-rows'
 import SeoSection from './internal/seo-section'
 import SeoStatus from './internal/seo-status'
+import SitemapUrlNotice from './internal/sitemap-url-notice'
 import { DEFAULT_SEO_SETTINGS, type MetaOwner, type SeoSettings } from './shared/types'
 
 const { Title } = Typography
@@ -50,6 +52,14 @@ export default function Seo() {
   const setArchive = useMemo(() => setGroup('archives'), [setGroup])
   const setIndexArchive = useMemo(() => setGroup('indexArchives'), [setGroup])
   const setSitemap = useMemo(() => setGroup('sitemap'), [setGroup])
+
+  const setSitemapUrlsPerPage = useCallback((value: number) => {
+    setIsDirty(true)
+    setForm(previous => ({
+      ...previous,
+      sitemap: { ...previous.sitemap, urlsPerPage: value }
+    }))
+  }, [])
 
   const setSitemapArchive = useCallback((segment: string, value: boolean) => {
     setIsDirty(true)
@@ -248,71 +258,76 @@ export default function Seo() {
       children: (
         <SeoSection
           disabled={disabled}
-          onChange={setSitemap}
           subtitle={__(
             'How search engines discover the portal, including topics no page links to directly. Archive inclusion is set per taxonomy on the Archives tab.'
           )}
           title={__('Sitemap')}
-          toggles={[
-            {
-              description: __(
-                'Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry.'
-              ),
-              key: 'enabled',
-              label: __('Portal sitemap'),
-              value: form.sitemap.enabled
-            },
-            {
-              description: __(
-                'Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap.'
-              ),
-              disabled: !form.sitemap.enabled,
-              key: 'inRobotsTxt',
-              label: __('Announce in robots.txt'),
-              value: form.sitemap.inRobotsTxt
-            },
-            {
-              description: __('List the portal landing page as the entry point of the community.'),
-              disabled: !form.sitemap.enabled,
-              key: 'includeHome',
-              label: __('Include portal home'),
-              value: form.sitemap.includeHome
-            },
-            {
-              description: __(
-                'List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be.'
-              ),
-              disabled: !form.sitemap.enabled,
-              key: 'includeTopics',
-              label: __('Include topics'),
-              value: form.sitemap.includeTopics
-            }
-          ]}
         >
-          <div className="bc-mt-4 bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
-            <Typography.Text strong>{__('URLs per sitemap page')}</Typography.Text>
-            <p className="bc-mb-3 bc-mt-1 bc-text-sm bc-text-ink-muted">
-              {__(
-                'Large communities are split across several sitemap pages. The sitemap standard allows up to 50,000 URLs per page; smaller pages are lighter to generate.'
-              )}
-            </p>
-            <InputNumber
-              disabled={disabled || !form.sitemap.enabled}
-              max={50_000}
-              min={100}
-              onChange={value =>
-                setForm(previous => {
-                  setIsDirty(true)
-                  return {
-                    ...previous,
-                    sitemap: { ...previous.sitemap, urlsPerPage: Number(value ?? 2000) }
-                  }
-                })
+          <SitemapUrlNotice enabled={form.sitemap.enabled} url={diagnostics.sitemapUrl} />
+
+          <SeoFieldRows
+            disabled={disabled}
+            fields={[
+              {
+                control: 'switch',
+                description: __(
+                  'Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry.'
+                ),
+                key: 'enabled',
+                label: __('Portal sitemap'),
+                onChange: value => setSitemap('enabled', value),
+                value: form.sitemap.enabled
+              },
+              {
+                control: 'switch',
+                description: __(
+                  'Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap.'
+                ),
+                disabled: !form.sitemap.enabled,
+                key: 'inRobotsTxt',
+                label: __('Announce in robots.txt'),
+                onChange: value => setSitemap('inRobotsTxt', value),
+                value: form.sitemap.inRobotsTxt
+              },
+              {
+                control: 'switch',
+                description: __(
+                  'List the portal landing page as the entry point of the community.'
+                ),
+                disabled: !form.sitemap.enabled,
+                key: 'includeHome',
+                label: __('Include portal home'),
+                onChange: value => setSitemap('includeHome', value),
+                value: form.sitemap.includeHome
+              },
+              {
+                control: 'switch',
+                description: __(
+                  'List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be.'
+                ),
+                disabled: !form.sitemap.enabled,
+                key: 'includeTopics',
+                label: __('Include topics'),
+                onChange: value => setSitemap('includeTopics', value),
+                value: form.sitemap.includeTopics
+              },
+              {
+                control: 'number',
+                description: __(
+                  'Each content type gets its own sitemap, split across numbered pages once it holds more URLs than this. The sitemap standard allows up to 50,000 per page; smaller pages are lighter to generate.'
+                ),
+                disabled: !form.sitemap.enabled,
+                fallback: DEFAULT_SEO_SETTINGS.sitemap.urlsPerPage,
+                key: 'urlsPerPage',
+                label: __('URLs per sitemap page'),
+                max: 50_000,
+                min: 100,
+                onChange: setSitemapUrlsPerPage,
+                step: 500,
+                value: form.sitemap.urlsPerPage
               }
-              step={500}
-              value={form.sitemap.urlsPerPage}
-            />
-          </div>
+            ]}
+          />
         </SeoSection>
       ),
       key: 'sitemap',
