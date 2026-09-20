@@ -173,6 +173,39 @@ final class ExtensionPoints
     }
 
     /**
+     * A thread ordered by something this plugin cannot order by.
+     *
+     * This plugin sorts a thread by date, either way round, and that is every
+     * ordering it can perform: ordering by upvotes on replies needs upvotes on
+     * replies, which it does not implement. Rather than silently treating an
+     * ordering it does not know as "newest" — a sort control that does nothing
+     * is the shape this plugin has been removing — it offers the question.
+     *
+     * A listener that recognises `$sort` returns the comments in that order. A
+     * listener that does not returns null, and so does the absence of one, and
+     * the caller falls back to its own date ordering.
+     *
+     * Trusted no further than the shape: an answer that is not a list of the
+     * same comments is discarded rather than rendered, because a listener that
+     * dropped or invented a reply would silently lose part of a thread.
+     *
+     * @param WP_Comment[] $comments the top-level comments, in date order
+     * @param string       $sort     what was asked for
+     *
+     * @return null|array the ordered comments, or null to sort by date
+     */
+    public static function orderedComments(array $comments, string $sort): ?array
+    {
+        $offered = Hooks::applyFilter('bit_connect_ordered_comments', null, $comments, $sort);
+
+        if (!\is_array($offered) || \count($offered) !== \count($comments)) {
+            return null;
+        }
+
+        return $offered;
+    }
+
+    /**
      * How many upvotes a member has received.
      *
      * This plugin counts the votes on their topics, which is every vote it

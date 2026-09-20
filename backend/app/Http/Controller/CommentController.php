@@ -51,14 +51,12 @@ final class CommentController
         $validated = $request->validated();
         $page = max(1, (int) ($validated['page'] ?? 1));
         $perPage = max(1, (int) ($validated['per_page'] ?? 10));
-        $sort = $validated['sort'] ?? 'newest';
-        // Newest or oldest, and nothing else. Ordering a thread by upvotes
-        // needs upvotes on replies, which this plugin does not implement — a
-        // 'mostVoted' asked for by an older portal build falls back to newest
-        // rather than to an order built from counts nobody maintains.
-        if (!\in_array($sort, ['newest', 'all'], true)) {
-            $sort = 'newest';
-        }
+        // Passed on as asked for rather than narrowed to the two orderings
+        // this plugin performs. An ordering it does not know is offered to
+        // whatever does — see ExtensionPoints::orderedComments — and falls
+        // back to newest-first when nobody answers, which is what an ordering
+        // that reaches nothing has always meant here.
+        $sort = \is_string($validated['sort'] ?? null) ? $validated['sort'] : 'newest';
 
         // Load every approved comment once, then split into top-level threads
         // and a parent => children map. Pagination is applied to the top-level
@@ -496,16 +494,22 @@ final class CommentController
      *
      * By date, either way round. There is no vote ordering here because there
      * are no reply votes here to order by; the add-on that implements them
-     * brings its own ordering with it.
+     * answers the extension point below and brings its ordering with it.
      *
      * @param WP_Comment[] $topLevel
-     * @param string       $sort     one of newest|all
+     * @param string       $sort     newest|all, or whatever a listener knows
      *
      * @return WP_Comment[]
      */
     private function sortTopLevelComments($topLevel, $sort)
     {
-        // "all" => oldest first, "newest" (default) => newest first.
+        $ordered = ExtensionPoints::orderedComments($topLevel, $sort);
+
+        if ($ordered !== null) {
+            return $ordered;
+        }
+
+        // "all" => oldest first, everything else => newest first.
         usort(
             $topLevel,
             static function ($a, $b) use ($sort) {

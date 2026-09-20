@@ -43,6 +43,16 @@ declare const SERVER_VARIABLES: {
   currentUserAvatar: string
   customLoginUrl?: string
   customRegistrationUrl?: string
+  /**
+   * Whether this forum offers upvoting on replies.
+   *
+   * A slot, not a setting. This plugin never sends it and nothing in this
+   * tree reads it — upvoting a reply ships in Bit Connect Pro, which fills
+   * this in and whose overlay is the only code that looks at it. Declared
+   * here for the same reason `isProExist` is: the payload has one shape, and
+   * the add-on's modules are type-checked against it.
+   */
+  commentUpvote?: string
   dateFormat: string
   defaultStageSlug?: string
   defaultStatusSlug?: string
