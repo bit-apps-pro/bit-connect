@@ -37,9 +37,10 @@ final class AdminSettingsController
             // feature this plugin does not implement would describe a control
             // that has nothing behind it.
             [
-                // Same again: the portal decides whether to draw the upvote
-                // control on a comment from this payload, so reporting the
-                // stored value alone would draw a button the server refuses.
+                // Reported through the service rather than read straight from
+                // the array so the portal and the server answer the same
+                // question with the same code. There is no second gate behind
+                // it any more — the administrator's setting is the whole of it.
                 'commentUpvote' => PermissionService::canUseCommentUpvotes(),
             ]
         );

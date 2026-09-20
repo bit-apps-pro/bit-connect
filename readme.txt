@@ -23,7 +23,7 @@ Members can create topics, join threaded discussions, upvote ideas, follow conve
 * **Topics and discussions:** Members can create topics and, when permitted, edit or delete their own posts.
 * **Comments and threaded replies:** Keep conversations organized with nested replies.
 * **@mentions:** Mention other members inside topics and replies.
-* **Topic upvotes:** Let members vote on ideas, questions, feature requests and discussions.
+* **Upvotes on topics and replies:** Let members vote on ideas, questions and feature requests, and on the individual replies they find most useful.
 * **Feature requests and roadmap:** Collect ideas and feedback and move topics through stages and statuses.
 * **Topic organization:** Use topic types, departments or products, tags, stages and statuses.
 * **Search, sorting and filters:** Help members find relevant community discussions.
@@ -56,7 +56,7 @@ Give every member a clear identity inside your community. Users can add a profil
 
 = Organized Discussions and Engagement =
 
-Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while useful community discussions stay easier to find, follow and revisit.
+Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and upvotes on both topics and replies. Members can ask questions, share ideas and join conversations, while the most useful answers rise to the top of a thread and good discussions stay easier to find, follow and revisit.
 
 = Feature Requests and Public Roadmaps =
 
