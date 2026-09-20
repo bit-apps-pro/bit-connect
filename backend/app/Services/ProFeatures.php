@@ -8,7 +8,6 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use WP_User;
 
 /**
  * The extension points through which the Bit Connect Pro add-on adds features
@@ -122,41 +121,4 @@ final class ProFeatures
         return self::notificationDelivery() || self::notificationWording();
     }
 
-    /**
-     * Whether capabilities can be granted or revoked for one member, on top of
-     * what their role gives them.
-     *
-     * This plugin's capability model is per role: the matrix on the Manager
-     * screen is the whole of it. Overriding a single person's permissions is
-     * the add-on's.
-     */
-    public static function perUserCapabilities(): bool
-    {
-        return (bool) Hooks::applyFilter('bit_connect_per_user_capabilities_available', false);
-    }
-
-    /**
-     * Ask the add-on to write per-user capability overrides.
-     *
-     * Returns false when nothing applied them, which is what a forum without
-     * the add-on always gets: this plugin holds no code that writes a user-level
-     * capability, so there is nothing here for a listener to switch back on.
-     *
-     * The listener is handed the already-sanitised map — unknown capabilities
-     * are dropped before it is called — and is responsible for refusing to
-     * escalate: only a WordPress administrator may grant the manage capability,
-     * whatever the caller sent.
-     *
-     * @param WP_User            $user         the member being changed
-     * @param array<string,bool> $capabilities allowlisted forum capabilities
-     */
-    public static function applyUserCapabilities(WP_User $user, array $capabilities): bool
-    {
-        return Hooks::applyFilter(
-            'bit_connect_apply_user_capabilities',
-            false,
-            $user,
-            $capabilities
-        ) === true;
-    }
 }

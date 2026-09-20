@@ -194,7 +194,9 @@ Route::post('capability-settings/update', [CapabilitySettingsController::class, 
 
 // User Management Routes (forum_manage cap required)
 Route::get('users', [UserManagementController::class, 'getUsers']);
-Route::post('users/{id}/capabilities', [UserManagementController::class, 'updateUserCapabilities']);
+// Granting a per-user override is the add-on's route, in the add-on's
+// namespace — this plugin has no code that writes a user-level capability.
+// Reset only ever removes, so it needs neither.
 Route::post('users/{id}/capabilities/reset', [UserManagementController::class, 'resetUserCapabilities']);
 
 // Profile Badge routes live in the pro add-on — see pro/backend/hooks/api.php.

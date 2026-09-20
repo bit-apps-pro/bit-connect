@@ -14,8 +14,6 @@
  * than answer a fixed true.
  */
 
-use BitApps\BitConnect\Enum\Capabilities;
-
 /**
  * Register the add-on's listeners.
  *
@@ -29,7 +27,6 @@ function bc_test_install_pro_addon(array $features = []): void
         'comment_upvotes',
         'notification_delivery',
         'notification_wording',
-        'per_user_capabilities',
         'auto_hide',
     ];
 
@@ -40,7 +37,6 @@ function bc_test_install_pro_addon(array $features = []): void
         'comment_upvotes'       => 'bit_connect_comment_upvotes_available',
         'notification_delivery' => 'bit_connect_custom_notification_delivery',
         'notification_wording'  => 'bit_connect_custom_notification_wording',
-        'per_user_capabilities' => 'bit_connect_per_user_capabilities_available',
     ];
 
     foreach ($features as $feature) {
@@ -51,10 +47,6 @@ function bc_test_install_pro_addon(array $features = []): void
 
     if (\in_array('auto_hide', $features, true)) {
         $GLOBALS['__wp_filters']['bit_connect_should_auto_hide'] = 'bc_test_pro_auto_hide';
-    }
-
-    if (\in_array('per_user_capabilities', $features, true)) {
-        $GLOBALS['__wp_filters']['bit_connect_apply_user_capabilities'] = 'bc_test_pro_apply_capabilities';
     }
 }
 
@@ -69,9 +61,7 @@ function bc_test_uninstall_pro_addon(): void
             'bit_connect_comment_upvotes_available',
             'bit_connect_custom_notification_delivery',
             'bit_connect_custom_notification_wording',
-            'bit_connect_per_user_capabilities_available',
             'bit_connect_should_auto_hide',
-            'bit_connect_apply_user_capabilities',
         ] as $tag
     ) {
         unset($GLOBALS['__wp_filters'][$tag]);
@@ -104,27 +94,3 @@ function bc_test_pro_auto_hide($hide, $targetType, $targetId, $author, $pending 
     return $pending >= \BitApps\BitConnect\Services\ReportService::autoHideThreshold();
 }
 
-/**
- * The add-on writing per-user capability overrides.
- *
- * True grants the capability regardless of role; false revokes it even when the
- * role grants it — the only correct way to override a role capability for one
- * person in WordPress. The escalation guard travels with the write: only a
- * WordPress administrator may hand out the manage capability.
- *
- * @param bool               $applied      the free plugin's answer, always false
- * @param WP_User            $user         the member being changed
- * @param array<string,bool> $capabilities already allowlisted by the Request
- */
-function bc_test_pro_apply_capabilities($applied, $user, $capabilities): bool
-{
-    if (!current_user_can('manage_options')) {
-        unset($capabilities[Capabilities::MANAGE->value]);
-    }
-
-    foreach ($capabilities as $cap => $granted) {
-        $user->add_cap($cap, (bool) $granted);
-    }
-
-    return true;
-}

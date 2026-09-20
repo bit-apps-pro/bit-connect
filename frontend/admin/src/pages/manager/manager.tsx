@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 
 import useBadgesAdmin from './data/use-badges-admin'
 import useResetUserCapabilities from './data/use-reset-user-capabilities'
-import useUpdateUserCapabilities from './data/use-update-user-capabilities'
+import useUserCapabilitiesAdmin from './data/use-user-capabilities-admin'
 import useUsers from './data/use-users'
 import { type ForumCapability } from './shared/types'
 import BadgesColumnHeader from './ui/badges-column-header'
@@ -25,7 +25,9 @@ export default function Manager() {
   const [badgeModalOpen, setBadgeModalOpen] = useState(false)
 
   const { isUsersFetching, usersData } = useUsers({ page, perPage: 20, search: debouncedSearch })
-  const { isUpdating, updateUserCapabilities } = useUpdateUserCapabilities()
+  // One hook for per-user overrides, so this page never names the pro-only
+  // endpoint and the free build can drop it. See use-user-capabilities-admin.ts.
+  const { isUpdating, saveUserCapabilities } = useUserCapabilitiesAdmin()
   const { isResetting, resetUserCapabilities } = useResetUserCapabilities()
   // One hook for the whole badge feature, so this page never names the pro-only
   // endpoints and the free build can drop them. See use-badges-admin.ts.
@@ -38,9 +40,9 @@ export default function Manager() {
 
   const handleSaveCaps = useCallback(
     async (userId: number, caps: Record<ForumCapability, boolean>) => {
-      await updateUserCapabilities({ capabilities: caps, userId })
+      await saveUserCapabilities(userId, caps)
     },
-    [updateUserCapabilities]
+    [saveUserCapabilities]
   )
 
   return (
