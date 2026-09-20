@@ -26,21 +26,18 @@ class NotificationSettingsTest extends TestCase
         $GLOBALS['__wp_bloginfo'] = ['name' => 'Bit Flows Forum'];
         $GLOBALS['__wp_home_url'] = 'https://forum.example.com';
 
-        // Sender identity, digest schedule and email wording only reach these
-        // normalisers when the add-on supplies them — see
-        // NotificationSettingsProGateTest for what a forum without it gets. The
-        // clamps are what is under test here, so the add-on is installed and
-        // stays out of the way.
+        // No listeners: the digest schedule and the clamps under test here are
+        // this plugin's own, and the sender and wording resolve to its own
+        // values when nothing supplies others. NotificationMailIdentityTest is
+        // where a supplied sender is exercised.
         $GLOBALS['__wp_options'] = [];
         $GLOBALS['__wp_filters'] = [];
-        bc_test_install_pro_addon(['notification_delivery', 'notification_wording']);
     }
 
     protected function tearDown(): void
     {
         $GLOBALS['__wp_options'] = [];
-
-        bc_test_uninstall_pro_addon();
+        $GLOBALS['__wp_filters'] = [];
     }
 
     public function testAnUnsavedForumIsOn(): void

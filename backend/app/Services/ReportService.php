@@ -173,7 +173,7 @@ final class ReportService
      */
     public static function shouldAutoHide(string $targetType, int $targetId, int $author, ?int $pending = null): bool
     {
-        return ProFeatures::autoHideOnReports($targetType, $targetId, $author, $pending);
+        return ExtensionPoints::autoHideOnReports($targetType, $targetId, $author, $pending);
     }
 
     /**

@@ -1682,6 +1682,6 @@ require_once __DIR__ . '/doubles/services-functions.php';
 
 require_once __DIR__ . '/doubles/wpdb.php';
 
-require_once __DIR__ . '/doubles/pro-features.php';
+require_once __DIR__ . '/doubles/extension-points.php';
 
 require_once __DIR__ . '/../vendor/autoload.php';

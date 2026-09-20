@@ -208,11 +208,6 @@ class NotificationPreferencesTest extends TestCase
 
     public function testAnUnknownFrequencyFallsBackToTheForumDefault(): void
     {
-        // The forum default is only the forum's to set on a licensed site;
-        // without one every read of it is instant, which would not exercise
-        // the fallback this is about.
-        $this->licence();
-
         $GLOBALS['__wp_user_meta'][self::MEMBER][NotificationPreferences::META_KEY] = ['frequency' => 'hourly'];
         $this->storeSettings(['defaultFrequency' => NotificationSettings::FREQUENCY_WEEKLY]);
 
@@ -323,11 +318,4 @@ class NotificationPreferencesTest extends TestCase
         NotificationPreferences::flushSettings();
     }
 
-    /**
-     * Turn the pro licence on for tests that need a forum-set digest cadence.
-     */
-    private function licence(): void
-    {
-        bc_test_install_pro_addon(['notification_delivery', 'notification_wording']);
-    }
 }
