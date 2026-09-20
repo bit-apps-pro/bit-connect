@@ -102,11 +102,19 @@ class NotificationSettingsTest extends TestCase
         );
     }
 
-    public function testTheSenderFallsBackToTheSiteAndNotToAPerson(): void
+    /**
+     * The sender is the site, and a stored sender is not consulted.
+     *
+     * The `fromName`/`fromEmail` keys are passed in deliberately: sites that
+     * ran an older build still have them in the option, and this plugin no
+     * longer reads either. Supplying a sender is the add-on's, through
+     * `bit_connect_mail_from_name` — see NotificationMailIdentityTest.
+     */
+    public function testTheSenderIsTheSiteAndNotAPerson(): void
     {
         $this->assertSame('Bit Flows Forum', NotificationSettings::fromName([]));
         $this->assertSame('Bit Flows Forum', NotificationSettings::fromName(['fromName' => '   ']));
-        $this->assertSame('Community', NotificationSettings::fromName(['fromName' => 'Community']));
+        $this->assertSame('Bit Flows Forum', NotificationSettings::fromName(['fromName' => 'Community']));
 
         // Replies to a notification should not land in the admin's own mail.
         $this->assertSame('wordpress@forum.example.com', NotificationSettings::fromEmail([]));
@@ -115,7 +123,7 @@ class NotificationSettingsTest extends TestCase
             NotificationSettings::fromEmail(['fromEmail' => 'not-an-address'])
         );
         $this->assertSame(
-            'noreply@forum.example.com',
+            'wordpress@forum.example.com',
             NotificationSettings::fromEmail(['fromEmail' => 'noreply@forum.example.com'])
         );
     }

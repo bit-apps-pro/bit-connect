@@ -72,40 +72,4 @@ final class ProFeatures
         return (bool) Hooks::applyFilter('bit_connect_comment_upvotes_available', false);
     }
 
-    /**
-     * Whether the forum can set its own sender identity and digest schedule.
-     *
-     * Read by the settings normaliser rather than only by the screen, because
-     * the cron and every dispatch read these values unsupervised — a check that
-     * lived in the UI would be bypassed by a stale tab or a direct POST.
-     */
-    public static function notificationDelivery(): bool
-    {
-        return (bool) Hooks::applyFilter('bit_connect_custom_notification_delivery', false);
-    }
-
-    /**
-     * Whether the four email template lines can be rewritten.
-     *
-     * Separate from notificationDelivery() only so the two can part company
-     * later; they answer the same question today.
-     */
-    public static function notificationWording(): bool
-    {
-        return (bool) Hooks::applyFilter('bit_connect_custom_notification_wording', false);
-    }
-
-    /**
-     * Whether any of the notification fields above may be written.
-     *
-     * The settings screen posts one blob, so the write path needs a single
-     * answer: with neither feature present the stored values are carried
-     * forward untouched rather than overwritten with the neutralised ones the
-     * screen was shown.
-     */
-    public static function notificationCustomisation(): bool
-    {
-        return self::notificationDelivery() || self::notificationWording();
-    }
-
 }

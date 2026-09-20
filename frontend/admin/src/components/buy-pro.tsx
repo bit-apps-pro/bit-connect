@@ -29,15 +29,20 @@ const PURCHASE_URL = 'https://bitapps.pro/bit-connect'
  * - profile badges      the .free/.pro dispatchers under manager/ui
  * - comment upvotes     PermissionService::canUseCommentUpvotes()
  * - auto-hide           ReportService::shouldAutoHide()
- * - digests, sender,    NotificationSettings::defaultFrequency(), fromName(),
- *   email wording       fromEmail() and template()
+ * - sender identity,    not implemented here — NotificationSettings::fromName(),
+ *   email wording       fromEmail() and template() send as the site with the
+ *                       built-in wording and ask a filter for anything else
+ *
+ * Digests are deliberately *not* on this list any more. They were, and the
+ * warning above was written about exactly that: members have always chosen
+ * their own cadence and the plugin's own cron has always batched, so the line
+ * was selling something the reader already had.
  */
 const PRO_FEATURES = [
   __('Private topics, visible only to the people you choose'),
   __('Profile badges you author and hand out'),
   __('Upvotes on comments, not just topics'),
   __('Hide reported content automatically, before a moderator gets to it'),
-  __('Daily and weekly email digests'),
   __('Send forum email from your own name and address'),
   __('Write your own wording for every notification email')
 ]

@@ -2,7 +2,7 @@
 
 namespace BitApps\BitConnect\Enum;
 
-use BitApps\BitConnect\Services\ProFeatures;
+use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 
 // Prevent direct script access
 if (!defined('ABSPATH')) {
@@ -143,10 +143,6 @@ enum NotificationSettings: string
      */
     public static function digestHour($settings): int
     {
-        if (!self::canCustomiseDelivery()) {
-            return self::DIGEST_HOUR_DEFAULT;
-        }
-
         $stored = \is_array($settings) ? $settings : [];
         $hour = isset($stored['digestHour']) ? (int) $stored['digestHour'] : self::DIGEST_HOUR_DEFAULT;
 
@@ -174,18 +170,23 @@ enum NotificationSettings: string
     /**
      * The default digest frequency for members who have not chosen one.
      *
+     * Not gated, and the reason is worth recording: digests are this plugin's
+     * feature and always were. NotificationPreferences::frequencyFor() reads a
+     * member's own choice, NotificationController saves it without asking about
+     * a licence, and NotificationDigest batches and sends on the hourly cron —
+     * all of it here, all of it working. This value is only the default for
+     * members who have not chosen.
+     *
+     * It used to be forced to INSTANT unless a licence answered, which made the
+     * admin's saved choice silently not apply while the same schedule ran fine
+     * for any member who set it themselves. That is a built-in feature switched
+     * off by a licence test, which WordPress.org guideline 5 forbids, and it
+     * was not even buying anything: the engine it disabled ships here.
+     *
      * @param mixed $settings the stored notification_settings option
      */
     public static function defaultFrequency($settings): string
     {
-        // Digests are a pro feature, and this is the value the cron reads to
-        // decide whether to batch. Gating it here rather than only in the admin
-        // screen is what stops a lapsed licence from leaving daily digests
-        // going out — the stored choice is kept, it simply stops applying.
-        if (!self::canCustomiseDelivery()) {
-            return self::FREQUENCY_INSTANT;
-        }
-
         $stored = \is_array($settings) ? $settings : [];
         $frequency = \is_string($stored['defaultFrequency'] ?? null)
             ? $stored['defaultFrequency']
@@ -300,42 +301,55 @@ enum NotificationSettings: string
     }
 
     /**
-     * Sender name, falling back to the site's own.
+     * Sender name: the site's own, unless something supplies another.
+     *
+     * This plugin sends forum email as the site. It holds no setting for a
+     * sender of its own and no code that would read one — choosing a sender
+     * identity is the Bit Connect Pro add-on's feature, and it arrives by
+     * filtering this value rather than by unlocking a field stored here.
      *
      * @param mixed $settings the stored notification_settings option
      */
     public static function fromName($settings): string
     {
-        $stored = \is_array($settings) ? $settings : [];
-        $name = self::canCustomiseDelivery() && \is_string($stored['fromName'] ?? null)
-            ? trim($stored['fromName'])
-            : '';
+        /**
+         * Filter the name forum email is sent as.
+         *
+         * @param string $name     the site title
+         * @param mixed  $settings the stored notification_settings option
+         */
+        $name = Hooks::applyFilter('bit_connect_mail_from_name', (string) get_bloginfo('name'), $settings);
+        $name = \is_string($name) ? trim($name) : '';
 
         return $name === '' ? (string) get_bloginfo('name') : $name;
     }
 
     /**
-     * Sender address, falling back to WordPress's default rather than to the
-     * admin's own inbox — replies to a notification should not land in a
-     * person's mail.
+     * Sender address: WordPress's default, unless something supplies another.
+     *
+     * The default is WordPress's own rather than the admin's inbox — replies to
+     * a notification should not land in a person's mail. As with fromName, a
+     * chosen address is the add-on's and reaches this through the filter; an
+     * address that is not a valid one is ignored rather than sent.
      *
      * @param mixed $settings the stored notification_settings option
      */
     public static function fromEmail($settings): string
     {
-        $stored = \is_array($settings) ? $settings : [];
-        $email = self::canCustomiseDelivery() && \is_string($stored['fromEmail'] ?? null)
-            ? trim($stored['fromEmail'])
-            : '';
-
-        if ($email !== '' && is_email($email)) {
-            return $email;
-        }
-
         $host = wp_parse_url(network_home_url(), PHP_URL_HOST);
         $host = \is_string($host) ? preg_replace('/^www\./i', '', $host) : '';
+        $default = $host === '' ? (string) get_option('admin_email') : 'wordpress@' . $host;
 
-        return $host === '' ? (string) get_option('admin_email') : 'wordpress@' . $host;
+        /**
+         * Filter the address forum email is sent from.
+         *
+         * @param string $email    WordPress's own default sender
+         * @param mixed  $settings the stored notification_settings option
+         */
+        $email = Hooks::applyFilter('bit_connect_mail_from_email', $default, $settings);
+        $email = \is_string($email) ? trim($email) : '';
+
+        return $email !== '' && is_email($email) ? $email : $default;
     }
 
     /**
@@ -354,41 +368,22 @@ enum NotificationSettings: string
      */
     private static function template($settings, string $key, string $default): string
     {
-        $stored = \is_array($settings) ? $settings : [];
-        $value = self::canCustomiseWording() && \is_string($stored[$key] ?? null)
-            ? trim($stored[$key])
-            : '';
+        /**
+         * Filter one line of the wording around a notification email.
+         *
+         * This plugin's own wording is the default and is what a forum sends;
+         * rewriting it is the Bit Connect Pro add-on's feature, and arrives
+         * here rather than by unlocking a field stored on this side. A filter
+         * that answers with nothing is ignored, for the same reason a blanked
+         * field always was: an email with a hole in it reads as a bug.
+         *
+         * @param string $line     this plugin's wording, already translated
+         * @param string $key      one of mailGreeting|mailIntro|mailDigestIntro|mailFooter
+         * @param mixed  $settings the stored notification_settings option
+         */
+        $value = Hooks::applyFilter('bit_connect_mail_template', $default, $key, $settings);
+        $value = \is_string($value) ? trim($value) : '';
 
         return $value === '' ? $default : $value;
-    }
-
-    /**
-     * Whether this site may set its own sender identity and digest schedule.
-     *
-     * Gated at the normaliser rather than at the screen, because these values
-     * are read unsupervised by the cron and by every dispatch. A check that
-     * lives only in the admin UI stops nobody: a stale tab, a direct POST or a
-     * licence that lapsed after the option was written would all sail past it.
-     *
-     * Stored values are deliberately kept, not cleared — a site that renews
-     * gets its sender and schedule back rather than having to type them again.
-     *
-     * Do not call before plugins_loaded:12; the add-on registers at 11, after
-     * resolving its licence.
-     */
-    private static function canCustomiseDelivery(): bool
-    {
-        return ProFeatures::notificationDelivery();
-    }
-
-    /**
-     * Whether this site may rewrite the four email template lines.
-     *
-     * Separate from canCustomiseDelivery() only so the two can part company
-     * later; they answer the same question today.
-     */
-    private static function canCustomiseWording(): bool
-    {
-        return ProFeatures::notificationWording();
     }
 }

@@ -37,12 +37,10 @@ export default function EmailDeliverySectionFree({
             <span className="bc-text-ink-subtle">&lt;{payload.effectiveSender.email}&gt;</span>
           </div>
           <div className="bc-text-xs bc-text-ink-subtle">
-            {__(
-              'Taken from your site title and address. A custom sender, and daily or weekly digests, come with Pro.'
-            )}
+            {__('Taken from your site title and address. A custom sender comes with Pro.')}
           </div>
         </div>
-        <Tooltip title={__('A custom sender and digest schedule are Pro features.')}>
+        <Tooltip title={__('A custom sender is a Pro feature.')}>
           <Tag
             className="bc-m-0 bc-shrink-0 bc-cursor-pointer"
             color="gold"
