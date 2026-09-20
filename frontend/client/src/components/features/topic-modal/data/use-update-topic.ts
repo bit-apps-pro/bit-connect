@@ -1,24 +1,27 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import { type Response } from '@common/helpers/request'
-import queryRequest from '@common/helpers/request'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormInstance } from 'antd'
 import { useContext } from 'react'
 
 import { slugDisclosure } from '../shared/slug-disclosure'
 import { type SaveTopicPayload, type Topic } from '../shared/type'
+import useTopicRequest from './use-topic-request'
 
 export default function useUpdateTopic(form: FormInstance) {
   const { notificationApi } = useContext(NotifyContext)
   const queryClient = useQueryClient()
+  // See use-topic-request: an edit that changes visibility does not go to the
+  // same place as one that only changes words.
+  const topicRequest = useTopicRequest()
 
   const { error, isError, isPending, mutateAsync } = useMutation<
     Response<Topic>,
     Response<string> | Response<ValidationType<SaveTopicPayload>>,
     SaveTopicPayload
   >({
-    mutationFn: async data => queryRequest<Topic>(`topics/${data.topic_id}`, data),
+    mutationFn: async data => topicRequest.update(data),
     mutationKey: ['topics', 'update'],
     onError: error => {
       if (typeof error.data === 'object') {

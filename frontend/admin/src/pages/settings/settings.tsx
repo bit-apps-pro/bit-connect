@@ -1,5 +1,4 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
 import { Alert, Button, Descriptions, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,7 +7,7 @@ import useUpdateSettings from './data/use-update-settings'
 import { type ErrorResponse } from './data/use-update-settings'
 import ModerationSection from './internal/moderation-section'
 import SettingsSection from './internal/settings-section'
-import TopicAccessProNote from './internal/topic-access-pro-note'
+import TopicAccessExtras from './internal/topic-access-extras'
 import {
   type CleanupSettings,
   type SettingsFormData,
@@ -222,7 +221,7 @@ export default function Settings() {
       <div className="bc-px-5">
         <SettingsSection
           disabled={isUpdatingSettings}
-          note={IS_PRO_ACTIVE ? undefined : <TopicAccessProNote />}
+          note={<TopicAccessExtras />}
           onChange={(key, value) =>
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }
