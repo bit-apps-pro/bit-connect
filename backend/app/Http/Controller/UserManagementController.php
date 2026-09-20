@@ -8,9 +8,9 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
-use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Http\Requests\GetUsersRequest;
 use BitApps\BitConnect\Http\Requests\ResetUserCapabilitiesRequest;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\MemberPresenter;
 use WP_User;
 use WP_User_Query;
@@ -82,7 +82,7 @@ final class UserManagementController
             return Response::error(__('User not found.', 'bit-connect'))->httpStatus(404);
         }
 
-        foreach (Capabilities::values() as $cap) {
+        foreach (ExtensionPoints::capabilities() as $cap) {
             $user->remove_cap($cap);
         }
 

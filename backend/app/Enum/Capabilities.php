@@ -49,8 +49,12 @@ enum Capabilities: string
     #[Label('Vote on Posts')]
     case VOTE_POST = 'forum_vote_post';
 
-    #[Label('Vote on Comments')]
-    case VOTE_COMMENT = 'forum_vote_comment';
+    /*
+     * There is no vote-on-comments capability here. Upvoting an individual
+     * reply is implemented in the Bit Connect Pro add-on, which declares its
+     * own slug through the `bit_connect_capabilities` filter so the roles
+     * screen still lists it and saving that screen does not strip it.
+     */
 
     // Content authority over other people's words
     /*
@@ -127,7 +131,6 @@ enum Capabilities: string
             self::EDIT_OWN_COMMENT   => __('Edit Own Comments', 'bit-connect'),
             self::DELETE_OWN_COMMENT => __('Delete Own Comments', 'bit-connect'),
             self::VOTE_POST          => __('Vote on Posts', 'bit-connect'),
-            self::VOTE_COMMENT       => __('Vote on Comments', 'bit-connect'),
             self::DELETE_ANY         => __('Delete Any Content', 'bit-connect'),
             self::MODERATE           => __('Moderate (Reports, Locked Threads)', 'bit-connect'),
             self::PIN_POST           => __('Pin/Unpin Topics', 'bit-connect'),
@@ -165,7 +168,7 @@ enum Capabilities: string
         return [
             self::CREATE_POST, self::EDIT_OWN_POST, self::DELETE_OWN_POST,
             self::CREATE_COMMENT, self::EDIT_OWN_COMMENT, self::DELETE_OWN_COMMENT,
-            self::VOTE_POST, self::VOTE_COMMENT,
+            self::VOTE_POST,
         ];
     }
 
@@ -234,7 +237,7 @@ enum Capabilities: string
         return [
             'bit_connect_post'     => [self::CREATE_POST->value, self::EDIT_OWN_POST->value, self::DELETE_OWN_POST->value],
             'bit_connect_comment'  => [self::CREATE_COMMENT->value, self::EDIT_OWN_COMMENT->value, self::DELETE_OWN_COMMENT->value],
-            'bit_connect_vote'     => [self::VOTE_POST->value, self::VOTE_COMMENT->value],
+            'bit_connect_vote'     => [self::VOTE_POST->value],
             'bit_connect_moderate' => [self::MODERATE->value, self::PIN_POST->value, self::LOCK_POST->value],
             'bit_connect_manage'   => [self::MANAGE->value],
         ];

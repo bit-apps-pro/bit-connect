@@ -7,9 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
-use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use WP_Comment;
 use WP_Post;
@@ -120,51 +118,15 @@ final class PermissionService
     // -------------------------------------------------------------------------
 
     /**
-     * Whether the forum offers upvoting on comments at all.
+     * Topics only.
      *
-     * One gate: the administrator's own setting. There used to be a second, a
-     * licence check, and removing it was a WordPress.org guideline 5 fix rather
-     * than a change of heart about what is worth charging for.
-     *
-     * The gate withheld almost nothing. This plugin already stores comment
-     * votes, counts them on every comment it returns, sorts a thread by them,
-     * counts them towards a member's standing on their profile, and carries
-     * `forum_vote_comment` in the role matrix an admin fills in. All of that
-     * shipped and worked. The licence blocked one thing — casting the vote —
-     * which is a built-in feature switched off by a licence test, and the
-     * clearest possible case of what that guideline forbids.
-     *
-     * Not a capability. Capabilities::VOTE_COMMENT says whether *this member*
-     * may vote; this says whether the forum offers it — a different question,
-     * asked before the capability is worth checking.
-     *
-     * Existing votes are untouched: turning this off stops new ones being cast
-     * and stops the control being offered, it does not erase what was counted.
-     *
-     * Off until an administrator asks for it, and nothing seeds this option at
-     * activation, so a missing key reads as off and a new forum starts without
-     * comment upvoting. That is a default, not a lock: the switch sits in the
-     * Topic Access grid on the settings screen, carries no pro flag, and the
-     * administrator of a free-only site can turn it on and have it work. What
-     * guideline 5 forbids is a feature a licence decides, and no licence is
-     * asked here — the only opinion that counts is the one the site's own
-     * administrator saved.
+     * There is no canVoteComment() beside this, and no setting behind it,
+     * because upvoting an individual reply is not something this plugin does.
+     * It ships in the Bit Connect Pro add-on, which asks its own questions.
      */
-    public static function canUseCommentUpvotes(): bool
-    {
-        $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
-
-        return \is_array($settings) && !empty($settings['topicAccess']['commentUpvote']);
-    }
-
     public static function canVotePost(): bool
     {
         return WpCapabilities::check(Capabilities::VOTE_POST->value);
-    }
-
-    public static function canVoteComment(): bool
-    {
-        return WpCapabilities::check(Capabilities::VOTE_COMMENT->value);
     }
 
     // -------------------------------------------------------------------------

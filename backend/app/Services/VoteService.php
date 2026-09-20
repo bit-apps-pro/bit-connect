@@ -14,17 +14,22 @@ use BitApps\BitConnect\Enum\PostTypes as EnumPostTypes;
 use BitApps\BitConnect\Model\Vote;
 
 /**
- * VoteService handles all voting business logic.
+ * Upvoting a topic.
  *
- * Voting is a simple toggle: one vote per user per entity.
+ * Voting is a simple toggle: one vote per user per topic.
  * Casting a vote when one already exists removes it (toggle off).
  *
- * Features added over the legacy implementation:
  *   - Capability checks via current_user_can()
  *   - Rate limiting via VoteRateLimiter
- *   - Cached totals in postmeta / commentmeta (_bit_connect_vote_count)
+ *   - Cached totals in postmeta (_bit_connect_vote_count)
  *   - Dropping the author's cached profile totals, since a vote moves the
  *     "Upvotes" figure on their card and nothing in core announces one
+ *
+ * Topics only. Upvoting an individual reply is implemented in the Bit Connect
+ * Pro add-on and not here — there is no method on this class that casts one.
+ * What remains on the comment side is deleteCommentVotes(), which is
+ * housekeeping for this plugin's own table rather than a feature: a deleted
+ * comment must not leave rows behind pointing at it.
  */
 class VoteService
 {
@@ -92,73 +97,6 @@ class VoteService
     }
 
     // -------------------------------------------------------------------------
-    // Comment voting
-    // -------------------------------------------------------------------------
-
-    public function toggleCommentVote(int $userId, int $commentId): array
-    {
-        // Asked before the capability, because it is a different question: this
-        // is whether the forum offers comment upvotes at all, and a member with
-        // every capability in the world cannot use a feature the forum does not
-        // have. Checked here rather than only in the portal so a stale page or
-        // a hand-made request cannot cast a vote the forum stopped offering.
-        if (!PermissionService::canUseCommentUpvotes()) {
-            return $this->denied(__('Comment upvoting is not enabled on this forum.', 'bit-connect'));
-        }
-
-        if (!WpCapabilities::check(Capabilities::VOTE_COMMENT->value)) {
-            return $this->denied(__('You do not have permission to vote on comments.', 'bit-connect'));
-        }
-
-        if (!VoteRateLimiter::isAllowed($userId)) {
-            return $this->denied(VoteRateLimiter::errorMessage());
-        }
-
-        $comment = get_comment($commentId);
-
-        if (!$comment) {
-            return $this->error(__('Comment not found.', 'bit-connect'));
-        }
-
-        if (Vote::getUserVoteForComment($userId, $commentId)) {
-            Vote::deleteUserVoteForComment($userId, $commentId);
-            $this->rebuildCommentVoteCache($commentId);
-            UserStatsService::forget($comment->user_id);
-            VoteRateLimiter::consume($userId);
-
-            return $this->success(__('Vote removed.', 'bit-connect'), $this->commentVoteData($commentId, $userId));
-        }
-
-        $vote = new Vote();
-        $vote->fill(['user_id' => $userId, 'comment_id' => $commentId]);
-        $vote->save();
-        $this->rebuildCommentVoteCache($commentId);
-        UserStatsService::forget($comment->user_id);
-        VoteRateLimiter::consume($userId);
-
-        // See togglePostVote(): the notification rides the vote, not the toggle.
-        // Votes are the one collapsible type, so a popular comment is one line
-        // in the author's bell rather than fifty.
-        NotificationService::dispatch(
-            NotificationTypes::VOTE_RECEIVED,
-            NotificationService::TARGET_COMMENT,
-            $commentId,
-            [
-                'excerpt' => ActivityLogService::excerpt($comment->comment_content),
-                'url'     => (string) get_comment_link($comment),
-            ],
-            (int) $comment->comment_post_ID
-        );
-
-        return $this->success(__('Vote added.', 'bit-connect'), $this->commentVoteData($commentId, $userId));
-    }
-
-    public function getCommentVoteStatus(int $commentId, int $userId = 0): array
-    {
-        return $this->commentVoteData($commentId, $userId ?: get_current_user_id());
-    }
-
-    // -------------------------------------------------------------------------
     // Cached vote counts
     // -------------------------------------------------------------------------
 
@@ -174,26 +112,9 @@ class VoteService
         return (int) $cached;
     }
 
-    public function getCommentVoteCounts(int $commentId): int
-    {
-        $cached = get_comment_meta($commentId, self::META_VOTE_COUNT, true);
-
-        if ($cached === '') {
-            $this->rebuildCommentVoteCache($commentId);
-            $cached = get_comment_meta($commentId, self::META_VOTE_COUNT, true);
-        }
-
-        return (int) $cached;
-    }
-
     public function rebuildPostVoteCache(int $postId): void
     {
         update_post_meta($postId, self::META_VOTE_COUNT, Vote::getPostVoteCount($postId));
-    }
-
-    public function rebuildCommentVoteCache(int $commentId): void
-    {
-        update_comment_meta($commentId, self::META_VOTE_COUNT, Vote::getCommentVoteCount($commentId));
     }
 
     // -------------------------------------------------------------------------
@@ -207,6 +128,16 @@ class VoteService
         return Vote::deleteAllVotesForPost($postId);
     }
 
+    /**
+     * Clears away anything stored against a comment that is being deleted.
+     *
+     * Kept although this plugin no longer casts comment votes. The votes table
+     * is this plugin's, and a deleted comment must not leave rows in it
+     * pointing at a comment_ID that no longer exists — whoever wrote them. The
+     * add-on writes those rows; cleaning up after its own table is still this
+     * plugin's job, and on a site without the add-on it tidies whatever an
+     * earlier version left behind.
+     */
     public function deleteCommentVotes(int $commentId): bool
     {
         delete_comment_meta($commentId, self::META_VOTE_COUNT);
@@ -228,14 +159,6 @@ class VoteService
         return [
             'votes'    => $this->getPostVoteCounts($postId),
             'hasVoted' => $userId > 0 && Vote::hasUserVoted($userId, $postId),
-        ];
-    }
-
-    private function commentVoteData(int $commentId, int $userId): array
-    {
-        return [
-            'votes'    => $this->getCommentVoteCounts($commentId),
-            'hasVoted' => $userId > 0 && Vote::hasUserVotedComment($userId, $commentId),
         ];
     }
 

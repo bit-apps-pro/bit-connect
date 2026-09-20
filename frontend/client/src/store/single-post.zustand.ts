@@ -7,7 +7,6 @@ import { deleteCommentApi } from './data/delete-comment-api'
 import { deletePostApi } from './data/delete-post-api'
 import { fetchCommentsApi } from './data/fetch-comments-api'
 import { fetchPostByNameApi } from './data/fetch-post-api'
-import { toggleCommentVoteApi } from './data/toggle-comment-vote-api'
 import { toggleVoteApi } from './data/toggle-vote-api'
 import { updateCommentApi } from './data/update-comment-api'
 import { sortHierarchicalComments, transformTopicCommentsToComments } from './helper/post-commons'
@@ -340,53 +339,32 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
     }
   },
   sortOption: 'newest',
-  toggleCommentVote: async (commentId: number) => {
+  /**
+   * Writes a reply's upvote figures into the thread on screen.
+   *
+   * A setter and nothing more: this plugin never calls an endpoint to change
+   * them, because upvoting a reply is the Bit Connect Pro add-on's feature.
+   * The add-on's own hook casts the vote and calls this with the answer, and
+   * with the optimistic figure before it. Both copies are rebuilt together —
+   * the rendered tree is derived from the raw comments, and the button reads
+   * from the derived one.
+   */
+  setCommentVote: (commentId: number, vote: Vote) => {
     const id = commentId.toString()
 
-    // The rendered tree is derived from the raw comments, so both are rebuilt
-    // together — the button reads from the derived copy.
-    const show = (vote: Vote) => {
-      set(state => {
-        const comments = state.comments.map(comment =>
-          comment.comment_ID === id ? { ...comment, vote } : comment
+    set(state => {
+      const comments = state.comments.map(comment =>
+        comment.comment_ID === id ? { ...comment, vote } : comment
+      )
+
+      return {
+        comments,
+        transformedComments: sortHierarchicalComments(
+          transformTopicCommentsToComments(comments),
+          state.sortOption
         )
-
-        return {
-          comments,
-          transformedComments: sortHierarchicalComments(
-            transformTopicCommentsToComments(comments),
-            state.sortOption
-          )
-        }
-      })
-    }
-
-    const comment = get().comments.find(item => item.comment_ID === id)
-    const before = comment?.vote
-
-    set({ isVoting: true })
-    // Straight away, so the count answers the click rather than the round trip.
-    if (before) show(flipVote(before))
-
-    try {
-      // Call custom API to toggle vote (uses bit-connect API)
-      const response = await toggleCommentVoteApi(commentId)
-
-      show({ hasVoted: response.hasVoted, total: response.votes })
-      set({ isVoting: false })
-
-      // Sidebar and profile card both show the author's upvote total, and a
-      // vote on their comment counts towards it.
-      if (comment?.user_id) syncVotesReceived(comment.user_id, response.hasVoted)
-    } catch (error) {
-      // Put back what the button showed before the click: the vote did not land,
-      // and a count that stayed moved would claim otherwise.
-      if (before) show(before)
-
-      const errorMessage = (error as Error).message || 'Failed to vote on comment'
-      set({ error: errorMessage, isVoting: false })
-      throw error
-    }
+      }
+    })
   },
   toggleVote: async (postId: number) => {
     // Guarded rather than assumed: a vote for another topic can still be in

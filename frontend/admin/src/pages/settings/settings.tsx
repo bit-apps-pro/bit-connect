@@ -148,21 +148,11 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      // Unconditional. Comment upvoting is this plugin's own feature — it
-      // stores the votes, counts them, sorts by them and scores profiles with
-      // them — so the switch that offers it belongs to every forum. It used to
-      // appear only with the add-on, which made a built-in feature look like a
-      // paid one and was the guideline 5 problem in miniature.
-      //
-      // Private topics are not here at all: that setting is the add-on's,
-      // stored in the add-on's options and rendered by the add-on's own
-      // section, because the feature it switches is entirely over there.
-      {
-        description: __('On/off your Topic comment Upvote'),
-        key: 'commentUpvote',
-        label: __('Comment Upvote'),
-        value: form.topicAccess.commentUpvote ?? false
-      }
+      // Neither comment upvoting nor private topics is here, for the same
+      // reason: both settings are the add-on's, stored in the add-on's
+      // options and rendered by the add-on's own section, because the
+      // features they switch are entirely over there. A switch here for
+      // either would be a control with nothing behind it.
     ]
   }, [form])
 

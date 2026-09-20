@@ -102,35 +102,18 @@ class Vote extends Model
     }
 
     // -------------------------------------------------------------------------
-    // Comment vote queries
+    // Comment vote cleanup
     // -------------------------------------------------------------------------
 
-    public static function getCommentVoteCount(int $commentId): int
-    {
-        return static::where('comment_id', $commentId)->count() ?? 0;
-    }
-
-    public static function hasUserVotedComment(int $userId, int $commentId): bool
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->count() > 0;
-    }
-
-    public static function getUserVoteForComment(int $userId, int $commentId)
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->first();
-    }
-
-    public static function deleteUserVoteForComment(int $userId, int $commentId): bool
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->delete() > 0;
-    }
-
+    /**
+     * Clears every vote cast on a comment that is going away.
+     *
+     * The only comment-side query left here. This plugin does not count,
+     * read or cast comment votes — the Bit Connect Pro add-on implements that
+     * feature and queries this table itself. What stays is the housekeeping:
+     * `comment_id` is a column in this plugin's own table, and deleting a
+     * comment without clearing its rows would orphan them.
+     */
     public static function deleteAllVotesForComment(int $commentId): bool
     {
         return !empty(static::where('comment_id', $commentId)->delete());

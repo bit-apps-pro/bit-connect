@@ -1,7 +1,13 @@
 export interface TopicAccessSettings {
   comment: boolean
-  commentUpvote: boolean
   upvote: boolean
+  /**
+   * Whether replies can be upvoted. Optional because this plugin neither
+   * reads nor writes it — the key belongs to Bit Connect Pro, which renders
+   * its own switch and saves it through its own endpoint. Declared so the
+   * overlay and this screen agree on one shape.
+   */
+  commentUpvote?: boolean
 }
 
 export interface CleanupSettings {

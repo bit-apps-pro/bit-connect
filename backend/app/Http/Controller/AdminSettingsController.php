@@ -14,7 +14,6 @@ use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Http\Requests\GetAdminSettingsRequest;
 use BitApps\BitConnect\Http\Requests\UpdateAdminSettingsRequest;
-use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\ReportService;
 
 final class AdminSettingsController
@@ -28,21 +27,17 @@ final class AdminSettingsController
         }
 
         $defaults = $this->getDefaultSettings();
+        // Neither private topics nor comment upvoting is in this payload, for
+        // the same reason: both features ship in the Bit Connect Pro add-on,
+        // endpoint and all, and the add-on tells the portal about its own.
+        // Reporting a flag here for a feature this plugin does not implement
+        // would describe a control that has nothing behind it.
         $settings['topicAccess'] = array_merge(
             $defaults['topicAccess'],
-            $settings['topicAccess'] ?? [],
-            // Private topics are not in this payload at all: the feature ships
-            // in the Bit Connect Pro add-on, endpoint and all, and the add-on
-            // tells the portal about its own. Reporting a flag here for a
-            // feature this plugin does not implement would describe a control
-            // that has nothing behind it.
-            [
-                // Reported through the service rather than read straight from
-                // the array so the portal and the server answer the same
-                // question with the same code. There is no second gate behind
-                // it any more — the administrator's setting is the whole of it.
-                'commentUpvote' => PermissionService::canUseCommentUpvotes(),
-            ]
+            array_intersect_key(
+                $settings['topicAccess'] ?? [],
+                $defaults['topicAccess']
+            )
         );
         $settings['cleanup'] = array_merge(
             $defaults['cleanup'],
@@ -93,22 +88,18 @@ final class AdminSettingsController
     /**
      * What a forum that has never saved this screen runs on.
      *
-     * `commentUpvote` is off while the other two are on, and that is a default
-     * rather than a lock. Comment threads and topic upvotes are what a forum
-     * is; upvoting individual replies changes how a thread reads, so a new
-     * forum starts without it and the administrator decides. The switch is in
-     * the Topic Access grid, it carries no pro flag, and a free-only site can
-     * turn it on and have it work — PermissionService::canUseCommentUpvotes()
-     * asks nothing but this setting, which is why the screen reports through
-     * it rather than reading the array here.
+     * These keys are the whole of Topic Access as this plugin knows it. A
+     * setting for upvoting individual replies is not among them and is not
+     * missing either — the feature is not implemented here, so there is
+     * nothing for a switch to turn on. The add-on brings both the feature and
+     * its control.
      */
     private function getDefaultSettings()
     {
         return [
             'topicAccess' => [
-                'comment'       => true,
-                'commentUpvote' => false,
-                'upvote'        => true,
+                'comment' => true,
+                'upvote'  => true,
             ],
             'cleanup' => [
                 'deleteDataOnUninstall' => false,

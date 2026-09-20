@@ -1,7 +1,12 @@
 export interface TopicAccessSettings {
   comment: boolean
-  commentUpvote: boolean
   upvote: boolean
+  /**
+   * Whether replies can be upvoted. Optional because this plugin never sends
+   * it — upvoting a reply ships in Bit Connect Pro, and the add-on adds the
+   * key to this payload when it is installed.
+   */
+  commentUpvote?: boolean
 }
 
 export interface TopicFormFieldsSettings {

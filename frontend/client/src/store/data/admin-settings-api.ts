@@ -6,7 +6,6 @@ import { type AdminSettings } from '../admin-settings.type'
 const defaultSettings: AdminSettings = {
   topicAccess: {
     comment: false,
-    commentUpvote: false,
     upvote: false
   },
   topicFormFields: {
@@ -25,9 +24,10 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
   return {
     topicAccess: {
       comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
-      commentUpvote:
-        settingsData.topicAccess?.commentUpvote ?? defaultSettings.topicAccess.commentUpvote,
-      upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
+      upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote,
+      // Passed through untouched rather than defaulted: the key is the
+      // add-on's, and an install without it simply has nothing here.
+      commentUpvote: settingsData.topicAccess?.commentUpvote
     },
     topicFormFields: {
       requireDepartment:

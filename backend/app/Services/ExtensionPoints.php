@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
+use BitApps\BitConnect\Enum\Capabilities;
 
 /**
  * Behaviour this plugin declines to perform, offered to anything that will.
@@ -17,9 +18,11 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
  * are not features this plugin has and withholds: it does not implement them
  * at all. Each one names a decision the plugin deliberately declines to make
  * by itself — whether to hide reported content before a human has looked at
- * it, and which asset bundle the pages it renders should load — and hands it
- * to a listener if there is one. With no listener the plugin's own answer
- * stands, and it is a complete, working behaviour rather than a refusal.
+ * it, which asset bundle the pages it renders should load, which capabilities
+ * this forum recognises, what else is true of a comment, and what a member's
+ * upvote total comes to — and hands it to a listener if there is one. With no
+ * listener the plugin's own answer stands, and it is a complete, working
+ * behaviour rather than a refusal.
  *
  * The filters are public. Any plugin may answer them; the Bit Connect Pro
  * add-on is the one that does, but nothing here knows or asks about that, and
@@ -107,6 +110,82 @@ final class ExtensionPoints
     public static function flush(): void
     {
         self::$assetBundle = null;
+    }
+
+    /**
+     * The capability slugs this forum recognises.
+     *
+     * This plugin's own list, unless something adds to it. The role matrix is
+     * built from this and, more importantly, applySettings() revokes anything
+     * in it that a role was not granted — so a capability belonging to another
+     * plugin has to be named here or saving the roles screen would strip it.
+     *
+     * A listener adds its own slugs and returns the list. Anything that is not
+     * a non-empty string is dropped, and an answer that comes back empty or
+     * malformed leaves this plugin's own list standing.
+     *
+     * @return list<string>
+     */
+    public static function capabilities(): array
+    {
+        $own = Capabilities::values();
+
+        $offered = Hooks::applyFilter('bit_connect_capabilities', $own);
+
+        if (!\is_array($offered)) {
+            return $own;
+        }
+
+        $clean = array_values(
+            array_unique(
+                array_filter(
+                    $offered,
+                    static fn ($cap): bool => \is_string($cap) && $cap !== ''
+                )
+            )
+        );
+
+        return $clean === [] ? $own : $clean;
+    }
+
+    /**
+     * The fields a formatted comment carries.
+     *
+     * Everything this plugin knows about a comment is in `$fields` already;
+     * this is where a plugin that knows something more about the same comment
+     * adds it. The add-on uses it to attach the reply's upvote count and
+     * whether the reader has cast one — a feature this plugin does not have,
+     * so there is no key here to overwrite and nothing withheld when nobody
+     * answers.
+     *
+     * Trusted no further than the shape: a listener that answers with
+     * something that is not an array gets this plugin's own fields sent
+     * instead of breaking the comment.
+     *
+     * @param array $fields    the comment as this plugin formats it
+     * @param int   $commentId the comment being formatted
+     */
+    public static function commentFields(array $fields, int $commentId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_comment_fields', $fields, $commentId);
+
+        return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
+     * How many upvotes a member has received.
+     *
+     * This plugin counts the votes on their topics, which is every vote it
+     * knows how to cast. The add-on adds the ones on their replies. Nobody
+     * answering leaves the topic figure, which is a true total of what this
+     * forum offers rather than a partial one.
+     *
+     * @param int $count  votes on this member's topics
+     * @param int $userId the member
+     */
+    public static function votesReceived(int $count, int $userId): int
+    {
+        return (int) Hooks::applyFilter('bit_connect_votes_received', $count, $userId);
     }
 
     /**

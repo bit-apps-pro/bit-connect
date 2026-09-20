@@ -102,11 +102,10 @@ Route::get('follows', [FollowController::class, 'mine']);
 Route::get('activity-log', [ActivityLogController::class, 'feed']);
 Route::get('activity-log/actions', [ActivityLogController::class, 'actions']);
 
-// Votes
+// Votes. Topics only — upvoting an individual reply ships in the Bit Connect
+// Pro add-on, which registers its own routes for it.
 Route::post('posts/{id}/vote', [VoteController::class, 'togglePostVote']);
-Route::post('comments/{id}/vote', [VoteController::class, 'toggleCommentVote']);
 Route::get('posts/{id}/votes', [VoteController::class, 'getPostVotes']);
-Route::get('comments/{id}/votes', [VoteController::class, 'getCommentVotes']);
 
 Route::get('taxonomies', [TaxonomyController::class, 'getTaxonomies']);
 

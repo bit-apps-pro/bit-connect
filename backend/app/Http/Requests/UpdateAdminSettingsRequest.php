@@ -6,8 +6,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
+use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\ReportService;
 
@@ -62,11 +64,20 @@ final class UpdateAdminSettingsRequest extends Request
     public function toSettingsData(): array
     {
         return [
-            'topicAccess' => [
-                'comment'       => (bool) ($this->topicAccess['comment'] ?? false),
-                'commentUpvote' => (bool) ($this->topicAccess['commentUpvote'] ?? false),
-                'upvote'        => (bool) ($this->topicAccess['upvote'] ?? false),
-            ],
+            // This plugin reads only the two keys it implements off the
+            // request, and writes them over whatever is already stored rather
+            // than replacing the group. Anything else under topicAccess
+            // belongs to a plugin that is not this one — the add-on keeps its
+            // own switches here — and rebuilding the array from the request
+            // would erase a setting this screen never showed every time an
+            // administrator pressed Save.
+            'topicAccess' => array_merge(
+                self::storedTopicAccess(),
+                [
+                    'comment' => (bool) ($this->topicAccess['comment'] ?? false),
+                    'upvote'  => (bool) ($this->topicAccess['upvote'] ?? false),
+                ]
+            ),
             'cleanup' => [
                 'deleteDataOnUninstall' => (bool) ($this->cleanup['deleteDataOnUninstall'] ?? false),
             ],
@@ -84,5 +95,23 @@ final class UpdateAdminSettingsRequest extends Request
                 ),
             ],
         ];
+    }
+
+    /**
+     * The Topic Access group as it is stored right now.
+     *
+     * Read so a save can be written over it rather than in place of it. This
+     * plugin owns two of the keys in there and must not assume it owns the
+     * rest; see toSettingsData().
+     */
+    private static function storedTopicAccess(): array
+    {
+        $stored = Config::getOption(AdminSettings::OPTION_NAME->value, []);
+
+        if (!\is_array($stored) || !\is_array($stored['topicAccess'] ?? null)) {
+            return [];
+        }
+
+        return $stored['topicAccess'];
     }
 }

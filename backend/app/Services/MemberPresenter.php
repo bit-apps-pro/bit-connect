@@ -8,7 +8,6 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use BitApps\BitConnect\Enum\Capabilities;
 use WP_User;
 
 /**
@@ -45,7 +44,7 @@ final class MemberPresenter
         $effective = [];
         $overrides = [];
 
-        foreach (Capabilities::values() as $cap) {
+        foreach (ExtensionPoints::capabilities() as $cap) {
             $effective[$cap] = (bool) $user->has_cap($cap);
 
             // $user->caps holds only explicit user-level entries.
