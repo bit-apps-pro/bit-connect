@@ -192,6 +192,26 @@ final class VoteServiceTest extends TestCase
     }
 
     /**
+     * A forum that has never saved its settings does not offer comment upvotes.
+     *
+     * Nothing seeds the settings option at activation, so a fresh install has
+     * no `topicAccess` at all and a missing key reads as off — the default
+     * AdminSettingsController::getDefaultSettings() reports. Pinned because it
+     * is a default and not a lock, and the difference is the whole of the
+     * guideline 5 question: the test below turns it on with no add-on present
+     * and the vote goes through.
+     */
+    public function testAForumThatHasNeverSavedItsSettingsDoesNotOfferCommentUpvotes(): void
+    {
+        $GLOBALS['__wp_options'] = [];
+
+        $result = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame([], $GLOBALS['__bc_votes']);
+    }
+
+    /**
      * No listener registered anywhere, which is what a forum without the add-on
      * looks like, and the vote still goes through.
      */

@@ -90,12 +90,24 @@ final class AdminSettingsController
         return Response::success($settingsData);
     }
 
+    /**
+     * What a forum that has never saved this screen runs on.
+     *
+     * `commentUpvote` is off while the other two are on, and that is a default
+     * rather than a lock. Comment threads and topic upvotes are what a forum
+     * is; upvoting individual replies changes how a thread reads, so a new
+     * forum starts without it and the administrator decides. The switch is in
+     * the Topic Access grid, it carries no pro flag, and a free-only site can
+     * turn it on and have it work — PermissionService::canUseCommentUpvotes()
+     * asks nothing but this setting, which is why the screen reports through
+     * it rather than reading the array here.
+     */
     private function getDefaultSettings()
     {
         return [
             'topicAccess' => [
                 'comment'       => true,
-                'commentUpvote' => true,
+                'commentUpvote' => false,
                 'upvote'        => true,
             ],
             'cleanup' => [

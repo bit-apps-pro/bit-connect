@@ -140,6 +140,15 @@ final class PermissionService
      *
      * Existing votes are untouched: turning this off stops new ones being cast
      * and stops the control being offered, it does not erase what was counted.
+     *
+     * Off until an administrator asks for it, and nothing seeds this option at
+     * activation, so a missing key reads as off and a new forum starts without
+     * comment upvoting. That is a default, not a lock: the switch sits in the
+     * Topic Access grid on the settings screen, carries no pro flag, and the
+     * administrator of a free-only site can turn it on and have it work. What
+     * guideline 5 forbids is a feature a licence decides, and no licence is
+     * asked here — the only opinion that counts is the one the site's own
+     * administrator saved.
      */
     public static function canUseCommentUpvotes(): bool
     {
