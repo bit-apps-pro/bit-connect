@@ -19,12 +19,9 @@ vi.mock('@features/file-uploader/state/use-file-store', () => ({ default: () => 
 // care about the row's layout set it per render. The `mock` prefix keeps it
 // reachable from the factory, which vitest hoists above this file's own code.
 const mockTopicFormFields: { requireDepartment?: boolean; requireTopicType?: boolean } = {}
-// Private topics are off here, as they are for any forum without the pro add-on.
-// The visibility radio reads this to decide whether to offer the option at all.
-const mockTopicAccess: { privateTopic?: boolean } = {}
 vi.mock('@/store/admin-settings.zustand', () => ({
   useAdminSettingsStore: (selector: (s: unknown) => unknown) =>
-    selector({ settings: { topicAccess: mockTopicAccess, topicFormFields: mockTopicFormFields } })
+    selector({ settings: { topicFormFields: mockTopicFormFields } })
 }))
 // The availability check needs a query client and the network. What it reports
 // is its own test's business; here it only has to not be in the way.

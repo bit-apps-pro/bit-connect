@@ -19,13 +19,13 @@ describe('reading the portal settings', () => {
   it('reads back what the server sent', async () => {
     vi.mocked(getRequest).mockResolvedValue({
       data: {
-        topicAccess: { comment: true, commentUpvote: true, privateTopic: false, upvote: true },
+        topicAccess: { comment: true, commentUpvote: true, upvote: true },
         topicFormFields: { requireDepartment: false, requireTopicType: false }
       }
     } as never)
 
     await expect(fetchAdminSettingsApi()).resolves.toEqual({
-      topicAccess: { comment: true, commentUpvote: true, privateTopic: false, upvote: true },
+      topicAccess: { comment: true, commentUpvote: true, upvote: true },
       topicFormFields: { requireDepartment: false, requireTopicType: false }
     })
   })
@@ -39,7 +39,6 @@ describe('reading the portal settings', () => {
       topicAccess: {
         comment: true,
         commentUpvote: defaultSettings.topicAccess.commentUpvote,
-        privateTopic: defaultSettings.topicAccess.privateTopic,
         upvote: defaultSettings.topicAccess.upvote
       },
       topicFormFields: defaultSettings.topicFormFields
@@ -81,7 +80,7 @@ describe('reading the portal settings', () => {
 describe('writing the portal settings', () => {
   it('sends the settings and reads back what was stored', async () => {
     const settings = {
-      topicAccess: { comment: true, commentUpvote: false, privateTopic: false, upvote: true },
+      topicAccess: { comment: true, commentUpvote: false, upvote: true },
       topicFormFields: { requireDepartment: true, requireTopicType: false }
     }
 

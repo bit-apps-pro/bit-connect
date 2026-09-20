@@ -120,37 +120,10 @@ final class PermissionService
     // -------------------------------------------------------------------------
 
     /**
-     * Whether a topic may be created or kept private.
-     *
-     * Two gates, and both have to be open. The admin decides whether the forum
-     * offers private topics at all (admin_settings.topicAccess.privateTopic),
-     * and private topics are a pro feature, so an unlicensed site cannot switch
-     * them on however the setting reads. Ordering matters only for cost: the
-     * option read is cheaper than resolving the pro plugin.
-     *
-     * This is deliberately not a capability. Capabilities say what a *member*
-     * may do; this says what the *forum* offers, which is a different question
-     * and is why it is not in the Manager's per-role matrix.
-     *
-     * Existing private topics are untouched by this — turning it off stops new
-     * ones being created, it does not publish or hide what is already there.
-     */
-    public static function canUsePrivateTopics(): bool
-    {
-        $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
-
-        if (!\is_array($settings) || empty($settings['topicAccess']['privateTopic'])) {
-            return false;
-        }
-
-        return ProFeatures::privateTopics();
-    }
-
-    /**
      * Whether the forum offers upvoting on comments at all.
      *
-     * The same two gates as canUsePrivateTopics(), and the same reasoning: the
-     * admin decides whether comment upvotes are offered
+     * Two gates, and both have to be open: the admin decides whether comment
+     * upvotes are offered
      * (admin_settings.topicAccess.commentUpvote), and comment upvoting is a pro
      * feature, so an unlicensed site cannot switch it on however the setting
      * reads.

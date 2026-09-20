@@ -26,7 +26,7 @@ describe('the settings screen’s values', () => {
       stored({
         cleanup: { deleteDataOnUninstall: true },
         moderation: { autoHideThreshold: 5 },
-        topicAccess: { comment: false, commentUpvote: true, privateTopic: false, upvote: false },
+        topicAccess: { comment: false, commentUpvote: true, upvote: false },
         topicFormFields: { requireDepartment: false, requireTopicType: false }
       }) as never
     )
@@ -39,7 +39,7 @@ describe('the settings screen’s values', () => {
     expect(result.current.settings).toEqual({
       cleanup: { deleteDataOnUninstall: true },
       moderation: { autoHideThreshold: 5 },
-      topicAccess: { comment: false, commentUpvote: true, privateTopic: false, upvote: false },
+      topicAccess: { comment: false, commentUpvote: true, upvote: false },
       topicFormFields: { requireDepartment: false, requireTopicType: false }
     })
   })
@@ -62,7 +62,7 @@ describe('the settings screen’s values', () => {
   it('keeps a switch the admin turned off', async () => {
     vi.mocked(request).mockResolvedValue(
       stored({
-        topicAccess: { comment: false, commentUpvote: false, privateTopic: false, upvote: false }
+        topicAccess: { comment: false, commentUpvote: false, upvote: false }
       }) as never
     )
     const { wrapper } = createQueryWrapper()
@@ -74,7 +74,6 @@ describe('the settings screen’s values', () => {
     expect(result.current.settings.topicAccess).toEqual({
       comment: false,
       commentUpvote: false,
-      privateTopic: false,
       upvote: false
     })
   })

@@ -18,9 +18,11 @@ const { Text } = Typography
  * advertisement shaped like one, which is what Plugin Directory guideline 6
  * calls a feature locked pending payment.
  *
- * The server agrees, and is the real boundary: `ProFeatures::commentUpvotes()`
- * and `ProFeatures::privateTopics()` answer `false` with no listener attached,
- * so the settings never take effect regardless of what a client posts.
+ * The server agrees, and is the real boundary. Private topics are not merely
+ * switched off here — this plugin has no endpoint that writes the status and no
+ * setting that offers it; both ship in the add-on. Comment upvotes are still
+ * gated by `ProFeatures::commentUpvotes()`, which answers `false` with no
+ * listener attached, so the setting never takes effect whatever a client posts.
  */
 export default function TopicAccessProNote() {
   const setBuyProOpen = useSetAtom($isBuyProModalOpen)

@@ -66,7 +66,6 @@ final class UpdateAdminSettingsRequest extends Request
                 'comment'       => (bool) ($this->topicAccess['comment'] ?? false),
                 'commentUpvote' => (bool) ($this->topicAccess['commentUpvote'] ?? false),
                 'upvote'        => (bool) ($this->topicAccess['upvote'] ?? false),
-                'privateTopic'  => (bool) ($this->topicAccess['privateTopic'] ?? false),
             ],
             'cleanup' => [
                 'deleteDataOnUninstall' => (bool) ($this->cleanup['deleteDataOnUninstall'] ?? false),

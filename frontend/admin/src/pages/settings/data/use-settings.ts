@@ -17,7 +17,6 @@ const defaultSettings: Settings = {
   topicAccess: {
     comment: true,
     commentUpvote: false,
-    privateTopic: false,
     upvote: true
   },
   topicFormFields: {
@@ -65,8 +64,6 @@ export default function useSettings() {
             comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
             commentUpvote:
               settingsData.topicAccess?.commentUpvote ?? defaultSettings.topicAccess.commentUpvote,
-            privateTopic:
-              settingsData.topicAccess?.privateTopic ?? defaultSettings.topicAccess.privateTopic,
             upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
           },
           topicFormFields: {

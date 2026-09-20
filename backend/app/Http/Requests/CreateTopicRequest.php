@@ -39,7 +39,13 @@ final class CreateTopicRequest extends Request
             // reaches the service is already a valid slug. Left blank, the
             // service derives one from the title the way core does.
             'post_name'   => ['nullable', 'string', 'sanitize:title', 'max:200'],
-            'post_status' => ['nullable', 'string', 'sanitize:text'],
+            // Publish is the only status this endpoint creates. Topics visible
+            // only to their author are the Bit Connect Pro add-on's, endpoint
+            // and all — there is nothing here to permit, so the allowlist is a
+            // statement of what this plugin does rather than a gate on it.
+            // Hiding a reported topic is moderation's, and goes through
+            // ContentVisibilityService rather than this request.
+            'post_status' => ['nullable', 'string', 'in:publish'],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
             'departments' => ['nullable', 'integer', 'min:1'],

@@ -23,7 +23,6 @@
 function bc_test_install_pro_addon(array $features = []): void
 {
     $all = [
-        'private_topics',
         'comment_upvotes',
         'notification_delivery',
         'notification_wording',
@@ -33,7 +32,6 @@ function bc_test_install_pro_addon(array $features = []): void
     $features = $features === [] ? $all : $features;
 
     $map = [
-        'private_topics'        => 'bit_connect_private_topics_available',
         'comment_upvotes'       => 'bit_connect_comment_upvotes_available',
         'notification_delivery' => 'bit_connect_custom_notification_delivery',
         'notification_wording'  => 'bit_connect_custom_notification_wording',
@@ -57,7 +55,6 @@ function bc_test_uninstall_pro_addon(): void
 {
     foreach (
         [
-            'bit_connect_private_topics_available',
             'bit_connect_comment_upvotes_available',
             'bit_connect_custom_notification_delivery',
             'bit_connect_custom_notification_wording',

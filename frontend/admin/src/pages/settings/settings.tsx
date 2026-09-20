@@ -149,11 +149,16 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      // Rows for the two add-on features are added only when the add-on is
-      // there to answer for them. A row rendered switched-off-and-disabled is
-      // a control for something this plugin cannot do, which reads as a
-      // built-in feature held back pending payment — see TopicAccessProNote,
-      // which says the same thing in words instead.
+      // The comment-upvote row is added only when the add-on is there to answer
+      // for it. A row rendered switched-off-and-disabled is a control for
+      // something this plugin cannot do, which reads as a built-in feature held
+      // back pending payment — see TopicAccessProNote, which says the same
+      // thing in words instead.
+      //
+      // Private topics are not here at all, in either branch: the setting is
+      // the add-on's, stored in the add-on's options and rendered by the
+      // add-on's own section, because the feature it switches is entirely over
+      // there.
       ...(IS_PRO_ACTIVE
         ? [
             {
@@ -161,14 +166,6 @@ export default function Settings() {
               key: 'commentUpvote',
               label: __('Comment Upvote'),
               value: form.topicAccess.commentUpvote ?? false
-            },
-            {
-              description: __(
-                'Let authors keep a topic private, visible only to them and the forum team'
-              ),
-              key: 'privateTopic',
-              label: __('Private Topic'),
-              value: form.topicAccess.privateTopic ?? false
             }
           ]
         : [])

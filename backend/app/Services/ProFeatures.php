@@ -65,19 +65,6 @@ final class ProFeatures
     }
 
     /**
-     * Whether the forum can offer topics visible only to their author and the
-     * moderators.
-     *
-     * Asked after the administrator's own `topicAccess.privateTopic` setting,
-     * which is a separate question: the setting says whether the forum wants
-     * the feature, this says whether it has it.
-     */
-    public static function privateTopics(): bool
-    {
-        return (bool) Hooks::applyFilter('bit_connect_private_topics_available', false);
-    }
-
-    /**
      * Whether replies can be upvoted as well as topics.
      */
     public static function commentUpvotes(): bool

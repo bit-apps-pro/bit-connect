@@ -1,8 +1,6 @@
 export interface TopicAccessSettings {
   comment: boolean
   commentUpvote: boolean
-  /** Pro. The server reports this as false unless pro is installed and licensed. */
-  privateTopic: boolean
   upvote: boolean
 }
 

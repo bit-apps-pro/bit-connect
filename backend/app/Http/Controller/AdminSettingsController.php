@@ -31,13 +31,12 @@ final class AdminSettingsController
         $settings['topicAccess'] = array_merge(
             $defaults['topicAccess'],
             $settings['topicAccess'] ?? [],
-            // Reported as what will actually apply, for the same reason as
-            // moderation below. Private topics need the setting *and* a licensed
-            // pro plugin; the portal builds its topic form from this payload, so
-            // answering with the stored value alone would offer authors an
-            // option the server then refuses.
+            // Private topics are not in this payload at all: the feature ships
+            // in the Bit Connect Pro add-on, endpoint and all, and the add-on
+            // tells the portal about its own. Reporting a flag here for a
+            // feature this plugin does not implement would describe a control
+            // that has nothing behind it.
             [
-                'privateTopic' => PermissionService::canUsePrivateTopics(),
                 // Same again: the portal decides whether to draw the upvote
                 // control on a comment from this payload, so reporting the
                 // stored value alone would draw a button the server refuses.
@@ -97,9 +96,6 @@ final class AdminSettingsController
                 'comment'       => true,
                 'commentUpvote' => true,
                 'upvote'        => true,
-                // Off by default: private topics are a pro feature, and a forum
-                // that has never been told to offer them should not.
-                'privateTopic' => false,
             ],
             'cleanup' => [
                 'deleteDataOnUninstall' => false,

@@ -24,7 +24,8 @@ const PURCHASE_URL = 'https://bitapps.pro/bit-connect'
  * Each line below names something the free build genuinely withholds, and the
  * gate that withholds it:
  *
- * - private topics      PermissionService::canUsePrivateTopics()
+ * - private topics      not implemented here at all — the add-on owns the
+ *                       endpoint, the setting and the form option
  * - profile badges      the .free/.pro dispatchers under manager/ui
  * - comment upvotes     PermissionService::canUseCommentUpvotes()
  * - auto-hide           ReportService::shouldAutoHide()
