@@ -1,13 +1,15 @@
+/**
+ * Topic Access as this plugin knows it.
+ *
+ * No `commentUpvote`. The key exists in the stored option when the add-on is
+ * installed — the server writes this screen's save over the stored group
+ * rather than replacing it, so the add-on's switch survives — but it never
+ * reaches this screen: AdminSettingsController::get() reports only the keys
+ * this plugin implements. The add-on reads and writes its own.
+ */
 export interface TopicAccessSettings {
   comment: boolean
   upvote: boolean
-  /**
-   * Whether replies can be upvoted. Optional because this plugin neither
-   * reads nor writes it — the key belongs to Bit Connect Pro, which renders
-   * its own switch and saves it through its own endpoint. Declared so the
-   * overlay and this screen agree on one shape.
-   */
-  commentUpvote?: boolean
 }
 
 export interface CleanupSettings {

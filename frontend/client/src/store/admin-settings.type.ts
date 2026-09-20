@@ -1,12 +1,13 @@
+/**
+ * Topic Access as the portal receives it.
+ *
+ * No `commentUpvote`: this plugin does not send one, because upvoting a reply
+ * is the add-on's feature and the add-on tells the portal about its own. The
+ * control is driven by use-comment-vote, not by a flag here.
+ */
 export interface TopicAccessSettings {
   comment: boolean
   upvote: boolean
-  /**
-   * Whether replies can be upvoted. Optional because this plugin never sends
-   * it — upvoting a reply ships in Bit Connect Pro, and the add-on adds the
-   * key to this payload when it is installed.
-   */
-  commentUpvote?: boolean
 }
 
 export interface TopicFormFieldsSettings {

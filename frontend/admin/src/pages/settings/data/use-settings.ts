@@ -61,11 +61,7 @@ export default function useSettings() {
           },
           topicAccess: {
             comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
-            upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote,
-            // Carried through untouched rather than defaulted: the key is the
-            // add-on's, and this screen must hand back what it was given so a
-            // save does not drop a setting it never showed.
-            commentUpvote: settingsData.topicAccess?.commentUpvote
+            upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
           },
           topicFormFields: {
             requireDepartment:

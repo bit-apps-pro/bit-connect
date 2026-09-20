@@ -39,10 +39,10 @@ export interface SinglePostStore {
   isSubmitting: boolean
   isVoting: boolean
   post: Topic | undefined
+  setCommentVote: (commentId: number, vote: Vote) => void
   setError: (error: string | undefined) => void
   setLoading: (isLoading: boolean) => void
   setPost: (post: Topic) => void
-  setCommentVote: (commentId: number, vote: Vote) => void
   setSortOption: (sortOption: SortOption) => void
   sortOption: SortOption
   toggleVote: (postId: number) => Promise<void>

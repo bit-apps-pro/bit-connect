@@ -24,10 +24,7 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
   return {
     topicAccess: {
       comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
-      upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote,
-      // Passed through untouched rather than defaulted: the key is the
-      // add-on's, and an install without it simply has nothing here.
-      commentUpvote: settingsData.topicAccess?.commentUpvote
+      upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
     },
     topicFormFields: {
       requireDepartment:
