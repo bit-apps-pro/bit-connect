@@ -10,9 +10,11 @@ const { Text, Title } = Typography
 /**
  * Moderation without the add-on: what happens to a reported post, stated.
  *
- * No number field, because there is no number to set — the server does not
- * auto-hide at all without a licence (ReportService::shouldAutoHide), so a
- * spinner holding "2" would be describing behaviour this forum does not have.
+ * No number field, because there is no number to set. This plugin holds no
+ * code that hides anything on a report count: ReportService asks the public
+ * `bit_connect_should_auto_hide` filter and, with nobody answering, the answer
+ * is no. A spinner holding "2" would be describing behaviour this forum does
+ * not have rather than a setting it declines to save.
  *
  * Reporting itself and the moderation queue are free and unaffected. What the
  * add-on sells is acting on reports *before* a moderator has looked, so that is

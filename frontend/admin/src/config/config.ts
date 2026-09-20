@@ -75,7 +75,11 @@ const config = {
   IS_DEV: import.meta.env.DEV,
   IS_PRO: SERVER_VARIABLES?.isPro === '1',
   IS_PRO_EXIST: getServerVariable('isProExist', '0') === '1',
-  KEY: getServerVariable('key'), // license key
+  // Never sent by this plugin — it holds no key to send — and not sent by the
+  // add-on either (see its addProConfigVariables). Read straight off
+  // SERVER_VARIABLES so its absence is the ordinary answer rather than a
+  // console warning on every admin page load.
+  KEY: SERVER_VARIABLES?.key,
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL', ''),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'bit-connect'),

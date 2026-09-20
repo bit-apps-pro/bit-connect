@@ -863,6 +863,30 @@ if (!function_exists('wp_mail')) {
     }
 }
 
+// Plugin location. Enough for Config's ROOT_URI and ROOT_DIR, which the asset
+// bundle is built from; the path is the real one, so readBuildCodeName() reads
+// whatever `assets/` actually holds — a built tree or nothing.
+if (!function_exists('plugins_url')) {
+    function plugins_url($path = '', $plugin = '')
+    {
+        return 'https://example.com/wp-content/plugins/bit-connect' . ($path === '' ? '' : '/' . ltrim((string) $path, '/'));
+    }
+}
+
+if (!function_exists('plugin_dir_path')) {
+    function plugin_dir_path($file)
+    {
+        return rtrim(\dirname((string) $file), '/\\') . '/';
+    }
+}
+
+if (!function_exists('set_url_scheme')) {
+    function set_url_scheme($url, $scheme = null)
+    {
+        return $url;
+    }
+}
+
 if (!function_exists('wp_parse_url')) {
     function wp_parse_url($url, $component = -1)
     {

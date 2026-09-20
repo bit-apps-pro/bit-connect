@@ -7,18 +7,19 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 
 /**
  * Behaviour this plugin declines to perform, offered to anything that will.
  *
- * Every method here answers `false` on its own, and that is the whole design.
- * These are not features this plugin has and withholds: it does not implement
- * them at all. Each one names a decision the plugin deliberately refuses to
- * make by itself — currently one, whether to hide reported content before a
- * human has looked at it — and hands to a listener if there is one. With no
- * listener the answer is no, and no is a complete, working behaviour rather
- * than a refusal.
+ * Every method here answers for itself, and that is the whole design. These
+ * are not features this plugin has and withholds: it does not implement them
+ * at all. Each one names a decision the plugin deliberately declines to make
+ * by itself — whether to hide reported content before a human has looked at
+ * it, and which asset bundle the pages it renders should load — and hands it
+ * to a listener if there is one. With no listener the plugin's own answer
+ * stands, and it is a complete, working behaviour rather than a refusal.
  *
  * The filters are public. Any plugin may answer them; the Bit Connect Pro
  * add-on is the one that does, but nothing here knows or asks about that, and
@@ -34,6 +35,80 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
  */
 final class ExtensionPoints
 {
+    /**
+     * The resolved bundle, which cannot change within a request.
+     *
+     * @var null|array{codeName: string, codeNameClient: string, uri: string}
+     */
+    private static ?array $assetBundle = null;
+
+    /**
+     * Where the admin and portal bundles are, and what their files are stamped
+     * with.
+     *
+     * This plugin's own build, unless something answers with a fuller one. The
+     * add-on is that something: it ships no view layer, so the pages are still
+     * rendered here and only the files they load change. Nothing about a
+     * licence is asked — the add-on answers whenever its build is on disk,
+     * because a plugin whose interface is in another plugin's bundle needs
+     * that bundle to reach its own settings screen at all.
+     *
+     * The three travel together on purpose. Asked separately, a listener that
+     * answers one and not another produces a URI from one build and a code
+     * name from another, which names a file that does not exist; a listener
+     * that cannot supply all three returns what it was given and the whole
+     * working set falls back intact.
+     *
+     * Returning the array unchanged is a listener's normal way of declining,
+     * so the shape is validated rather than trusted: anything missing a key or
+     * answering with a non-string leaves this plugin's own bundle in place.
+     *
+     * Memoised because Head and BaseView each read all three while enqueuing,
+     * and a filter that hits the filesystem should not run six times a page.
+     * Called no earlier than `plugins_loaded:12`, like everything here — both
+     * callers run on enqueue hooks, which is long after that.
+     *
+     * @return array{codeName: string, codeNameClient: string, uri: string}
+     */
+    public static function assetBundle(): array
+    {
+        if (self::$assetBundle !== null) {
+            return self::$assetBundle;
+        }
+
+        $own = [
+            'codeName'       => Config::readBuildCodeName(Config::ASSETS_FOLDER . '/build-code-name.txt'),
+            'codeNameClient' => Config::readBuildCodeName(Config::ASSETS_FOLDER . '/client/build-code-name.txt'),
+            'uri'            => Config::get('ROOT_URI') . '/' . Config::ASSETS_FOLDER,
+        ];
+
+        $offered = Hooks::applyFilter('bit_connect_asset_bundle', $own);
+
+        foreach (array_keys($own) as $key) {
+            if (!\is_array($offered) || !isset($offered[$key]) || !\is_string($offered[$key]) || $offered[$key] === '') {
+                return self::$assetBundle = $own;
+            }
+        }
+
+        return self::$assetBundle = [
+            'codeName'       => $offered['codeName'],
+            'codeNameClient' => $offered['codeNameClient'],
+            'uri'            => $offered['uri'],
+        ];
+    }
+
+    /**
+     * Drops the memoised bundle.
+     *
+     * Only tests need it — they answer the filter differently per case and
+     * would otherwise read the first case's answer for the whole run. Within a
+     * request the bundle cannot change, so nothing in the plugin calls this.
+     */
+    public static function flush(): void
+    {
+        self::$assetBundle = null;
+    }
+
     /**
      * Whether reported content is hidden automatically once enough members
      * have reported it.
@@ -62,5 +137,4 @@ final class ExtensionPoints
             $pending
         );
     }
-
 }

@@ -2,18 +2,16 @@
 
 namespace BitApps\BitConnect;
 
-// A class this plugin deliberately does not ship. Safe to reference because
-// every use of it sits inside isProActivated()'s class_exists() guard.
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\EmailChangeService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Views\Body;
 use BitApps\BitConnect\Views\Menu;
 use BitApps\BitConnect\Views\PluginPageActions;
-use BitApps\BitConnectPro\Config as ProConfig;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -58,8 +56,6 @@ class Config
     public const CLASS_PREFIX = 'BitApps\BitConnect';
 
     public const ASSETS_FOLDER = 'assets';
-
-    public const PRO_PLUGIN_NAMESPACE = 'BitApps\BitConnectPro\\';
 
     /**
      * Provides configuration for plugin.
@@ -108,37 +104,23 @@ class Config
             case 'ROOT_URI':
                 return set_url_scheme(plugins_url('', self::get('MAIN_FILE')), wp_parse_url(home_url())['scheme']);
 
-                // The three asset cases below hand over to the pro plugin
-                // wholesale: pro ships no view layer of its own, so the free
-                // plugin is what enqueues the pro bundle.
+                // The three asset cases below read one answer, offered to
+                // anything that ships a fuller bundle than this plugin's own.
                 //
-                // The gate is *installed*, not *licensed*, and that matters. The
-                // pro bundle is the only one containing the license screen, so
-                // serving free assets to an unlicensed pro install would leave
-                // the site with no way to enter a key — the feature could never
-                // be switched on. Serving the pro bundle unlicensed is safe:
-                // IS_PRO_ACTIVE on the frontend is the bundle flag AND the
-                // license, so every pro control still reads as locked.
+                // This plugin asks nothing about what else is installed. It
+                // states where its own assets are and lets a listener say
+                // otherwise — see ExtensionPoints::assetBundle(), which is also
+                // why the three arrive together rather than one question at a
+                // time: a URI from one build and a code name from another names
+                // a file that does not exist.
             case 'ASSET_URI':
-                if (self::isProInstalled()) {
-                    return ProConfig::get('ASSET_URI');
-                }
-
-                return self::get('ROOT_URI') . '/' . self::ASSETS_FOLDER;
+                return ExtensionPoints::assetBundle()['uri'];
 
             case 'BUILD_CODE_NAME':
-                if (self::isProInstalled()) {
-                    return ProConfig::get('BUILD_CODE_NAME');
-                }
-
-                return self::readBuildCodeName(self::ASSETS_FOLDER . '/build-code-name.txt');
+                return ExtensionPoints::assetBundle()['codeName'];
 
             case 'BUILD_CODE_NAME_CLIENT':
-                if (self::isProInstalled()) {
-                    return ProConfig::get('BUILD_CODE_NAME_CLIENT');
-                }
-
-                return self::readBuildCodeName(self::ASSETS_FOLDER . '/client/build-code-name.txt');
+                return ExtensionPoints::assetBundle()['codeNameClient'];
 
             case 'PLUGIN_PAGE_LINKS':
                 return (new PluginPageActions())->getActionLinks();
@@ -161,42 +143,6 @@ class Config
             default:
                 return $default;
         }
-    }
-
-    /**
-     * Whether the pro add-on is installed *and* holds a valid license.
-     *
-     * Two distinct states matter: installed (the class resolves) and licensed
-     * (the pro plugin says so). This answers the second, which is the one that
-     * should unlock behaviour. Callers that only need "is pro present" should
-     * ask class_exists directly.
-     *
-     * Do not call this before plugins_loaded:12 — the pro plugin configures the
-     * option prefix its license lives under at priority 11.
-     *
-     * @return bool
-     */
-    public static function isProActivated()
-    {
-        if (self::isProInstalled()) {
-            return ProConfig::isPro();
-        }
-
-        return false;
-    }
-
-    /**
-     * Whether the pro add-on's code is present, licensed or not.
-     *
-     * Asset serving asks this rather than isProActivated(): the pro bundle
-     * carries the license screen, so an unlicensed install still needs it.
-     * Anything that unlocks a paid feature must ask isProActivated() instead.
-     *
-     * @return bool
-     */
-    public static function isProInstalled()
-    {
-        return class_exists(ProConfig::class);
     }
 
     /**

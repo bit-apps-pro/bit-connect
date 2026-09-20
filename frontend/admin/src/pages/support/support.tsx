@@ -18,7 +18,7 @@ const { Paragraph, Title } = Typography
  * key, no activation, no check — so "License & Support", which is what this
  * screen used to be called, named a thing that is not present. The add-on adds
  * activation and renames the entry to "Support & License"; see
- * `Menu.php::getLicenseMenuAttributes` and the add-on's `adminSidebarMenu`.
+ * `Menu.php::getSupportMenuAttributes` and the add-on's `adminSidebarMenu`.
  *
  * Composed here rather than by importing the commons `SupportPage`, and the
  * reason is a WordPress.org rule rather than a preference. `SupportPage`
