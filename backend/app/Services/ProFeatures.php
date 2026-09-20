@@ -64,12 +64,4 @@ final class ProFeatures
         );
     }
 
-    /**
-     * Whether replies can be upvoted as well as topics.
-     */
-    public static function commentUpvotes(): bool
-    {
-        return (bool) Hooks::applyFilter('bit_connect_comment_upvotes_available', false);
-    }
-
 }

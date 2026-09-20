@@ -56,12 +56,11 @@ final class VoteServiceTest extends TestCase
         $GLOBALS['__wp_posts'] = [self::TOPIC => $this->topic()];
         $GLOBALS['__wp_comments'] = [self::COMMENT => $this->comment()];
 
-        // Comment upvoting needs the forum to offer it and a licence to allow
-        // it. Both are on here so the toggle itself is what these tests
-        // exercise; the gate has its own case below.
+        // Comment upvoting needs the forum to offer it, and that is the whole
+        // of it. Switched on here so the toggle itself is what these tests
+        // exercise; the setting has its own case below.
         $GLOBALS['__wp_filters'] = [];
         $this->offerCommentUpvotes(true);
-        $this->licence(true);
     }
 
     protected function tearDown(): void
@@ -172,11 +171,15 @@ final class VoteServiceTest extends TestCase
     }
 
     /**
-     * Two gates, and either one shut is enough. A member carrying the
-     * capability still cannot vote on a comment in a forum that does not offer
-     * comment upvotes, and a forum that offers them cannot hand them out
-     * without a licence — checked at the service, not just in the portal, so a
-     * stale page or a hand-made request gets the same answer.
+     * The administrator's setting is the gate, and the only one. A member
+     * carrying the capability still cannot vote on a comment in a forum that
+     * has switched comment upvotes off — checked at the service, not just in
+     * the portal, so a stale page or a hand-made request gets the same answer.
+     *
+     * There was a second gate, a licence, and its removal was a WordPress.org
+     * guideline 5 fix: this plugin stores comment votes, counts them, sorts by
+     * them and scores profiles with them, so blocking only the cast was a
+     * built-in feature switched off by a licence test.
      */
     public function testAForumThatDoesNotOfferCommentUpvotesRefusesTheVote(): void
     {
@@ -188,15 +191,19 @@ final class VoteServiceTest extends TestCase
         $this->assertSame([], $GLOBALS['__bc_votes']);
     }
 
-    public function testAnUnlicensedForumRefusesTheVoteHoweverTheSettingReads(): void
+    /**
+     * No listener registered anywhere, which is what a forum without the add-on
+     * looks like, and the vote still goes through.
+     */
+    public function testAForumWithoutTheAddOnStillTakesTheVote(): void
     {
         $this->offerCommentUpvotes(true);
-        $this->licence(false);
+        bc_test_uninstall_pro_addon();
 
         $result = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
 
-        $this->assertFalse($result['success']);
-        $this->assertSame([], $GLOBALS['__bc_votes']);
+        $this->assertTrue($result['success']);
+        $this->assertNotSame([], $GLOBALS['__bc_votes']);
     }
 
     public function testAVoteOnACommentThatIsGoneIsRefused(): void
@@ -418,9 +425,4 @@ final class VoteServiceTest extends TestCase
         ];
     }
 
-    private function licence(bool $valid): void
-    {
-        // The add-on registers its listeners only while licensed.
-        $valid ? bc_test_install_pro_addon(['comment_upvotes']) : bc_test_uninstall_pro_addon();
-    }
 }

@@ -27,7 +27,6 @@ const PURCHASE_URL = 'https://bitapps.pro/bit-connect'
  * - private topics      not implemented here at all — the add-on owns the
  *                       endpoint, the setting and the form option
  * - profile badges      the .free/.pro dispatchers under manager/ui
- * - comment upvotes     PermissionService::canUseCommentUpvotes()
  * - auto-hide           ReportService::shouldAutoHide()
  * - sender identity,    not implemented here — NotificationSettings::fromName(),
  *   email wording       fromEmail() and template() send as the site with the
@@ -41,7 +40,6 @@ const PURCHASE_URL = 'https://bitapps.pro/bit-connect'
 const PRO_FEATURES = [
   __('Private topics, visible only to the people you choose'),
   __('Profile badges you author and hand out'),
-  __('Upvotes on comments, not just topics'),
   __('Hide reported content automatically, before a moderator gets to it'),
   __('Send forum email from your own name and address'),
   __('Write your own wording for every notification email')

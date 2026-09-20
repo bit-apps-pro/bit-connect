@@ -8,21 +8,20 @@ import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
 const { Text } = Typography
 
 /**
- * What Topic Access looks like without the add-on: two features, stated.
+ * What Topic Access does not include without the add-on: private topics.
  *
- * These used to be rows in the grid above, rendered as switches forced off and
- * disabled behind a crown. They are described in a sentence instead, for the
- * same reason the moderation and email-wording sections describe rather than
- * grey out: this plugin has no comment-upvote and no private-topic code to
- * switch on, so a control for either was never a control — it was an
- * advertisement shaped like one, which is what Plugin Directory guideline 6
- * calls a feature locked pending payment.
+ * Described in a sentence rather than rendered as a switch forced off behind a
+ * crown, for the same reason the moderation section describes rather than greys
+ * out: a control for something this plugin cannot do was never a control, it
+ * was an advertisement shaped like one — a feature locked pending payment.
  *
  * The server agrees, and is the real boundary. Private topics are not merely
- * switched off here — this plugin has no endpoint that writes the status and no
- * setting that offers it; both ship in the add-on. Comment upvotes are still
- * gated by `ProFeatures::commentUpvotes()`, which answers `false` with no
- * listener attached, so the setting never takes effect whatever a client posts.
+ * switched off here: this plugin has no endpoint that writes the status and no
+ * setting that offers it. Both ship in the add-on.
+ *
+ * Comment upvoting used to be named here too and is not any more. It is this
+ * plugin's own feature — the votes, the counts, the sort and the profile
+ * scoring are all here — so it has an ordinary switch in the grid above.
  */
 export default function TopicAccessProNote() {
   const setBuyProOpen = useSetAtom($isBuyProModalOpen)
@@ -31,10 +30,10 @@ export default function TopicAccessProNote() {
     <div className="bc-flex bc-items-start bc-justify-between bc-gap-4 bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
       <Text className="bc-text-sm" type="secondary">
         {__(
-          'Members can upvote topics and reply to them. Upvoting individual replies, and letting an author keep a topic private so only they and the forum team can see it, come with Bit Connect Pro — a separate add-on.'
+          'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.'
         )}
       </Text>
-      <Tooltip title={__('Comment Upvote and Private Topic are Pro features.')}>
+      <Tooltip title={__('Private Topic is a Pro feature.')}>
         <Tag
           className="bc-m-0 bc-shrink-0 bc-cursor-pointer"
           color="gold"

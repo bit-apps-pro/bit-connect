@@ -122,15 +122,21 @@ final class PermissionService
     /**
      * Whether the forum offers upvoting on comments at all.
      *
-     * Two gates, and both have to be open: the admin decides whether comment
-     * upvotes are offered
-     * (admin_settings.topicAccess.commentUpvote), and comment upvoting is a pro
-     * feature, so an unlicensed site cannot switch it on however the setting
-     * reads.
+     * One gate: the administrator's own setting. There used to be a second, a
+     * licence check, and removing it was a WordPress.org guideline 5 fix rather
+     * than a change of heart about what is worth charging for.
+     *
+     * The gate withheld almost nothing. This plugin already stores comment
+     * votes, counts them on every comment it returns, sorts a thread by them,
+     * counts them towards a member's standing on their profile, and carries
+     * `forum_vote_comment` in the role matrix an admin fills in. All of that
+     * shipped and worked. The licence blocked one thing — casting the vote —
+     * which is a built-in feature switched off by a licence test, and the
+     * clearest possible case of what that guideline forbids.
      *
      * Not a capability. Capabilities::VOTE_COMMENT says whether *this member*
-     * may vote; this says whether the forum has the feature — a different
-     * question, asked before the capability is worth checking.
+     * may vote; this says whether the forum offers it — a different question,
+     * asked before the capability is worth checking.
      *
      * Existing votes are untouched: turning this off stops new ones being cast
      * and stops the control being offered, it does not erase what was counted.
@@ -139,11 +145,7 @@ final class PermissionService
     {
         $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
 
-        if (!\is_array($settings) || empty($settings['topicAccess']['commentUpvote'])) {
-            return false;
-        }
-
-        return ProFeatures::commentUpvotes();
+        return \is_array($settings) && !empty($settings['topicAccess']['commentUpvote']);
     }
 
     public static function canVotePost(): bool

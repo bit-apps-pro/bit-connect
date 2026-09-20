@@ -149,26 +149,21 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      // The comment-upvote row is added only when the add-on is there to answer
-      // for it. A row rendered switched-off-and-disabled is a control for
-      // something this plugin cannot do, which reads as a built-in feature held
-      // back pending payment — see TopicAccessProNote, which says the same
-      // thing in words instead.
+      // Unconditional. Comment upvoting is this plugin's own feature — it
+      // stores the votes, counts them, sorts by them and scores profiles with
+      // them — so the switch that offers it belongs to every forum. It used to
+      // appear only with the add-on, which made a built-in feature look like a
+      // paid one and was the guideline 5 problem in miniature.
       //
-      // Private topics are not here at all, in either branch: the setting is
-      // the add-on's, stored in the add-on's options and rendered by the
-      // add-on's own section, because the feature it switches is entirely over
-      // there.
-      ...(IS_PRO_ACTIVE
-        ? [
-            {
-              description: __('On/off your Topic comment Upvote'),
-              key: 'commentUpvote',
-              label: __('Comment Upvote'),
-              value: form.topicAccess.commentUpvote ?? false
-            }
-          ]
-        : [])
+      // Private topics are not here at all: that setting is the add-on's,
+      // stored in the add-on's options and rendered by the add-on's own
+      // section, because the feature it switches is entirely over there.
+      {
+        description: __('On/off your Topic comment Upvote'),
+        key: 'commentUpvote',
+        label: __('Comment Upvote'),
+        value: form.topicAccess.commentUpvote ?? false
+      }
     ]
   }, [form])
 

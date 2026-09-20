@@ -3,10 +3,22 @@
 /**
  * Stands in for the Bit Connect Pro add-on.
  *
- * The free plugin no longer asks whether a licence is valid — it asks the
- * ProFeatures extension points whether anything implements a feature, and by
- * itself nothing does. So a test that wants to exercise behaviour the add-on
- * supplies has to do what the add-on does: register against those filters.
+ * The free plugin never asks whether a licence is valid. It asks its extension
+ * points whether anything implements a feature, and by itself nothing does, so
+ * a test that wants to exercise behaviour the add-on supplies has to do what
+ * the add-on does: register against those filters.
+ *
+ * The list is short now, and shrinking it was the point. Comment upvotes and
+ * digests left it because they were never really the add-on's — the free plugin
+ * implemented both and only refused the last step, which WordPress.org
+ * guideline 5 forbids. Private topics and per-user capabilities left it in the
+ * other direction: their endpoints moved into the add-on outright, so there is
+ * no free-side behaviour left for a filter to switch on.
+ *
+ * What remains is auto-hide, the shape the rest were meant to have — the free
+ * plugin queues reports and a listener decides — plus the three mail filters,
+ * which supply a value rather than unlock one and so are uninstalled here but
+ * never installed.
  *
  * Seeding $GLOBALS['__wp_filters'] is how the bootstrap's apply_filters() stub
  * takes an answer, and a seeded callable is invoked with the filter's arguments
@@ -22,26 +34,9 @@
  */
 function bc_test_install_pro_addon(array $features = []): void
 {
-    $all = [
-        'comment_upvotes',
-        'notification_delivery',
-        'notification_wording',
-        'auto_hide',
-    ];
+    $all = ['auto_hide'];
 
     $features = $features === [] ? $all : $features;
-
-    $map = [
-        'comment_upvotes'       => 'bit_connect_comment_upvotes_available',
-        'notification_delivery' => 'bit_connect_custom_notification_delivery',
-        'notification_wording'  => 'bit_connect_custom_notification_wording',
-    ];
-
-    foreach ($features as $feature) {
-        if (isset($map[$feature])) {
-            $GLOBALS['__wp_filters'][$map[$feature]] = true;
-        }
-    }
 
     if (\in_array('auto_hide', $features, true)) {
         $GLOBALS['__wp_filters']['bit_connect_should_auto_hide'] = 'bc_test_pro_auto_hide';
@@ -55,10 +50,10 @@ function bc_test_uninstall_pro_addon(): void
 {
     foreach (
         [
-            'bit_connect_comment_upvotes_available',
-            'bit_connect_custom_notification_delivery',
-            'bit_connect_custom_notification_wording',
             'bit_connect_should_auto_hide',
+            'bit_connect_mail_from_name',
+            'bit_connect_mail_from_email',
+            'bit_connect_mail_template',
         ] as $tag
     ) {
         unset($GLOBALS['__wp_filters'][$tag]);
