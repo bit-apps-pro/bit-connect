@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Mon Sep 21 2026 15:32:11 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Mon Sep 21 2026 15:44:04 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:41
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:24
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:20
 msgid "Support"
 msgstr ""
 
@@ -178,43 +178,6 @@ msgstr ""
 #: frontend/client/src/pages/Post/CommentItem.tsx:106
 #: frontend/client/src/pages/Post/PostHeader.tsx:167
 msgid "Cancel"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:31
-msgid "Private topics, visible only to the people you choose"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:32
-msgid "Profile badges you author and hand out"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:33
-msgid "Hide reported content automatically, before a moderator gets to it"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:34
-msgid "Send forum email from your own name and address"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:35
-msgid "Write your own wording for every notification email"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:53
-msgid "Maybe later"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:63
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
-msgid "Get Bit Connect Pro"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:68
-msgid "Bit Connect Pro"
-msgstr ""
-
-#: frontend/admin/src/components/buy-pro.tsx:70
-msgid "Bit Connect Pro adds:"
 msgstr ""
 
 #: frontend/admin/src/components/hooks/use-wp-media-modal.ts:33
@@ -1337,7 +1300,7 @@ msgid ""
 msgstr ""
 
 #: frontend/admin/src/pages/manager/manager.tsx:78
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:46
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:40
 msgid "Profile Badges"
 msgstr ""
 
@@ -1389,37 +1352,29 @@ msgstr ""
 msgid "Capabilities, set by role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:23
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:19
 msgid "Developer"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:25
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:21
 msgid "Group Expert"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:50
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:44
 msgid ""
 "Name your people beyond what their permissions make them — Developer, "
 "Support, Group Expert — and hand the badges out per member."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:57
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:51
 msgid "For example"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:67
+#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:61
 msgid ""
 "With the Pro add-on you write your own badges — name and colour — and "
 "assign them to members from the Badges column of this screen. Members see "
 "them beside their name across the forum."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:75
-msgid "Authoring and assigning profile badges is a Pro feature."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:78
-msgid "Buy Pro"
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:14
@@ -1485,73 +1440,58 @@ msgstr ""
 msgid "Digest send hour"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:23
 msgid "Who forum email appears to come from."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:23
 msgid "Email delivery"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:32
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:26
 msgid "Notifications are sent as"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:37
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
 msgid "Taken from your site title and address. A custom sender comes with Pro."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:40
-msgid "A custom sender is a Pro feature."
-msgstr ""
-
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:47
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:47
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:48
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:34
-msgid "Pro"
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:64
 msgid "Send test email"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:68
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:51
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:25
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:19
 msgid "Greeting"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:26
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:20
 msgid "Instant email intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:27
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:21
 msgid "Digest intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:22
 msgid "Sign-off"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:33
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:27
 msgid "The wording around the list of what happened."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:34
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
 msgid "Email wording"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:38
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
 msgid ""
 "Notification emails use the wording below. Rewriting these lines comes with "
 "Pro."
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:40
-msgid "Custom email wording is a Pro feature."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/notifications.tsx:43
@@ -2487,37 +2427,29 @@ msgstr ""
 msgid "Settings updated successfully"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:31
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:25
 msgid "Moderation"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:34
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:28
 msgid "Control what happens to reported content before a moderator has looked at it"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:40
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:34
 msgid "Hide content automatically"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:41
-msgid "Hiding content on report count is a Pro feature."
-msgstr ""
-
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:53
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:37
 msgid ""
 "Reported content stays visible until a moderator decides. With Pro, a topic "
 "or reply is taken out of public view once enough different members have "
 "reported it, and comes back if a moderator keeps it."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:23
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:18
 msgid ""
 "Letting an author keep a topic private, so only they and the forum team can "
 "see it, comes with Bit Connect Pro — a separate add-on."
-msgstr ""
-
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:27
-msgid "Private Topic is a Pro feature."
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:44
@@ -2823,6 +2755,10 @@ msgstr ""
 
 #: frontend/admin/src/pages/support/internal/version-panel.free.tsx:30
 msgid "Looking for more? Bit Connect Pro is a separate add-on."
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
+msgid "Get Bit Connect Pro"
 msgstr ""
 
 #: frontend/admin/src/pages/support/support.tsx:34

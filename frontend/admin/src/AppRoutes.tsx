@@ -10,7 +10,6 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router'
 
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
-import BuyPro from './components/buy-pro'
 import config from './config/config'
 import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
 import Error404 from './pages/Error404'
@@ -126,19 +125,6 @@ export default function AppRoutes() {
               <Route element={<Error404 />} path="*" />
             </Route>
           </Routes>
-
-          {/* Mounted once, beside the routes rather than in them: every "Pro"
-              tag in the app opens this same modal through
-              $isBuyProModalOpen. In the pro build nothing sets that atom, so it
-              renders a closed Modal.
-
-              It has to sit *inside* ConfigProvider. Outside it — where this
-              used to live, as a sibling of AppRoutes in main.tsx — antd fell
-              back to its defaults, so the modal came up unthemed and, worse,
-              on the default zIndexPopupBase of 1000. WordPress gives its admin
-              bar 99999 and its menu 9990, so both painted over the mask and
-              stayed clickable while the modal was open. */}
-          <BuyPro />
         </NotifyContext.Provider>
       </StyleProvider>
     </ConfigProvider>

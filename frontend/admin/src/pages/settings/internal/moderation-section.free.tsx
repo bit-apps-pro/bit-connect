@@ -1,9 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Tag, Tooltip, Typography } from 'antd'
-import { useSetAtom } from 'jotai'
-import { LuCrown } from 'react-icons/lu'
-
-import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
+import { Typography } from 'antd'
 
 const { Text, Title } = Typography
 
@@ -22,8 +18,6 @@ const { Text, Title } = Typography
  * badges cell takes none: there is nothing here to change.
  */
 export default function ModerationSectionFree() {
-  const setBuyProOpen = useSetAtom($isBuyProModalOpen)
-
   return (
     <div className="bc-bg-surface bc-p-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-mb-6">
       <div className="bc-mb-4">
@@ -36,19 +30,9 @@ export default function ModerationSectionFree() {
       </div>
 
       <div className="bc-bg-surface bc-p-4 bc-rounded-md bc-border bc-border-solid bc-border-line md:bc-max-w-md">
-        <div className="bc-mb-3 bc-flex bc-items-start bc-justify-between bc-gap-4">
-          <Text strong>{__('Hide content automatically')}</Text>
-          <Tooltip title={__('Hiding content on report count is a Pro feature.')}>
-            <Tag
-              className="bc-m-0 bc-shrink-0 bc-cursor-pointer"
-              color="gold"
-              icon={<LuCrown className="bc-mr-1 bc-inline" size={12} />}
-              onClick={() => setBuyProOpen(true)}
-            >
-              {__('Pro')}
-            </Tag>
-          </Tooltip>
-        </div>
+        <Text className="bc-mb-3 bc-block" strong>
+          {__('Hide content automatically')}
+        </Text>
         <Text className="bc-text-sm" type="secondary">
           {__(
             'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.'

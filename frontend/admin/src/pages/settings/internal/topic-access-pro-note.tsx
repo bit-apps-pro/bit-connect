@@ -1,9 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Tag, Tooltip, Typography } from 'antd'
-import { useSetAtom } from 'jotai'
-import { LuCrown } from 'react-icons/lu'
-
-import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
+import { Typography } from 'antd'
 
 const { Text } = Typography
 
@@ -12,28 +8,17 @@ const { Text } = Typography
  *
  * Described in a sentence rather than rendered as a switch: this plugin has no
  * endpoint that writes a private status and no setting that offers one. Both
- * are in the add-on, a separate plugin.
+ * are in the add-on, a separate plugin. Plain text, not a badge or a button —
+ * the one link to the add-on is on the Support screen.
  */
 export default function TopicAccessProNote() {
-  const setBuyProOpen = useSetAtom($isBuyProModalOpen)
-
   return (
-    <div className="bc-flex bc-items-start bc-justify-between bc-gap-4 bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
+    <div className="bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
       <Text className="bc-text-sm" type="secondary">
         {__(
           'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.'
         )}
       </Text>
-      <Tooltip title={__('Private Topic is a Pro feature.')}>
-        <Tag
-          className="bc-m-0 bc-shrink-0 bc-cursor-pointer"
-          color="gold"
-          icon={<LuCrown className="bc-mr-1 bc-inline" size={12} />}
-          onClick={() => setBuyProOpen(true)}
-        >
-          {__('Pro')}
-        </Tag>
-      </Tooltip>
     </div>
   )
 }

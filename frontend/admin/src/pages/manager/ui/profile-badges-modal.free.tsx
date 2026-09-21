@@ -1,9 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Button, Modal, Typography } from 'antd'
-import { useSetAtom } from 'jotai'
-import { LuCrown } from 'react-icons/lu'
-
-import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
+import { Modal, Typography } from 'antd'
 
 import { type ProfileBadgesModalProps } from '../shared/types'
 
@@ -33,8 +29,6 @@ const EXAMPLE_BADGES = [
  * to "where did that button go". What it does not do is imitate the pro screen.
  */
 export default function ProfileBadgesModalFree({ onClose, open }: ProfileBadgesModalProps) {
-  const setBuyProOpen = useSetAtom($isBuyProModalOpen)
-
   return (
     <Modal
       // antd hides the footer on null and renders the default OK/Cancel pair
@@ -68,15 +62,6 @@ export default function ProfileBadgesModalFree({ onClose, open }: ProfileBadgesM
             'With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.'
           )}
         </Text>
-      </div>
-
-      <div className="bc-mt-4 bc-flex bc-items-center bc-justify-between bc-gap-4">
-        <Text className="bc-text-xs" type="secondary">
-          {__('Authoring and assigning profile badges is a Pro feature.')}
-        </Text>
-        <Button icon={<LuCrown size={16} />} onClick={() => setBuyProOpen(true)} type="primary">
-          {__('Buy Pro')}
-        </Button>
       </div>
     </Modal>
   )

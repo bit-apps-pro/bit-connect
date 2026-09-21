@@ -73,24 +73,6 @@ return [
 
     'Cancel' => __('Cancel', 'bit-connect'),
 
-    'Private topics, visible only to the people you choose' => __('Private topics, visible only to the people you choose', 'bit-connect'),
-
-    'Profile badges you author and hand out' => __('Profile badges you author and hand out', 'bit-connect'),
-
-    'Hide reported content automatically, before a moderator gets to it' => __('Hide reported content automatically, before a moderator gets to it', 'bit-connect'),
-
-    'Send forum email from your own name and address' => __('Send forum email from your own name and address', 'bit-connect'),
-
-    'Write your own wording for every notification email' => __('Write your own wording for every notification email', 'bit-connect'),
-
-    'Maybe later' => __('Maybe later', 'bit-connect'),
-
-    'Get Bit Connect Pro' => __('Get Bit Connect Pro', 'bit-connect'),
-
-    'Bit Connect Pro' => __('Bit Connect Pro', 'bit-connect'),
-
-    'Bit Connect Pro adds:' => __('Bit Connect Pro adds:', 'bit-connect'),
-
     'Select Icon' => __('Select Icon', 'bit-connect'),
 
     'Preview' => __('Preview', 'bit-connect'),
@@ -597,10 +579,6 @@ return [
 
     'With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.' => __('With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.', 'bit-connect'),
 
-    'Authoring and assigning profile badges is a Pro feature.' => __('Authoring and assigning profile badges is a Pro feature.', 'bit-connect'),
-
-    'Buy Pro' => __('Buy Pro', 'bit-connect'),
-
     'Posts' => __('Posts', 'bit-connect'),
 
     'Voting' => __('Voting', 'bit-connect'),
@@ -639,10 +617,6 @@ return [
 
     'Taken from your site title and address. A custom sender comes with Pro.' => __('Taken from your site title and address. A custom sender comes with Pro.', 'bit-connect'),
 
-    'A custom sender is a Pro feature.' => __('A custom sender is a Pro feature.', 'bit-connect'),
-
-    'Pro' => __('Pro', 'bit-connect'),
-
     'Send test email' => __('Send test email', 'bit-connect'),
 
     'Sent to your own address, using the settings as last saved.' => __('Sent to your own address, using the settings as last saved.', 'bit-connect'),
@@ -660,8 +634,6 @@ return [
     'Email wording' => __('Email wording', 'bit-connect'),
 
     'Notification emails use the wording below. Rewriting these lines comes with Pro.' => __('Notification emails use the wording below. Rewriting these lines comes with Pro.', 'bit-connect'),
-
-    'Custom email wording is a Pro feature.' => __('Custom email wording is a Pro feature.', 'bit-connect'),
 
     'Notification settings could not be loaded.' => __('Notification settings could not be loaded.', 'bit-connect'),
 
@@ -1083,13 +1055,9 @@ return [
 
     'Hide content automatically' => __('Hide content automatically', 'bit-connect'),
 
-    'Hiding content on report count is a Pro feature.' => __('Hiding content on report count is a Pro feature.', 'bit-connect'),
-
     'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.' => __('Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.', 'bit-connect'),
 
     'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.' => __('Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.', 'bit-connect'),
-
-    'Private Topic is a Pro feature.' => __('Private Topic is a Pro feature.', 'bit-connect'),
 
     'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
 
@@ -1228,6 +1196,8 @@ return [
     'Installed version' => __('Installed version', 'bit-connect'),
 
     'Looking for more? Bit Connect Pro is a separate add-on.' => __('Looking for more? Bit Connect Pro is a separate add-on.', 'bit-connect'),
+
+    'Get Bit Connect Pro' => __('Get Bit Connect Pro', 'bit-connect'),
 
     'About' => __('About', 'bit-connect'),
 

@@ -1,9 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Tag, Tooltip, Typography } from 'antd'
-import { useSetAtom } from 'jotai'
-import { LuCrown } from 'react-icons/lu'
-
-import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
+import { Typography } from 'antd'
 
 import { type EmailWordingSectionProps } from '../shared/types'
 import SectionCard from './section-card'
@@ -19,8 +15,6 @@ const { Text } = Typography
  * quoted text and not as inputs: this plugin has no setting for them.
  */
 export default function EmailWordingSectionFree({ form }: EmailWordingSectionProps) {
-  const setBuyProOpen = useSetAtom($isBuyProModalOpen)
-
   const lines = [
     { key: 'mailGreeting', label: __('Greeting'), value: form.mailGreeting },
     { key: 'mailIntro', label: __('Instant email intro'), value: form.mailIntro },
@@ -33,21 +27,9 @@ export default function EmailWordingSectionFree({ form }: EmailWordingSectionPro
       subtitle={__('The wording around the list of what happened.')}
       title={__('Email wording')}
     >
-      <div className="bc-mb-4 bc-flex bc-items-start bc-justify-between bc-gap-4">
-        <Text className="bc-text-sm" type="secondary">
-          {__('Notification emails use the wording below. Rewriting these lines comes with Pro.')}
-        </Text>
-        <Tooltip title={__('Custom email wording is a Pro feature.')}>
-          <Tag
-            className="bc-m-0 bc-shrink-0 bc-cursor-pointer"
-            color="gold"
-            icon={<LuCrown className="bc-mr-1 bc-inline" size={12} />}
-            onClick={() => setBuyProOpen(true)}
-          >
-            {__('Pro')}
-          </Tag>
-        </Tooltip>
-      </div>
+      <Text className="bc-mb-4 bc-block bc-text-sm" type="secondary">
+        {__('Notification emails use the wording below. Rewriting these lines comes with Pro.')}
+      </Text>
 
       <dl className="bc-m-0 bc-flex bc-flex-col bc-gap-3">
         {lines.map(line => (
