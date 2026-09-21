@@ -52,10 +52,7 @@ final class ExtensionPoints
      *
      * This plugin's own build, unless something answers with a fuller one. The
      * add-on is that something: it ships no view layer, so the pages are still
-     * rendered here and only the files they load change. Nothing about a
-     * licence is asked — the add-on answers whenever its build is on disk,
-     * because a plugin whose interface is in another plugin's bundle needs
-     * that bundle to reach its own settings screen at all.
+     * rendered here and only the files they load change.
      *
      * The three travel together on purpose. Asked separately, a listener that
      * answers one and not another produces a URI from one build and a code

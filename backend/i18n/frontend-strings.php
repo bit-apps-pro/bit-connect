@@ -545,8 +545,6 @@ return [
 
     'Settings' => __('Settings', 'bit-connect'),
 
-    'Support & License' => __('Support & License', 'bit-connect'),
-
     'Bit Connect' => __('Bit Connect', 'bit-connect'),
 
     'Product by Bit Apps' => __('Product by Bit Apps', 'bit-connect'),

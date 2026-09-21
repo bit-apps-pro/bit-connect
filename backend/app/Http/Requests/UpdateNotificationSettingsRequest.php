@@ -107,9 +107,8 @@ final class UpdateNotificationSettingsRequest extends Request
             ? $validated['defaultFrequency']
             : NotificationSettings::FREQUENCY_INSTANT;
 
-        // Sender identity and email wording are not written here, and not
-        // because a licence says so — this plugin has no setting for either.
-        // Sending as something other than the site, and rewriting the lines
+        // Sender identity and email wording are not written here: this plugin
+        // has no setting for either. Sending as something other than the site, and rewriting the lines
         // around the list, are the Bit Connect Pro add-on's features; it stores
         // them in its own option and supplies them through the
         // `bit_connect_mail_from_name`, `bit_connect_mail_from_email` and

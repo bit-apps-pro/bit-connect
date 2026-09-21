@@ -14,28 +14,18 @@ const PURCHASE_URL = 'https://bitapps.pro/bit-connect'
  * instantly on a site that may never reach bitapps.pro, and a network round
  * trip to decide what to sell is a spinner where a list should be.
  *
- * **This list may only name features the free build actually withholds.** It
- * once listed the whole pro roadmap, including seven things the free plugin
- * shipped working — so a reader was told to upgrade to unlock digests, then
- * found digests two screens away. Add a line here in the same change that
- * gates the feature, never before: an upsell for something the reader already
- * has is worse than no upsell at all.
+ * **This list may only name features this plugin does not implement.** Each
+ * one is code that exists only in the add-on, a separate plugin:
  *
- * Each line below names something the free build genuinely withholds, and the
- * gate that withholds it:
+ * - private topics      the endpoint, the setting and the form option
+ * - profile badges      the catalog, its routes and assignment
+ * - auto-hide           the policy answering `bit_connect_should_auto_hide`
+ * - sender identity,    the stored values answering the mail filters that
+ *   email wording       NotificationSettings::fromName(), fromEmail() and
+ *                       template() ask
  *
- * - private topics      not implemented here at all — the add-on owns the
- *                       endpoint, the setting and the form option
- * - profile badges      the .free/.pro dispatchers under manager/ui
- * - auto-hide           ReportService::shouldAutoHide()
- * - sender identity,    not implemented here — NotificationSettings::fromName(),
- *   email wording       fromEmail() and template() send as the site with the
- *                       built-in wording and ask a filter for anything else
- *
- * Digests are deliberately *not* on this list any more. They were, and the
- * warning above was written about exactly that: members have always chosen
- * their own cadence and the plugin's own cron has always batched, so the line
- * was selling something the reader already had.
+ * Never list something this plugin already does — an upsell for a feature the
+ * reader already has is worse than no upsell at all.
  */
 const PRO_FEATURES = [
   __('Private topics, visible only to the people you choose'),

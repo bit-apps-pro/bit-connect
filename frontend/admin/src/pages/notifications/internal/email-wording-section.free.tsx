@@ -14,12 +14,9 @@ const { Text } = Typography
  * Email wording without the add-on: the built-in lines, shown as text.
  *
  * The four lines the forum actually sends are read from `form`, which the
- * server has already resolved to the defaults for an unlicensed site — so this
+ * server has already resolved to this plugin's built-in wording — so this
  * shows the real wording rather than a sample of it. They are rendered as
- * quoted text and not as disabled inputs, for the same reason the delivery
- * section has no locked fields: a greyed-out box invites the reader to try to
- * type in it, and reads as a control that has broken rather than one that was
- * never theirs.
+ * quoted text and not as inputs: this plugin has no setting for them.
  */
 export default function EmailWordingSectionFree({ form }: EmailWordingSectionProps) {
   const setBuyProOpen = useSetAtom($isBuyProModalOpen)

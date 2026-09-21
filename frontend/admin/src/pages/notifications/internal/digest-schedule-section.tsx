@@ -12,16 +12,10 @@ const HOURS = Array.from({ length: 24 }, (_, hour) => ({
 /**
  * When digests go out — a free section, with no sibling and no upsell.
  *
- * These two controls used to sit in the delivery section behind the add-on,
- * and the frequency one was written to an option the server then overrode
- * unless a licence answered. That was wrong twice over: it is a built-in
- * feature switched off by a licence test, which WordPress.org guideline 5
- * forbids, and it was not withholding anything real — members have always
- * picked their own cadence through the portal, and the hourly cron in
- * NotificationDigest has always batched and sent for them. The only thing the
- * gate achieved was making the admin's *default* silently not apply.
- *
- * So it moved here, out of the delivery card, where nothing is conditional.
+ * Digests are this plugin's own feature: members pick their cadence through
+ * the portal, and the hourly cron in NotificationDigest batches and sends for
+ * them. These controls set the default for members who have not chosen, and
+ * nothing about them is conditional.
  */
 export default function DigestScheduleSection({
   enabled,

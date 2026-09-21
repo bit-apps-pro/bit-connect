@@ -11,11 +11,8 @@ import SectionCard from './section-card'
 /**
  * Email delivery without the add-on: what the forum will send as, stated.
  *
- * No inputs, because there is nothing here a free site can change — the server
- * ignores a submitted sender and reads the site's own identity instead
- * (NotificationSettings::fromName/fromEmail). Showing disabled fields holding
- * values that are really WordPress's would suggest the forum has its own
- * setting that happens to be locked, which is not what is true.
+ * No inputs, because this plugin has no sender setting: it sends as the site's
+ * own identity (NotificationSettings::fromName/fromEmail).
  *
  * The test-email button stays. Whether mail leaves this server at all is a
  * question every forum needs answered, and it is not what the add-on sells.

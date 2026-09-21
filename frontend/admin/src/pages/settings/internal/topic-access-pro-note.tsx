@@ -8,22 +8,11 @@ import { $isBuyProModalOpen } from '@/common/globalStates/$buyPro'
 const { Text } = Typography
 
 /**
- * What Topic Access does not include without the add-on: private topics.
+ * What the add-on adds to Topic Access: private topics.
  *
- * Described in a sentence rather than rendered as a switch forced off behind a
- * crown, for the same reason the moderation section describes rather than greys
- * out: a control for something this plugin cannot do was never a control, it
- * was an advertisement shaped like one — a feature locked pending payment.
- *
- * The server agrees, and is the real boundary. Private topics are not merely
- * switched off here: this plugin has no endpoint that writes the status and no
- * setting that offers it. Both ship in the add-on.
- *
- * Comment upvoting used to be named here too, and is not any more for the
- * opposite reason: it left this plugin entirely. There is no vote route for a
- * reply, no count, no `Most voted` ordering and no switch in the grid above —
- * the whole feature moved to the add-on, so there is nothing left here to
- * describe. Upvoting a *topic* is unaffected and is this plugin's own.
+ * Described in a sentence rather than rendered as a switch: this plugin has no
+ * endpoint that writes a private status and no setting that offers one. Both
+ * are in the add-on, a separate plugin.
  */
 export default function TopicAccessProNote() {
   const setBuyProOpen = useSetAtom($isBuyProModalOpen)

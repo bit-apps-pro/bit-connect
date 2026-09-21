@@ -181,7 +181,7 @@ export default function PostDetailsPage() {
 
   const totalCommentCount = countComments(transformedComments)
   const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
-  // Empty unless the add-on is installed and licensed, in which case it brings
+  // Empty unless the add-on supplies it, in which case it brings
   // the handler that casts the vote. See use-comment-vote.ts.
   const { onVote: handleCommentVote } = useCommentVote()
 

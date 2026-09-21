@@ -286,7 +286,7 @@ final class TopicController
                 // Both are this plugin's to do. A topic that is already private
                 // stays editable here: the field simply is not sent, so its
                 // status is untouched and its author can still fix a typo in
-                // something they wrote after a licence lapsed.
+                // it.
                 $updateData['post_status'] = $validatedData['post_status'];
             }
             if (isset($validatedData['topic-types'])) {

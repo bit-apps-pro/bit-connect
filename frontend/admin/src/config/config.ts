@@ -39,9 +39,6 @@ interface ConfigType {
   DATE_FORMAT: string
   FREE_VERSION: string
   IS_DEV: boolean
-  IS_PRO: boolean
-  IS_PRO_EXIST: boolean
-  KEY?: string
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
@@ -73,13 +70,6 @@ const config = {
   DATE_FORMAT: getServerVariable('dateFormat', 'F j, Y'),
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
-  IS_PRO: SERVER_VARIABLES?.isPro === '1',
-  IS_PRO_EXIST: getServerVariable('isProExist', '0') === '1',
-  // Never sent by this plugin — it holds no key to send — and not sent by the
-  // add-on either (see its addProConfigVariables). Read straight off
-  // SERVER_VARIABLES so its absence is the ordinary answer rather than a
-  // console warning on every admin page load.
-  KEY: SERVER_VARIABLES?.key,
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL', ''),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'bit-connect'),

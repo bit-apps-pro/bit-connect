@@ -62,9 +62,8 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
       // is a filter that can only ever come back empty, since this plugin has
       // no code that makes a topic private. It stays while the visitor is
       // actually looking at that filter, so an existing bookmark — or a forum
-      // whose add-on licence lapsed, whose private topics are all still there
-      // and still readable — does not land on a Select with a value it cannot
-      // show.
+      // that already holds private topics, which stay readable here — does not
+      // land on a Select with a value it cannot show.
       ...(isLoggedIn && (hasPrivateTopics || currentValue === 'private')
         ? [{ label: __('Private'), value: 'private' }]
         : []),

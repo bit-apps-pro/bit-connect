@@ -26,7 +26,7 @@ export interface UserCapabilitiesAdmin {
  *
  * Resetting overrides is *not* here: it is `use-reset-user-capabilities`, it
  * calls this plugin's own endpoint, and it works on every install. A site must
- * always be able to take back a permission, whatever happened to its licence.
+ * always be able to take back a permission, whichever plugins it has installed.
  */
 const useUserCapabilitiesAdmin: () => UserCapabilitiesAdmin = IS_PRO_ACTIVE
   ? useUserCapabilitiesAdminPro

@@ -165,10 +165,9 @@ export default function AppRoutes() {
       }}
     >
       <StyleProvider container={styleContainer} hashPriority="high" layer>
-        {/* AllPluginEssentials deliberately absent: license/update notices are
-            wp-admin concerns whose server variables (ajaxURL, key, isProExist…)
-            the portal never injects — rendering it here only dragged the admin
-            app's config into the public bundle. It lives in the admin app. */}
+        {/* No wp-admin notices here: they are admin concerns whose server
+            variables the portal never injects, and rendering them only dragged
+            the admin app's config into the public bundle. */}
         {/* // TODO: separate the context providers into different component for performance */}
         <NotifyContext.Provider value={notifyContextValue}>
           {contextHolderNotification}

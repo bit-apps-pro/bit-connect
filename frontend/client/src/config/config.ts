@@ -76,7 +76,6 @@ interface ConfigType {
   FREE_VERSION: string
   IS_DEV: boolean
   IS_LOGGED_IN: boolean
-  IS_PRO: boolean
   LOGIN_PAGE_CUSTOMIZATION: { banner: string; description: string; title: string }
   LOGO_LIGHT: string
   LOGO_PERMALINK_CUSTOM: string
@@ -160,7 +159,6 @@ const config = {
   IS_DEV: import.meta.env.DEV,
   IS_LOGGED_IN:
     getServerVariable('isLoggedIn', false) === true || getServerVariable('isLoggedIn', false) === '1',
-  IS_PRO: SERVER_VARIABLES?.isPro === '1',
   LOGIN_PAGE_CUSTOMIZATION: getServerVariable('loginPageCustomization', {
     banner: '',
     description: '',

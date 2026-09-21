@@ -12,34 +12,13 @@ import VersionPanel from './internal/version-panel'
 const { Paragraph, Title } = Typography
 
 /**
- * Support.
+ * Support: about the plugin, the installed version, the changelog and where to
+ * get help.
  *
- * Named for what it is in this plugin. There is no licence here to manage — no
- * key, no activation, no check — so "License & Support", which is what this
- * screen used to be called, named a thing that is not present. The add-on adds
- * activation and renames the entry to "Support & License"; see
- * `Menu.php::getSupportMenuAttributes` and the add-on's `adminSidebarMenu`.
- *
- * Composed here rather than by importing the commons `SupportPage`, and the
- * reason is a WordPress.org rule rather than a preference. `SupportPage`
- * imports `License.pro` unconditionally — no `isPro()` guard, no stub — so
- * rendering it compiled the add-on's licence machinery into *this* plugin's
- * bundle: an activation call, a deactivation call, and a request to
- * `wp-api.bitapps.pro/public/verify-site` every 24 hours whose only job is to
- * decide whether paid features may run. Guideline 6 does not permit a hosted
- * plugin to carry that, dormant or not.
- *
- * It is done here, in Bit Connect's own tree, and not by patching the commons:
- * `pnpm plugin:commons:sync` empties and re-copies `frontend/_plugin-commons`
- * from the shared submodule, so a fix there would not survive the next sync.
- * Everything below is a commons component that makes no licence decision and
- * no undisclosed request, used unchanged; the licence half is reached through
- * the `.free`/`.pro` split every other pro surface already uses.
- *
- * The pro edition loses nothing: `version-panel.pro` renders the same commons
- * `License` component this screen used to, so activation, deactivation and the
- * update check are all still there — compiled from `pro/frontend`, into the
- * add-on's bundle only.
+ * Composed here from individual commons components rather than by importing
+ * the commons `SupportPage`, so this screen carries exactly what Bit Connect
+ * renders and nothing else. The version panel is the one piece that differs by
+ * edition, reached through the same `.free`/`.pro` split as every other one.
  */
 export default function Support() {
   const { token } = theme.useToken()

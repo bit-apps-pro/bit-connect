@@ -117,14 +117,8 @@ export default function AppRoutes() {
               <Route element={<Notifications />} path="notifications" />
               <Route element={<Seo />} path="seo" />
               <Route element={<Settings />} path="settings" />
-              {/* Registered in both builds. In this one it is support, the
-                  changelog and what the add-on adds; in the pro build the same
-                  screen also activates a licence. */}
+              {/* Support, the changelog and what the add-on adds. */}
               <Route element={<Support />} path="support" />
-              {/* The screen was at `#/license` until it was renamed, and that
-                  hash is in bookmarks, in old plugin-row links and in the
-                  READMEs of released versions. Redirect rather than 404. */}
-              <Route element={<Navigate replace to="../support" />} path="license" />
               <Route element={<Tags />} path="tags" />
               <Route element={<Products />} path="products" />
               <Route element={<Status />} path="status" />
@@ -133,8 +127,8 @@ export default function AppRoutes() {
             </Route>
           </Routes>
 
-          {/* Mounted once, beside the routes rather than in them: every locked
-              control in the app opens this same modal through
+          {/* Mounted once, beside the routes rather than in them: every "Pro"
+              tag in the app opens this same modal through
               $isBuyProModalOpen. In the pro build nothing sets that atom, so it
               renders a closed Modal.
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Mon Sep 21 2026 11:30:41 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Mon Sep 21 2026 15:32:11 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -137,7 +137,7 @@ msgid "Recommended Plugins"
 msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:41
 #: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:24
 msgid "Support"
 msgstr ""
@@ -180,40 +180,40 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:41
+#: frontend/admin/src/components/buy-pro.tsx:31
 msgid "Private topics, visible only to the people you choose"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:42
+#: frontend/admin/src/components/buy-pro.tsx:32
 msgid "Profile badges you author and hand out"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:43
+#: frontend/admin/src/components/buy-pro.tsx:33
 msgid "Hide reported content automatically, before a moderator gets to it"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:44
+#: frontend/admin/src/components/buy-pro.tsx:34
 msgid "Send forum email from your own name and address"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:45
+#: frontend/admin/src/components/buy-pro.tsx:35
 msgid "Write your own wording for every notification email"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:63
+#: frontend/admin/src/components/buy-pro.tsx:53
 msgid "Maybe later"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:73
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:48
+#: frontend/admin/src/components/buy-pro.tsx:63
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
 msgid "Get Bit Connect Pro"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:78
+#: frontend/admin/src/components/buy-pro.tsx:68
 msgid "Bit Connect Pro"
 msgstr ""
 
-#: frontend/admin/src/components/buy-pro.tsx:80
+#: frontend/admin/src/components/buy-pro.tsx:70
 msgid "Bit Connect Pro adds:"
 msgstr ""
 
@@ -393,7 +393,7 @@ msgid "Rows appear when someone acts on content they did not write."
 msgstr ""
 
 #: frontend/admin/src/pages/activity/activity.tsx:100
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:35
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:34
 msgid "Activity"
 msgstr ""
 
@@ -620,7 +620,7 @@ msgid "Sidebar card"
 msgstr ""
 
 #: frontend/admin/src/pages/general/general.tsx:209
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:27
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:26
 msgid "General"
 msgstr ""
 
@@ -667,7 +667,7 @@ msgid "Narrow the list down to a tag."
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:40
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:31
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:30
 #: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:12
 #: frontend/admin/src/pages/tags/tags.tsx:19
 #: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:144
@@ -1238,40 +1238,40 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:26
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:25
 msgid "Dashboard"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:28
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:27
 #: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:10
 msgid "Stages"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:29
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:28
 #: frontend/admin/src/pages/topic-types/topic-types.tsx:17
 msgid "Topic Types"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:30
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:29
 #: frontend/admin/src/pages/products/products.tsx:20
 msgid "Products"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:32
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:31
 #: frontend/admin/src/pages/status/status.tsx:18
 msgid "Status"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:33
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:32
 msgid "Manager"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:35
 #: frontend/admin/src/pages/reports/reports.tsx:105
 msgid "Reports"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:37
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
 #: frontend/admin/src/pages/notifications/notifications.tsx:62
 #: frontend/admin/src/pages/notifications/notifications.tsx:83
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:77
@@ -1284,27 +1284,23 @@ msgstr ""
 msgid "Notifications"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:37
 #: frontend/admin/src/pages/seo/seo.tsx:332
 msgid "SEO"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:39
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
 #: frontend/admin/src/pages/settings/settings.tsx:193
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
 msgid "Settings"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
-msgid "Support & License"
-msgstr ""
-
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:77
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:80
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:69
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:72
 msgid "Bit Connect"
 msgstr ""
 
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:103
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:95
 msgid "Product by Bit Apps"
 msgstr ""
 
@@ -1473,88 +1469,88 @@ msgstr ""
 msgid "Test email sent"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:34
+#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:28
 msgid "When batched email goes out, for members who have not chosen for themselves."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:35
+#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:29
 msgid "Digest schedule"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:40
+#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:34
 msgid "Default email frequency"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:52
+#: frontend/admin/src/pages/notifications/internal/digest-schedule-section.tsx:46
 msgid "Digest send hour"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:28
 msgid "Who forum email appears to come from."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:28
 msgid "Email delivery"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:35
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:32
 msgid "Notifications are sent as"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:40
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:37
 msgid "Taken from your site title and address. A custom sender comes with Pro."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:43
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:40
 msgid "A custom sender is a Pro feature."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:50
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:50
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:47
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:47
 #: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:48
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:45
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:34
 msgid "Pro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:67
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:64
 msgid "Send test email"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:71
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:68
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:25
 msgid "Greeting"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:29
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:26
 msgid "Instant email intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:30
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:27
 msgid "Digest intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
 msgid "Sign-off"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:36
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:33
 msgid "The wording around the list of what happened."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:37
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:34
 msgid "Email wording"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:41
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:38
 msgid ""
 "Notification emails use the wording below. Rewriting these lines comes with "
 "Pro."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:43
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:40
 msgid "Custom email wording is a Pro feature."
 msgstr ""
 
@@ -2514,13 +2510,13 @@ msgid ""
 "reported it, and comes back if a moderator keeps it."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:34
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:23
 msgid ""
 "Letting an author keep a topic private, so only they and the forum team can "
 "see it, comes with Bit Connect Pro — a separate add-on."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:38
+#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:27
 msgid "Private Topic is a Pro feature."
 msgstr ""
 
@@ -2817,19 +2813,19 @@ msgstr ""
 msgid "Delete Status"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:32
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:23
 msgid "Version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:35
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:26
 msgid "Installed version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:30
 msgid "Looking for more? Bit Connect Pro is a separate add-on."
 msgstr ""
 
-#: frontend/admin/src/pages/support/support.tsx:55
+#: frontend/admin/src/pages/support/support.tsx:34
 msgid "About"
 msgstr ""
 
@@ -3580,12 +3576,12 @@ msgstr ""
 msgid "Oldest"
 msgstr ""
 
-#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:69
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:68
 #: frontend/client/src/pages/topics/topics.tsx:132
 msgid "Private"
 msgstr ""
 
-#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:71
+#: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:70
 #: frontend/client/src/pages/topics/topics.tsx:130
 msgid "My Topics"
 msgstr ""

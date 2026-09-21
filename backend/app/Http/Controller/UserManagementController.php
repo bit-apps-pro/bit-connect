@@ -26,10 +26,9 @@ use WP_User_Query;
  * of it — and it holds no code that writes a user-level capability. Overriding
  * one person's permissions is the Bit Connect Pro add-on's, endpoint and all.
  *
- * Reset stays here, and stays ungated, because it only ever *removes*: a site
- * that never had the add-on has nothing to clear, and a site that has stopped
- * paying for it must still be able to take back permissions it can no longer
- * manage. Removal needs no licence and no pro code to exist.
+ * Reset stays here because it only ever *removes*: a site that never had the
+ * add-on has nothing to clear, and a site that has removed it must still be
+ * able to take back permissions it can no longer manage.
  */
 final class UserManagementController
 {

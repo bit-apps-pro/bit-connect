@@ -243,14 +243,13 @@ final class InstallerProvider
      *
      * The pro add-on namespaces its options under `bit_connect_pro_`, which
      * begins with this plugin's own `bit_connect_` — so a plain prefix sweep
-     * takes the add-on's data with it, licence key included. It has its own
+     * would take another plugin's data with it. The add-on has its own
      * uninstaller registered against its own plugin file and cleans up after
      * itself; this one must leave it alone.
      *
-     * That mattered in practice rather than in theory: `Requires Plugins`
-     * makes an admin deactivate pro before removing free, so the add-on would
-     * still be sitting installed on disk with its licence silently deleted,
-     * and would come back unlicensed on reactivation.
+     * That matters in practice: `Requires Plugins` makes an admin deactivate
+     * the add-on before removing this plugin, so the add-on is still installed
+     * on disk and would come back without its settings on reactivation.
      */
     public static function ownsOption(string $optionName): bool
     {

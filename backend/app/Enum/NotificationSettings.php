@@ -170,18 +170,11 @@ enum NotificationSettings: string
     /**
      * The default digest frequency for members who have not chosen one.
      *
-     * Not gated, and the reason is worth recording: digests are this plugin's
-     * feature and always were. NotificationPreferences::frequencyFor() reads a
-     * member's own choice, NotificationController saves it without asking about
-     * a licence, and NotificationDigest batches and sends on the hourly cron —
-     * all of it here, all of it working. This value is only the default for
-     * members who have not chosen.
-     *
-     * It used to be forced to INSTANT unless a licence answered, which made the
-     * admin's saved choice silently not apply while the same schedule ran fine
-     * for any member who set it themselves. That is a built-in feature switched
-     * off by a licence test, which WordPress.org guideline 5 forbids, and it
-     * was not even buying anything: the engine it disabled ships here.
+     * Digests are this plugin's own feature: NotificationPreferences::
+     * frequencyFor() reads a member's own choice, NotificationController saves
+     * it, and NotificationDigest batches and sends on the hourly cron. This
+     * value is only the default for members who have not chosen, and the
+     * admin's saved choice always applies.
      *
      * @param mixed $settings the stored notification_settings option
      */
