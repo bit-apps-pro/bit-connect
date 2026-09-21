@@ -288,24 +288,6 @@ final class VoteServiceTest extends TestCase
     }
 
     /**
-     * The rows are the add-on's; clearing them is still this plugin's job.
-     *
-     * Seeded straight into the table rather than cast through the service,
-     * because this plugin has no way to cast one. That is the point of the
-     * case: a comment going away must not leave votes behind pointing at it,
-     * whoever wrote them.
-     */
-    public function testDeletingACommentTakesItsVotesAndItsCachedTotal(): void
-    {
-        $GLOBALS['__bc_votes'] = [
-            ['user_id' => self::VOTER, 'post_id' => null, 'comment_id' => self::COMMENT],
-        ];
-
-        $this->assertTrue($this->votes->deleteCommentVotes(self::COMMENT));
-        $this->assertSame([], $GLOBALS['__bc_votes']);
-    }
-
-    /**
      * Left behind, a deleted member's votes keep counting towards totals nobody
      * can trace back to a person.
      */

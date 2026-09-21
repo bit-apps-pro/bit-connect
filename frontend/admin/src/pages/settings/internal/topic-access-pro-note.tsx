@@ -19,9 +19,11 @@ const { Text } = Typography
  * switched off here: this plugin has no endpoint that writes the status and no
  * setting that offers it. Both ship in the add-on.
  *
- * Comment upvoting used to be named here too and is not any more. It is this
- * plugin's own feature — the votes, the counts, the sort and the profile
- * scoring are all here — so it has an ordinary switch in the grid above.
+ * Comment upvoting used to be named here too, and is not any more for the
+ * opposite reason: it left this plugin entirely. There is no vote route for a
+ * reply, no count, no `Most voted` ordering and no switch in the grid above —
+ * the whole feature moved to the add-on, so there is nothing left here to
+ * describe. Upvoting a *topic* is unaffected and is this plugin's own.
  */
 export default function TopicAccessProNote() {
   const setBuyProOpen = useSetAtom($isBuyProModalOpen)

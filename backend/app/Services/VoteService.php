@@ -25,16 +25,15 @@ use BitApps\BitConnect\Model\Vote;
  *   - Dropping the author's cached profile totals, since a vote moves the
  *     "Upvotes" figure on their card and nothing in core announces one
  *
- * Topics only. Upvoting an individual reply is implemented in the Bit Connect
- * Pro add-on and not here — there is no method on this class that casts one.
- * What remains on the comment side is deleteCommentVotes(), which is
- * housekeeping for this plugin's own table rather than a feature: a deleted
- * comment must not leave rows behind pointing at it.
+ * Topics only, end to end: this class has no comment-side method at all, and
+ * the table it writes has no comment column. Upvoting an individual reply is a
+ * separate add-on's feature, and the rows, the column and the cleanup after
+ * them all belong to whichever plugin implements it.
  */
 class VoteService
 {
     /**
-     * Meta key used in postmeta and commentmeta for the cached vote total.
+     * Meta key used in postmeta for a topic's cached vote total.
      */
     public const META_VOTE_COUNT = '_bit_connect_vote_count';
 
@@ -126,23 +125,6 @@ class VoteService
         delete_post_meta($postId, self::META_VOTE_COUNT);
 
         return Vote::deleteAllVotesForPost($postId);
-    }
-
-    /**
-     * Clears away anything stored against a comment that is being deleted.
-     *
-     * Kept although this plugin no longer casts comment votes. The votes table
-     * is this plugin's, and a deleted comment must not leave rows in it
-     * pointing at a comment_ID that no longer exists — whoever wrote them. The
-     * add-on writes those rows; cleaning up after its own table is still this
-     * plugin's job, and on a site without the add-on it tidies whatever an
-     * earlier version left behind.
-     */
-    public function deleteCommentVotes(int $commentId): bool
-    {
-        delete_comment_meta($commentId, self::META_VOTE_COUNT);
-
-        return Vote::deleteAllVotesForComment($commentId);
     }
 
     public function deleteUserVotes(int $userId): bool

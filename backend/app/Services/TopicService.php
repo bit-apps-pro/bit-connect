@@ -384,16 +384,10 @@ class TopicService
             return false;
         }
 
-        $voteService = new VoteService();
-
-        // Delete votes for all comments on this post
-        $comments = get_comments(['post_id' => $id, 'fields' => 'ids']);
-        foreach ($comments as $commentId) {
-            $voteService->deleteCommentVotes((int) $commentId);
-        }
-
-        // Delete post votes
-        $voteService->deletePostVotes($id);
+        // The topic's own votes. Its replies are deleted by wp_delete_post()
+        // below, which fires `deleted_comment` for each one — anything holding
+        // data against a reply cleans up on that hook rather than here.
+        (new VoteService())->deletePostVotes($id);
 
         $result = wp_delete_post($id, true);
 
