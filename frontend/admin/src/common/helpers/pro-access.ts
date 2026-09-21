@@ -16,5 +16,3 @@ import isAddonActive from './addon-active.pro'
  * this file answers `false` and is never reached here.
  */
 export const IS_PRO_ACTIVE = isPro() && isAddonActive()
-
-export const SHOW_PRO_UPSELL = !IS_PRO_ACTIVE

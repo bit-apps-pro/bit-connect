@@ -7,11 +7,10 @@
  * exists so the import graph resolves and so the free build never reaches the
  * assignment popover.
  *
- * It used to draw an em dash in an always-empty column whose heading carried a
- * Buy Pro tag. A column that can never hold anything is not a column; it is an
- * advert with a table's chrome on, which is not something a plugin on
- * WordPress.org should ship. What profile badges are is explained once, on the
- * Profile Badges screen, and only when an admin asks for it.
+ * No empty column is drawn in its place either. A column that can never hold
+ * anything is not a column; it is an advert with a table's chrome on. What
+ * profile badges are is explained once, on the Profile Badges screen, and only
+ * when an admin asks for it.
  */
 export default function UserBadgesPopoverFree() {
   // eslint-disable-next-line unicorn/no-null

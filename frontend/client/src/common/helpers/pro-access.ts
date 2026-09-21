@@ -11,5 +11,3 @@ import isAddonActive from './addon-active.pro'
  * half is answered by the add-on's own `addon-active.pro` in its build only.
  */
 export const IS_PRO_ACTIVE = isPro() && isAddonActive()
-
-export const SHOW_PRO_UPSELL = !IS_PRO_ACTIVE
