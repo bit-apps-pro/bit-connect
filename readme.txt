@@ -106,18 +106,7 @@ View the full source code on [GitHub](https://github.com/bit-apps-pro/bit-connec
 
 == External Services ==
 
-This plugin relies on two external services: Google Fonts, for the typeface the forum is set in, and the Bit Apps API. Neither receives your site's content, your members' details or your settings. What each one does, and when, is set out below.
-
-= Google Fonts =
-
-The plugin loads the **Outfit** typeface from Google Fonts, on both its admin screens and the public forum portal. Because the portal is public, this happens for **every visitor** who views it, not only for logged-in administrators.
-
-* **What is sent:** the request for the font files themselves. As with any web request, Google receives the visitor's IP address, browser user agent and the referring page URL. No site content, member details or settings are transmitted.
-* **When:** on every page load of the forum portal and of the plugin's admin screens.
-* **Endpoints:** `https://fonts.googleapis.com` (stylesheet) and `https://fonts.gstatic.com` (font files).
-* **Provider:** Google — [terms of service](https://policies.google.com/terms), [privacy policy](https://policies.google.com/privacy).
-
-If serving fonts from Google is not acceptable for your site — some jurisdictions treat it as a transfer of visitor data — the font is purely cosmetic and the forum works without it.
+This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Outfit** typeface it is set in ships inside the plugin (SIL Open Font License 1.1) and is served from your own site.
 
 = Bit Apps plugin catalogue =
 
@@ -165,13 +154,14 @@ Yes. Members can create profiles and receive supported in-app and email notifica
 
 = Does the plugin contact any external servers? =
 
-Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
+One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
 
 = 1.0.1 =
 * Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
 * Settings screens now describe add-on features in plain text, with no disabled controls.
+* The Outfit typeface now ships with the plugin instead of loading from Google Fonts, so the portal contacts no third party.
 
 = 1.0.0 =
 * First stable release.

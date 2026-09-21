@@ -15,37 +15,17 @@ if (!defined('ABSPATH')) {
 
 class Head
 {
-    public const FONT_URL = 'https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap';
-
     public function __construct()
     {
         Hooks::addFilter('script_module_data_' . Config::SLUG . '-index-MODULE', [$this, 'createConfigVariable']);
     }
 
     /**
-     * Enqueue the Outfit webfont plus its preconnect hints.
-     *
-     * Both the admin screens and the public portal render UI that asks for this
-     * family, so each entry point calls this rather than duplicating the URLs.
-     * wp_enqueue_style() de-duplicates by handle, so calling it twice is safe.
-     *
-     * @param string $slug plugin slug used to namespace the style handles
-     */
-    public static function enqueueFont($slug)
-    {
-        $version = Config::VERSION;
-
-        // null version: these are origin-only preconnect hints (rewritten from
-        // rel=stylesheet by HtmlTagModifier), so a ?ver query is meaningless.
-        // phpcs:disable WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Preconnect hints carry no file to cache-bust.
-        wp_enqueue_style($slug . '-googleapis-PRECONNECT', 'https://fonts.googleapis.com', [], null);
-        wp_enqueue_style($slug . '-gstatic-PRECONNECT-CROSSORIGIN', 'https://fonts.gstatic.com', [], null);
-        // phpcs:enable WordPress.WP.EnqueuedResourceParameters.MissingVersion
-        wp_enqueue_style($slug . '-font', self::FONT_URL, [], $version);
-    }
-
-    /**
      * Load the asset libraries.
+     *
+     * The Outfit typeface is not enqueued here: it ships inside the built
+     * stylesheet (frontend/shared/fonts), so nothing is fetched from a third
+     * party on any page this plugin draws.
      *
      * @param string $currentScreen $top_level_page variable for current page
      */
@@ -57,8 +37,6 @@ class Head
 
         $version = Config::VERSION;
         $slug = Config::SLUG;
-
-        self::enqueueFont($slug);
 
         // Inject server variables as a window global so the ES module bundle can access them.
         // wp_localize_script() does not work with wp_enqueue_script_module(), so we use an inline script instead.

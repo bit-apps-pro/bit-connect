@@ -183,11 +183,6 @@ class BaseView
             PrePaint::enqueue();
         }
 
-        // The portal's stylesheet asks for the Outfit family, but Head::addHeadScripts()
-        // only runs on the plugin's wp-admin screens — so without this the public portal
-        // silently fell back to the visitor's system UI font.
-        Head::enqueueFont($this->slug);
-
         // This inline global is the bundle's only config transport: the Vite
         // build `define`s every bare SERVER_VARIABLES read to
         // `window.bit_connect_` (see vite.config.client.mts + .env), so the
