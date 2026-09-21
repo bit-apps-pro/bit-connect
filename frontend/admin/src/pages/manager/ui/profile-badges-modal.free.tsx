@@ -59,7 +59,7 @@ export default function ProfileBadgesModalFree({ onClose, open }: ProfileBadgesM
         </div>
         <Text className="bc-block bc-text-sm" type="secondary">
           {__(
-            'With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.'
+            'Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.'
           )}
         </Text>
       </div>

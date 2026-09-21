@@ -16,7 +16,7 @@ export default function TopicAccessProNote() {
     <div className="bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
       <Text className="bc-text-sm" type="secondary">
         {__(
-          'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.'
+          'Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin.'
         )}
       </Text>
     </div>

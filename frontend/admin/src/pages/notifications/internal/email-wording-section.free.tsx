@@ -28,7 +28,9 @@ export default function EmailWordingSectionFree({ form }: EmailWordingSectionPro
       title={__('Email wording')}
     >
       <Text className="bc-mb-4 bc-block bc-text-sm" type="secondary">
-        {__('Notification emails use the wording below. Rewriting these lines comes with Pro.')}
+        {__(
+          'Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.'
+        )}
       </Text>
 
       <dl className="bc-m-0 bc-flex bc-flex-col bc-gap-3">

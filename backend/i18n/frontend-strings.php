@@ -568,7 +568,7 @@ return [
 
     'For example' => __('For example', 'bit-connect'),
 
-    'With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.' => __('With the Pro add-on you write your own badges — name and colour — and assign them to members from the Badges column of this screen. Members see them beside their name across the forum.', 'bit-connect'),
+    'Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.' => __('Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.', 'bit-connect'),
 
     'Posts' => __('Posts', 'bit-connect'),
 
@@ -606,7 +606,7 @@ return [
 
     'Notifications are sent as' => __('Notifications are sent as', 'bit-connect'),
 
-    'Taken from your site title and address. A custom sender comes with Pro.' => __('Taken from your site title and address. A custom sender comes with Pro.', 'bit-connect'),
+    'Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.' => __('Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
 
     'Send test email' => __('Send test email', 'bit-connect'),
 
@@ -624,7 +624,7 @@ return [
 
     'Email wording' => __('Email wording', 'bit-connect'),
 
-    'Notification emails use the wording below. Rewriting these lines comes with Pro.' => __('Notification emails use the wording below. Rewriting these lines comes with Pro.', 'bit-connect'),
+    'Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.' => __('Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
 
     'Notification settings could not be loaded.' => __('Notification settings could not be loaded.', 'bit-connect'),
 
@@ -1044,11 +1044,9 @@ return [
 
     'Control what happens to reported content before a moderator has looked at it' => __('Control what happens to reported content before a moderator has looked at it', 'bit-connect'),
 
-    'Hide content automatically' => __('Hide content automatically', 'bit-connect'),
+    'Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.' => __('Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
 
-    'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.' => __('Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.', 'bit-connect'),
-
-    'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.' => __('Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.', 'bit-connect'),
+    'Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin.' => __('Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
 
     'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
 

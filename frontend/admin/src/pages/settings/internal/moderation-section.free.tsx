@@ -6,11 +6,12 @@ const { Text, Title } = Typography
 /**
  * Moderation without the add-on: what happens to a reported post, stated.
  *
- * No number field, because there is no number to set. This plugin holds no
- * code that hides anything on a report count: ReportService asks the public
- * `bit_connect_should_auto_hide` filter and, with nobody answering, the answer
- * is no. A spinner holding "2" would be describing behaviour this forum does
- * not have rather than a setting it declines to save.
+ * No number field and no heading shaped like a switch, because there is
+ * nothing to set. This plugin holds no code that hides anything on a report
+ * count: ReportService asks the public `bit_connect_should_auto_hide` filter
+ * and, with nobody answering, the answer is no. A spinner holding "2", or a
+ * bold label with nothing under it, would be describing behaviour this forum
+ * does not have rather than a setting it declines to save.
  *
  * Reporting itself and the moderation queue are free and unaffected. What the
  * add-on sells is acting on reports *before* a moderator has looked, so that is
@@ -29,16 +30,11 @@ export default function ModerationSectionFree() {
         </Text>
       </div>
 
-      <div className="bc-bg-surface bc-p-4 bc-rounded-md bc-border bc-border-solid bc-border-line md:bc-max-w-md">
-        <Text className="bc-mb-3 bc-block" strong>
-          {__('Hide content automatically')}
-        </Text>
-        <Text className="bc-text-sm" type="secondary">
-          {__(
-            'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.'
-          )}
-        </Text>
-      </div>
+      <Text className="bc-text-sm" type="secondary">
+        {__(
+          'Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.'
+        )}
+      </Text>
     </div>
   )
 }

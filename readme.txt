@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,6 +168,10 @@ Yes. Members can create profiles and receive supported in-app and email notifica
 Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.1 =
+* Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
+* Settings screens now describe add-on features in plain text, with no disabled controls.
 
 = 1.0.0 =
 * First stable release.

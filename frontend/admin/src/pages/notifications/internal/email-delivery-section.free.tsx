@@ -28,7 +28,9 @@ export default function EmailDeliverySectionFree({
           <span className="bc-text-ink-subtle">&lt;{payload.effectiveSender.email}&gt;</span>
         </div>
         <div className="bc-text-xs bc-text-ink-subtle">
-          {__('Taken from your site title and address. A custom sender comes with Pro.')}
+          {__(
+            'Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.'
+          )}
         </div>
       </div>
 

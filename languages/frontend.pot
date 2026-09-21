@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Mon Sep 21 2026 16:03:47 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Mon Sep 21 2026 17:02:06 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1354,9 +1354,9 @@ msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:61
 msgid ""
-"With the Pro add-on you write your own badges — name and colour — and "
-"assign them to members from the Badges column of this screen. Members see "
-"them beside their name across the forum."
+"Writing your own badges — name and colour — and assigning them to members "
+"is a feature of Bit Connect Pro, a separate plugin. Members see them beside "
+"their name across the forum."
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:14
@@ -1435,14 +1435,16 @@ msgid "Notifications are sent as"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
-msgid "Taken from your site title and address. A custom sender comes with Pro."
+msgid ""
+"Taken from your site title and address. A custom sender is a feature of Bit "
+"Connect Pro, a separate plugin."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:47
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:49
 msgid "Send test email"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:51
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:53
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
@@ -1472,8 +1474,8 @@ msgstr ""
 
 #: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
 msgid ""
-"Notification emails use the wording below. Rewriting these lines comes with "
-"Pro."
+"Notification emails use the wording below. Editing these lines is a feature "
+"of Bit Connect Pro, a separate plugin."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/notifications.tsx:43
@@ -2409,29 +2411,25 @@ msgstr ""
 msgid "Settings updated successfully"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:25
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:26
 msgid "Moderation"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:28
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:29
 msgid "Control what happens to reported content before a moderator has looked at it"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:34
-msgid "Hide content automatically"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:37
 msgid ""
-"Reported content stays visible until a moderator decides. With Pro, a topic "
-"or reply is taken out of public view once enough different members have "
-"reported it, and comes back if a moderator keeps it."
+"Reported content stays visible until a moderator decides. Hiding a topic or "
+"reply automatically once enough different members have reported it is a "
+"feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:18
 msgid ""
 "Letting an author keep a topic private, so only they and the forum team can "
-"see it, comes with Bit Connect Pro — a separate add-on."
+"see it, is a feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:44
