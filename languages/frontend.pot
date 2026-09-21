@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Mon Sep 21 2026 15:44:04 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Mon Sep 21 2026 16:03:47 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -32,24 +32,6 @@ msgstr ""
 
 #: frontend/_plugin-commons/components/FacebookCommunityCard.tsx:78
 msgid "Join Now"
-msgstr ""
-
-#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:60
-msgid "Plugin Update Required (%s)"
-msgstr ""
-
-#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:62
-msgid ""
-"Please update both Free and Pro plugins to the latest version. Keeping them "
-"the same is crucial to avoid potential issues."
-msgstr ""
-
-#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:79
-msgid "Updating..."
-msgstr ""
-
-#: frontend/_plugin-commons/components/PluginUpdateNotice.tsx:79
-msgid "Update Now"
 msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/data/pluginInfoData.ts:11

@@ -26,8 +26,6 @@ class Config
     // the same value. Deriving SLUG from the enum keeps them from drifting.
     public const SLUG = PostTypes::BIT_CONNECT->value;
 
-    public const PRO_PLUGIN_SLUG = 'bit-connect-pro';
-
     public const TITLE = 'Bit Connect';
 
     public const VAR_PREFIX = 'bit_connect_';

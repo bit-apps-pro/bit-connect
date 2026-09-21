@@ -21,15 +21,6 @@ return [
 
     'Join Now' => __('Join Now', 'bit-connect'),
 
-    /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
-    'Plugin Update Required (%s)' => __('Plugin Update Required (%s)', 'bit-connect'),
-
-    'Please update both Free and Pro plugins to the latest version. Keeping them the same is crucial to avoid potential issues.' => __('Please update both Free and Pro plugins to the latest version. Keeping them the same is crucial to avoid potential issues.', 'bit-connect'),
-
-    'Updating...' => __('Updating...', 'bit-connect'),
-
-    'Update Now' => __('Update Now', 'bit-connect'),
-
     'A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.' => __('A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.', 'bit-connect'),
 
     'WordPress CRM to manage contacts, leads, deals, and invoices and run your whole sales pipeline right from your WordPress dashboard.' => __('WordPress CRM to manage contacts, leads, deals, and invoices and run your whole sales pipeline right from your WordPress dashboard.', 'bit-connect'),

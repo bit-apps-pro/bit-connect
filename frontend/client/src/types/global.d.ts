@@ -81,7 +81,6 @@ declare const SERVER_VARIABLES: {
     prefix?: string
     url?: string
   }
-  proApiURL: string
   proPluginVersion?: string
   proSlug?: string
   redirectUri: string

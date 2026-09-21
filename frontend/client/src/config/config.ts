@@ -55,14 +55,6 @@ interface UserInfo {
 
 interface ConfigType {
   API_URL: string
-  /**
-   * The add-on's REST namespace.
-   *
-   * Pro routes register under their own namespace, so they cannot be addressed
-   * through API_URL. A URL, not a feature: this plugin calls nothing there, and
-   * the value only becomes reachable when the add-on is installed to answer it.
-   */
-  PRO_API_URL: string
   AUTH_MODE: 'custom_url' | 'plugin_default'
   CAN_REGISTER: boolean
   COMMUNITY_TITLE: string
@@ -129,16 +121,7 @@ const portalFilters = getServerVariable('portalFilters', {}) ?? {}
 const promo = getServerVariable('promo', {}) ?? {}
 
 const config = {
-  API_URL: getServerVariable(
-    'apiURL',
-    'http://backend.connect.btcd-test.io:8004/wp-json/bit-connect/v1'
-  ),
-  // Sent by the add-on; the fallback only matters before it has loaded, when
-  // nothing calls a pro route anyway.
-  PRO_API_URL: getServerVariable(
-    'proApiURL',
-    'http://backend.connect.btcd-test.io:8004/wp-json/bit-connect-pro/v1'
-  ),
+  API_URL: getServerVariable('apiURL', `${siteURL}/wp-json/bit-connect/v1`),
   AUTH_MODE:
     (getServerVariable('authMode', 'plugin_default') as 'custom_url' | 'plugin_default') ??
     'plugin_default',
@@ -207,7 +190,7 @@ const config = {
     maxUploadBytes: 5 * 1024 * 1024
   }) ?? { bigImageThresholdPx: 2560, maxUploadBytes: 5 * 1024 * 1024 },
   WP_REGISTER_URL: getServerVariable('wpRegisterURL', `${siteURL}/wp-login.php?action=register`),
-  WP_REST_URL: getServerVariable('wpRestURL', 'http://backend.connect.btcd-test.io:8004/wp-json/wp/v2')
+  WP_REST_URL: getServerVariable('wpRestURL', `${siteURL}/wp-json/wp/v2`)
 } as const satisfies ConfigType
 
 export default config

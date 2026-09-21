@@ -42,7 +42,6 @@ interface ConfigType {
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
-  PRO_API_URL: string
   PRO_SLUG?: string
   PRO_VERSION?: string
   PRODUCT_NAME: string
@@ -73,10 +72,6 @@ const config = {
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL', ''),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'bit-connect'),
-  // Pro routes register under their own REST namespace, so they cannot be
-  // addressed through API_URL. Sent by the pro plugin; the fallback only
-  // matters before it has loaded, when nothing calls a pro route anyway.
-  PRO_API_URL: getServerVariable('proApiURL', `${windowOrigin}/wp-json/bit-connect-pro/v1`),
   PRO_SLUG: getServerVariable('proSlug'),
   PRO_VERSION: getServerVariable('proPluginVersion'),
   PRODUCT_NAME: 'Bit Connect',
