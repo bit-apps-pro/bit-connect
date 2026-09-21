@@ -10,6 +10,7 @@ import { type Plugin } from 'vite'
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+import developmentServerOrigin from './scripts/development-server-origin.mjs'
 import proOverlay from './scripts/vite-plugin-pro-overlay.mjs'
 
 const PLUGIN_SLUG = 'bit-connect'
@@ -150,6 +151,10 @@ export default defineConfig(({ mode }) => {
         host: process.env.BIT_CONNECT_FRONTEND_ADMIN_HOST ?? 'localhost'
       },
       host: '0.0.0.0',
+      // Absolute asset URLs, so a CSS url() resolves on this server rather
+      // than on the WordPress page that embeds the bundle — see the helper.
+      // The port-detecting plugin above repeats this with the port it found.
+      origin: developmentServerOrigin(process.env.BIT_CONNECT_FRONTEND_ADMIN_HOST, 3000),
       port: 3000,
       strictPort: true, // strict port to match on PHP side
       watch: {
@@ -193,7 +198,9 @@ function setDevelopmentServerConfig(): Plugin {
           port = await detectPort(3000).then((detectedPort: number) => detectedPort)
           updateStoredPort(port)
         }
-        return { server: { origin: `http://localhost:${port}`, port } }
+        // Absolute asset URLs, so a CSS url() resolves on this server rather
+        // than on the WordPress page that embeds the bundle — see the helper.
+        return { server: { origin: developmentServerOrigin(process.env.BIT_CONNECT_FRONTEND_ADMIN_HOST, port), port } }
       }
       removeStoredPort()
     },
