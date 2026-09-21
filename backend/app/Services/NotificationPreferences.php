@@ -116,7 +116,12 @@ final class NotificationPreferences
 
         $types = [];
 
-        foreach (NotificationTypes::cases() as $type) {
+        // Two separate omissions, and they are not the same omission. A
+        // moderator-only type is missing because *this member* will never
+        // receive it; a type outside notifiableTypes() is missing because
+        // *nothing on this forum raises it*. Both would otherwise be a switch
+        // the member could set and never see honoured.
+        foreach (ExtensionPoints::notifiableTypes() as $type) {
             if (NotificationTypes::isModeratorOnly($type) && !$isModerator) {
                 continue;
             }

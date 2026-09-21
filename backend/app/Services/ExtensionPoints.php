@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Enum\NotificationTypes;
 
 /**
  * Behaviour this plugin declines to perform, offered to anything that will.
@@ -203,6 +204,59 @@ final class ExtensionPoints
         }
 
         return $offered;
+    }
+
+    /**
+     * The events this forum can actually tell a member about.
+     *
+     * Every case this plugin raises by itself, which is all of them bar
+     * BADGE_AWARDED — see NotificationTypes::isDispatchedHere() for why that
+     * one is in the vocabulary but not in this plugin's dispatch. A plugin that
+     * does raise it adds its slug back and the preference row returns with it.
+     *
+     * This governs which rows the admin defaults screen and the member's own
+     * preference screen draw. It does not govern delivery: a notification of
+     * any type, raised by anybody, is resolved and sent on its own merits, so a
+     * type missing from this list is one nobody is being asked about rather
+     * than one being withheld.
+     *
+     * Answered with slugs rather than cases, like capabilities(), so a listener
+     * needs nothing of this plugin's but the string. Anything that is not a
+     * slug this plugin knows is dropped — a listener cannot invent an event the
+     * dispatcher has no vocabulary for — and an answer that comes back empty or
+     * malformed leaves this plugin's own list standing.
+     *
+     * @return list<NotificationTypes>
+     */
+    public static function notifiableTypes(): array
+    {
+        $own = array_values(
+            array_filter(
+                NotificationTypes::cases(),
+                static fn (NotificationTypes $type): bool => NotificationTypes::isDispatchedHere($type)
+            )
+        );
+
+        $offered = Hooks::applyFilter(
+            'bit_connect_notifiable_types',
+            array_map(static fn (NotificationTypes $type): string => $type->value, $own)
+        );
+
+        if (!\is_array($offered)) {
+            return $own;
+        }
+
+        $resolved = [];
+
+        foreach ($offered as $slug) {
+            $type = \is_string($slug) ? NotificationTypes::tryFrom($slug) : null;
+
+            if ($type !== null && !\in_array($type, $resolved, true)) {
+                $resolved[] = $type;
+            }
+        }
+
+        return $resolved === [] ? $own : $resolved;
     }
 
     /**

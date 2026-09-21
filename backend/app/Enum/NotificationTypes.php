@@ -140,6 +140,29 @@ enum NotificationTypes: string
     }
 
     /**
+     * Types this plugin raises by itself.
+     *
+     * All but one. Nothing here awards a profile badge — the catalogue, the
+     * assignment screen and the endpoint behind them are not part of this
+     * plugin — so BADGE_AWARDED is a case this forum can render and deliver but
+     * never originates. It stays in the enum because it must: a badge awarded
+     * by another plugin arrives as this type, and dropping the case would leave
+     * the mailer and the notification list unable to read a row they are handed.
+     *
+     * What it should not do is appear as a preference row on a forum where
+     * nothing can raise it, for exactly the reason isModeratorOnly() exists —
+     * a row that can never fire is a promise the forum will not keep. The
+     * screens ask ExtensionPoints::notifiableTypes() rather than cases(), and
+     * a plugin that does award badges puts the row back by answering the
+     * filter. Delivery is not gated on any of this: whoever raises the event,
+     * the member gets it.
+     */
+    public static function isDispatchedHere(NotificationTypes $type): bool
+    {
+        return $type !== self::BADGE_AWARDED;
+    }
+
+    /**
      * Types a member cannot switch off in the app.
      *
      * Only one: being told your content was taken down. Removal is meant to be
