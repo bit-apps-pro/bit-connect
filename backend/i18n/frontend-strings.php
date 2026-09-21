@@ -77,11 +77,7 @@ return [
 
     'Profile badges you author and hand out' => __('Profile badges you author and hand out', 'bit-connect'),
 
-    'Upvotes on comments, not just topics' => __('Upvotes on comments, not just topics', 'bit-connect'),
-
     'Hide reported content automatically, before a moderator gets to it' => __('Hide reported content automatically, before a moderator gets to it', 'bit-connect'),
-
-    'Daily and weekly email digests' => __('Daily and weekly email digests', 'bit-connect'),
 
     'Send forum email from your own name and address' => __('Send forum email from your own name and address', 'bit-connect'),
 
@@ -563,13 +559,11 @@ return [
 
     'Capabilities updated' => __('Capabilities updated', 'bit-connect'),
 
-    'Failed to update user capabilities' => __('Failed to update user capabilities', 'bit-connect'),
-
-    'User capabilities updated' => __('User capabilities updated', 'bit-connect'),
-
     'Manage Users' => __('Manage Users', 'bit-connect'),
 
     'View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role.' => __('View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role.', 'bit-connect'),
+
+    'View all WordPress users and see the forum capabilities each one holds. Use Role Capabilities to set them per role.' => __('View all WordPress users and see the forum capabilities each one holds. Use Role Capabilities to set them per role.', 'bit-connect'),
 
     'Profile Badges' => __('Profile Badges', 'bit-connect'),
 
@@ -585,17 +579,13 @@ return [
 
     'Roles' => __('Roles', 'bit-connect'),
 
+    'Badges' => __('Badges', 'bit-connect'),
+
     'Capabilities' => __('Capabilities', 'bit-connect'),
 
     'No role' => __('No role', 'bit-connect'),
 
-    'Badges' => __('Badges', 'bit-connect'),
-
-    'Profile badges are a Pro feature.' => __('Profile badges are a Pro feature.', 'bit-connect'),
-
-    'Pro' => __('Pro', 'bit-connect'),
-
-    'Per-user capability overrides are a Pro feature. Set defaults per role instead.' => __('Per-user capability overrides are a Pro feature. Set defaults per role instead.', 'bit-connect'),
+    'Set by role, on the Role Capabilities screen.' => __('Set by role, on the Role Capabilities screen.', 'bit-connect'),
 
     'Capabilities, set by role' => __('Capabilities, set by role', 'bit-connect'),
 
@@ -625,8 +615,6 @@ return [
 
     'Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.' => __('Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.', 'bit-connect'),
 
-    'No badges' => __('No badges', 'bit-connect'),
-
     'Could not save notification settings' => __('Could not save notification settings', 'bit-connect'),
 
     'Notification settings saved' => __('Notification settings saved', 'bit-connect'),
@@ -637,15 +625,25 @@ return [
 
     'Test email sent' => __('Test email sent', 'bit-connect'),
 
+    'When batched email goes out, for members who have not chosen for themselves.' => __('When batched email goes out, for members who have not chosen for themselves.', 'bit-connect'),
+
+    'Digest schedule' => __('Digest schedule', 'bit-connect'),
+
+    'Default email frequency' => __('Default email frequency', 'bit-connect'),
+
+    'Digest send hour' => __('Digest send hour', 'bit-connect'),
+
     'Who forum email appears to come from.' => __('Who forum email appears to come from.', 'bit-connect'),
 
     'Email delivery' => __('Email delivery', 'bit-connect'),
 
     'Notifications are sent as' => __('Notifications are sent as', 'bit-connect'),
 
-    'Taken from your site title and address. A custom sender, and daily or weekly digests, come with Pro.' => __('Taken from your site title and address. A custom sender, and daily or weekly digests, come with Pro.', 'bit-connect'),
+    'Taken from your site title and address. A custom sender comes with Pro.' => __('Taken from your site title and address. A custom sender comes with Pro.', 'bit-connect'),
 
-    'A custom sender and digest schedule are Pro features.' => __('A custom sender and digest schedule are Pro features.', 'bit-connect'),
+    'A custom sender is a Pro feature.' => __('A custom sender is a Pro feature.', 'bit-connect'),
+
+    'Pro' => __('Pro', 'bit-connect'),
 
     'Send test email' => __('Send test email', 'bit-connect'),
 
@@ -1091,9 +1089,9 @@ return [
 
     'Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.' => __('Reported content stays visible until a moderator decides. With Pro, a topic or reply is taken out of public view once enough different members have reported it, and comes back if a moderator keeps it.', 'bit-connect'),
 
-    'Members can upvote topics and reply to them. Upvoting individual replies, and letting an author keep a topic private so only they and the forum team can see it, come with Bit Connect Pro — a separate add-on.' => __('Members can upvote topics and reply to them. Upvoting individual replies, and letting an author keep a topic private so only they and the forum team can see it, come with Bit Connect Pro — a separate add-on.', 'bit-connect'),
+    'Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.' => __('Letting an author keep a topic private, so only they and the forum team can see it, comes with Bit Connect Pro — a separate add-on.', 'bit-connect'),
 
-    'Comment Upvote and Private Topic are Pro features.' => __('Comment Upvote and Private Topic are Pro features.', 'bit-connect'),
+    'Private Topic is a Pro feature.' => __('Private Topic is a Pro feature.', 'bit-connect'),
 
     'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
 
@@ -1114,14 +1112,6 @@ return [
     'Upvote' => __('Upvote', 'bit-connect'),
 
     'On/off your Comment' => __('On/off your Comment', 'bit-connect'),
-
-    'On/off your Topic comment Upvote' => __('On/off your Topic comment Upvote', 'bit-connect'),
-
-    'Comment Upvote' => __('Comment Upvote', 'bit-connect'),
-
-    'Let authors keep a topic private, visible only to them and the forum team' => __('Let authors keep a topic private, visible only to them and the forum team', 'bit-connect'),
-
-    'Private Topic' => __('Private Topic', 'bit-connect'),
 
     'Delete all plugin settings, terms and posts when uninstalling this plugin' => __('Delete all plugin settings, terms and posts when uninstalling this plugin', 'bit-connect'),
 
@@ -1477,6 +1467,8 @@ return [
 
     'Topic updated successfully' => __('Topic updated successfully', 'bit-connect'),
 
+    'Public Topic' => __('Public Topic', 'bit-connect'),
+
     /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
     'The link you chose was already taken, so this topic is at /%s' => __('The link you chose was already taken, so this topic is at /%s', 'bit-connect'),
 
@@ -1509,8 +1501,6 @@ return [
     'Edit Topic' => __('Edit Topic', 'bit-connect'),
 
     'Failed to upload image' => __('Failed to upload image', 'bit-connect'),
-
-    'Public Topic' => __('Public Topic', 'bit-connect'),
 
     'Topic Title' => __('Topic Title', 'bit-connect'),
 
@@ -1777,13 +1767,13 @@ return [
 
     'View image full size' => __('View image full size', 'bit-connect'),
 
+    'All comments' => __('All comments', 'bit-connect'),
+
     'Failed to load post' => __('Failed to load post', 'bit-connect'),
 
     'Failed to load settings' => __('Failed to load settings', 'bit-connect'),
 
     'Failed to vote on post' => __('Failed to vote on post', 'bit-connect'),
-
-    'Failed to vote on comment' => __('Failed to vote on comment', 'bit-connect'),
 
     'Comment posted successfully' => __('Comment posted successfully', 'bit-connect'),
 
@@ -1838,10 +1828,6 @@ return [
     'Upvotes' => __('Upvotes', 'bit-connect'),
 
     'Sort comments' => __('Sort comments', 'bit-connect'),
-
-    'All comments' => __('All comments', 'bit-connect'),
-
-    'Most voted' => __('Most voted', 'bit-connect'),
 
     'Share on social media' => __('Share on social media', 'bit-connect'),
 
