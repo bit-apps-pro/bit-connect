@@ -126,11 +126,11 @@ This plugin relies on one external service, the Bit Apps API, and only from a si
 
 = Bit Apps plugin catalogue =
 
-On the **Bit Connect → Support** screen, your browser requests `https://wp-api.bitapps.pro/public/plugins-info` to display the list of other Bit Apps plugins shown at the bottom of that page.
+On the **Bit Connect → Support** screen, the bottom of the page offers a **Show other Bit Apps plugins** button. Only when you click it does your browser request `https://wp-api.bitapps.pro/public/plugins-info` to display that list. Opening the screen alone contacts nobody.
 
 * **What is sent:** nothing beyond an ordinary web request. No site content, user data, email addresses or settings are transmitted. As with any web request, the receiving server sees your IP address and the referring admin URL.
 * **What is received:** a list of plugin names, descriptions and links, plus the address of each plugin's icon image, which your browser then loads from Bit Apps' servers to display the card.
-* **When:** only while the Support screen is open. Never on the front end, and never on other admin screens.
+* **When:** only after an administrator clicks the button on the Support screen. Never automatically, never on the front end, and never on other admin screens.
 * **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
 
 == Installation ==

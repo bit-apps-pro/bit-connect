@@ -1137,6 +1137,14 @@ return [
 
     'Recommended Plugins' => __('Recommended Plugins', 'bit-connect'),
 
+    'The list of other Bit Apps plugins is loaded from bitapps.pro only when you ask for it. Nothing about this site is sent.' => __('The list of other Bit Apps plugins is loaded from bitapps.pro only when you ask for it. Nothing about this site is sent.', 'bit-connect'),
+
+    'Show other Bit Apps plugins' => __('Show other Bit Apps plugins', 'bit-connect'),
+
+    'Loading…' => __('Loading…', 'bit-connect'),
+
+    'The list could not be loaded right now.' => __('The list could not be loaded right now.', 'bit-connect'),
+
     'Version' => __('Version', 'bit-connect'),
 
     'Installed version' => __('Installed version', 'bit-connect'),

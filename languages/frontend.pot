@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Tue Sep 22 2026 14:05:51 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Tue Sep 22 2026 14:33:30 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -2625,8 +2625,26 @@ msgstr ""
 msgid "Delete Status"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:57
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:61
 msgid "Recommended Plugins"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:66
+msgid ""
+"The list of other Bit Apps plugins is loaded from bitapps.pro only when you "
+"ask for it. Nothing about this site is sent."
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:70
+msgid "Show other Bit Apps plugins"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:74
+msgid "Loading…"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:77
+msgid "The list could not be loaded right now."
 msgstr ""
 
 #: frontend/admin/src/pages/support/internal/version-panel.free.tsx:23
