@@ -9,8 +9,7 @@
  *
  * No empty column is drawn in its place either. A column that can never hold
  * anything is not a column; it is an advert with a table's chrome on. What
- * profile badges are is explained once, on the Profile Badges screen, and only
- * when an admin asks for it.
+ * the add-on adds is said once, in words, on the Support screen.
  */
 export default function UserBadgesPopoverFree() {
   // eslint-disable-next-line unicorn/no-null

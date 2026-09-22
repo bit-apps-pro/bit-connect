@@ -1,68 +1,18 @@
-import { __ } from '@common/helpers/i18nWrap'
-import { Modal, Typography } from 'antd'
-
-import { type ProfileBadgesModalProps } from '../shared/types'
-
-const { Text, Title } = Typography
-
 /**
- * Example badges, shown as badges and nothing else.
+ * The badge catalog editor without the add-on: there is no editor.
  *
- * These illustrate the shape a badge takes; they are not rows of a catalog,
- * because the free build has no catalog to read — those routes live in the pro
- * add-on. They are deliberately not laid out as a list of records, and there is
- * deliberately no name field or Add button anywhere on this screen: a mocked-up
- * form reads as a control that has stopped working, which is not something a
- * free plugin should draw.
- */
-const EXAMPLE_BADGES = [
-  { id: 'developer', label: __('Developer'), tone: 'bc-bg-blue-100 bc-text-blue-700' },
-  { id: 'support', label: __('Support'), tone: 'bc-bg-green-100 bc-text-green-700' },
-  { id: 'group-expert', label: __('Group Expert'), tone: 'bc-bg-amber-100 bc-text-amber-700' }
-]
-
-/**
- * What profile badges are, for a site without the add-on.
+ * Nothing opens it in this build — the Manager header draws the Profile Badges
+ * button only where `useBadgesAdmin` reports a catalog, and here it never does
+ * — so this neutral answer is what the dispatch resolves to and nothing
+ * renders it. It exists so the import graph resolves and so the free build
+ * never reaches the real editor or the endpoints it calls.
  *
- * Same modal, same trigger, same route — an admin who clicks Profile Badges in
- * the free plugin gets an explanation rather than nothing, which is the answer
- * to "where did that button go". What it does not do is imitate the pro screen.
+ * No explanatory modal is drawn in its place either. A screen that describes
+ * a feature this plugin does not have, reached from a button shaped like the
+ * feature, is a placeholder for it; what the add-on adds is said in words on
+ * the Support screen instead.
  */
-export default function ProfileBadgesModalFree({ onClose, open }: ProfileBadgesModalProps) {
-  return (
-    <Modal
-      // antd hides the footer on null and renders the default OK/Cancel pair
-      // on undefined, so this one has to stay null.
-      // eslint-disable-next-line unicorn/no-null
-      footer={null}
-      onCancel={onClose}
-      open={open}
-      title={__('Profile Badges')}
-      width={640}
-    >
-      <Text className="bc-block bc-mb-4" type="secondary">
-        {__(
-          'Name your people beyond what their permissions make them — Developer, Support, Group Expert — and hand the badges out per member.'
-        )}
-      </Text>
-
-      <div className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-4">
-        <Title className="bc-mb-3" level={5}>
-          {__('For example')}
-        </Title>
-        <div className="bc-mb-4 bc-flex bc-flex-wrap bc-gap-2">
-          {EXAMPLE_BADGES.map(badge => (
-            <span className={`bc-rounded-full bc-px-3 bc-py-1 bc-text-xs ${badge.tone}`} key={badge.id}>
-              {badge.label}
-            </span>
-          ))}
-        </div>
-        <Text className="bc-block bc-text-sm" type="secondary">
-          {__(
-            'Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.'
-          )}
-        </Text>
-      </div>
-    </Modal>
-  )
+export default function ProfileBadgesModalFree() {
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

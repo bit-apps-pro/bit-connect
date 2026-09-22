@@ -198,6 +198,7 @@ Route::get('users', [UserManagementController::class, 'getUsers']);
 // Reset only ever removes, so it needs neither.
 Route::post('users/{id}/capabilities/reset', [UserManagementController::class, 'resetUserCapabilities']);
 
-// Profile Badge routes live in the pro add-on — see pro/backend/hooks/api.php.
-// The badges a member *wears* still ride on the free payloads; only authoring
-// and assigning the catalog is pro.
+// There are no profile-badge routes here. The badges a member *wears* ride on
+// this plugin's payloads, supplied through the `bit_connect_assigned_member_badges`
+// filter by whatever authors them; authoring and assigning a catalog is not
+// something this plugin does.

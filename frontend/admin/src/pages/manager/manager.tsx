@@ -75,7 +75,13 @@ export default function Manager() {
           </Text>
         </div>
         <div className="bc-flex bc-shrink-0 bc-gap-2">
-          <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile Badges')}</Button>
+          {/* Only where a catalog can exist. A button that opens a description
+              of a feature this plugin does not have is a placeholder for it,
+              and this plugin draws none: what the add-on adds is said once, in
+              words, on the Support screen. */}
+          {hasBadgeCatalog && (
+            <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile Badges')}</Button>
+          )}
           <Button onClick={() => setRoleModalOpen(true)} type="primary">
             {__('Role Capabilities')}
           </Button>

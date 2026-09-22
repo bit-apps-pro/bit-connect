@@ -9,8 +9,9 @@ import ProfileBadgesModalPro from './profile-badges-modal.pro'
  *
  * Dispatch only. In the free build `IS_PRO_ACTIVE` folds to `false` and Rollup
  * drops the real editor — along with its four data hooks and the endpoints they
- * call — leaving a description of the add-on's badges in its place.
+ * call — and the free sibling renders nothing, because nothing in that build
+ * opens it.
  */
 export default function ProfileBadgesModal(props: ProfileBadgesModalProps) {
-  return IS_PRO_ACTIVE ? <ProfileBadgesModalPro {...props} /> : <ProfileBadgesModalFree {...props} />
+  return IS_PRO_ACTIVE ? <ProfileBadgesModalPro {...props} /> : <ProfileBadgesModalFree />
 }
