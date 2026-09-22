@@ -63,35 +63,6 @@ export const sortArrOfObj = (data: any, sortLabel: string) =>
     return 0
   })
 
-// eslint-disable-next-line unicorn/prefer-code-point, unicorn/prefer-spread
-const textToChars = (text: string) => text.split('').map(c => c.charCodeAt(0))
-
-const byteHex = (n: number) => {
-  const string_ = `0${Number(n).toString(16)}`
-  return string_.slice(Math.max(0, string_.length - 2))
-}
-
-const cipher = (salt: string) => {
-  const applySaltToChar = (code: any) => textToChars(salt).reduce((a: number, b: number) => a ^ b, code)
-  // eslint-disable-next-line newline-per-chained-call
-  return (text: string) => text?.split('')?.map(textToChars).map(applySaltToChar).map(byteHex).join('')
-}
-
-const decipher = (salt: string) => {
-  const applySaltToChar = (code: any) => textToChars(salt).reduce((a, b) => a ^ b, code)
-  return (encoded: string) =>
-    encoded
-      ?.match(/.{1,2}/g)
-      ?.map(hex => Number.parseInt(hex, 16))
-      .map(applySaltToChar)
-      // eslint-disable-next-line unicorn/prefer-code-point
-      .map(charCode => String.fromCharCode(charCode))
-      .join('')
-}
-
-export const bitCipher = cipher('btcd')
-export const bitDecipher = decipher('btcd')
-
 export const checkValidEmail = (email: string) => {
   if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
     return true

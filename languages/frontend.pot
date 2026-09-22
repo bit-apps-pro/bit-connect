@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Tue Sep 22 2026 11:49:56 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Tue Sep 22 2026 14:05:51 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -55,67 +55,6 @@ msgid ""
 "An social media management plugin for WordPress, that allows you to share "
 "your post to different social media platform, schedule post, manage social "
 "media account and many more feature."
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:27
-msgid "Cash Back"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:39
-msgid "Hi"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:42
-msgid "We want your feedback!"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:43
-msgid "Write a review"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:44
-msgid "of your experience with %s, and we'll send you a"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:45
-msgid "$10 Cash back"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:45
-msgid "to say thanks!"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:47
-msgid ""
-"To claim your cash back, simply reply to support with a screenshot or link "
-"of your review."
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/GiveReview.tsx:67
-msgid "Review Now"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:22
-msgid "Improvement"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:30
-msgid ""
-"Allow the collection of diagnostic data and error reports to enhance the "
-"application's performance. Please review our"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:39
-msgid "Privacy Policy"
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/Imporvement.tsx:41
-msgid "for more information."
-msgstr ""
-
-#: frontend/_plugin-commons/components/SupportPage/RecommendedPlugins.tsx:45
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:56
-msgid "Recommended Plugins"
 msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
@@ -2684,6 +2623,10 @@ msgstr ""
 
 #: frontend/admin/src/pages/status/ui/status-table.tsx:107
 msgid "Delete Status"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:57
+msgid "Recommended Plugins"
 msgstr ""
 
 #: frontend/admin/src/pages/support/internal/version-panel.free.tsx:23

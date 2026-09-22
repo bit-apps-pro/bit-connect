@@ -29,35 +29,6 @@ return [
 
     'An social media management plugin for WordPress, that allows you to share your post to different social media platform, schedule post, manage social media account and many more feature.' => __('An social media management plugin for WordPress, that allows you to share your post to different social media platform, schedule post, manage social media account and many more feature.', 'bit-connect'),
 
-    'Cash Back' => __('Cash Back', 'bit-connect'),
-
-    'Hi' => __('Hi', 'bit-connect'),
-
-    'We want your feedback!' => __('We want your feedback!', 'bit-connect'),
-
-    'Write a review' => __('Write a review', 'bit-connect'),
-
-    /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
-    'of your experience with %s, and we\'ll send you a' => __('of your experience with %s, and we\'ll send you a', 'bit-connect'),
-
-    '$10 Cash back' => __('$10 Cash back', 'bit-connect'),
-
-    'to say thanks!' => __('to say thanks!', 'bit-connect'),
-
-    'To claim your cash back, simply reply to support with a screenshot or link of your review.' => __('To claim your cash back, simply reply to support with a screenshot or link of your review.', 'bit-connect'),
-
-    'Review Now' => __('Review Now', 'bit-connect'),
-
-    'Improvement' => __('Improvement', 'bit-connect'),
-
-    'Allow the collection of diagnostic data and error reports to enhance the application\'s performance. Please review our' => __('Allow the collection of diagnostic data and error reports to enhance the application\'s performance. Please review our', 'bit-connect'),
-
-    'Privacy Policy' => __('Privacy Policy', 'bit-connect'),
-
-    'for more information.' => __('for more information.', 'bit-connect'),
-
-    'Recommended Plugins' => __('Recommended Plugins', 'bit-connect'),
-
     'Support' => __('Support', 'bit-connect'),
 
     'Save changes' => __('Save changes', 'bit-connect'),
@@ -1163,6 +1134,8 @@ return [
     'No color' => __('No color', 'bit-connect'),
 
     'Delete Status' => __('Delete Status', 'bit-connect'),
+
+    'Recommended Plugins' => __('Recommended Plugins', 'bit-connect'),
 
     'Version' => __('Version', 'bit-connect'),
 

@@ -1,11 +1,8 @@
-/* eslint-disable newline-per-chained-call */
 import { describe, expect, it } from 'vitest'
 
 import {
   _if,
   assign,
-  bitCipher,
-  bitDecipher,
   checkValidEmail,
   cn,
   deepCopy,
@@ -86,13 +83,6 @@ describe('isObjectEqual', () => {
   it('compares by serialized value', () => {
     expect(isObjectEqual({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true)
     expect(isObjectEqual({ a: 1 }, { a: 2 })).toBe(false)
-  })
-})
-
-describe('bitCipher / bitDecipher', () => {
-  it('round-trips a string', () => {
-    const original = 'hello world 123'
-    expect(bitDecipher(bitCipher(original))).toBe(original)
   })
 })
 
