@@ -161,6 +161,7 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 = 1.0.1 =
 * Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
 * Settings screens now describe add-on features in plain text, with no disabled controls.
+* Reported content is no longer hidden automatically, and the report threshold setting has gone with it. This plugin queues reports for a moderator to decide; hiding on a count is a feature of Bit Connect Pro, a separate plugin.
 * The Outfit typeface now ships with the plugin instead of loading from Google Fonts, so the portal contacts no third party.
 
 = 1.0.0 =

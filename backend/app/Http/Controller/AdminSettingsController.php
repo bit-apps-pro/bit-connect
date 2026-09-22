@@ -14,7 +14,6 @@ use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Http\Requests\GetAdminSettingsRequest;
 use BitApps\BitConnect\Http\Requests\UpdateAdminSettingsRequest;
-use BitApps\BitConnect\Services\ReportService;
 
 final class AdminSettingsController
 {
@@ -27,51 +26,44 @@ final class AdminSettingsController
         }
 
         $defaults = $this->getDefaultSettings();
-        // Neither private topics nor comment upvoting is in this payload, for
-        // the same reason: both features ship in the Bit Connect Pro add-on,
-        // endpoint and all, and the add-on tells the portal about its own.
-        // Reporting a flag here for a feature this plugin does not implement
+        // Built from the groups this plugin implements and nothing else. The
+        // stored option may hold more — the add-on keeps its own switches under
+        // topicAccess, and an older build of this plugin wrote a `moderation`
+        // group — but neither is a setting this plugin acts on, so neither is
+        // reported: a flag here for a feature this plugin does not implement
         // would describe a control that has nothing behind it.
-        $settings['topicAccess'] = array_merge(
-            $defaults['topicAccess'],
-            array_intersect_key(
-                $settings['topicAccess'] ?? [],
-                $defaults['topicAccess']
-            )
-        );
-        $settings['cleanup'] = array_merge(
-            $defaults['cleanup'],
-            $settings['cleanup'] ?? []
-        );
-        $settings['topicFormFields'] = array_merge(
-            $defaults['topicFormFields'],
-            $settings['topicFormFields'] ?? []
-        );
-        // Reported through the service rather than read straight from the array,
-        // so the screen shows the number that will actually be applied — the
-        // filter and the legacy standalone option both feed into it.
-        $settings['moderation'] = array_merge(
-            $defaults['moderation'],
-            $settings['moderation'] ?? [],
-            ['autoHideThreshold' => ReportService::autoHideThreshold()]
-        );
+        $response = [
+            'topicAccess' => array_merge(
+                $defaults['topicAccess'],
+                array_intersect_key(
+                    \is_array($settings['topicAccess'] ?? null) ? $settings['topicAccess'] : [],
+                    $defaults['topicAccess']
+                )
+            ),
+            'cleanup' => array_merge(
+                $defaults['cleanup'],
+                \is_array($settings['cleanup'] ?? null) ? $settings['cleanup'] : []
+            ),
+            'topicFormFields' => array_merge(
+                $defaults['topicFormFields'],
+                \is_array($settings['topicFormFields'] ?? null) ? $settings['topicFormFields'] : []
+            ),
+        ];
 
         // The portal reads this endpoint too — it builds the topic form and
         // decides which controls to draw from `topicAccess` and
-        // `topicFormFields`. It has no use for the rest, and the rest is worth
-        // withholding: `moderation.autoHideThreshold` tells a would-be abuser
-        // exactly how many reports it takes to bury someone else's topic, and
-        // `cleanup` describes what an uninstall will destroy.
+        // `topicFormFields`. It has no use for `cleanup`, which describes what
+        // an uninstall will destroy, so that stays with the administrators.
         if (!WpCapabilities::check(Capabilities::MANAGE->value)) {
             return Response::success(
                 [
-                    'topicAccess'     => $settings['topicAccess'],
-                    'topicFormFields' => $settings['topicFormFields'],
+                    'topicAccess'     => $response['topicAccess'],
+                    'topicFormFields' => $response['topicFormFields'],
                 ]
             );
         }
 
-        return Response::success($settings);
+        return Response::success($response);
     }
 
     public function update(UpdateAdminSettingsRequest $request)
@@ -88,11 +80,11 @@ final class AdminSettingsController
     /**
      * What a forum that has never saved this screen runs on.
      *
-     * These keys are the whole of Topic Access as this plugin knows it. A
-     * setting for upvoting individual replies is not among them and is not
-     * missing either — the feature is not implemented here, so there is
-     * nothing for a switch to turn on. The add-on brings both the feature and
-     * its control.
+     * These groups are the whole of this screen as this plugin knows it. There
+     * is no moderation group and no switch for upvoting individual replies or
+     * for private topics, and none is missing either — none of those is
+     * implemented here, so there is nothing for a setting to control. The
+     * add-on brings each feature together with its own setting.
      */
     private function getDefaultSettings()
     {
@@ -107,9 +99,6 @@ final class AdminSettingsController
             'topicFormFields' => [
                 'requireTopicType'  => true,
                 'requireDepartment' => true,
-            ],
-            'moderation' => [
-                'autoHideThreshold' => ReportService::DEFAULT_AUTO_HIDE_THRESHOLD,
             ],
         ];
     }

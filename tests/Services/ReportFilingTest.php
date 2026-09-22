@@ -54,9 +54,11 @@ final class ReportFilingTest extends TestCase
 
         unset($GLOBALS['__bc_report_insert_fails'], $GLOBALS['__bc_reports_as_collection']);
 
-        // Auto-hiding is a pro feature. Licensed here so the threshold logic is
-        // what these cases exercise; the gate itself has its own tests below.
+        // Auto-hiding is the add-on's feature. Its listener is installed here
+        // so the hiding path is what these cases exercise; the extension point
+        // itself, unanswered, has its own tests below.
         $GLOBALS['__wp_filters'] = [];
+        unset($GLOBALS['__bc_test_auto_hide_threshold']);
         $this->licence(true);
 
         ReportService::flushPendingCount();

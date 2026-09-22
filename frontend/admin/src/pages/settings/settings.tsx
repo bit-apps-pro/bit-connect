@@ -87,10 +87,6 @@ export default function Settings() {
     if (settings) {
       setForm({
         cleanup: { ...settings.cleanup },
-        // Defaulted here as well as on the server: an admin bundle newer than
-        // the stored settings would otherwise put `undefined` in the input and
-        // save it back as a threshold of nothing.
-        moderation: { autoHideThreshold: settings.moderation?.autoHideThreshold ?? 2 },
         topicAccess: { ...settings.topicAccess },
         topicFormFields: { ...settings.topicFormFields }
       })
@@ -107,7 +103,6 @@ export default function Settings() {
         if (!prev) return prev
         const updated: SettingsFormData = {
           cleanup: { ...prev.cleanup },
-          moderation: { ...prev.moderation },
           topicAccess: { ...prev.topicAccess },
           topicFormFields: { ...prev.topicFormFields }
         }
@@ -228,13 +223,9 @@ export default function Settings() {
           subtitle={__('Control which fields are shown and required when creating a topic')}
           title={__('Topic Form Fields')}
         />
-        <ModerationSection
-          autoHideThreshold={form?.moderation?.autoHideThreshold ?? 2}
-          disabled={isUpdatingSettings}
-          onChange={autoHideThreshold =>
-            setForm(prev => (prev ? { ...prev, moderation: { autoHideThreshold } } : prev))
-          }
-        />
+        {/* Takes nothing from this form: this plugin stores no moderation
+            setting. The add-on's section reads and saves its own. */}
+        <ModerationSection />
         <SettingsSection
           disabled={isUpdatingSettings}
           onChange={(key, value) => handleSettingChange('cleanup', key as keyof CleanupSettings, value)}

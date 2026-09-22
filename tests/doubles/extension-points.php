@@ -24,6 +24,11 @@
  * takes an answer, and a seeded callable is invoked with the filter's arguments
  * — which is what lets the auto-hide double reproduce the real decision rather
  * than answer a fixed true.
+ *
+ * The threshold the double compares against is the add-on's, not the free
+ * plugin's: the free plugin stores no such number, because a setting for a
+ * behaviour it does not perform would be a control with nothing behind it. A
+ * test that needs another value seeds $GLOBALS['__bc_test_auto_hide_threshold'].
  */
 
 /**
@@ -83,6 +88,8 @@ function bc_test_pro_auto_hide($hide, $targetType, $targetId, $author, $pending 
 
     $pending ??= \BitApps\BitConnect\Model\Report::pendingCount($targetType, (int) $targetId);
 
-    return $pending >= \BitApps\BitConnect\Services\ReportService::autoHideThreshold();
+    $threshold = (int) ($GLOBALS['__bc_test_auto_hide_threshold'] ?? 2);
+
+    return $pending >= max(1, $threshold);
 }
 

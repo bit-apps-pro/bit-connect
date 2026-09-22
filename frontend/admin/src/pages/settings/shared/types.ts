@@ -21,21 +21,20 @@ export interface TopicFormFieldsSettings {
   requireTopicType: boolean
 }
 
-export interface ModerationSettings {
-  /** How many pending reports take content out of public view. Minimum 1. */
-  autoHideThreshold: number
-}
-
+/**
+ * No moderation group. This plugin queues reports for a moderator and never
+ * acts on them by itself, so it holds no threshold to show or save; the
+ * add-on that hides content on a count stores that number behind its own
+ * endpoint and draws its own section for it.
+ */
 export interface Settings {
   cleanup: CleanupSettings
-  moderation: ModerationSettings
   topicAccess: TopicAccessSettings
   topicFormFields: TopicFormFieldsSettings
 }
 
 export interface SettingsFormData {
   cleanup: CleanupSettings
-  moderation: ModerationSettings
   topicAccess: TopicAccessSettings
   topicFormFields: TopicFormFieldsSettings
 }
@@ -82,18 +81,4 @@ export interface AuthSettingsFormData {
   redirectAfterLogout: string
   registrationRole: string
   requireEmailVerification: boolean
-}
-
-/**
- * Props for the moderation section.
- *
- * Declared here rather than in either sibling. Both editions render this
- * section, so the contract belongs to neither implementation — and the free
- * tree has to type-check without the pro one present, which it cannot do while
- * the dispatch imports its own props from a `.pro` file.
- */
-export interface ModerationSectionProps {
-  autoHideThreshold: number
-  disabled?: boolean
-  onChange: (autoHideThreshold: number) => void
 }

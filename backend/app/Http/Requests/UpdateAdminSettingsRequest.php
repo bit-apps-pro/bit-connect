@@ -11,15 +11,13 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Services\AuthService;
-use BitApps\BitConnect\Services\ReportService;
 
 /**
  * Request input properties.
  *
- * @property array      $topicAccess
- * @property array      $cleanup
- * @property array      $topicFormFields
- * @property null|array $moderation
+ * @property array $topicAccess
+ * @property array $cleanup
+ * @property array $topicFormFields
  */
 final class UpdateAdminSettingsRequest extends Request
 {
@@ -43,9 +41,6 @@ final class UpdateAdminSettingsRequest extends Request
             'topicAccess'     => ['required', 'array'],
             'cleanup'         => ['required', 'array'],
             'topicFormFields' => ['required', 'array'],
-            // Optional so an older admin bundle, which knows nothing about it,
-            // does not have its save rejected outright.
-            'moderation' => ['nullable', 'array'],
         ];
     }
 
@@ -85,15 +80,9 @@ final class UpdateAdminSettingsRequest extends Request
                 'requireTopicType'  => (bool) ($this->topicFormFields['requireTopicType'] ?? true),
                 'requireDepartment' => (bool) ($this->topicFormFields['requireDepartment'] ?? true),
             ],
-            'moderation' => [
-                // Floored at 1 and capped so a typo cannot switch auto-hiding
-                // off by making it unreachable — a threshold of 900 reads as
-                // "on" in the settings screen and behaves as "never".
-                'autoHideThreshold' => max(
-                    1,
-                    min(20, (int) ($this->moderation['autoHideThreshold'] ?? ReportService::DEFAULT_AUTO_HIDE_THRESHOLD))
-                ),
-            ],
+            // No moderation group. This plugin never acts on a report by
+            // itself, so it has no threshold to store; the add-on that does
+            // keeps that number in its own option, behind its own endpoint.
         ];
     }
 

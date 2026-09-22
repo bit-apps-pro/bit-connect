@@ -9,11 +9,6 @@ const defaultSettings: Settings = {
   cleanup: {
     deleteDataOnUninstall: false
   },
-  // Two, matching ReportService::DEFAULT_AUTO_HIDE_THRESHOLD. A default of 1
-  // here would show "hide after 1 report" on a site the server is running at 2.
-  moderation: {
-    autoHideThreshold: 2
-  },
   topicAccess: {
     comment: true,
     upvote: true
@@ -54,10 +49,6 @@ export default function useSettings() {
             deleteDataOnUninstall:
               settingsData.cleanup?.deleteDataOnUninstall ??
               defaultSettings.cleanup.deleteDataOnUninstall
-          },
-          moderation: {
-            autoHideThreshold:
-              settingsData.moderation?.autoHideThreshold ?? defaultSettings.moderation.autoHideThreshold
           },
           topicAccess: {
             comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
