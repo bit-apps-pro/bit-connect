@@ -26,8 +26,6 @@ declare const SERVER_VARIABLES: {
   nonce: string
   pluginAdminURL: string
   pluginSlug: string
-  proPluginVersion: string
-  proSlug: string
   redirectUri: string
   rootURL: string
   routePrefix: string

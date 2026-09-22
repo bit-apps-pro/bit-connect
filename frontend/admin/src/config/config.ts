@@ -42,8 +42,6 @@ interface ConfigType {
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
-  PRO_SLUG?: string
-  PRO_VERSION?: string
   PRODUCT_NAME: string
   REDIRECT_URI: string
   ROOT_URL: string
@@ -72,8 +70,6 @@ const config = {
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL', ''),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'bit-connect'),
-  PRO_SLUG: getServerVariable('proSlug'),
-  PRO_VERSION: getServerVariable('proPluginVersion'),
   PRODUCT_NAME: 'Bit Connect',
   REDIRECT_URI: getServerVariable('redirectUri', ''),
   ROOT_URL: getServerVariable('rootURL', 'http://.local'),
