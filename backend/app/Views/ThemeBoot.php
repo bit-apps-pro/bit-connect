@@ -31,9 +31,14 @@ if (!defined('ABSPATH')) {
 final class ThemeBoot
 {
     /**
-     * The pre-paint theme script, ready to hand to wp_add_inline_script().
+     * Attach the pre-paint theme script to an already-registered handle.
+     *
+     * The script is a literal. The one value it takes from PHP — the
+     * localStorage key — goes in through wp_json_encode() at the
+     * wp_add_inline_script() call itself, so the escaping is visible where the
+     * output happens rather than buried in a helper that returns a string.
      */
-    public static function script(): string
+    public static function attach(string $handle): void
     {
         // Notes on the JS, which is minified past commenting:
         // - color-scheme is set as well as the class because the *browser* keys
@@ -42,20 +47,24 @@ final class ThemeBoot
         // - the catch swallows a quota-blocked, disabled or partitioned
         //   localStorage, which throws on read. Light is what the server markup
         //   is styled for, so failing closed costs a flash at worst.
-        $template = <<<'JS'
-(function(){try{
-var m="system",r=localStorage.getItem(%s);
-if(r){var v=JSON.parse(r);
-if(v&&(v.themeMode==="dark"||v.themeMode==="light"||v.themeMode==="system")){m=v.themeMode;}
-else if(v&&typeof v.isDarkTheme==="boolean"){m=v.isDarkTheme?"dark":"light";}}
-var d=m==="dark"||(m==="system"&&!!window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
-document.documentElement.classList.toggle("dark",d);
-document.documentElement.style.colorScheme=d?"dark":"light";
-}catch(e){}})();
-JS;
-
-        // Config::SLUG is the same value the frontend reads as `pluginSlug`, and
-        // the config atom keys its blob `${pluginSlug}-config`.
-        return \sprintf($template, wp_json_encode(Config::SLUG . '-config'));
+        // - Config::SLUG is the same value the frontend reads as `pluginSlug`,
+        //   and the config atom keys its blob `${pluginSlug}-config`.
+        wp_add_inline_script(
+            $handle,
+            \sprintf(
+                <<<'JS'
+                (function(){try{
+                var m="system",r=localStorage.getItem(%s);
+                if(r){var v=JSON.parse(r);
+                if(v&&(v.themeMode==="dark"||v.themeMode==="light"||v.themeMode==="system")){m=v.themeMode;}
+                else if(v&&typeof v.isDarkTheme==="boolean"){m=v.isDarkTheme?"dark":"light";}}
+                var d=m==="dark"||(m==="system"&&!!window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+                document.documentElement.classList.toggle("dark",d);
+                document.documentElement.style.colorScheme=d?"dark":"light";
+                }catch(e){}})();
+                JS,
+                wp_json_encode(Config::SLUG . '-config')
+            )
+        );
     }
 }

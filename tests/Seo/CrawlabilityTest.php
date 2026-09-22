@@ -8,6 +8,8 @@ use BitApps\BitConnect\SSR\Seo\SeoContent;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\Views\PrePaint;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use WP_Post;
 
 /**
  * Proves the portal is readable by clients that never execute JavaScript.
@@ -38,7 +40,7 @@ final class CrawlabilityTest extends TestCase
     protected function setUp(): void
     {
         $GLOBALS['__wp_options'] = [
-            Config::withPrefix('portal_page') => 'community',
+            Config::withPrefix('portal_page')      => 'community',
             Config::withPrefix('general_settings') => [
                 'portalAccess'   => 'everyone',
                 'communityTitle' => 'Acme Community',
@@ -51,6 +53,8 @@ final class CrawlabilityTest extends TestCase
         $GLOBALS['__wp_filters'] = [];
         $GLOBALS['__wp_thumbnails'] = [];
         $GLOBALS['__wp_site_icon'] = '';
+        $GLOBALS['__wp_styles'] = [];
+        $GLOBALS['__wp_scripts'] = [];
 
         $GLOBALS['__wp_posts'] = [$this->makePortalPage()];
 
@@ -66,30 +70,6 @@ final class CrawlabilityTest extends TestCase
         $GLOBALS['__wp_posts'] = [];
 
         PortalLocation::resetCache();
-    }
-
-    /**
-     * Put the portal at the site root: the flag plus the front-page binding it
-     * needs to actually take effect.
-     */
-    private function serveAtSiteRoot(): void
-    {
-        update_option(Config::withPrefix(PortalLocation::ROOT_OPTION), 1);
-        update_option('show_on_front', 'page');
-        update_option('page_on_front', self::PORTAL_PAGE_ID);
-
-        PortalLocation::resetCache();
-    }
-
-    private function makePortalPage(): \WP_Post
-    {
-        $page = new \WP_Post();
-        $page->ID = self::PORTAL_PAGE_ID;
-        $page->post_name = 'community';
-        $page->post_type = 'page';
-        $page->post_status = 'publish';
-
-        return $page;
     }
 
     // -----------------------------------------------------------------------
@@ -200,7 +180,7 @@ final class CrawlabilityTest extends TestCase
         $text = trim(preg_replace('/\s+/', ' ', wp_strip_all_tags($html)));
 
         // The old build-time prerender emitted layout markup with no words in it.
-        $this->assertGreaterThan(40, strlen($text), 'Server HTML carried no readable text.');
+        $this->assertGreaterThan(40, \strlen($text), 'Server HTML carried no readable text.');
     }
 
     // -----------------------------------------------------------------------
@@ -413,7 +393,8 @@ final class CrawlabilityTest extends TestCase
 
     public function testContentIsVisibleByDefaultAndHiddenOnlyWithJavaScript(): void
     {
-        $css = PrePaint::css();
+        PrePaint::enqueue();
+        $css = $this->inlineStyle(PrePaint::handle());
 
         // Default (no JS, i.e. crawlers): spinner hidden, content shown.
         $this->assertStringContainsString('.bc-ssr-loading{display:none}', $css);
@@ -425,16 +406,36 @@ final class CrawlabilityTest extends TestCase
         // The spinner's keyframes ride along here rather than being repeated
         // inline in each loading template.
         $this->assertStringContainsString('@keyframes bc-dot', $css);
+
+        // The stylesheet is a nowdoc indented under its call; the closing
+        // marker's indentation is stripped from every line, so no rule may
+        // reach the browser with leading whitespace or a stray `%s`.
+        $this->assertStringStartsWith('.bc-ssr{', $css);
+        $this->assertStringContainsString("\n.bc-js .bc-ssr{display:none}", $css);
     }
 
     public function testTogglesTheHumanViewBeforeFirstPaint(): void
     {
-        $script = PrePaint::script();
+        PrePaint::enqueue();
+        $script = $this->inlineScript(PrePaint::handle());
 
-        $this->assertStringContainsString('classList.add("bc-js")', $script);
+        $this->assertStringStartsWith('document.documentElement.classList.add("bc-js")', $script);
 
         // Safety valve: a bundle that never mounts re-reveals the content.
         $this->assertStringContainsString('classList.remove("bc-js")', $script);
+    }
+
+    /**
+     * More than one owner may ask for the pre-paint assets on a request; the
+     * second ask must not print the payloads twice.
+     */
+    public function testPrePaintEnqueuesOnce(): void
+    {
+        PrePaint::enqueue();
+        PrePaint::enqueue();
+
+        $this->assertCount(1, $GLOBALS['__wp_styles'][PrePaint::handle()]['after']);
+        $this->assertCount(1, $GLOBALS['__wp_scripts'][PrePaint::handle()]['after']);
     }
 
     /**
@@ -657,24 +658,58 @@ final class CrawlabilityTest extends TestCase
         $this->assertSame('Member profile — Acme Community', $parts['title']);
     }
 
+    /**
+     * Put the portal at the site root: the flag plus the front-page binding it
+     * needs to actually take effect.
+     */
+    private function serveAtSiteRoot(): void
+    {
+        update_option(Config::withPrefix(PortalLocation::ROOT_OPTION), 1);
+        update_option('show_on_front', 'page');
+        update_option('page_on_front', self::PORTAL_PAGE_ID);
+
+        PortalLocation::resetCache();
+    }
+
+    private function makePortalPage(): WP_Post
+    {
+        $page = new WP_Post();
+        $page->ID = self::PORTAL_PAGE_ID;
+        $page->post_name = 'community';
+        $page->post_type = 'page';
+        $page->post_status = 'publish';
+
+        return $page;
+    }
+
+    private function inlineStyle(string $handle): string
+    {
+        return implode("\n", $GLOBALS['__wp_styles'][$handle]['after'] ?? []);
+    }
+
+    private function inlineScript(string $handle): string
+    {
+        return implode("\n", $GLOBALS['__wp_scripts'][$handle]['after'] ?? []);
+    }
+
     private function makeTopic(
         int $id = 1,
         string $title = 'How do I reset my password',
         string $slug = 'how-do-i'
     ): array {
         return [
-            'ID'             => $id,
-            'post_title'     => $title,
-            'post_name'      => $slug,
-            'post_status'    => 'publish',
-            'post_content'   => 'You can reset it from the account page.',
-            'post_excerpt'   => '',
-            'post_date'      => '2026-03-04 10:00:00',
-            'post_date_gmt'  => '2026-03-04 10:00:00',
+            'ID'                => $id,
+            'post_title'        => $title,
+            'post_name'         => $slug,
+            'post_status'       => 'publish',
+            'post_content'      => 'You can reset it from the account page.',
+            'post_excerpt'      => '',
+            'post_date'         => '2026-03-04 10:00:00',
+            'post_date_gmt'     => '2026-03-04 10:00:00',
             'post_modified_gmt' => '2026-03-05 09:00:00',
-            'author_name'    => 'Casey',
-            'comments_count' => 1,
-            'terms'          => [
+            'author_name'       => 'Casey',
+            'comments_count'    => 1,
+            'terms'             => [
                 'topic_types' => ['name' => 'Question'],
             ],
             'comments' => [
@@ -705,7 +740,7 @@ final class CrawlabilityTest extends TestCase
      */
     private function resetMeta(): void
     {
-        $reflection = new \ReflectionClass(SeoMeta::class);
+        $reflection = new ReflectionClass(SeoMeta::class);
         $reflection->getProperty('meta')->setValue(null, null);
     }
 }

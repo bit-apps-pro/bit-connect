@@ -46,13 +46,25 @@ class Head
         // and run whatever followed. Default encoding happens to escape the
         // slash, which is a coincidence and not a guarantee — SeoMeta::head()
         // passes the flag for the same reason.
-        $configJson = wp_json_encode(self::createConfigVariable(), JSON_HEX_TAG | JSON_HEX_AMP);
+        //
+        // Both halves are escaped at the call itself, which is where the
+        // directory's escaping review looks: `window["bit_connect_"]` is the
+        // same property the bundle's `window.bit_connect_` define reads,
+        // written in the form that lets the name go through wp_json_encode()
+        // like the payload does.
         wp_register_script($slug . '-module-config', false, [], $version, ['in_footer' => false]);
         wp_enqueue_script($slug . '-module-config');
-        wp_add_inline_script($slug . '-module-config', 'window.' . Config::VAR_PREFIX . '=' . $configJson . ';');
+        wp_add_inline_script(
+            $slug . '-module-config',
+            \sprintf(
+                'window[%s]=%s;',
+                wp_json_encode(Config::VAR_PREFIX),
+                wp_json_encode(self::createConfigVariable(), JSON_HEX_TAG | JSON_HEX_AMP)
+            )
+        );
 
         // Runs in the head, before the first paint — see ThemeBoot.
-        wp_add_inline_script($slug . '-module-config', ThemeBoot::script());
+        ThemeBoot::attach($slug . '-module-config');
 
         if (Config::isDev()) {
             $devUrl = Config::getAdminEndDevUrl();
