@@ -229,6 +229,20 @@ if (!function_exists('current_user_can')) {
     }
 }
 
+if (!function_exists('get_post_type_object')) {
+    /**
+     * Every post type here is registered with capability_type 'post', so each
+     * one maps its meta capabilities onto the core post primitives.
+     */
+    function get_post_type_object($postType)
+    {
+        return (object) [
+            'name' => (string) $postType,
+            'cap'  => (object) ['read_private_posts' => 'read_private_posts'],
+        ];
+    }
+}
+
 if (!function_exists('get_current_user_id')) {
     function get_current_user_id(): int
     {

@@ -21,6 +21,8 @@ use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
+use BitApps\BitConnect\Services\NotificationPreferences;
+use BitApps\BitConnect\Services\NotificationRecipients;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\StageService;
@@ -198,7 +200,7 @@ final class TopicController
         $validatedData = $request->validated();
         $id = $validatedData['id'];
 
-        $topic = $this->topicService->getTopicById($id);
+        $topic = $this->topicService->getReadableTopicById($id);
 
         if (!$topic) {
             return Response::error('Topic not found', self::HTTP_NOT_FOUND);
@@ -384,6 +386,10 @@ final class TopicController
      * stops being usable past a handful of topics a week, and a bell full of
      * things nobody asked for is the fastest way to teach people to ignore it.
      *
+     * Moderators are the exception: they get TOPIC_POSTED for every topic,
+     * because keeping an eye on everything is their job. It is a separate type so
+     * they can switch it off without losing the topics they follow.
+     *
      * @param array<string, mixed> $topic as returned by TopicService::createTopic()
      */
     private function notifyNewTopic(array $topic): void
@@ -430,14 +436,36 @@ final class TopicController
             );
         }
 
+        $followers = NotificationRecipients::newTopicAudience($topicId);
+
         NotificationService::dispatch(
             NotificationTypes::TOPIC_NEW,
             NotificationService::TARGET_TOPIC,
             $topicId,
             $context,
             $topicId,
-            null,
+            $followers,
             $mentioned
+        );
+
+        // Moderators hear about every topic, followed or not, so nothing new
+        // reaches the portal unseen. A moderator who was already told as a
+        // follower is skipped: one topic is one row. Only the followers who
+        // actually took the TOPIC_NEW row count as told — one who switched that
+        // type off must still get this one.
+        $toldAsFollower = array_filter(
+            $followers,
+            static fn (int $id): bool => NotificationPreferences::wantsInApp($id, NotificationTypes::TOPIC_NEW)
+        );
+
+        NotificationService::dispatch(
+            NotificationTypes::TOPIC_POSTED,
+            NotificationService::TARGET_TOPIC,
+            $topicId,
+            $context,
+            $topicId,
+            null,
+            array_merge($mentioned, $toldAsFollower)
         );
     }
 

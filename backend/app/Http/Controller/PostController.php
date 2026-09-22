@@ -10,11 +10,13 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Requests\CreatePostRequest;
 use BitApps\BitConnect\Http\Requests\FilterPostRequest;
 use BitApps\BitConnect\Http\Requests\GetAllPostsRequest;
 use BitApps\BitConnect\Http\Requests\GetPostRequest;
 use BitApps\BitConnect\Model\Vote;
+use BitApps\BitConnect\Services\TopicService;
 use WP_Query;
 
 final class PostController
@@ -82,7 +84,12 @@ final class PostController
         $postId = $request->id;
 
         $post = get_post($postId);
-        if (!$post) {
+
+        // get_post() answers for any post on the site, of any type and status.
+        // This endpoint serves forum topics, and only the ones the viewer may
+        // read — otherwise a guest could page through drafts and private posts
+        // by ID.
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Post not found', 404);
         }
 

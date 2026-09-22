@@ -158,15 +158,9 @@ class TopicService
         }
 
         // get_page_by_path() matches on slug and post type alone — it applies no
-        // status filter at all. Without this, a topic hidden from every listing
-        // would still be served in full to anyone holding its URL.
-        //
-        // The author is not a stranger to their own topic: they keep the URL,
-        // marked as hidden, while it stays out of every listing for everyone.
-        $isHiddenFromViewer = $post->post_status === ContentVisibilityService::HIDDEN_STATUS
-            && !ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
-
-        if ($isHiddenFromViewer) {
+        // status filter at all. Without this, a hidden or private topic would
+        // still be served in full to anyone holding its URL.
+        if (!self::isReadable($post)) {
             return null;
         }
 
@@ -174,7 +168,10 @@ class TopicService
     }
 
     /**
-     * Get a single topic by ID.
+     * Get a single topic by ID, whatever its status.
+     *
+     * For the write paths, which run their own permission checks. Anything
+     * that shows a topic to the current user goes through getReadableTopicById().
      */
     public function getTopicById(int $id): ?array
     {
@@ -185,6 +182,55 @@ class TopicService
         }
 
         return $this->prepareTopicData($post, true);
+    }
+
+    /**
+     * Get a single topic by ID, or null when the current user may not read it.
+     */
+    public function getReadableTopicById(int $id): ?array
+    {
+        $post = get_post($id);
+
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !self::isReadable($post)) {
+            return null;
+        }
+
+        return $this->prepareTopicData($post, true);
+    }
+
+    /**
+     * Whether the current user may read this topic.
+     *
+     * The single-topic twin of the listing query's status list and
+     * `perm => readable`: a lookup by ID or slug bypasses both, so it has to
+     * ask the same question itself.
+     *
+     * - Published: anyone.
+     * - Hidden by moderation: moderators, and the author, who keeps the URL
+     *   marked as hidden while it stays out of every listing.
+     * - Private: the author, and whoever may read others' private posts —
+     *   exactly who `perm => readable` admits.
+     * - Anything else (draft, pending, trash): nobody. The portal writes none
+     *   of them, so a topic in one reached it some other way.
+     */
+    public static function isReadable(WP_Post $post): bool
+    {
+        switch ($post->post_status) {
+            case 'publish':
+                return true;
+
+            case ContentVisibilityService::HIDDEN_STATUS:
+                return ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
+
+            case 'private':
+                $postType = get_post_type_object($post->post_type);
+
+                return ContentVisibilityService::isOwnContent((int) $post->post_author)
+                    || ($postType && current_user_can($postType->cap->read_private_posts));
+
+            default:
+                return false;
+        }
     }
 
     /**

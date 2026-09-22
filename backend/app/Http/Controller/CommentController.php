@@ -44,7 +44,9 @@ final class CommentController
         $postId = $request->id;
 
         $post = get_post($postId);
-        if (!$post) {
+
+        // A private or hidden topic's comments are as private as the topic.
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Post not found', 404);
         }
 
