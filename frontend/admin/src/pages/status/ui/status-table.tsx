@@ -93,6 +93,7 @@ export default function StatusTable() {
       render: (_: unknown, record: Status) => (
         <div>
           <Button
+            aria-label={__('Edit status')}
             className="hover:bc-text-blue-600"
             icon={<EditIcon size={16} />}
             onClick={() => handleEdit(record.id)}
@@ -107,6 +108,7 @@ export default function StatusTable() {
             title={__('Delete Status')}
           >
             <Button
+              aria-label={__('Delete status')}
               danger
               disabled={isDeletingStatus || record.meta?.is_default}
               icon={<LuTrash2 size={16} />}

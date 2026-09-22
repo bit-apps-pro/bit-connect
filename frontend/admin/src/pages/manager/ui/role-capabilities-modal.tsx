@@ -114,7 +114,10 @@ export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitie
 
   return (
     <Modal
-      footer={undefined}
+      // No footer: each role saves with its own button. `undefined` would
+      // render antd's default Cancel/OK, and OK had nothing to confirm.
+      // eslint-disable-next-line unicorn/no-null
+      footer={null}
       onCancel={onClose}
       open={open}
       title={

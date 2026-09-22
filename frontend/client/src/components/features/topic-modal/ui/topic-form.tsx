@@ -140,7 +140,14 @@ export default function TopicForm({
   return (
     // Field labels read as headings for their control, so they carry weight; antd
     // exposes no font-weight token for them, hence the one-off descendant rule.
-    <Form className="[&_.ant-form-item-label>label]:bc-font-semibold" form={form} layout="vertical">
+    <Form
+      className="[&_.ant-form-item-label>label]:bc-font-semibold"
+      form={form}
+      layout="vertical"
+      // antd builds field ids from the form name. Unnamed, the create and edit
+      // forms both render `#post_title`, and a label can reach the wrong input.
+      name={isEditMode ? 'topic-edit' : 'topic-create'}
+    >
       {/* Hidden rather than unrendered when only one visibility is on offer: a
           radio group of one is a control with nothing to decide, but the field
           still has to register `publish` so the payload is identical either way.

@@ -49,6 +49,7 @@ export default function ProductsTable() {
       render: (_, record: Product) => (
         <Space>
           <Button
+            aria-label={__('Edit product')}
             className="hover:bc-text-blue-600"
             icon={<LuPencilLine size={16} />}
             onClick={() => handleEdit(record.id)}

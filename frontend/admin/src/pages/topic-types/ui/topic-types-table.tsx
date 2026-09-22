@@ -88,6 +88,7 @@ export default function TopicTypesTable() {
       render: (_, record) => (
         <div className="bc-flex bc-gap-2 bc-justify-center bc-items-center">
           <Button
+            aria-label={__('Edit topic type')}
             className="hover:bc-text-blue-600"
             icon={<LuPencilLine />}
             onClick={() => handleEdit(record.id)}
@@ -101,7 +102,13 @@ export default function TopicTypesTable() {
             onConfirm={() => handleDelete(record.id)}
             title={__('Delete Topic Type')}
           >
-            <Button danger disabled={isDeletingTopicType} icon={<LuTrash2 />} type="text" />
+            <Button
+              aria-label={__('Delete topic type')}
+              danger
+              disabled={isDeletingTopicType}
+              icon={<LuTrash2 />}
+              type="text"
+            />
           </Popconfirm>
         </div>
       ),
