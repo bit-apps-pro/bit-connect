@@ -1,4 +1,5 @@
 import config from '@config/config'
+import { decodeTermFields } from '@shared/text/decode-terms'
 
 import { getNonce } from './nonce'
 import { type QueryParam, type ResponseType } from './types'
@@ -58,5 +59,5 @@ export async function wpApi<PAYLOAD, RESPONSE_DATA>(
     throw responseData ?? { message: response.statusText }
   }
 
-  return { data: responseData } as ResponseType<RESPONSE_DATA>
+  return { data: decodeTermFields(responseData) } as ResponseType<RESPONSE_DATA>
 }

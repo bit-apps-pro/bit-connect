@@ -229,6 +229,14 @@ if (!function_exists('current_user_can')) {
     }
 }
 
+if (!function_exists('wp_specialchars_decode')) {
+    /** Core decodes the five entities esc_html() writes, and nothing else. */
+    function wp_specialchars_decode($text, $quoteStyle = ENT_NOQUOTES)
+    {
+        return htmlspecialchars_decode((string) $text, $quoteStyle === ENT_QUOTES ? ENT_QUOTES : ENT_NOQUOTES);
+    }
+}
+
 if (!function_exists('get_post_type_object')) {
     /**
      * Every post type here is registered with capability_type 'post', so each

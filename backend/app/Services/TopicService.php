@@ -753,9 +753,10 @@ class TopicService
             return null;
         }
 
+        // The name is stored escaped ("API &amp; Integrations"); JSON wants the text.
         $data = [
             'term_id'          => $term->term_id,
-            'name'             => $term->name,
+            'name'             => wp_specialchars_decode($term->name, ENT_QUOTES),
             'slug'             => $term->slug,
             'taxonomy'         => $term->taxonomy,
             'description'      => $term->description,

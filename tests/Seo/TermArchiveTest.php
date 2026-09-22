@@ -184,6 +184,23 @@ final class TermArchiveTest extends TestCase
         $this->assertStringContainsString('"@type":"BreadcrumbList"', $head);
     }
 
+    /**
+     * WordPress stores "API & Integrations" as "API &amp; Integrations". The
+     * meta tags escape on output either way; JSON-LD does not, so an undecoded
+     * name put the literal "&amp;" into the breadcrumb a search result shows.
+     */
+    public function testAnEscapedTermNameReachesStructuredDataDecoded(): void
+    {
+        $term = $this->makeTerm('api', 'API &amp; Integrations', Taxonomies::TOPIC_TYPES->value);
+
+        SeoMeta::forArchive($term, [$this->makeTopic()]);
+        $head = SeoMeta::head();
+
+        $this->assertStringNotContainsString('&amp;amp;', $head);
+        $this->assertDoesNotMatchRegularExpression('/"name":"API &amp; Integrations"/', $head);
+        $this->assertMatchesRegularExpression('/"name":"API (&|\\\\u0026) Integrations"/', $head);
+    }
+
     public function testArchiveBodyLeadsWithTheTermAsItsHeading(): void
     {
         $term = $this->makeTerm('billing', 'Billing', Taxonomies::TOPIC_TYPES->value);

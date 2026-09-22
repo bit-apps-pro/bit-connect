@@ -135,12 +135,16 @@ final class SeoMeta
         $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
         $url = PortalTaxonomies::urlForTerm($term);
 
+        // Stored escaped ("API &amp; Integrations"). The tags below escape on
+        // output, but JSON-LD does not, and would carry the literal "&amp;".
+        $termName = wp_specialchars_decode($term->name, ENT_QUOTES);
+
         // translators: 1: term name, 2: community name.
-        $title = \sprintf(__('%1$s — %2$s', 'bit-connect'), $term->name, $community);
+        $title = \sprintf(__('%1$s — %2$s', 'bit-connect'), $termName, $community);
 
         $description = $term->description !== ''
             ? wp_trim_words(wp_strip_all_tags($term->description), 30, '…')
-            : self::archiveDescription($term->name, $community, $topics);
+            : self::archiveDescription($termName, $community, $topics);
 
         $indexable = PortalTaxonomies::isIndexable(PortalTaxonomies::segmentFor($term->taxonomy));
 
@@ -155,7 +159,7 @@ final class SeoMeta
             // and the topics it lists carry their own structured data already.
             'jsonLd' => $indexable ? self::schemaDocuments(
                 self::collectionJsonLd($topics, $title, $url),
-                self::breadcrumbJsonLd($term->name, $url)
+                self::breadcrumbJsonLd($termName, $url)
             ) : [],
         ];
     }
