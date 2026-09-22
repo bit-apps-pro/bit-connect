@@ -1,3 +1,5 @@
+import { normalizeFailure } from '@shared/request/failure'
+
 import config from '../../config/config'
 
 export type MethodType = 'GET' | 'POST'
@@ -91,10 +93,15 @@ export default async function queryRequest<T>(
 
   try {
     const response = await fetch(uri, fetchOptions)
-    const responseData = await response.json()
+    let responseData: unknown
+    try {
+      responseData = await response.json()
+    } catch {
+      // A fatal can answer with an HTML page rather than JSON; handled below.
+    }
 
-    if (!response.ok) {
-      throw responseData
+    if (!response.ok || responseData === undefined) {
+      throw normalizeFailure(responseData, 'Unexpected response from the server.')
     }
 
     return responseData as Response<T>
