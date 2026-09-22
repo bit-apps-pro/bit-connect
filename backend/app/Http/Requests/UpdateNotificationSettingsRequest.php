@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use BitApps\BitConnect\Http\Rules\InRule;
 
 /**
  * Request input properties.
@@ -55,7 +56,7 @@ final class UpdateNotificationSettingsRequest extends Request
             'defaultFrequency' => [
                 'nullable',
                 'string',
-                'in:' . implode(',', NotificationSettings::frequencies()),
+                new InRule(NotificationSettings::frequencies()),
             ],
         ];
     }

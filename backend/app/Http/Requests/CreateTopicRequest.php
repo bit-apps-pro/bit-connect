@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
 
 /**
@@ -45,7 +46,7 @@ final class CreateTopicRequest extends Request
             // statement of what this plugin does rather than a gate on it.
             // Hiding a reported topic is moderation's, and goes through
             // ContentVisibilityService rather than this request.
-            'post_status' => ['nullable', 'string', 'in:publish'],
+            'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
             'departments' => ['nullable', 'integer', 'min:1'],

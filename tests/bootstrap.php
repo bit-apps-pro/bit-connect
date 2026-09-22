@@ -875,6 +875,15 @@ if (!function_exists('sanitize_text_field')) {
     }
 }
 
+if (!function_exists('sanitize_user')) {
+    function sanitize_user($username, $strict = false)
+    {
+        $username = trim(strip_tags((string) $username));
+
+        return $strict ? preg_replace('/[^a-z0-9 _.\-@]/i', '', $username) : $username;
+    }
+}
+
 if (!function_exists('sanitize_textarea_field')) {
     function sanitize_textarea_field($str)
     {

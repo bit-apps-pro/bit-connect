@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
 
 /**
@@ -63,7 +64,7 @@ final class UpdateTopicRequest extends Request
             // clearing a capability override is. Omitting the field leaves the
             // stored status alone, so an author editing a private topic on a
             // site without the add-on keeps it private.
-            'post_status' => ['nullable', 'string', 'in:publish'],
+            'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
             'departments' => ['nullable', 'integer', 'min:1'],

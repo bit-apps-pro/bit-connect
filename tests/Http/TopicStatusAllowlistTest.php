@@ -2,8 +2,10 @@
 
 namespace BitApps\BitConnect\Tests\Http;
 
+use BitApps\BitConnect\Deps\BitApps\WPValidator\Validator;
 use BitApps\BitConnect\Http\Requests\CreateTopicRequest;
 use BitApps\BitConnect\Http\Requests\UpdateTopicRequest;
+use BitApps\BitConnect\Http\Rules\InRule;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,43 +22,88 @@ use PHPUnit\Framework\TestCase;
  * free side, which is the WordPress.org guideline 5 problem the split exists to
  * avoid.
  *
+ * The rules are also run through the real validator, not only compared as
+ * arrays: the previous version asserted `'in:publish'` literally, and
+ * wp-validator has no `in` rule, so every topic create fataled while this test
+ * stayed green.
+ *
  * @internal
  *
  * @coversNothing
  */
 final class TopicStatusAllowlistTest extends TestCase
 {
-    public function testCreateAcceptsPublishOnly(): void
+    /**
+     * @return array<string, array{0: object}>
+     */
+    public static function requests(): array
     {
-        $this->assertSame(
-            ['nullable', 'string', 'in:publish'],
-            (new CreateTopicRequest())->rules()['post_status']
-        );
-    }
-
-    public function testUpdateAcceptsPublishOnly(): void
-    {
-        $this->assertSame(
-            ['nullable', 'string', 'in:publish'],
-            (new UpdateTopicRequest())->rules()['post_status']
-        );
+        return [
+            'create' => [new CreateTopicRequest()],
+            'update' => [new UpdateTopicRequest()],
+        ];
     }
 
     /**
-     * Neither rule set may name 'private' anywhere.
+     * @dataProvider requests
+     */
+    public function testAcceptsPublishOnly(object $request): void
+    {
+        $rule = $request->rules()['post_status'];
+
+        $this->assertSame(['nullable', 'string'], \array_slice($rule, 0, 2));
+        $this->assertInstanceOf(InRule::class, $rule[2]);
+        $this->assertSame(['publish'], $rule[2]->allowed());
+    }
+
+    /**
+     * @dataProvider requests
+     */
+    public function testTheValidatorAdmitsPublish(object $request): void
+    {
+        $validator = (new Validator())->make(
+            ['post_status' => 'publish'],
+            ['post_status' => $request->rules()['post_status']]
+        );
+
+        $this->assertFalse($validator->fails());
+    }
+
+    /**
+     * @dataProvider requests
+     */
+    public function testTheValidatorRejectsPrivate(object $request): void
+    {
+        $validator = (new Validator())->make(
+            ['post_status' => 'private'],
+            ['post_status' => $request->rules()['post_status']]
+        );
+
+        $this->assertTrue($validator->fails());
+        $this->assertArrayHasKey('post_status', $validator->errors());
+    }
+
+    /**
+     * Neither allowlist may name 'private'.
      *
-     * Broader than the two assertions above on purpose: a rule added beside
-     * these — a custom validator, a second status field — would not change the
-     * arrays they compare, and this catches it.
+     * Read from the rule objects themselves: JSON-encoding the rules, as this
+     * test used to, serialises an object rule as `{}` and would pass whatever
+     * it allowed.
      */
     public function testNeitherRequestNamesThePrivateStatus(): void
     {
         foreach ([new CreateTopicRequest(), new UpdateTopicRequest()] as $request) {
-            $this->assertStringNotContainsStringIgnoringCase(
-                'private',
-                wp_json_encode($request->rules()),
-                'A topic request rule names the private status.'
-            );
+            foreach ($request->rules() as $rules) {
+                foreach ($rules as $rule) {
+                    $text = $rule instanceof InRule ? implode(',', $rule->allowed()) : (string) $rule;
+
+                    $this->assertStringNotContainsStringIgnoringCase(
+                        'private',
+                        $text,
+                        'A topic request rule names the private status.'
+                    );
+                }
+            }
         }
     }
 }
