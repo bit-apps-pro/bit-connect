@@ -57,7 +57,7 @@ interface ConfigType {
 const windowOrigin = typeof window === 'undefined' ? '' : window.location.origin
 
 const config = {
-  AJAX_URL: getServerVariable('ajaxURL', 'http://bit-pi.site/wp-admin/admin-ajax.php'),
+  AJAX_URL: getServerVariable('ajaxURL', `${windowOrigin}/wp-admin/admin-ajax.php`),
   API_URL: getServerVariable('apiURL', `${windowOrigin}/wp-json/bit-connect/v1`),
   // Read straight off SERVER_VARIABLES rather than through getServerVariable:
   // that helper warns on any falsy value, and `false` here is a normal answer,
@@ -73,7 +73,7 @@ const config = {
   PRODUCT_NAME: 'Bit Connect',
   REDIRECT_URI: getServerVariable('redirectUri', ''),
   ROOT_URL: getServerVariable('rootURL', 'http://.local'),
-  ROUTE_PREFIX: getServerVariable('routePrefix', 'bit_pi_'),
+  ROUTE_PREFIX: getServerVariable('routePrefix', 'bit_connect_'),
   SITE_BASE_URL: getServerVariable('siteBaseURL', ''),
   SITE_URL: getServerVariable('siteURL', ''),
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),

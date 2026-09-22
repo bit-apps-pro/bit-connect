@@ -59,7 +59,7 @@ class PluginCommands
     public function toggleDev($_, $assocArgs)
     {
         if (!isset($assocArgs['active'])) {
-            WP_CLI::error('missing parameter use wp bit-pi use toggleDev --active=y|n');
+            WP_CLI::error('missing parameter use wp bit-connect use toggleDev --active=y|n');
 
             return;
         }
