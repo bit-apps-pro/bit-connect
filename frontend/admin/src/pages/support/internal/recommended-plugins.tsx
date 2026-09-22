@@ -11,11 +11,11 @@ const { Link, Text, Title } = Typography
  * The other Bit Apps plugins, fetched from the Bit Apps API.
  *
  * A deliberate local copy of the commons `SupportPage/RecommendedPlugins`,
- * which the commons sync leaves out of this tree: that version splits its
- * endpoint into fragments joined at runtime, so the address never appears in
- * the source as a string a reader — or a WordPress.org reviewer — could search
- * for. The URL below is written plainly, and it is the endpoint documented
- * under *External Services* in `readme.txt`.
+ * which the commons sync leaves out of this tree: that version assembles its
+ * endpoint from fragments at runtime, so the address is not searchable in the
+ * source. The URL below is written plainly so anyone reading this file can
+ * find it, and it is the endpoint documented under *External Services* in
+ * `readme.txt`.
  *
  * Nothing is sent: it is a GET with no body, no key and no site identifier,
  * and it is made only while an administrator is looking at this screen. The
