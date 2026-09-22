@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Services\NotificationDigest;
 
@@ -29,9 +28,13 @@ use BitApps\BitConnect\Services\NotificationDigest;
  */
 final class CronProvider
 {
-    public const DIGEST_HOOK = Config::VAR_PREFIX . 'notification_digest';
+    // Spelled out rather than built from Config::VAR_PREFIX: the WordPress.org
+    // prefix analyzer reads string literals, and a bare 'notification_digest'
+    // was reported as a second, unprefixed name family. The full literal reads
+    // as `bit_connect_…` like every other stored key in the plugin.
+    public const DIGEST_HOOK = 'bit_connect_notification_digest';
 
-    public const CLEANUP_HOOK = Config::VAR_PREFIX . 'notification_cleanup';
+    public const CLEANUP_HOOK = 'bit_connect_notification_cleanup';
 
     /**
      * Wires the callbacks and makes sure both events exist.
