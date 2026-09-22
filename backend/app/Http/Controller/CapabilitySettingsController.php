@@ -12,6 +12,7 @@ use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Http\Requests\GetCapabilitySettingsRequest;
 use BitApps\BitConnect\Http\Requests\UpdateCapabilitySettingsRequest;
 use BitApps\BitConnect\Services\CapabilityService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 
 /**
  * REST API controller for managing forum capability assignments.
@@ -36,7 +37,7 @@ final class CapabilitySettingsController
         return Response::success(
             [
                 'roles'            => CapabilityService::getRolesWithCapabilities(),
-                'allCapabilities'  => Capabilities::values(),
+                'allCapabilities'  => ExtensionPoints::capabilities(),
                 'capabilityLabels' => $capabilityLabels,
             ]
         );

@@ -147,10 +147,6 @@ final class TopicController
     {
         $validatedData = $request->validated();
 
-        if (!$this->mayUseStatus($validatedData['post_status'] ?? null)) {
-            return $this->refusePrivateTopic();
-        }
-
         // Prepare data for service
         $topicData = [
             'post_title'   => $validatedData['post_title'],
@@ -285,17 +281,12 @@ final class TopicController
                 $updateData['post_name'] = $validatedData['post_name'];
             }
             if (isset($validatedData['post_status'])) {
-                // Only a *move* into private is refused. A topic that is already
-                // private stays editable after the feature is switched off or a
-                // license lapses — otherwise turning the setting off would trap
-                // its author, unable to fix a typo in something they wrote,
-                // which is not what "stop offering private topics" should mean.
-                $wasPrivate = (string) ($existingTopic['post_status'] ?? '') === 'private';
-
-                if (!$wasPrivate && !$this->mayUseStatus($validatedData['post_status'])) {
-                    return $this->refusePrivateTopic();
-                }
-
+                // Validation admits 'publish' and nothing else, so this either
+                // leaves a public topic public or makes a private one public.
+                // Both are this plugin's to do. A topic that is already private
+                // stays editable here: the field simply is not sent, so its
+                // status is untouched and its author can still fix a typo in
+                // it.
                 $updateData['post_status'] = $validatedData['post_status'];
             }
             if (isset($validatedData['topic-types'])) {
@@ -622,32 +613,4 @@ final class TopicController
         }
     }
 
-    /**
-     * Whether the forum currently accepts a topic in this status.
-     *
-     * Only 'private' is gated. Anything else — 'publish', or the hidden status
-     * moderation applies — is not this method's business, so it passes through
-     * and the existing handling decides.
-     *
-     * The portal already hides the Private option when it is unavailable, but
-     * that is presentation: the request can still arrive from a stale tab, a
-     * second browser, or anything speaking to the API directly.
-     *
-     * @param null|string $status
-     */
-    private function mayUseStatus($status): bool
-    {
-        if ((string) $status !== 'private') {
-            return true;
-        }
-
-        return PermissionService::canUsePrivateTopics();
-    }
-
-    private function refusePrivateTopic()
-    {
-        return Response::error(
-            __('Private topics are not available on this forum.', 'bit-connect')
-        )->httpStatus(403);
-    }
 }

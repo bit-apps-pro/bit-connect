@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Services\ExtensionPoints;
 
 /**
  * Request input properties.
@@ -62,7 +63,7 @@ final class UpdateCapabilitySettingsRequest extends Request
             return $result;
         }
 
-        foreach (Capabilities::values() as $cap) {
+        foreach (ExtensionPoints::capabilities() as $cap) {
             $result[$cap] = !empty($raw[$cap]);
         }
 

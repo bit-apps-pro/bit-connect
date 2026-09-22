@@ -5,8 +5,14 @@ namespace BitApps\BitConnect\Model;
 /**
  * Test double for the Vote model.
  *
- * One row per vote, in $GLOBALS['__bc_votes'], each carrying user_id and either
- * post_id or comment_id — the same shape the table holds.
+ * One row per vote, in $GLOBALS['__bc_votes'], each carrying user_id and
+ * post_id. Rows carry a `comment_id` key too, always null when this plugin
+ * writes one: the column is added to the table by an add-on that implements
+ * reply upvoting, and cases about a member's votes seed a reply row directly
+ * to prove that this plugin's clean-up by user_id reaches rows it did not
+ * write and has no query for.
+ *
+ * The model itself has no comment-side method, so neither does this double.
  *
  * Loaded from bootstrap.php before the Composer autoloader, like the other
  * model doubles.
@@ -70,42 +76,6 @@ class Vote
     public static function deleteAllVotesForPost(int $postId): bool
     {
         return self::remove(static fn ($row) => (int) ($row['post_id'] ?? 0) === $postId);
-    }
-
-    public static function getCommentVoteCount(int $commentId): int
-    {
-        return \count(self::matching(static fn ($row) => (int) ($row['comment_id'] ?? 0) === $commentId));
-    }
-
-    public static function hasUserVotedComment(int $userId, int $commentId): bool
-    {
-        return self::matching(
-            static fn ($row) => (int) ($row['user_id'] ?? 0) === $userId
-                && (int) ($row['comment_id'] ?? 0) === $commentId
-        ) !== [];
-    }
-
-    public static function getUserVoteForComment(int $userId, int $commentId)
-    {
-        $rows = self::matching(
-            static fn ($row) => (int) ($row['user_id'] ?? 0) === $userId
-                && (int) ($row['comment_id'] ?? 0) === $commentId
-        );
-
-        return $rows === [] ? null : (object) reset($rows);
-    }
-
-    public static function deleteUserVoteForComment(int $userId, int $commentId): bool
-    {
-        return self::remove(
-            static fn ($row) => (int) ($row['user_id'] ?? 0) === $userId
-                && (int) ($row['comment_id'] ?? 0) === $commentId
-        );
-    }
-
-    public static function deleteAllVotesForComment(int $commentId): bool
-    {
-        return self::remove(static fn ($row) => (int) ($row['comment_id'] ?? 0) === $commentId);
     }
 
     public static function deleteAllVotesByUser(int $userId): bool

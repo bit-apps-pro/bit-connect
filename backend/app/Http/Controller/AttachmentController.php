@@ -27,12 +27,8 @@ final class AttachmentController
         // validateFile() above — never the raw client-supplied $_FILES entry.
         $file = $request->validatedFile();
 
-        include_once ABSPATH . 'wp-admin/includes/file.php';
-
-        include_once ABSPATH . 'wp-admin/includes/media.php';
-
-        include_once ABSPATH . 'wp-admin/includes/image.php';
-
+        // wp_handle_upload() is an admin-side function, not loaded on REST requests.
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         $uploadedFile = wp_handle_upload($file, ['test_form' => false]);
 
         if (isset($uploadedFile['error'])) {
@@ -52,6 +48,8 @@ final class AttachmentController
             return Response::error('Failed to create attachment: ' . $attachId->get_error_message())->httpStatus(500);
         }
 
+        // wp_generate_attachment_metadata() is admin-side too.
+        require_once ABSPATH . 'wp-admin/includes/image.php';
         $attachData = wp_generate_attachment_metadata($attachId, $uploadedFile['file']);
         wp_update_attachment_metadata($attachId, $attachData);
 

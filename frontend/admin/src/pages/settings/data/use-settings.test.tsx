@@ -25,8 +25,7 @@ describe('the settings screen’s values', () => {
     vi.mocked(request).mockResolvedValue(
       stored({
         cleanup: { deleteDataOnUninstall: true },
-        moderation: { autoHideThreshold: 5 },
-        topicAccess: { comment: false, commentUpvote: true, privateTopic: false, upvote: false },
+        topicAccess: { comment: false, upvote: false },
         topicFormFields: { requireDepartment: false, requireTopicType: false }
       }) as never
     )
@@ -38,8 +37,7 @@ describe('the settings screen’s values', () => {
 
     expect(result.current.settings).toEqual({
       cleanup: { deleteDataOnUninstall: true },
-      moderation: { autoHideThreshold: 5 },
-      topicAccess: { comment: false, commentUpvote: true, privateTopic: false, upvote: false },
+      topicAccess: { comment: false, upvote: false },
       topicFormFields: { requireDepartment: false, requireTopicType: false }
     })
   })
@@ -54,15 +52,32 @@ describe('the settings screen’s values', () => {
 
     expect(result.current.settings.topicAccess.comment).toBe(false)
     expect(result.current.settings.topicAccess.upvote).toBe(true)
-    expect(result.current.settings.moderation.autoHideThreshold).toBe(2)
     expect(result.current.settings.topicFormFields.requireDepartment).toBe(true)
+  })
+
+  // An older build of the server wrote a `moderation` group. It is not a
+  // setting this plugin has, so it must not come back as one.
+  it('ignores a group this plugin no longer stores', async () => {
+    vi.mocked(request).mockResolvedValue(
+      stored({
+        moderation: { autoHideThreshold: 5 },
+        topicAccess: { comment: true, upvote: true }
+      }) as never
+    )
+    const { wrapper } = createQueryWrapper()
+
+    const { result } = renderHook(() => useSettings(), { wrapper })
+
+    await waitFor(() => expect(result.current.isSettingsFetching).toBe(false))
+
+    expect(result.current.settings).not.toHaveProperty('moderation')
   })
 
   // `false` is a decision an admin made, not a gap to be filled.
   it('keeps a switch the admin turned off', async () => {
     vi.mocked(request).mockResolvedValue(
       stored({
-        topicAccess: { comment: false, commentUpvote: false, privateTopic: false, upvote: false }
+        topicAccess: { comment: false, upvote: false }
       }) as never
     )
     const { wrapper } = createQueryWrapper()
@@ -73,15 +88,13 @@ describe('the settings screen’s values', () => {
 
     expect(result.current.settings.topicAccess).toEqual({
       comment: false,
-      commentUpvote: false,
-      privateTopic: false,
       upvote: false
     })
   })
 
-  // A default of one here would show "hide after 1 report" on a site the server
-  // is running at two.
-  it('shows the same auto-hide threshold the server defaults to', () => {
+  // The switches render before the request settles, so what they show first
+  // has to be the shipped default rather than nothing.
+  it('shows the shipped defaults while the request is still in flight', () => {
     vi.mocked(request).mockReturnValue(
       new Promise(() => {
         /* never settles */
@@ -91,7 +104,8 @@ describe('the settings screen’s values', () => {
 
     const { result } = renderHook(() => useSettings(), { wrapper })
 
-    expect(result.current.settings.moderation.autoHideThreshold).toBe(2)
+    expect(result.current.settings.topicAccess).toEqual({ comment: true, upvote: true })
+    expect(result.current.settings.topicFormFields.requireTopicType).toBe(true)
   })
 
   it('falls back to the defaults for a body it cannot read', async () => {
@@ -116,7 +130,7 @@ describe('the settings screen’s values', () => {
 
     await waitFor(() => expect(result.current.isSettingsError).toBe(true))
 
-    expect(result.current.settings.moderation.autoHideThreshold).toBe(2)
+    expect(result.current.settings.topicAccess).toEqual({ comment: true, upvote: true })
   })
 
   // Uninstall data deletion is destructive and irreversible, so it may only

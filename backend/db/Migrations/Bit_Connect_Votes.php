@@ -11,18 +11,23 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Migration for the votes table.
+ * Migration for the votes table: one row per (user, topic).
+ *
+ * The table holds upvotes on topics, which is the whole of what this plugin
+ * lets a member vote on. Upvoting an individual reply is not this plugin's
+ * feature and its column is not in this schema — an add-on that implements
+ * reply upvoting adds `comment_id` and its unique index itself, in its own
+ * migration. Nothing here creates, reads or writes it.
  *
  * Handles two cases:
  *   - Fresh install: create the table with the current one-row-per-vote schema.
  *   - Upgrade: an existing install may still carry the legacy schema
- *     (`vote_type ENUM NOT NULL`, no `comment_id`, and unique indexes that
- *     include `vote_type`). Because Schema::create emits CREATE TABLE IF NOT
- *     EXISTS it is a no-op on those installs, so the legacy `vote_type NOT NULL`
- *     column survives and every new INSERT (user_id, post_id only) fails
- *     silently. This migration performs a real ALTER: add the new column,
- *     de-duplicate rows, drop the legacy column, and (re)create the unique
- *     indexes by name.
+ *     (`vote_type ENUM NOT NULL` and unique indexes that include it). Because
+ *     Schema::create emits CREATE TABLE IF NOT EXISTS it is a no-op on those
+ *     installs, so the legacy `vote_type NOT NULL` column survives and every
+ *     new INSERT (user_id, post_id only) fails silently. The upgrade path
+ *     performs a real ALTER: drop the legacy indexes, de-duplicate, drop the
+ *     legacy column, and create the unique index by name.
  */
 final class Bit_Connect_Votes extends Migration
 {
@@ -37,7 +42,6 @@ final class Bit_Connect_Votes extends Migration
                 function (Blueprint $table): void {
                     $table->id();
                     $table->bigint('post_id')->unsigned()->nullable()->index();
-                    $table->bigint('comment_id')->unsigned()->nullable()->index();
                     $table->bigint('user_id')->unsigned()->index();
                     $table->timestamps();
                 }
@@ -59,28 +63,32 @@ final class Bit_Connect_Votes extends Migration
 
     /**
      * Bring a pre-existing (possibly legacy) votes table up to the current schema.
+     *
+     * Everything but the last line is guarded on the one marker of the legacy
+     * schema, the `vote_type` column. A table without it is already current —
+     * or carries an add-on's `comment_id` beside this plugin's columns, which
+     * a blind drop-and-recreate of the indexes would disturb for no reason.
      */
     private function upgradeExistingTable(string $tableName): void
     {
-        // A legacy install may be missing comment_id entirely (post votes only).
-        if (!$this->columnExists($tableName, 'comment_id')) {
-            $this->runOrFail(
-                "ALTER TABLE `{$tableName}` ADD COLUMN `comment_id` BIGINT UNSIGNED NULL AFTER `post_id`, ADD INDEX `comment_id` (`comment_id`)"
-            );
-        }
-
-        // Drop the legacy unique indexes (they include vote_type and share the
-        // names we want to reuse). Doing this first avoids "duplicate index name".
-        $this->dropIndexIfExists($tableName, 'unique_post_vote');
-        $this->dropIndexIfExists($tableName, 'unique_comment_vote');
-
-        // De-duplicate before adding the unique keys: the legacy schema allowed
-        // one up and one down row per (user, target); collapse to a single row.
-        $this->dedupe($tableName, 'post_id');
-        $this->dedupe($tableName, 'comment_id');
-
-        // Drop the legacy NOT NULL column that blocks new inserts.
         if ($this->columnExists($tableName, 'vote_type')) {
+            // Both legacy unique indexes include vote_type and share the names
+            // this schema wants, so they go first: it avoids "duplicate index
+            // name", and it lifts the uniqueness constraint that the DROP
+            // COLUMN below would otherwise violate.
+            //
+            // `unique_comment_vote` is dropped and not recreated. Reply votes
+            // are not this plugin's, so neither is the index over them: an
+            // add-on that implements reply upvoting de-duplicates the rows and
+            // adds the index back in its own migration.
+            $this->dropIndexIfExists($tableName, 'unique_post_vote');
+            $this->dropIndexIfExists($tableName, 'unique_comment_vote');
+
+            // One row per (user, topic) before the unique key goes back on:
+            // the legacy schema allowed an up row and a down row per target.
+            $this->dedupe($tableName, 'post_id');
+
+            // The legacy NOT NULL column that blocks new inserts.
             $this->runOrFail("ALTER TABLE `{$tableName}` DROP COLUMN `vote_type`");
         }
 
@@ -110,19 +118,13 @@ final class Bit_Connect_Votes extends Migration
     }
 
     /**
-     * Create the unique indexes only if they are absent (idempotent).
+     * Create the unique index only if it is absent (idempotent).
      */
     private function ensureUniqueIndexes(string $tableName): void
     {
         if (!$this->indexExists($tableName, 'unique_post_vote')) {
             $this->runOrFail(
                 "ALTER TABLE `{$tableName}` ADD UNIQUE INDEX `unique_post_vote` (`user_id`, `post_id`)"
-            );
-        }
-
-        if (!$this->indexExists($tableName, 'unique_comment_vote')) {
-            $this->runOrFail(
-                "ALTER TABLE `{$tableName}` ADD UNIQUE INDEX `unique_comment_vote` (`user_id`, `comment_id`)"
             );
         }
     }

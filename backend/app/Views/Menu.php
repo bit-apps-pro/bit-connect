@@ -230,20 +230,12 @@ final class Menu
     }
 
     /**
-     * Support, and in the add-on's edition the licence too.
+     * Support.
      *
-     * Present in both editions and last in the list. It is the one entry here
-     * about the plugin rather than about the forum, and in this edition it is
-     * where somebody goes to find out what Pro is — so hiding it would hide the
-     * only route to buying one.
-     *
-     * Named "Support", not "License & Support": this plugin holds no licence to
-     * manage. There is no key, no activation and no validity check anywhere in
-     * it, so naming the screen after one would advertise a mechanism that is
-     * not here — and a licence surface inside a plugin hosted on WordPress.org
-     * is exactly what Plugin Directory guideline 6 refuses. The add-on renames
-     * this entry to "Support & License" through the `admin_sidebar_menu`
-     * filter, which is where anything about the add-on belongs.
+     * Last in the list: it is the one entry here about the plugin rather than
+     * about the forum — support, the changelog and what the add-on adds. The
+     * entries pass through the `admin_sidebar_menu` filter, so another plugin
+     * can adjust this one like any other.
      */
     private static function getSupportMenuAttributes()
     {

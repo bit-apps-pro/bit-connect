@@ -44,7 +44,6 @@ class UserProfileService
         'forum_edit_own_comment'   => 'Commenting',
         'forum_delete_own_comment' => 'Commenting',
         'forum_vote_post'          => 'Voting',
-        'forum_vote_comment'       => 'Voting',
         'forum_delete_any'         => 'Other People\'s Content',
         'forum_moderate'           => 'Moderation',
         'forum_pin_post'           => 'Moderation',
@@ -369,7 +368,6 @@ class UserProfileService
                 'comment_date_gmt' => $row->comment_date_gmt,
                 'post_title'       => $row->post_title,
                 'post_name'        => $row->post_name,
-                'vote'             => TopicService::getCommentVoteStatus((int) $row->comment_ID),
             ];
         }
 
@@ -591,7 +589,6 @@ class UserProfileService
                 'comment_date_gmt' => $row->comment_date_gmt,
                 'post_title'       => $row->post_title,
                 'post_name'        => $row->post_name,
-                'vote'             => TopicService::getCommentVoteStatus((int) $row->comment_ID),
             ];
         }
 

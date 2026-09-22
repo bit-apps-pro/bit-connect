@@ -22,16 +22,10 @@ declare const SERVER_VARIABLES: {
   /** Whether this user holds forum_moderate — the Activity screen answers to it. */
   canModerate?: boolean
   dateFormat: string
-  isPro: string
-  isProExist?: string
-  key?: string
   loggedInUserName: string
   nonce: string
   pluginAdminURL: string
   pluginSlug: string
-  proApiURL: string
-  proPluginVersion: string
-  proSlug: string
   redirectUri: string
   rootURL: string
   routePrefix: string

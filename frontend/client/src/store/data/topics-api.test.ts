@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { fetchAllPostsApi } from './fetch-all-posts-api'
 import { fetchPostByNameApi } from './fetch-post-api'
-import { toggleCommentVoteApi } from './toggle-comment-vote-api'
 import { toggleVoteApi } from './toggle-vote-api'
 
 vi.mock('@utils/request/get', () => ({ default: vi.fn() }))
@@ -116,10 +115,4 @@ describe('voting', () => {
     expect(postRequest).toHaveBeenCalledWith('posts/9/vote', { body: {} })
   })
 
-  it('toggles a comment’s vote through its own endpoint', async () => {
-    vi.mocked(postRequest).mockResolvedValue({ data: { hasVoted: false, votes: 0 } } as never)
-
-    await expect(toggleCommentVoteApi(55)).resolves.toEqual({ hasVoted: false, votes: 0 })
-    expect(postRequest).toHaveBeenCalledWith('comments/55/vote', { body: {} })
-  })
 })

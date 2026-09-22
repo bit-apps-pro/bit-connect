@@ -20,6 +20,7 @@ import { type Comment } from '@/types/post'
 import Error404 from '../Error404/Error404'
 import CommentEditor from './CommentEditor'
 import CommentList from './CommentList'
+import useCommentVote from './data/use-comment-vote'
 import PostHeader from './PostHeader'
 import useCommentFocus from './shared/use-comment-focus'
 import AttachmentList from './ui/attachment-list'
@@ -56,7 +57,6 @@ export default function PostDetailsPage() {
     post,
     setSortOption,
     sortOption,
-    toggleCommentVote,
     toggleVote,
     transformedComments,
     updateComment
@@ -99,18 +99,6 @@ export default function PostDetailsPage() {
       } catch (error_) {
         notificationApi?.error({
           message: (error_ as { message?: string })?.message ?? __('Failed to vote on post')
-        })
-      }
-    })
-  }
-
-  const handleCommentVote = async (commentId: number) => {
-    requireLogin(async () => {
-      try {
-        await toggleCommentVote(commentId)
-      } catch (error_) {
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to vote on comment')
         })
       }
     })
@@ -192,11 +180,10 @@ export default function PostDetailsPage() {
   const focusedCommentId = useCommentFocus(isTopicReady)
 
   const totalCommentCount = countComments(transformedComments)
-  const {
-    comment: canComment,
-    commentUpvote: canCommentUpvote,
-    upvote: canPostUpvote
-  } = settings.topicAccess
+  const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
+  // Empty unless the add-on supplies it, in which case it brings
+  // the handler that casts the vote. See use-comment-vote.ts.
+  const { onVote: handleCommentVote } = useCommentVote()
 
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
@@ -331,7 +318,7 @@ export default function PostDetailsPage() {
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
               onReply={handleReply}
-              onVote={canCommentUpvote ? handleCommentVote : undefined}
+              onVote={handleCommentVote}
               sortOption={sortOption}
               topicSlug={post.post_name}
               topicTitle={post.post_title}

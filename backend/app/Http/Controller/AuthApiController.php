@@ -68,8 +68,13 @@ final class AuthApiController
     }
 
     /**
-     * REST signup endpoint — creates a WordPress user with the forum member role,
-     * then immediately signs them in via wp_signon().
+     * REST signup endpoint.
+     *
+     * Creates the account WordPress's own registration form would have created
+     * — wp_insert_user() with the site's default role, after the `register_post`
+     * and `registration_errors` hooks have had their say — and then signs the
+     * member in through wp_signon(), like the login endpoint. With email
+     * verification on, nothing is created until the link is opened.
      */
     public function signup(RestSignupRequest $request)
     {
@@ -103,6 +108,19 @@ final class AuthApiController
         $password = (string) $request->password;
         $displayName = sanitize_text_field((string) ($request->display_name ?? $username));
 
+        // The gate WordPress's own registration form runs — see
+        // AuthService::registrationErrors().
+        $refused = AuthService::registrationErrors($username, $email);
+
+        if ($refused !== null) {
+            return Response::error(self::errorMessage($refused))
+                ->httpStatus(422);
+        }
+
+        // Hashed here, before the branch, so the copy parked for email
+        // verification is never the password itself.
+        $passwordHash = wp_hash_password($password);
+
         // When email verification is required, defer user creation until the email is confirmed
         if (AuthService::requiresEmailVerification()) {
             // Validate uniqueness before storing
@@ -117,7 +135,7 @@ final class AuthApiController
             }
 
             AuthService::storePendingAndSendVerification(
-                compact('username', 'password', 'email', 'displayName'),
+                compact('username', 'passwordHash', 'email', 'displayName'),
                 $email
             );
 
@@ -129,111 +147,71 @@ final class AuthApiController
             );
         }
 
-        // wp_create_user handles duplicate username/email checks and returns WP_Error on failure
-        $userId = wp_create_user($username, $password, $email);
+        // wp_insert_user() rejects a duplicate login or email with a WP_Error.
+        $userId = AuthService::createMember($username, $email, $displayName, $passwordHash);
 
         if (is_wp_error($userId)) {
             return Response::error(self::errorMessage($userId))
                 ->httpStatus(422);
         }
 
-        // Apply display name and forum member role
-        wp_update_user(
-            [
-                'ID'           => $userId,
-                'display_name' => $displayName,
-            ]
-        );
-
-        $newUser = get_userdata($userId);
-
-        $registrationRole = AuthService::getRegistrationRole();
-
-        if ($newUser) {
-            $newUser->set_role($registrationRole);
-        }
-
         Hooks::doAction('bit_connect_after_register', $userId);
 
+        // Through wp_signon(), like the login endpoint, so everything on the
+        // `authenticate` chain sees this sign-in as well.
         $user = AuthService::login($username, $password, false);
 
         if (is_wp_error($user)) {
-            return Response::success(
-                [
-                    'id'           => $userId,
-                    'username'     => $username,
-                    'slug'         => ProfileSlugService::slugFor($userId),
-                    'email'        => $email,
-                    'display_name' => $displayName,
-                    'avatar'       => get_avatar_url($userId),
-                    'role'         => $registrationRole,
-                    'roles'        => [$registrationRole],
-                ]
-            );
+            // The account exists; something on the authenticate chain declined
+            // to open a session for it here. The member can use the login form.
+            return Response::success(self::createdResponse($userId));
         }
 
         return Response::success(self::authResponse($user));
     }
 
     /**
-     * Verify email address via token.
+     * Finish a registration parked for email verification.
      *
-     * Two flows are handled:
-     * - Pending registration (no WP user yet): create the user, then auto-login.
-     * - Already-created user (legacy / future use): validate token from user meta.
+     * The token is the key the registration was parked under, single-use and
+     * expiring with its transient, and it arrived by email at the address being
+     * claimed. Opening the link is the proof this flow asks for, so the account
+     * is created and a session opened for it. Only the password's hash was kept,
+     * so there is nothing to hand wp_signon(); wp_set_auth_cookie() opens the
+     * session for the account that was confirmed a moment ago.
      */
     public function verifyEmail(RestVerifyEmailRequest $request)
     {
-        $token = (string) $request->token;
+        $pending = AuthService::getPendingRegistration((string) $request->token);
 
-        // Check for a pending (pre-creation) registration first
-        $pending = AuthService::getPendingRegistration($token);
-
-        if ($pending !== null) {
-            $userId = wp_create_user($pending['username'], $pending['password'], $pending['email']);
-
-            if (is_wp_error($userId)) {
-                return Response::error(self::errorMessage($userId))
-                    ->httpStatus(422);
-            }
-
-            wp_update_user(['ID' => $userId, 'display_name' => $pending['displayName']]);
-
-            $newUser = get_userdata($userId);
-
-            if ($newUser) {
-                $newUser->set_role(AuthService::getRegistrationRole());
-            }
-
-            Hooks::doAction('bit_connect_after_register', $userId);
-
-            AuthService::primeCookieJar();
-            wp_set_current_user($userId);
-            wp_set_auth_cookie($userId);
-
-            return Response::success(self::authResponse(get_userdata($userId)));
-        }
-
-        // Legacy path: user already exists, validate token stored in user meta
-        $userId = (int) ($request->user_id ?? 0);
-
-        if (!$userId) {
+        if ($pending === null) {
             return Response::error(__('Invalid verification link.', 'bit-connect'))
                 ->httpStatus(422);
         }
 
-        $result = AuthService::verifyEmail($userId, $token);
+        $userId = AuthService::createMember(
+            (string) $pending['username'],
+            (string) $pending['email'],
+            (string) $pending['displayName'],
+            (string) $pending['passwordHash']
+        );
 
-        if (is_wp_error($result)) {
-            return Response::error(self::errorMessage($result))
+        if (is_wp_error($userId)) {
+            return Response::error(self::errorMessage($userId))
                 ->httpStatus(422);
         }
 
-        AuthService::primeCookieJar();
-        wp_set_current_user($result->ID);
-        wp_set_auth_cookie($result->ID);
+        Hooks::doAction('bit_connect_after_register', $userId);
 
-        return Response::success(self::authResponse($result));
+        AuthService::primeCookieJar();
+        wp_set_current_user($userId);
+        wp_set_auth_cookie($userId);
+
+        $user = get_userdata($userId);
+
+        return Response::success(
+            $user instanceof WP_User ? self::authResponse($user) : self::createdResponse($userId)
+        );
     }
 
     /**
@@ -298,6 +276,17 @@ final class AuthApiController
     private static function errorMessage($error): string
     {
         return trim(wp_strip_all_tags((string) $error->get_error_message()));
+    }
+
+    /**
+     * The payload for an account that was created but not signed in: the user
+     * as WordPress now holds it, with no nonce because no session was opened.
+     */
+    private static function createdResponse(int $userId): array
+    {
+        $user = get_userdata($userId);
+
+        return $user instanceof WP_User ? self::formatUser($user) : ['id' => $userId];
     }
 
     private static function formatUser(WP_User $user): array

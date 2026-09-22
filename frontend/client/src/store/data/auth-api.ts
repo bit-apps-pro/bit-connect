@@ -169,14 +169,13 @@ export async function getCurrentUserApi(): Promise<ResponseType<User>> {
 }
 
 /**
- * Verify email address using the token from the verification email link
+ * Finish a registration with the token from the verification email link.
+ *
+ * The token alone names the parked registration; the server accepts nothing
+ * else. The member is signed in on success, so a fresh nonce comes back.
  */
-export async function verifyEmailApi(token: string, userId?: number): Promise<ResponseType<User>> {
-  const body: { token: string; user_id?: number } = { token }
-  if (userId) body.user_id = userId
-  const response = await post<{ token: string; user_id?: number }, AuthUser>('auth/verify-email', {
-    body
-  })
+export async function verifyEmailApi(token: string): Promise<ResponseType<User>> {
+  const response = await post<{ token: string }, AuthUser>('auth/verify-email', { body: { token } })
   return { ...response, data: consumeAuthUser(response.data) }
 }
 

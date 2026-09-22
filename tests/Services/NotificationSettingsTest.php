@@ -26,21 +26,18 @@ class NotificationSettingsTest extends TestCase
         $GLOBALS['__wp_bloginfo'] = ['name' => 'Bit Flows Forum'];
         $GLOBALS['__wp_home_url'] = 'https://forum.example.com';
 
-        // Sender identity, digest schedule and email wording only reach these
-        // normalisers when the add-on supplies them — see
-        // NotificationSettingsProGateTest for what a forum without it gets. The
-        // clamps are what is under test here, so the add-on is installed and
-        // stays out of the way.
+        // No listeners: the digest schedule and the clamps under test here are
+        // this plugin's own, and the sender and wording resolve to its own
+        // values when nothing supplies others. NotificationMailIdentityTest is
+        // where a supplied sender is exercised.
         $GLOBALS['__wp_options'] = [];
         $GLOBALS['__wp_filters'] = [];
-        bc_test_install_pro_addon(['notification_delivery', 'notification_wording']);
     }
 
     protected function tearDown(): void
     {
         $GLOBALS['__wp_options'] = [];
-
-        bc_test_uninstall_pro_addon();
+        $GLOBALS['__wp_filters'] = [];
     }
 
     public function testAnUnsavedForumIsOn(): void
@@ -102,11 +99,19 @@ class NotificationSettingsTest extends TestCase
         );
     }
 
-    public function testTheSenderFallsBackToTheSiteAndNotToAPerson(): void
+    /**
+     * The sender is the site, and a stored sender is not consulted.
+     *
+     * The `fromName`/`fromEmail` keys are passed in deliberately: sites that
+     * ran an older build still have them in the option, and this plugin no
+     * longer reads either. Supplying a sender is the add-on's, through
+     * `bit_connect_mail_from_name` — see NotificationMailIdentityTest.
+     */
+    public function testTheSenderIsTheSiteAndNotAPerson(): void
     {
         $this->assertSame('Bit Flows Forum', NotificationSettings::fromName([]));
         $this->assertSame('Bit Flows Forum', NotificationSettings::fromName(['fromName' => '   ']));
-        $this->assertSame('Community', NotificationSettings::fromName(['fromName' => 'Community']));
+        $this->assertSame('Bit Flows Forum', NotificationSettings::fromName(['fromName' => 'Community']));
 
         // Replies to a notification should not land in the admin's own mail.
         $this->assertSame('wordpress@forum.example.com', NotificationSettings::fromEmail([]));
@@ -115,7 +120,7 @@ class NotificationSettingsTest extends TestCase
             NotificationSettings::fromEmail(['fromEmail' => 'not-an-address'])
         );
         $this->assertSame(
-            'noreply@forum.example.com',
+            'wordpress@forum.example.com',
             NotificationSettings::fromEmail(['fromEmail' => 'noreply@forum.example.com'])
         );
     }

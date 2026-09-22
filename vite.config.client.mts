@@ -5,6 +5,7 @@ import path, { join } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+import developmentServerOrigin from './scripts/development-server-origin.mjs'
 import proOverlay from './scripts/vite-plugin-pro-overlay.mjs'
 
 const PLUGIN_SLUG = 'bit-connect'
@@ -144,6 +145,9 @@ export default defineConfig(({ command, mode }) => {
         host: process.env.BIT_CONNECT_FRONTEND_CLIENT_HOST ?? 'localhost'
       },
       host: '0.0.0.0',
+      // Absolute asset URLs, so a CSS url() resolves on this server rather
+      // than on the WordPress page that embeds the bundle — see the helper.
+      origin: developmentServerOrigin(process.env.BIT_CONNECT_FRONTEND_CLIENT_HOST, 3001),
       port: 3001,
       strictPort: true, // strict port to match on PHP side
       warmup: {

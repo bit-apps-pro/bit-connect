@@ -1,9 +1,12 @@
+/**
+ * Topic Access as the portal receives it.
+ *
+ * No `commentUpvote`: this plugin does not send one, because upvoting a reply
+ * is the add-on's feature and the add-on tells the portal about its own. The
+ * control is driven by use-comment-vote, not by a flag here.
+ */
 export interface TopicAccessSettings {
   comment: boolean
-  commentUpvote: boolean
-  /** Pro. The server reports the effective value, so this is already false
-      unless pro is installed, licensed, and the admin switched it on. */
-  privateTopic: boolean
   upvote: boolean
 }
 

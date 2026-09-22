@@ -1,10 +1,10 @@
 === Bit Connect – Community, Discussion Forum, Feedback & Roadmap ===
 Contributors: bitpressadmin
-Tags: community, forum, discussion, social network, forums
+Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ Members can create topics, join threaded discussions, upvote ideas, follow conve
 * **Topics and discussions:** Members can create topics and, when permitted, edit or delete their own posts.
 * **Comments and threaded replies:** Keep conversations organized with nested replies.
 * **@mentions:** Mention other members inside topics and replies.
-* **Topic upvotes:** Let members vote on ideas, questions, feature requests and discussions.
+* **Topic upvotes:** Let members vote on ideas, questions and feature requests.
 * **Feature requests and roadmap:** Collect ideas and feedback and move topics through stages and statuses.
 * **Topic organization:** Use topic types, departments or products, tags, stages and statuses.
 * **Search, sorting and filters:** Help members find relevant community discussions.
@@ -56,7 +56,7 @@ Give every member a clear identity inside your community. Users can add a profil
 
 = Organized Discussions and Engagement =
 
-Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while useful community discussions stay easier to find, follow and revisit.
+Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while the most popular topics rise to the top and good discussions stay easier to find, follow and revisit.
 
 = Feature Requests and Public Roadmaps =
 
@@ -88,6 +88,22 @@ Bit Connect is built for product and service providers, SaaS teams, LMS platform
 
 It can work as a traditional forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
 
+= Source Code =
+
+The JavaScript and CSS this plugin ships under `assets/` and `assets/client/` are compiled, minified bundles generated from human-readable source with Vite. That source is not included in the plugin zip; it is published in full, together with build instructions, in the plugin's public repository:
+
+**https://github.com/bit-apps-pro/bit-connect**
+
+The repository holds everything the plugin is built from: the React + TypeScript admin panel (`frontend/admin/`), the React + TypeScript portal (`frontend/client/`), the Vite configs (`vite.config.mts`, `vite.config.client.mts`), the PHP plugin (`backend/`) and the third-party libraries it bundles, listed in `package.json` and `composer.json`. To rebuild the shipped assets yourself:
+
+`git clone https://github.com/bit-apps-pro/bit-connect.git`
+`cd bit-connect`
+`composer install`
+`pnpm install`
+`pnpm build:free`
+
+That writes `assets/` and `assets/client/`, after which the directory is the plugin. `pnpm prod:free-zip` produces the same installable zip that is published here. Requirements: PHP 8.2+, Node 20+, pnpm 9+, Composer 2. The repository README documents the build in more detail.
+
 = Other Products by Bit Apps =
 
 * [**Bit Form:**](https://bit-form.com/) WordPress form builder for contact forms, multi-step forms, calculations, payments and other form workflows.
@@ -102,22 +118,11 @@ It can work as a traditional forum, but it can also serve as a product community
 
 Join our [Bit Apps Community](https://www.facebook.com/groups/3308027439209387) for the latest plugin updates.
 
-View the full source code on [GitHub](https://github.com/bit-apps-pro/bit-connect/).
+View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/) — see *Source Code* above.
 
 == External Services ==
 
-This plugin relies on two external services: Google Fonts, for the typeface the forum is set in, and the Bit Apps API. Neither receives your site's content, your members' details or your settings. What each one does, and when, is set out below.
-
-= Google Fonts =
-
-The plugin loads the **Outfit** typeface from Google Fonts, on both its admin screens and the public forum portal. Because the portal is public, this happens for **every visitor** who views it, not only for logged-in administrators.
-
-* **What is sent:** the request for the font files themselves. As with any web request, Google receives the visitor's IP address, browser user agent and the referring page URL. No site content, member details or settings are transmitted.
-* **When:** on every page load of the forum portal and of the plugin's admin screens.
-* **Endpoints:** `https://fonts.googleapis.com` (stylesheet) and `https://fonts.gstatic.com` (font files).
-* **Provider:** Google — [terms of service](https://policies.google.com/terms), [privacy policy](https://policies.google.com/privacy).
-
-If serving fonts from Google is not acceptable for your site — some jurisdictions treat it as a transfer of visitor data — the font is purely cosmetic and the forum works without it.
+This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Outfit** typeface it is set in ships inside the plugin (SIL Open Font License 1.1) and is served from your own site.
 
 = Bit Apps plugin catalogue =
 
@@ -165,9 +170,15 @@ Yes. Members can create profiles and receive supported in-app and email notifica
 
 = Does the plugin contact any external servers? =
 
-Two, both described under *External Services* above: Google Fonts, which serves the typeface on the portal and the admin screens, and the Bit Apps API, which is contacted only from the Support screen. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
+One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.1 =
+* Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
+* Settings screens now describe add-on features in plain text, with no disabled controls.
+* Reported content is no longer hidden automatically, and the report threshold setting has gone with it. This plugin queues reports for a moderator to decide; hiding on a count is a feature of Bit Connect Pro, a separate plugin.
+* The Outfit typeface now ships with the plugin instead of loading from Google Fonts, so the portal contacts no third party.
 
 = 1.0.0 =
 * First stable release.

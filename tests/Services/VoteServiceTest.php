@@ -50,18 +50,12 @@ final class VoteServiceTest extends TestCase
         $GLOBALS['__wp_user_meta'] = [];
         $GLOBALS['__wp_current_user_id'] = self::VOTER;
         $GLOBALS['__wp_caps'] = [
-            Capabilities::VOTE_POST->value    => true,
-            Capabilities::VOTE_COMMENT->value => true,
+            Capabilities::VOTE_POST->value => true,
         ];
         $GLOBALS['__wp_posts'] = [self::TOPIC => $this->topic()];
         $GLOBALS['__wp_comments'] = [self::COMMENT => $this->comment()];
 
-        // Comment upvoting needs the forum to offer it and a licence to allow
-        // it. Both are on here so the toggle itself is what these tests
-        // exercise; the gate has its own case below.
         $GLOBALS['__wp_filters'] = [];
-        $this->offerCommentUpvotes(true);
-        $this->licence(true);
     }
 
     protected function tearDown(): void
@@ -159,70 +153,27 @@ final class VoteServiceTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Voting on a comment
+    // Voting on a comment, which this plugin does not do
     // -----------------------------------------------------------------------
 
-    public function testACommentVoteIsRecordedAndTakenBackTheSameWay(): void
-    {
-        $added = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-        $this->assertSame(['votes' => 1, 'hasVoted' => true], $added['data']);
-
-        $removed = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-        $this->assertSame(['votes' => 0, 'hasVoted' => false], $removed['data']);
-    }
-
     /**
-     * Two gates, and either one shut is enough. A member carrying the
-     * capability still cannot vote on a comment in a forum that does not offer
-     * comment upvotes, and a forum that offers them cannot hand them out
-     * without a licence — checked at the service, not just in the portal, so a
-     * stale page or a hand-made request gets the same answer.
+     * There is no way to cast a vote on a reply through this service.
+     *
+     * The guideline 5 fix, pinned as a fact about the class rather than as
+     * behaviour: upvoting an individual reply is implemented in the Bit
+     * Connect Pro add-on and is not present here in any form — not switched
+     * off by a licence, not switched off by a setting, simply absent. If a
+     * method by this name ever comes back to the free plugin, this fails and
+     * whoever added it has to make the case.
      */
-    public function testAForumThatDoesNotOfferCommentUpvotesRefusesTheVote(): void
+    public function testThisPluginHasNoWayToCastACommentVote(): void
     {
-        $this->offerCommentUpvotes(false);
-
-        $result = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-
-        $this->assertFalse($result['success']);
-        $this->assertSame([], $GLOBALS['__bc_votes']);
-    }
-
-    public function testAnUnlicensedForumRefusesTheVoteHoweverTheSettingReads(): void
-    {
-        $this->offerCommentUpvotes(true);
-        $this->licence(false);
-
-        $result = $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-
-        $this->assertFalse($result['success']);
-        $this->assertSame([], $GLOBALS['__bc_votes']);
-    }
-
-    public function testAVoteOnACommentThatIsGoneIsRefused(): void
-    {
-        $this->assertFalse($this->votes->toggleCommentVote(self::VOTER, 404)['success']);
-    }
-
-    public function testCommentVotingHasAPermissionOfItsOwn(): void
-    {
-        $GLOBALS['__wp_caps'] = [Capabilities::VOTE_POST->value => true];
-
-        $this->assertTrue($this->votes->togglePostVote(self::VOTER, self::TOPIC)['success']);
-        $this->assertFalse($this->votes->toggleCommentVote(self::VOTER, self::COMMENT)['success']);
-    }
-
-    /**
-     * A topic and a comment are separate things to vote on, even when the ids
-     * happen to collide.
-     */
-    public function testATopicVoteAndACommentVoteAreCountedApart(): void
-    {
-        $this->votes->togglePostVote(self::VOTER, self::TOPIC);
-        $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-
-        $this->assertSame(1, $this->votes->getPostVoteCounts(self::TOPIC));
-        $this->assertSame(1, $this->votes->getCommentVoteCounts(self::COMMENT));
+        $this->assertFalse(
+            method_exists($this->votes, 'toggleCommentVote'),
+            'Casting a vote on a reply belongs to the add-on, not to the free plugin.'
+        );
+        $this->assertFalse(method_exists($this->votes, 'getCommentVoteStatus'));
+        $this->assertFalse(method_exists($this->votes, 'getCommentVoteCounts'));
     }
 
     // -----------------------------------------------------------------------
@@ -256,17 +207,9 @@ final class VoteServiceTest extends TestCase
         $this->assertSame(2, $GLOBALS['__wp_post_meta'][self::TOPIC][VoteService::META_VOTE_COUNT]);
     }
 
-    public function testACommentWithNoCachedTotalYetBuildsOneToo(): void
-    {
-        $GLOBALS['__bc_votes'] = [['user_id' => 3, 'post_id' => null, 'comment_id' => self::COMMENT]];
-
-        $this->assertSame(1, $this->votes->getCommentVoteCounts(self::COMMENT));
-    }
-
     public function testSomethingNobodyHasVotedOnCountsZero(): void
     {
         $this->assertSame(0, $this->votes->getPostVoteCounts(self::TOPIC));
-        $this->assertSame(0, $this->votes->getCommentVoteCounts(self::COMMENT));
     }
 
     /**
@@ -307,14 +250,6 @@ final class VoteServiceTest extends TestCase
         $this->assertCount(1, $GLOBALS['__bc_notifications']);
     }
 
-    public function testTheAuthorIsToldWhenSomeoneUpvotesTheirComment(): void
-    {
-        $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-
-        $this->assertCount(1, $GLOBALS['__bc_notifications']);
-        $this->assertSame(self::AUTHOR, $GLOBALS['__bc_notifications'][0]['user_id']);
-    }
-
     public function testNobodyIsToldAboutTheirOwnUpvote(): void
     {
         // The vote is attributed by the id passed in, the notification by the
@@ -352,14 +287,6 @@ final class VoteServiceTest extends TestCase
         $this->assertArrayNotHasKey(VoteService::META_VOTE_COUNT, $GLOBALS['__wp_post_meta'][self::TOPIC]);
     }
 
-    public function testDeletingACommentTakesItsVotesAndItsCachedTotal(): void
-    {
-        $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
-
-        $this->assertTrue($this->votes->deleteCommentVotes(self::COMMENT));
-        $this->assertSame([], $GLOBALS['__bc_votes']);
-    }
-
     /**
      * Left behind, a deleted member's votes keep counting towards totals nobody
      * can trace back to a person.
@@ -367,8 +294,13 @@ final class VoteServiceTest extends TestCase
     public function testDeletingAnAccountTakesEveryVoteItCast(): void
     {
         $this->votes->togglePostVote(self::VOTER, self::TOPIC);
-        $this->votes->toggleCommentVote(self::VOTER, self::COMMENT);
         $this->votes->togglePostVote(4, self::TOPIC);
+        // A reply vote the add-on cast, seeded directly: closing an account
+        // takes every vote the member left behind, not only the ones this
+        // plugin knows how to cast.
+        $GLOBALS['__bc_votes'][] = [
+            'user_id' => self::VOTER, 'post_id' => null, 'comment_id' => self::COMMENT,
+        ];
 
         $this->assertTrue($this->votes->deleteUserVotes(self::VOTER));
 
@@ -410,17 +342,4 @@ final class VoteServiceTest extends TestCase
         return $comment;
     }
 
-    /** Whether the forum offers comment upvotes at all. */
-    private function offerCommentUpvotes(bool $offered): void
-    {
-        $GLOBALS['__wp_options']['bit_connect_admin_settings'] = [
-            'topicAccess' => ['commentUpvote' => $offered],
-        ];
-    }
-
-    private function licence(bool $valid): void
-    {
-        // The add-on registers its listeners only while licensed.
-        $valid ? bc_test_install_pro_addon(['comment_upvotes']) : bc_test_uninstall_pro_addon();
-    }
 }

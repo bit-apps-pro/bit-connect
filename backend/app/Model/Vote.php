@@ -13,19 +13,15 @@ use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
 /**
  * Vote Model.
  *
- * Represents a directional vote (upvote or downvote) on a forum post or comment.
+ * An upvote on a topic. One record per (user_id, post_id), enforced by a unique
+ * DB index; casting an upvote inserts the row and retracting it deletes the row.
  *
- * vote_type values:
- *   1  = upvote
- *  -1  = downvote
+ * Upvoting an individual reply is not this plugin's feature, so there is no
+ * comment column here, nothing that writes one, and nothing that reads one.
  *
- * One record per (user_id, post_id) and one per (user_id, comment_id), enforced
- * by unique DB indexes.  To change vote direction, the existing row is updated.
- * To remove a vote, the row is deleted.
- *
- * Cached totals (_bit_connect_vote_count, see VoteService::META_VOTE_COUNT) are stored in
- * wp_postmeta / wp_commentmeta by VoteService and are authoritative for reads.
- * This table is the source of truth for user vote history and direction.
+ * Cached totals (_bit_connect_vote_count, see VoteService::META_VOTE_COUNT) are
+ * stored in wp_postmeta by VoteService and are authoritative for reads. This
+ * table is the source of truth for a member's vote history.
  */
 class Vote extends Model
 {
@@ -34,15 +30,13 @@ class Vote extends Model
     protected $fillable = [
         'user_id',
         'post_id',
-        'comment_id',
     ];
 
     protected $table = 'votes';
 
     protected $casts = [
-        'user_id'    => 'integer',
-        'post_id'    => 'integer',
-        'comment_id' => 'integer',
+        'user_id' => 'integer',
+        'post_id' => 'integer',
     ];
 
     /**
@@ -99,41 +93,6 @@ class Vote extends Model
     public static function deleteAllVotesForPost(int $postId): bool
     {
         return !empty(static::where('post_id', $postId)->delete());
-    }
-
-    // -------------------------------------------------------------------------
-    // Comment vote queries
-    // -------------------------------------------------------------------------
-
-    public static function getCommentVoteCount(int $commentId): int
-    {
-        return static::where('comment_id', $commentId)->count() ?? 0;
-    }
-
-    public static function hasUserVotedComment(int $userId, int $commentId): bool
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->count() > 0;
-    }
-
-    public static function getUserVoteForComment(int $userId, int $commentId)
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->first();
-    }
-
-    public static function deleteUserVoteForComment(int $userId, int $commentId): bool
-    {
-        return static::where('user_id', $userId)
-            ->where('comment_id', $commentId)
-            ->delete() > 0;
-    }
-
-    public static function deleteAllVotesForComment(int $commentId): bool
-    {
-        return !empty(static::where('comment_id', $commentId)->delete());
     }
 
     // -------------------------------------------------------------------------

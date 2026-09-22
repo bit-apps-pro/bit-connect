@@ -384,16 +384,10 @@ class TopicService
             return false;
         }
 
-        $voteService = new VoteService();
-
-        // Delete votes for all comments on this post
-        $comments = get_comments(['post_id' => $id, 'fields' => 'ids']);
-        foreach ($comments as $commentId) {
-            $voteService->deleteCommentVotes((int) $commentId);
-        }
-
-        // Delete post votes
-        $voteService->deletePostVotes($id);
+        // The topic's own votes. Its replies are deleted by wp_delete_post()
+        // below, which fires `deleted_comment` for each one — anything holding
+        // data against a reply cleans up on that hook rather than here.
+        (new VoteService())->deletePostVotes($id);
 
         $result = wp_delete_post($id, true);
 
@@ -472,21 +466,6 @@ class TopicService
 
         return [
             'total'    => Vote::getPostVoteCount($postId),
-            'hasVoted' => $hasVoted,
-        ];
-    }
-
-    public static function getCommentVoteStatus(int $commentId): ?array
-    {
-        $hasVoted = false;
-        if (is_user_logged_in()) {
-            $currentUserId = get_current_user_id();
-            $userVote = Vote::hasUserVotedComment($currentUserId, $commentId);
-            $hasVoted = !empty($userVote);
-        }
-
-        return [
-            'total'    => Vote::getCommentVoteCount($commentId),
             'hasVoted' => $hasVoted,
         ];
     }
@@ -793,7 +772,7 @@ class TopicService
                 ? ContentVisibilityService::tombstone()
                 : $comment->comment_content;
 
-            $formattedComments[] = [
+            $formattedComments[] = ExtensionPoints::commentFields([
                 'comment_ID'      => $comment->comment_ID,
                 'comment_post_ID' => $comment->comment_post_ID,
                 'comment_author'  => $comment->comment_author,
@@ -814,7 +793,11 @@ class TopicService
                 'author_avatar'      => get_avatar_url($comment->user_id ?: $comment->comment_author_email),
                 // Empty for guest comments (user_id 0), which have no profile.
                 'author_slug' => ProfileSlugService::slugFor((int) $comment->user_id),
-                'vote'        => self::getCommentVoteStatus((int) $comment->comment_ID),
+                // No `vote` key. Upvoting a reply is the add-on's feature, and
+                // the add-on attaches its own count through commentFields()
+                // below; a forum without it renders a reply with no upvote
+                // control, which is this plugin's complete answer rather than
+                // a blank where something was taken out.
                 'attachments' => self::formatCommentAttachments((int) $comment->comment_ID),
                 // The topic page reads its comments from here, not from the
                 // comments endpoint, so a badge missing from this shape is a
@@ -829,7 +812,7 @@ class TopicService
                 // underneath. "Out of public view", not "you may read this", so
                 // it is true on a tombstone as well.
                 'hidden' => $isHidden,
-            ];
+            ], (int) $comment->comment_ID);
         }
 
         return $formattedComments;

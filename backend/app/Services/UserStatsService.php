@@ -263,7 +263,6 @@ class UserStatsService
      */
     private function countVotesReceived($userId)
     {
-        $wpdbComments = Connection::prop('comments');
         $wpdbPosts = Connection::prop('posts');
         $wpdbPrefix = Connection::prop('prefix');
 
@@ -279,15 +278,11 @@ class UserStatsService
             )
         );
 
-        $onComments = (int) Connection::get_var(
-            Connection::prepare(
-                "SELECT COUNT(*) FROM {$votes} v
-                 INNER JOIN {$wpdbComments} c ON c.comment_ID = v.comment_id
-                 WHERE c.user_id = %d",
-                $userId
-            )
-        );
-
-        return $onTopics + $onComments;
+        // Votes on their topics, which is every vote this forum knows how to
+        // cast. Upvoting a reply belongs to the add-on, so the replies half of
+        // this total is the add-on's to add — see ExtensionPoints. With
+        // nothing listening the figure is a true count of what this forum
+        // offers rather than a partial one.
+        return ExtensionPoints::votesReceived($onTopics, $userId);
     }
 }

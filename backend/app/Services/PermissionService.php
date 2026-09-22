@@ -7,9 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
-use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use WP_Comment;
 use WP_Post;
@@ -120,67 +118,15 @@ final class PermissionService
     // -------------------------------------------------------------------------
 
     /**
-     * Whether a topic may be created or kept private.
+     * Topics only.
      *
-     * Two gates, and both have to be open. The admin decides whether the forum
-     * offers private topics at all (admin_settings.topicAccess.privateTopic),
-     * and private topics are a pro feature, so an unlicensed site cannot switch
-     * them on however the setting reads. Ordering matters only for cost: the
-     * option read is cheaper than resolving the pro plugin.
-     *
-     * This is deliberately not a capability. Capabilities say what a *member*
-     * may do; this says what the *forum* offers, which is a different question
-     * and is why it is not in the Manager's per-role matrix.
-     *
-     * Existing private topics are untouched by this — turning it off stops new
-     * ones being created, it does not publish or hide what is already there.
+     * There is no canVoteComment() beside this, and no setting behind it,
+     * because upvoting an individual reply is not something this plugin does.
+     * It ships in the Bit Connect Pro add-on, which asks its own questions.
      */
-    public static function canUsePrivateTopics(): bool
-    {
-        $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
-
-        if (!\is_array($settings) || empty($settings['topicAccess']['privateTopic'])) {
-            return false;
-        }
-
-        return ProFeatures::privateTopics();
-    }
-
-    /**
-     * Whether the forum offers upvoting on comments at all.
-     *
-     * The same two gates as canUsePrivateTopics(), and the same reasoning: the
-     * admin decides whether comment upvotes are offered
-     * (admin_settings.topicAccess.commentUpvote), and comment upvoting is a pro
-     * feature, so an unlicensed site cannot switch it on however the setting
-     * reads.
-     *
-     * Not a capability. Capabilities::VOTE_COMMENT says whether *this member*
-     * may vote; this says whether the forum has the feature — a different
-     * question, asked before the capability is worth checking.
-     *
-     * Existing votes are untouched: turning this off stops new ones being cast
-     * and stops the control being offered, it does not erase what was counted.
-     */
-    public static function canUseCommentUpvotes(): bool
-    {
-        $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
-
-        if (!\is_array($settings) || empty($settings['topicAccess']['commentUpvote'])) {
-            return false;
-        }
-
-        return ProFeatures::commentUpvotes();
-    }
-
     public static function canVotePost(): bool
     {
         return WpCapabilities::check(Capabilities::VOTE_POST->value);
-    }
-
-    public static function canVoteComment(): bool
-    {
-        return WpCapabilities::check(Capabilities::VOTE_COMMENT->value);
     }
 
     // -------------------------------------------------------------------------

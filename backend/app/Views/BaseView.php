@@ -183,11 +183,6 @@ class BaseView
             PrePaint::enqueue();
         }
 
-        // The portal's stylesheet asks for the Outfit family, but Head::addHeadScripts()
-        // only runs on the plugin's wp-admin screens — so without this the public portal
-        // silently fell back to the visitor's system UI font.
-        Head::enqueueFont($this->slug);
-
         // This inline global is the bundle's only config transport: the Vite
         // build `define`s every bare SERVER_VARIABLES read to
         // `window.bit_connect_` (see vite.config.client.mts + .env), so the
@@ -198,13 +193,25 @@ class BaseView
         // admin-authored copy (community title, promo text, login-page wording)
         // plus the current member's display name. One `</script>` in any of
         // them would close this inline block. See SeoMeta::head().
-        $configJson = wp_json_encode(self::createConfigVariable(), JSON_HEX_TAG | JSON_HEX_AMP);
+        //
+        // Both halves are escaped at the call itself, which is where the
+        // directory's escaping review looks: `window["bit_connect_"]` is the
+        // same property the bundle's `window.bit_connect_` define reads,
+        // written in the form that lets the name go through wp_json_encode()
+        // like the payload does.
         wp_register_script($this->slug . '-module-config', false, [], $this->version, ['in_footer' => false]);
         wp_enqueue_script($this->slug . '-module-config');
-        wp_add_inline_script($this->slug . '-module-config', 'window.' . Config::VAR_PREFIX . '=' . $configJson . ';');
+        wp_add_inline_script(
+            $this->slug . '-module-config',
+            \sprintf(
+                'window[%s]=%s;',
+                wp_json_encode(Config::VAR_PREFIX),
+                wp_json_encode(self::createConfigVariable(), JSON_HEX_TAG | JSON_HEX_AMP)
+            )
+        );
 
         // Runs in the head, before the first paint — see ThemeBoot.
-        wp_add_inline_script($this->slug . '-module-config', ThemeBoot::script());
+        ThemeBoot::attach($this->slug . '-module-config');
 
         if (Config::isDev()) {
             wp_enqueue_script_module($this->slug . '-MODULE-vite-client-helper');

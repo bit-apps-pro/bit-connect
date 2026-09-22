@@ -7,6 +7,15 @@ import useBadgesAdminPro from './use-badges-admin.pro'
 export interface BadgesAdmin {
   /** The catalog, in priority order. Empty without the pro add-on. */
   catalog: ProfileBadge[]
+  /**
+   * Whether this install can author and assign badges at all.
+   *
+   * The Manager table asks before drawing the Badges column. Without the
+   * add-on there is no catalog and never will be one in this build, so the
+   * column is not drawn — an always-empty column is not a column, it is a
+   * placeholder for something the plugin cannot do.
+   */
+  hasBadgeCatalog: boolean
   isSavingBadges: boolean
   /** How many badges one member may wear at once. */
   maxPerMember: number

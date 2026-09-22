@@ -143,7 +143,7 @@ final class AttachmentValidatorService
 
         // 8. Magic-byte MIME validation via wp_check_filetype_and_ext().
         //    This reads the actual file bytes — it cannot be spoofed by the client.
-        //    Requires wp-admin includes to be loaded (caller must include them first).
+        //    Lives in wp-includes/functions.php, so it needs no admin include.
         $checked = wp_check_filetype_and_ext($file['tmp_name'], $safeName);
 
         if (empty($checked['ext']) || empty($checked['type'])) {

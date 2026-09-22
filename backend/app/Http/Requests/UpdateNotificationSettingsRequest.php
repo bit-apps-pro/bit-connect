@@ -6,13 +6,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
-use BitApps\BitConnect\Services\ProFeatures;
 
 /**
  * Request input properties.
@@ -26,8 +24,6 @@ use BitApps\BitConnect\Services\ProFeatures;
  * @property null|array  $types            type value => {inapp, email, userMayOverride}
  * @property null|int    $digestHour
  * @property null|int    $retentionDays
- * @property null|string $fromName
- * @property null|string $fromEmail
  * @property null|string $defaultFrequency
  */
 final class UpdateNotificationSettingsRequest extends Request
@@ -48,26 +44,28 @@ final class UpdateNotificationSettingsRequest extends Request
 
     public function rules()
     {
+        // No sender or wording fields: this endpoint does not accept them,
+        // because this plugin does not store them. They belong to the add-on
+        // and are posted to the add-on's own endpoint.
         return [
             'enabled'          => ['nullable', 'boolean'],
             'types'            => ['nullable', 'array'],
-            'digestHour'       => ['nullable', 'integer'],
-            'retentionDays'    => ['nullable', 'integer'],
-            'fromName'         => ['nullable', 'string', 'max:120'],
-            'fromEmail'        => ['nullable', 'string', 'max:190'],
-            'defaultFrequency' => ['nullable', 'string'],
-            'mailGreeting'     => ['nullable', 'string', 'max:200'],
-            'mailIntro'        => ['nullable', 'string', 'max:200'],
-            'mailDigestIntro'  => ['nullable', 'string', 'max:200'],
-            'mailFooter'       => ['nullable', 'string', 'max:200'],
+            'digestHour'       => ['nullable', 'integer', 'min:0', 'max:23'],
+            'retentionDays'    => ['nullable', 'integer', 'min:7', 'max:3650'],
+            'defaultFrequency' => [
+                'nullable',
+                'string',
+                'in:' . implode(',', NotificationSettings::frequencies()),
+            ],
         ];
     }
 
     public function messages()
     {
         return [
-            'fromEmail.max' => __('That address is too long.', 'bit-connect'),
-            'fromName.max'  => __('Please keep the sender name under 120 characters.', 'bit-connect'),
+            'digestHour.min'       => __('Pick an hour between 0 and 23.', 'bit-connect'),
+            'digestHour.max'       => __('Pick an hour between 0 and 23.', 'bit-connect'),
+            'defaultFrequency.in'  => __('That is not a digest frequency this forum offers.', 'bit-connect'),
         ];
     }
 
@@ -109,28 +107,13 @@ final class UpdateNotificationSettingsRequest extends Request
             ? $validated['defaultFrequency']
             : NotificationSettings::FREQUENCY_INSTANT;
 
-        $fromEmail = \is_string($validated['fromEmail'] ?? null) ? trim($validated['fromEmail']) : '';
-
-        // Sender identity, digest schedule and email wording come from the
-        // Bit Connect Pro add-on. Without it the submitted values are dropped
-        // and whatever is already stored is written back untouched.
-        //
-        // Carrying the stored value forward is the point, not politeness. The
-        // screen posts the whole blob, and on a forum without the add-on it was
-        // handed the *neutralised* values to display — so simply ignoring the
-        // gate here would have every save quietly overwrite a lapsed
-        // subscriber's sender and wording with the defaults they were shown.
-        if (!ProFeatures::notificationCustomisation()) {
-            return array_merge(
-                [
-                    'enabled'       => filter_var($validated['enabled'] ?? true, FILTER_VALIDATE_BOOLEAN),
-                    'types'         => $types,
-                    'retentionDays' => NotificationSettings::retentionDays($validated),
-                ],
-                $this->storedProValues()
-            );
-        }
-
+        // Sender identity and email wording are not written here: this plugin
+        // has no setting for either. Sending as something other than the site, and rewriting the lines
+        // around the list, are the Bit Connect Pro add-on's features; it stores
+        // them in its own option and supplies them through the
+        // `bit_connect_mail_from_name`, `bit_connect_mail_from_email` and
+        // `bit_connect_mail_template` filters. Nothing to carry forward, and
+        // nothing this endpoint can overwrite.
         return [
             'enabled' => filter_var($validated['enabled'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'types'   => $types,
@@ -138,70 +121,9 @@ final class UpdateNotificationSettingsRequest extends Request
             // these unsupervised, and an hour of 25 is a digest that never goes.
             'digestHour'    => NotificationSettings::digestHour($validated),
             'retentionDays' => NotificationSettings::retentionDays($validated),
-            'fromName'      => \is_string($validated['fromName'] ?? null) ? trim($validated['fromName']) : '',
-            // Stored empty rather than stored wrong: fromEmail() falls back to
-            // the site's own address, which is a better answer than an
-            // undeliverable one somebody mistyped.
-            'fromEmail'        => $fromEmail !== '' && is_email($fromEmail) ? $fromEmail : '',
             'defaultFrequency' => NotificationSettings::isValidFrequency($frequency)
                 ? $frequency
                 : NotificationSettings::FREQUENCY_INSTANT,
-            // Email wording. Stripped of tags rather than escaped: these are
-            // plain-text emails, so markup would be printed literally at best,
-            // and an admin field that ends up in every member's inbox is not
-            // somewhere to accept HTML on trust. Blank is stored as blank and
-            // reads back as the built-in wording.
-            'mailGreeting'    => $this->line('mailGreeting'),
-            'mailIntro'       => $this->line('mailIntro'),
-            'mailDigestIntro' => $this->line('mailDigestIntro'),
-            'mailFooter'      => $this->line('mailFooter'),
         ];
-    }
-
-    /**
-     * The pro-only keys exactly as they sit in the option today.
-     *
-     * Read raw rather than through NotificationSettings, whose normalisers
-     * already blank these for an unlicensed site — going through them would
-     * return the neutralised values and defeat the whole purpose.
-     *
-     * @return array<string, mixed>
-     */
-    private function storedProValues(): array
-    {
-        $stored = Config::getOption(NotificationSettings::OPTION_NAME->value, []);
-        $stored = \is_array($stored) ? $stored : [];
-
-        $keys = [
-            'fromName',
-            'fromEmail',
-            'defaultFrequency',
-            'digestHour',
-            'mailGreeting',
-            'mailIntro',
-            'mailDigestIntro',
-            'mailFooter',
-        ];
-
-        $values = [];
-
-        foreach ($keys as $key) {
-            if (\array_key_exists($key, $stored)) {
-                $values[$key] = $stored[$key];
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * One template line, reduced to plain text.
-     */
-    private function line(string $key): string
-    {
-        $validated = $this->validated();
-        $value = \is_string($validated[$key] ?? null) ? $validated[$key] : '';
-
-        return trim(wp_strip_all_tags($value));
     }
 }

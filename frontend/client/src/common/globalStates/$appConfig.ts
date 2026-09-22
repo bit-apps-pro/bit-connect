@@ -8,7 +8,6 @@ import config from '../../config/config'
 const hasLocalStorage = () => globalThis.localStorage !== undefined
 
 interface AppConfigType {
-  isPro: boolean
   isSidebarCollapsed: boolean
   isWpMenuCollapsed: boolean
   preferNodeDetailsInDrawer: boolean
@@ -18,7 +17,6 @@ interface AppConfigType {
 const $appConfig = atomWithStorage<AppConfigType>(
   `${config.PLUGIN_SLUG}-config`,
   {
-    isPro: config.IS_PRO,
     isSidebarCollapsed: false,
     isWpMenuCollapsed: false,
     preferNodeDetailsInDrawer: false,
@@ -40,7 +38,6 @@ const $appConfig = atomWithStorage<AppConfigType>(
 
       return {
         ...(savedValue as Partial<AppConfigType>),
-        isPro: config.IS_PRO,
         // Parsed rather than spread through, so a blob written by a build that
         // stored the old `isDarkTheme` boolean still carries that choice over.
         themeMode: readStoredMode(value)

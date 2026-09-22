@@ -9,13 +9,14 @@ To separate free and pro code, you need to separate the code into two different 
 - `isPro()` (`@plugin-commons/utils/isPro`) — a **build-time** literal: is this the
   pro bundle? Vite replaces `import.meta.env.VITE_PRO` with `"false"` in the free
   build, so Rollup folds the branch away and drops the `.pro` module entirely.
-- `IS_PRO_ACTIVE` (`@common/helpers/pro-access`) — `isPro() && config.IS_PRO`, so it
-  also asks whether the **license is valid at runtime**.
+- `IS_PRO_ACTIVE` (`@common/helpers/pro-access`) — `isPro() && isAddonActive()`. The
+  second half is a `.pro` stub answering `false` here; in the add-on's build the
+  add-on supplies its own answer. Nothing in this repository decides it.
 
 **Prefer `IS_PRO_ACTIVE`.** It still folds to `false` in the free build (the bundle
-flag is the left half of the `&&`), so you keep the dead-code elimination *and* a pro
-build with an expired license correctly falls back to the free UI. Use bare `isPro()`
-only where a runtime license check would be wrong.
+flag is the left half of the `&&`), so you keep the dead-code elimination, and the
+add-on's build can fall back to the free UI when the add-on says so. Use bare
+`isPro()` only where the add-on's answer must not matter.
 
 The parent file should contain **only** the dispatch — no other markup — so that
 nothing else is dragged into the free bundle with it.

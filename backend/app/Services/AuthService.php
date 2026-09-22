@@ -12,7 +12,6 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\AuthSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use WP_Error;
-use WP_Role;
 use WP_User;
 
 /**
@@ -88,7 +87,9 @@ final class AuthService
             return $defaults;
         }
 
-        return array_replace_recursive($defaults, $saved);
+        // Only the keys this release knows. A key an earlier release stored —
+        // the registration role it used to keep — is not read back.
+        return array_intersect_key(array_replace_recursive($defaults, $saved), $defaults);
     }
 
     public static function getMode(): string
@@ -427,83 +428,82 @@ final class AuthService
             'redirectAfterLogin'       => '',
             'redirectAfterLogout'      => '',
             'requireEmailVerification' => false,
-            'registrationRole'         => self::defaultRegistrationRole(),
         ];
     }
 
+    // -------------------------------------------------------------------------
+    // Registration — the same account WordPress's own form would create
+    // -------------------------------------------------------------------------
+
     /**
-     * WP roles a self-registered user may be assigned. Roles that can manage the
-     * site (manage_options) are excluded so registration can never hand out an
-     * admin-capable role.
+     * Give the plugins that guard WordPress's own registration form their say.
      *
-     * @return array<int, array{value: string, label: string}>
+     * register_new_user() fires `register_post` and then passes the login and
+     * email through the `registration_errors` filter before it creates anything,
+     * and that pair is where anti-spam, captcha and security plugins hook in. A
+     * registration form of our own that skipped them would be a way around every
+     * one of those plugins, so this form asks them too, in the same order and
+     * with the same arguments.
+     *
+     * A plugin that expects a field it added to wp-login.php will refuse a
+     * registration made here, since this form does not render that field. That
+     * is the right answer: the site asked for the check, and an administrator
+     * who wants it can point the portal at their own registration page instead.
+     *
+     * @return null|WP_Error null when nothing objected
      */
-    public static function assignableRoles(): array
+    public static function registrationErrors(string $username, string $email): ?WP_Error
     {
-        $roles = [];
+        $errors = new WP_Error();
 
-        foreach (wp_roles()->get_names() as $slug => $name) {
-            $role = get_role($slug);
+        Hooks::doAction('register_post', $username, $email, $errors);
 
-            if (!$role instanceof WP_Role) {
-                continue;
-            }
+        $errors = Hooks::applyFilter('registration_errors', $errors, $username, $email);
 
-            if (!empty($role->capabilities['manage_options'])) {
-                continue;
-            }
-
-            $roles[] = [
-                'value' => $slug,
-                'label' => translate_user_role((string) $name),
-            ];
-        }
-
-        return $roles;
+        return $errors instanceof WP_Error && $errors->has_errors() ? $errors : null;
     }
 
     /**
-     * The role assigned to users who register through the Bit Connect form.
-     * Falls back to a safe default if the stored role is missing or not
-     * assignable (e.g. it was deleted or is an admin role).
+     * Create the WordPress account for a registration.
+     *
+     * This is wp_insert_user() the way register_new_user() calls it: no role is
+     * named, so the member gets the site's "New User Default Role" from
+     * Settings → General — exactly the role wp-login.php?action=register would
+     * have given them. This plugin keeps no role setting of its own, so
+     * registering through the forum can never grant more than registering
+     * through WordPress does.
+     *
+     * The password arrives already hashed. It was hashed the moment the form was
+     * submitted, so a registration parked for email verification never sits in
+     * the options table in clear text. wp_insert_user() hashes whatever it is
+     * handed, so the stored hash is put in place through
+     * `wp_pre_insert_user_data`, the filter core offers for the final word over
+     * the row; the throwaway password it hashed is never stored anywhere.
+     *
+     * @return int|WP_Error the new user's ID
      */
-    public static function getRegistrationRole(): string
+    public static function createMember(string $username, string $email, string $displayName, string $passwordHash)
     {
-        $configured = (string) (self::getSettings()['registrationRole'] ?? '');
+        $useStoredHash = static function (array $data) use ($passwordHash): array {
+            $data['user_pass'] = $passwordHash;
 
-        return self::sanitizeRegistrationRole($configured);
-    }
+            return $data;
+        };
 
-    /**
-     * Validate a candidate registration role against the assignable list,
-     * falling back to the default when it is empty/unknown/not assignable.
-     */
-    public static function sanitizeRegistrationRole(string $role): string
-    {
-        $role = sanitize_key($role);
-        $allowed = array_column(self::assignableRoles(), 'value');
+        Hooks::addFilter('wp_pre_insert_user_data', $useStoredHash, 10, 1);
 
-        return \in_array($role, $allowed, true) ? $role : self::defaultRegistrationRole();
-    }
+        $userId = wp_insert_user(
+            [
+                'user_login'   => $username,
+                'user_pass'    => wp_generate_password(32, true, true),
+                'user_email'   => $email,
+                'display_name' => $displayName,
+            ]
+        );
 
-    /**
-     * Safe default registration role. Prefers 'subscriber'; falls back to
-     * WordPress' own default_role, then the first assignable role.
-     */
-    public static function defaultRegistrationRole(): string
-    {
-        $allowed = array_column(self::assignableRoles(), 'value');
+        remove_filter('wp_pre_insert_user_data', $useStoredHash, 10);
 
-        if (\in_array('subscriber', $allowed, true)) {
-            return 'subscriber';
-        }
-
-        $wpDefault = sanitize_key((string) get_option('default_role', 'subscriber'));
-        if (\in_array($wpDefault, $allowed, true)) {
-            return $wpDefault;
-        }
-
-        return $allowed[0] ?? 'subscriber';
+        return $userId;
     }
 
     public static function requiresEmailVerification(): bool
@@ -537,8 +537,12 @@ final class AuthService
     }
 
     /**
-     * Stores pending registration data and sends a verification email.
-     * The WP user is NOT created yet — creation happens in verifyEmail().
+     * Park a registration and send its verification link.
+     *
+     * No WordPress user exists yet; AuthApiController::verifyEmail() creates
+     * one when the link is opened. What is parked is the login, the email, the
+     * display name and the password's hash — never the password itself — under
+     * a single-use token that expires with the transient.
      */
     public static function storePendingAndSendVerification(array $data, string $email): void
     {
@@ -575,36 +579,6 @@ final class AuthService
         }
 
         return $data;
-    }
-
-    /**
-     * Validates the token for an already-created user and marks email as verified.
-     *
-     * @return WP_Error|WP_User
-     */
-    public static function verifyEmail(int $userId, string $token)
-    {
-        $storedToken = get_user_meta($userId, 'bit_connect_email_verify_token', true);
-        $expiry = (int) get_user_meta($userId, 'bit_connect_email_verify_expiry', true);
-
-        if (!$storedToken || !hash_equals($storedToken, $token)) {
-            return new WP_Error('invalid_token', __('Invalid verification link.', 'bit-connect'));
-        }
-
-        if (time() > $expiry) {
-            return new WP_Error('token_expired', __('This verification link has expired. Please register again.', 'bit-connect'));
-        }
-
-        delete_user_meta($userId, 'bit_connect_email_verify_token');
-        delete_user_meta($userId, 'bit_connect_email_verify_expiry');
-
-        $user = get_userdata($userId);
-
-        if (!$user instanceof WP_User) {
-            return new WP_Error('user_not_found', __('User not found.', 'bit-connect'));
-        }
-
-        return $user;
     }
 
     private static function removeLegacyRoles(): void

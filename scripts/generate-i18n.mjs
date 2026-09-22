@@ -122,6 +122,17 @@ execFileSync(
     // templates now, and make-pot reading its own output is how a `.pot` grows
     // stale references to files that have moved.
     '--include=backend',
+    // `--include` is matched at any depth, not anchored to the root, so a
+    // `build/bit-connect/backend/` left behind by a previous `prod:free-zip`
+    // satisfies it too. make-pot then extracts from that copy as well as from
+    // source, and every string the plugin has ever built accumulates into the
+    // template for good: regenerating after a release reintroduced
+    // "Comment Upvote" and "Private Topic" — labels for features this plugin
+    // no longer has — from a stale zip's catalogue. A `.pot` naming the add-on's
+    // features is the trialware signal this file's header warns about, so the
+    // build output is excluded by name. `vendor` and `node_modules` are among
+    // make-pot's own defaults; `build` is not.
+    '--exclude=build',
     `--headers=${potHeaders}`,
   ],
   { cwd: rootDirectory, stdio: 'inherit' }

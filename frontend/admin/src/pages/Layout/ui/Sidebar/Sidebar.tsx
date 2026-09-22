@@ -1,6 +1,5 @@
 import ThemeToggle from '@components/utilities/theme-toggle'
 import config from '@config/config'
-import isPro from '@plugin-commons/utils/isPro'
 import { Layout, Typography } from 'antd'
 import { useAtomValue } from 'jotai'
 import { Link } from 'react-router'
@@ -39,14 +38,7 @@ const navItems: { label: string; path: string; requires: 'manage' | 'moderate' }
   { label: __('Settings'), path: '../settings', requires: 'manage' },
   // Last, and forum_manage: it is the one screen here that is about the plugin
   // rather than about the forum.
-  //
-  // The label is edition-aware because the screen is. This plugin has no
-  // licence to manage — no key, no activation, no check — so calling the screen
-  // "License" would name something that is not there, and WordPress.org reads a
-  // licence surface in a hosted plugin as a feature gate (guideline 6). With
-  // the add-on installed the same screen does carry activation, and says so.
-  // A label is data, not logic, so this is a constant rather than a code split.
-  { label: isPro() ? __('Support & License') : __('Support'), path: '../support', requires: 'manage' }
+  { label: __('Support'), path: '../support', requires: 'manage' }
 ]
 
 export default function Sidebar() {

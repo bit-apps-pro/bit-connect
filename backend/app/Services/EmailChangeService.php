@@ -23,11 +23,10 @@ use WP_User;
  * flow), including not asking for the password: the confirmation link going to
  * the new inbox is what proves the request.
  *
- * Deliberately NOT reusing `bit_connect_email_verify_token`, the meta pair
- * AuthService::verifyEmail() reads. Nothing writes that pair today, so it looks
- * like a free socket — but AuthApiController still routes `auth/verify-email`
- * through it, and sharing the key would let a registration confirmation consume
- * an email-change token.
+ * Kept apart from registration's own verification on purpose. That flow parks
+ * the pending account in a transient keyed by its token and never touches user
+ * meta, so a registration link can never be spent as an email-change
+ * confirmation, nor the other way round.
  */
 class EmailChangeService
 {

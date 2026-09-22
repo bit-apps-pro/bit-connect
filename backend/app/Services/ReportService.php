@@ -11,8 +11,6 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
-use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\ReportReasons;
 use BitApps\BitConnect\Enum\ReportStatus;
 use BitApps\BitConnect\Model\Report;
@@ -34,11 +32,6 @@ final class ReportService
     public const TARGET_COMMENT = 'comment';
 
     /**
-     * Pending reports needed before content is hidden, when nobody has chosen.
-     */
-    public const DEFAULT_AUTO_HIDE_THRESHOLD = 2;
-
-    /**
      * Hard cap on rows read to build the queue.
      *
      * Pending reports are self-limiting in practice — they exist only until
@@ -52,37 +45,6 @@ final class ReportService
      * Transient holding the queue badge's count.
      */
     private const PENDING_COUNT_KEY = 'bit_connect_reports_pending_targets';
-
-    /**
-     * How many pending reports it takes to hide something automatically.
-     *
-     * Two rather than one. On one, a single member who dislikes a post takes it
-     * out of sight on their own and nothing stands between them and the button —
-     * the rest of this class's rules bound who may report and how often, not what
-     * one report is worth. Two means a second person has to agree before anyone's
-     * words disappear, which is the cheapest check there is on the reporter who
-     * is simply wrong.
-     *
-     * Forums that would rather act on the first report can set it back to one in
-     * Settings; the point is that it is now a decision someone made.
-     *
-     * Read from admin settings, falling back to the standalone option this used
-     * to live in so a site that set it by WP-CLI does not silently change
-     * behaviour on upgrade.
-     *
-     * Filter: bit_connect_report_auto_hide_threshold
-     */
-    public static function autoHideThreshold(): int
-    {
-        $settings = Config::getOption(AdminSettings::OPTION_NAME->value, []);
-        $configured = \is_array($settings) ? ($settings['moderation']['autoHideThreshold'] ?? null) : null;
-
-        $stored = $configured === null
-            ? (int) get_option('bit_connect_report_auto_hide_threshold', self::DEFAULT_AUTO_HIDE_THRESHOLD)
-            : (int) $configured;
-
-        return max(1, (int) Hooks::applyFilter('bit_connect_report_auto_hide_threshold', $stored));
-    }
 
     /**
      * Files a report, or explains why it cannot be filed.
@@ -173,7 +135,7 @@ final class ReportService
      */
     public static function shouldAutoHide(string $targetType, int $targetId, int $author, ?int $pending = null): bool
     {
-        return ProFeatures::autoHideOnReports($targetType, $targetId, $author, $pending);
+        return ExtensionPoints::autoHideOnReports($targetType, $targetId, $author, $pending);
     }
 
     /**

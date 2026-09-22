@@ -24,12 +24,7 @@ class PluginPageActions
                 'title' => __('Settings', 'bit-connect'),
                 'url'   => Config::get('ADMIN_URL') . 'admin.php?page=' . Config::SLUG . '#/settings',
             ],
-            // This pointed at '#/license' for a long time while no such route
-            // existed, so it landed every visitor on Error404. The route exists
-            // now — it is '#/support', because that is what the screen is in
-            // this plugin: support, the changelog and what the add-on adds, with
-            // no licence to manage. '#/license' still redirects there, for links
-            // released before the rename.
+            // Support, the changelog and what the add-on adds.
             'support' => [
                 'title' => __('Support', 'bit-connect'),
                 'url'   => Config::get('ADMIN_URL') . 'admin.php?page=' . Config::SLUG . '#/support',

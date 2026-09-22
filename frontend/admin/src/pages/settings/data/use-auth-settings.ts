@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import { type AuthSettings } from '../shared/types'
 
 const defaultAuthSettings: AuthSettings = {
-  availableRoles: [],
   customLoginUrl: '',
   customRegistrationUrl: '',
   loginPageCustomization: { banner: '', description: '', title: '' },
@@ -14,7 +13,6 @@ const defaultAuthSettings: AuthSettings = {
   redirectAfterLogin: '',
   redirectAfterLogout: '',
   registrationPageUrl: '',
-  registrationRole: '',
   requireEmailVerification: false
 }
 
@@ -32,7 +30,6 @@ export default function useAuthSettings() {
       if (!d || typeof d !== 'object') return defaultAuthSettings
       const customization = d.loginPageCustomization ?? {}
       return {
-        availableRoles: Array.isArray(d.availableRoles) ? d.availableRoles : [],
         customLoginUrl: d.customLoginUrl ?? '',
         customRegistrationUrl: d.customRegistrationUrl ?? '',
         loginPageCustomization: {
@@ -45,7 +42,6 @@ export default function useAuthSettings() {
         redirectAfterLogin: d.redirectAfterLogin ?? '',
         redirectAfterLogout: d.redirectAfterLogout ?? '',
         registrationPageUrl: d.registrationPageUrl ?? '',
-        registrationRole: d.registrationRole ?? '',
         requireEmailVerification:
           d.requireEmailVerification ?? defaultAuthSettings.requireEmailVerification
       }

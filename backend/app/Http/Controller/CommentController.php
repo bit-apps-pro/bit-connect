@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
@@ -20,12 +19,12 @@ use BitApps\BitConnect\Http\Requests\DeleteCommentRequest;
 use BitApps\BitConnect\Http\Requests\GetCommentsByPostRequest;
 use BitApps\BitConnect\Http\Requests\UpdateCommentRequest;
 use BitApps\BitConnect\Model\Follow;
-use BitApps\BitConnect\Model\Vote;
 use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\CommentSanitizerService;
 use BitApps\BitConnect\Services\ContentRemovalService;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\EditAttributionService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
@@ -52,10 +51,12 @@ final class CommentController
         $validated = $request->validated();
         $page = max(1, (int) ($validated['page'] ?? 1));
         $perPage = max(1, (int) ($validated['per_page'] ?? 10));
-        $sort = $validated['sort'] ?? 'newest';
-        if (!\in_array($sort, ['newest', 'all', 'mostVoted'], true)) {
-            $sort = 'newest';
-        }
+        // Passed on as asked for rather than narrowed to the two orderings
+        // this plugin performs. An ordering it does not know is offered to
+        // whatever does — see ExtensionPoints::orderedComments — and falls
+        // back to newest-first when nobody answers, which is what an ordering
+        // that reaches nothing has always meant here.
+        $sort = \is_string($validated['sort'] ?? null) ? $validated['sort'] : 'newest';
 
         // Load every approved comment once, then split into top-level threads
         // and a parent => children map. Pagination is applied to the top-level
@@ -115,12 +116,9 @@ final class CommentController
 
         // Flatten each page thread (top-level comment followed by its whole
         // subtree) into the response; the frontend nests them by parent id.
-        $votesTable = $this->getVotesTable();
-        $currentUserId = get_current_user_id();
-
         $formattedComments = [];
-        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent, $votesTable, $currentUserId) {
-            $formattedComments[] = $this->formatComment($comment, $votesTable, $currentUserId);
+        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent) {
+            $formattedComments[] = $this->formatComment($comment);
             $children = $childrenByParent[(int) $comment->comment_ID] ?? [];
             foreach ($children as $child) {
                 $appendThread($child);
@@ -230,8 +228,7 @@ final class CommentController
         // by design.
         $this->notifyThread($post, $comment, $parentId);
 
-        $votesTable = $this->getVotesTable();
-        $formattedComment = $this->formatComment($comment, $votesTable, $currentUser->ID);
+        $formattedComment = $this->formatComment($comment);
 
         return Response::success($formattedComment);
     }
@@ -319,8 +316,7 @@ final class CommentController
             return Response::error('Comment updated but could not be retrieved', 500);
         }
 
-        $votesTable = $this->getVotesTable();
-        $formattedComment = $this->formatComment($updatedComment, $votesTable, $currentUser->ID);
+        $formattedComment = $this->formatComment($updatedComment);
 
         return Response::success($formattedComment);
     }
@@ -494,39 +490,26 @@ final class CommentController
     }
 
     /**
-     * Sort top-level comments by the requested key. Vote counts are
-     * precomputed once (avoiding a query per comparison) for "mostVoted".
+     * Sort top-level comments by the requested key.
+     *
+     * By date, either way round. There is no vote ordering here because there
+     * are no reply votes here to order by; the add-on that implements them
+     * answers the extension point below and brings its ordering with it.
      *
      * @param WP_Comment[] $topLevel
-     * @param string        $sort      one of newest|all|mostVoted
+     * @param string       $sort     newest|all, or whatever a listener knows
      *
      * @return WP_Comment[]
      */
     private function sortTopLevelComments($topLevel, $sort)
     {
-        if ($sort === 'mostVoted') {
-            $voteCounts = [];
-            foreach ($topLevel as $comment) {
-                $voteCounts[(int) $comment->comment_ID] = (int) Vote::getCommentVoteCount((int) $comment->comment_ID);
-            }
+        $ordered = ExtensionPoints::orderedComments($topLevel, $sort);
 
-            usort(
-                $topLevel,
-                static function ($a, $b) use ($voteCounts) {
-                    $votesA = $voteCounts[(int) $a->comment_ID] ?? 0;
-                    $votesB = $voteCounts[(int) $b->comment_ID] ?? 0;
-                    if ($votesA !== $votesB) {
-                        return $votesB - $votesA;
-                    }
-
-                    return strcmp($b->comment_date, $a->comment_date); // newer first on tie
-                }
-            );
-
-            return $topLevel;
+        if ($ordered !== null) {
+            return $ordered;
         }
 
-        // "all" => oldest first, "newest" (default) => newest first.
+        // "all" => oldest first, everything else => newest first.
         usort(
             $topLevel,
             static function ($a, $b) use ($sort) {
@@ -588,12 +571,7 @@ final class CommentController
         return 0;
     }
 
-    private function getVotesTable()
-    {
-        return Config::withDBPrefix('votes');
-    }
-
-    private function formatComment($comment, $votesTable, $currentUserId)
+    private function formatComment($comment)
     {
         $authorId = (int) $comment->user_id;
         $authorBadge = UserBadgeService::for($authorId);
@@ -601,17 +579,9 @@ final class CommentController
         $keepsWords = ContentVisibilityService::canViewHidden()
             || ContentVisibilityService::isOwnContent($authorId);
 
-        $voteCount = Vote::getCommentVoteCount($comment->comment_ID);
-
-        $hasVoted = false;
-        if ($currentUserId) {
-            $userVote = Vote::hasUserVotedComment($currentUserId, $comment->comment_ID);
-            $hasVoted = !empty($userVote);
-        }
-
         $attachments = TopicService::formatCommentAttachments($comment->comment_ID);
 
-        return [
+        return ExtensionPoints::commentFields([
             'id'          => (int) $comment->comment_ID,
             'post'        => (int) $comment->comment_post_ID,
             'parent'      => (int) $comment->comment_parent,
@@ -638,8 +608,9 @@ final class CommentController
                 '48' => get_avatar_url($comment, ['size' => 48]),
                 '96' => get_avatar_url($comment, ['size' => 96]),
             ],
-            'votes'       => (int) $voteCount,
-            'hasVoted'    => $hasVoted,
+            // No `votes` or `hasVoted`. Upvoting a reply ships in the add-on,
+            // which attaches its own pair through commentFields(); a forum
+            // without it sends a reply that simply has no upvote control.
             'attachments' => $attachments,
             // The author's standing, or null for an ordinary member.
             'author_badge' => $authorBadge,
@@ -657,6 +628,6 @@ final class CommentController
             // for a forum_moderate-only member, where the old
             // hasModeratorRole() check (manage_options || forum_manage) said no.
             'isAdmin' => $authorBadge !== null,
-        ];
+        ], (int) $comment->comment_ID);
     }
 }
