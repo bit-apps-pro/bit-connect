@@ -1,6 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
@@ -10,10 +11,9 @@ import { Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import LoginGate from '@/components/features/login-warning-modal/ui/login-gate'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
-import { useAuthStore } from '@/store/auth.zustand'
+import { type ForumCapability } from '@/store/helper/capabilities'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { type Comment } from '@/types/post'
 
@@ -61,8 +61,7 @@ export default function PostDetailsPage() {
     transformedComments,
     updateComment
   } = useSinglePostStore()
-  const { isLoggedIn } = useAuthStore()
-  const { open: openLoginWarning } = useLoginWarningStore()
+  const canAct = useCapabilityGate()
 
   useEffect(() => {
     if (postName) {
@@ -82,18 +81,13 @@ export default function PostDetailsPage() {
     )
   }, [fetchSettings])
 
-  const requireLogin = (action: () => void) => {
-    if (!isLoggedIn) {
-      openLoginWarning()
-      return false
-    }
-    action()
-    return true
+  const requireCapability = (capability: ForumCapability, action: () => void) => {
+    if (canAct(capability)) action()
   }
 
   const handlePostVote = async () => {
     if (!post?.ID) return
-    requireLogin(async () => {
+    requireCapability('forum_vote_post', async () => {
       try {
         await toggleVote(post.ID)
       } catch (error_) {
@@ -105,7 +99,7 @@ export default function PostDetailsPage() {
   }
 
   const handlePostComment = async (content: string, attachments?: WPAttachmentData[]) => {
-    requireLogin(async () => {
+    requireCapability('forum_create_comment', async () => {
       try {
         await createComment(
           content,

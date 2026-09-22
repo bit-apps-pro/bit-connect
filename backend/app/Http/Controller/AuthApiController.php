@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\Requests\RestSignupRequest;
 use BitApps\BitConnect\Http\Requests\RestVerifyEmailRequest;
 use BitApps\BitConnect\Services\AuthRateLimiter;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use WP_Error;
 use WP_User;
@@ -262,6 +263,11 @@ final class AuthApiController
             self::formatUser($user),
             [
                 'nonce' => wp_create_nonce('wp_rest'),
+                // The same map auth/me and the bootstrap payload carry. Without
+                // it the portal falls back to assuming every member may post,
+                // vote and comment — and a member whose role grants none of that
+                // was shown the forms, then refused on submit.
+                'capabilities' => PermissionService::currentUserCapabilities(),
             ]
         );
     }

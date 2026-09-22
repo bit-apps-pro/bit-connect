@@ -1,5 +1,6 @@
 import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
+import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import config from '@config/config'
 import { NotificationBell } from '@features/notifications'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
@@ -25,6 +26,7 @@ interface HeaderProps {
 
 export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) {
   const { setCreateModalOpen } = useTopicModalStore()
+  const canAct = useCapabilityGate()
   const location = useLocation()
   const { checkAuth, isLoggedIn, logout, user } = useAuthStore()
   const { fetchSettings } = useAdminSettingsStore()
@@ -257,7 +259,9 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                     strokeWidth={2.5}
                   />
                 }
-                onClick={() => setCreateModalOpen(true)}
+                onClick={() => {
+                  if (canAct('forum_create_post')) setCreateModalOpen(true)
+                }}
                 shape="round"
                 size="middle"
                 type="primary"

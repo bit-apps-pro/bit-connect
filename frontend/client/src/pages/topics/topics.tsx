@@ -2,6 +2,7 @@ import './topics.css'
 
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import ProductFilter from '@utilities/product-filter'
 import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
@@ -14,9 +15,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'r
 import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useSearchParams } from 'react-router'
 
-import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import config from '@/config/config'
-import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
@@ -157,8 +156,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     }
   }
 
-  const { isLoggedIn } = useAuthStore()
-  const { open: openLoginWarning } = useLoginWarningStore()
+  const canAct = useCapabilityGate()
 
   // A term archive (`/tag/api`) pins its filter from the path rather than the
   // query string, so it stays the clean, canonical URL the server advertised
@@ -279,10 +277,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   }
 
   const handlePostVote = async (postId: number) => {
-    if (!isLoggedIn) {
-      openLoginWarning()
-      return
-    }
+    if (!canAct('forum_vote_post')) return
     try {
       await toggleVote(postId)
     } catch {
