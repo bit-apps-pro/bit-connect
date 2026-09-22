@@ -11,6 +11,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use WP_Comment;
 
 /**
  * Behaviour this plugin declines to perform, offered to anything that will.
