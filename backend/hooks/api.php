@@ -54,7 +54,6 @@ Route::post('topics/{id}', [TopicController::class, 'update']);
 Route::get('topics-delete/{id}', [TopicController::class, 'delete']);
 // Off the `topics/` prefix on purpose — `topics/{id}` would swallow it.
 Route::get('topic-slug-check', [TopicController::class, 'slugCheck']);
-Route::get('posts/filter', [PostController::class, 'filter']);
 
 // Comments
 Route::get('posts/{id}/comments', [CommentController::class, 'getByPost']);
