@@ -73,6 +73,13 @@
     <exclude name="PEAR.Commenting.FunctionComment" />
     <exclude name="PEAR.Commenting.InlineComment" />
     <exclude name="PEAR.ControlStructures.MultiLineCondition" />
+    <!--
+      The WordPress.org review asks that the few permitted core includes
+      (wp-admin/includes/file.php, image.php) use `require_once`, immediately
+      before the function they provide. This sniff would rewrite them to
+      `include_once` because they sit inside a method.
+    -->
+    <exclude name="PEAR.Files.IncludingFile.UseIncludeOnce" />
     <!-- <exclude name="PEAR.Commenting.FileComment.Missing" /> -->
     <!-- <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment" /> -->
     <!-- <exclude name="PEAR.Commenting.FileComment.MissingCategoryTag" />

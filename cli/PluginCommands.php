@@ -5,8 +5,6 @@ namespace BitApps\BitConnect\CLI;
 use BitApps\BitConnect\Config;
 use WP_CLI;
 
-// require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-include_once ABSPATH . 'wp-admin/includes/plugin.php';
 class PluginCommands
 {
     public const PRO_PLUGIN_INDEX = Config::PRO_PLUGIN_SLUG . '/' . Config::PRO_PLUGIN_SLUG . '.php';
@@ -41,6 +39,9 @@ class PluginCommands
     public function disablePro()
     {
         $proPluginDir = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . Config::PRO_PLUGIN_SLUG;
+
+        // is_plugin_active() is an admin-side function, not loaded under WP-CLI.
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
         if (file_exists($proPluginDir) && is_plugin_active(self::PRO_PLUGIN_INDEX)) {
             $isDeactivated = shell_exec('wp plugin deactivate ' . Config::PRO_PLUGIN_SLUG);
