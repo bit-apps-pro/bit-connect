@@ -639,6 +639,11 @@ if (!class_exists('WP_Error')) {
         {
             return $this->message;
         }
+
+        public function has_errors()
+        {
+            return $this->code !== '';
+        }
     }
 }
 

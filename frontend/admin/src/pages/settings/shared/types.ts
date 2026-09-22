@@ -49,14 +49,7 @@ export interface AuthLoginPageCustomization {
   title: string
 }
 
-export interface RoleOption {
-  label: string
-  value: string
-}
-
 export interface AuthSettings {
-  /** Read-only — assignable WP roles for registration, provided by server */
-  availableRoles: RoleOption[]
   customLoginUrl: string
   customRegistrationUrl: string
   loginPageCustomization: AuthLoginPageCustomization
@@ -67,8 +60,6 @@ export interface AuthSettings {
   redirectAfterLogout: string
   /** Read-only — provided by server, not sent on update */
   registrationPageUrl: string
-  /** WP role assigned to users who register via the plugin form */
-  registrationRole: string
   requireEmailVerification: boolean
 }
 
@@ -79,6 +70,5 @@ export interface AuthSettingsFormData {
   mode: AuthMode
   redirectAfterLogin: string
   redirectAfterLogout: string
-  registrationRole: string
   requireEmailVerification: boolean
 }

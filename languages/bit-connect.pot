@@ -2,23 +2,20 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bit Connect 1.0.0\n"
+"Project-Id-Version: Bit Connect – Community, Discussion Forum, Feedback & Roadmap 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bit-connect\n"
 "Last-Translator: Bit Apps <developer@bitapps.pro>\n"
 "Language-Team: Bit Apps <support@bitapps.pro>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-21T11:02:07+00:00\n"
+"POT-Creation-Date: 2026-09-22T05:49:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 
 #. Plugin Name of the plugin
 #: bit-connect.php
-#: backend/app/Views/Menu.php:62
-#: backend/app/Views/Menu.php:63
-#: backend/i18n/frontend-strings.php:521
-msgid "Bit Connect"
+msgid "Bit Connect – Community, Discussion Forum, Feedback & Roadmap"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -268,7 +265,7 @@ msgid "Sent to moderators only, when a report enters the queue."
 msgstr ""
 
 #: backend/app/Enum/ReportStatus.php:59
-#: backend/i18n/frontend-strings.php:781
+#: backend/i18n/frontend-strings.php:765
 msgid "Awaiting review"
 msgstr ""
 
@@ -281,7 +278,7 @@ msgid "Reviewed — content removed"
 msgstr ""
 
 #: backend/app/Enum/ReportStatus.php:62
-#: backend/i18n/frontend-strings.php:787
+#: backend/i18n/frontend-strings.php:771
 msgid "Dismissed"
 msgstr ""
 
@@ -296,9 +293,8 @@ msgstr ""
 #: backend/app/Http/Controller/UserProfileController.php:115
 #: backend/app/Http/Controller/UserProfileController.php:132
 #: backend/app/Http/Controller/UserStatsController.php:35
-#: backend/app/Services/AuthService.php:604
-#: backend/app/Services/EmailChangeService.php:74
-#: backend/app/Services/EmailChangeService.php:159
+#: backend/app/Services/EmailChangeService.php:73
+#: backend/app/Services/EmailChangeService.php:158
 msgid "User not found."
 msgstr ""
 
@@ -326,33 +322,32 @@ msgstr ""
 msgid "The portal login form is disabled. Please use the site login page."
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:78
+#: backend/app/Http/Controller/AuthApiController.php:83
 msgid "The portal registration form is disabled. Please use the site registration page."
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:83
+#: backend/app/Http/Controller/AuthApiController.php:88
 msgid "Registration is currently disabled."
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:110
+#: backend/app/Http/Controller/AuthApiController.php:128
 msgid "Sorry, that username already exists!"
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:115
+#: backend/app/Http/Controller/AuthApiController.php:133
 msgid "Sorry, that email address is already used!"
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:221
-#: backend/app/Services/AuthService.php:591
-#: backend/i18n/frontend-strings.php:1639
+#: backend/app/Http/Controller/AuthApiController.php:188
+#: backend/i18n/frontend-strings.php:1623
 msgid "Invalid verification link."
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:247
+#: backend/app/Http/Controller/AuthApiController.php:225
 msgid "Please enter your username or email address."
 msgstr ""
 
-#: backend/app/Http/Controller/AuthApiController.php:269
+#: backend/app/Http/Controller/AuthApiController.php:247
 msgid "Password reset email sent. Please check your inbox."
 msgstr ""
 
@@ -397,7 +392,7 @@ msgid "That is not something this forum accepts reports about."
 msgstr ""
 
 #: backend/app/Http/Controller/ReportController.php:116
-#: backend/i18n/frontend-strings.php:1386
+#: backend/i18n/frontend-strings.php:1370
 msgid "Thank you. A moderator will look at this."
 msgstr ""
 
@@ -469,7 +464,7 @@ msgid "Please keep the explanation under 2000 characters."
 msgstr ""
 
 #: backend/app/Http/Requests/RequestEmailChangeRequest.php:49
-#: backend/app/Services/EmailChangeService.php:80
+#: backend/app/Services/EmailChangeService.php:79
 msgid "Please enter a valid email address."
 msgstr ""
 
@@ -482,7 +477,7 @@ msgid "Confirmation token is required."
 msgstr ""
 
 #: backend/app/Http/Requests/RestVerifyEmailChangeRequest.php:42
-#: backend/app/Services/EmailChangeService.php:122
+#: backend/app/Services/EmailChangeService.php:121
 msgid "This confirmation link is not valid."
 msgstr ""
 
@@ -505,15 +500,15 @@ msgstr ""
 msgid "Post ID must be a valid integer."
 msgstr ""
 
-#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:79
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:78
 msgid "A custom login page URL is required when using a custom login page."
 msgstr ""
 
-#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:83
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:82
 msgid "The custom login page URL is not a valid URL, for example https://example.com/login."
 msgstr ""
 
-#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:91
+#: backend/app/Http/Requests/UpdateAuthSettingsRequest.php:90
 msgid "The custom registration page URL is not a valid URL, for example https://example.com/register."
 msgstr ""
 
@@ -642,12 +637,12 @@ msgid_plural "Too many attempts. Please wait %d minutes and try again."
 msgstr[0] ""
 msgstr[1] ""
 
-#: backend/app/Services/AuthService.php:551
+#: backend/app/Services/AuthService.php:555
 msgid "Verify your email address"
 msgstr ""
 
 #. translators: %s: verification URL
-#: backend/app/Services/AuthService.php:554
+#: backend/app/Services/AuthService.php:558
 #, php-format
 msgid ""
 "Hello,\n"
@@ -659,10 +654,6 @@ msgid ""
 "This link expires in 24 hours.\n"
 "\n"
 "If you did not register, you can safely ignore this email."
-msgstr ""
-
-#: backend/app/Services/AuthService.php:595
-msgid "This verification link has expired. Please register again."
 msgstr ""
 
 #: backend/app/Services/ContentVisibilityService.php:55
@@ -681,25 +672,25 @@ msgstr[1] ""
 msgid "This comment is hidden while a moderator reviews it."
 msgstr ""
 
-#: backend/app/Services/EmailChangeService.php:84
+#: backend/app/Services/EmailChangeService.php:83
 msgid "That is already your email address."
 msgstr ""
 
-#: backend/app/Services/EmailChangeService.php:90
-#: backend/app/Services/EmailChangeService.php:142
+#: backend/app/Services/EmailChangeService.php:89
+#: backend/app/Services/EmailChangeService.php:141
 msgid "That email address is already in use."
 msgstr ""
 
-#: backend/app/Services/EmailChangeService.php:130
+#: backend/app/Services/EmailChangeService.php:129
 msgid "This confirmation link has expired. Please request the change again."
 msgstr ""
 
-#: backend/app/Services/EmailChangeService.php:188
+#: backend/app/Services/EmailChangeService.php:187
 msgid "Confirm your new email address"
 msgstr ""
 
 #. translators: %s: confirmation URL
-#: backend/app/Services/EmailChangeService.php:191
+#: backend/app/Services/EmailChangeService.php:190
 #, php-format
 msgid ""
 "Hello,\n"
@@ -734,12 +725,12 @@ msgid "This is a test message from your forum's notification settings. If you ar
 msgstr ""
 
 #: backend/app/Services/NotificationMailer.php:224
-#: backend/i18n/frontend-strings.php:1333
+#: backend/i18n/frontend-strings.php:1317
 msgid "Someone"
 msgstr ""
 
 #: backend/app/Services/NotificationMailer.php:246
-#: backend/i18n/frontend-strings.php:1335
+#: backend/i18n/frontend-strings.php:1319
 msgid "a topic"
 msgstr ""
 
@@ -786,7 +777,7 @@ msgid "A moderator reviewed something you reported — %1$s"
 msgstr ""
 
 #: backend/app/Services/NotificationMailer.php:280
-#: backend/i18n/frontend-strings.php:1343
+#: backend/i18n/frontend-strings.php:1327
 msgid "Something you wrote was removed after review"
 msgstr ""
 
@@ -803,7 +794,7 @@ msgid "The status changed on %s"
 msgstr ""
 
 #: backend/app/Services/NotificationMailer.php:294
-#: backend/i18n/frontend-strings.php:1347
+#: backend/i18n/frontend-strings.php:1331
 msgid "A new report is waiting in the moderation queue"
 msgstr ""
 
@@ -871,36 +862,36 @@ msgstr ""
 msgid "You have reported several things just now. Please wait a little before reporting anything else."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:99
+#: backend/app/Services/ReportService.php:61
 msgid "You must be logged in to report anything."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:105
+#: backend/app/Services/ReportService.php:67
 msgid "That is not a reason this forum recognises."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:111
-#: backend/i18n/frontend-strings.php:1398
+#: backend/app/Services/ReportService.php:73
+#: backend/i18n/frontend-strings.php:1382
 msgid "Please say what is wrong with it."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:117
+#: backend/app/Services/ReportService.php:79
 msgid "That content no longer exists."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:121
+#: backend/app/Services/ReportService.php:83
 msgid "You cannot report your own content."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:125
+#: backend/app/Services/ReportService.php:87
 msgid "You have already reported this."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:149
+#: backend/app/Services/ReportService.php:111
 msgid "Your report could not be saved. Please try again."
 msgstr ""
 
-#: backend/app/Services/ReportService.php:257
+#: backend/app/Services/ReportService.php:219
 msgid "The reports could not be updated. Please try again."
 msgstr ""
 
@@ -1015,8 +1006,14 @@ msgid_plural "%1$s discussions about %2$s in the %3$s community."
 msgstr[0] ""
 msgstr[1] ""
 
+#: backend/app/Views/Menu.php:62
+#: backend/app/Views/Menu.php:63
+#: backend/i18n/frontend-strings.php:515
+msgid "Bit Connect"
+msgstr ""
+
 #: backend/app/Views/PluginPageActions.php:24
-#: backend/i18n/frontend-strings.php:519
+#: backend/i18n/frontend-strings.php:513
 msgid "Settings"
 msgstr ""
 
@@ -1632,3299 +1629,3267 @@ msgid "New accounts"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:315
-msgid "The WordPress role people get when they register."
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:317
-msgid "Registration role"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:319
-msgid "Select a role"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:321
 msgid "New members have to confirm their email address before they can sign in."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:323
+#: backend/i18n/frontend-strings.php:317
 msgid "Require email verification"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:325
+#: backend/i18n/frontend-strings.php:319
 msgid "Where the portal sends people instead of showing its own form."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:327
+#: backend/i18n/frontend-strings.php:321
 msgid "Your login pages"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:329
+#: backend/i18n/frontend-strings.php:323
 msgid "The page people sign in on."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:331
+#: backend/i18n/frontend-strings.php:325
 msgid "Login page URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:333
+#: backend/i18n/frontend-strings.php:327
 msgid "The page people create an account on. Leave empty to reuse the login page."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:335
+#: backend/i18n/frontend-strings.php:329
 msgid "Registration page URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:337
+#: backend/i18n/frontend-strings.php:331
 msgid "The name and logo the portal shows visitors, and where the logo takes them."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:339
+#: backend/i18n/frontend-strings.php:333
 msgid "Used for the browser tab, the meta title and the name emails are sent under. It usually reads best as your site title."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:341
+#: backend/i18n/frontend-strings.php:335
 msgid "Portal title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:343
+#: backend/i18n/frontend-strings.php:337
 msgid "e.g. Acme Community"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:345
+#: backend/i18n/frontend-strings.php:339
 msgid "Shown in the portal header. A wide, transparent image reads best — around 480 × 120, or 4:1."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:347
+#: backend/i18n/frontend-strings.php:341
 msgid "Logo"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:349
+#: backend/i18n/frontend-strings.php:343
 msgid "Site logo preview"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:351
+#: backend/i18n/frontend-strings.php:345
 msgid "Where clicking the logo takes a visitor."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:353
+#: backend/i18n/frontend-strings.php:347
 msgid "Logo link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:355
+#: backend/i18n/frontend-strings.php:349
 msgid "Portal home"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:357
+#: backend/i18n/frontend-strings.php:351
 msgid "Custom URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:359
+#: backend/i18n/frontend-strings.php:353
 msgid "Choose an image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:361
+#: backend/i18n/frontend-strings.php:355
 msgid "Remove image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:363
+#: backend/i18n/frontend-strings.php:357
 msgid "Replace"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:365
+#: backend/i18n/frontend-strings.php:359
 msgid "The community is now your homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:367
+#: backend/i18n/frontend-strings.php:361
 msgid "The community is back on its own page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:369
+#: backend/i18n/frontend-strings.php:363
 msgid "Could not change the community address"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:372
+#: backend/i18n/frontend-strings.php:366
 #, php-format
 msgid "Create a page with the slug \"%s\" and the shortcode in it, then try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:374
+#: backend/i18n/frontend-strings.php:368
 msgid "Add the shortcode to a page and publish it, then try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:376
+#: backend/i18n/frontend-strings.php:370
 msgid "There is no community page yet"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:378
+#: backend/i18n/frontend-strings.php:372
 msgid "Your current homepage is replaced by the community, and topic links change from /slug/topic to /topic. Links people already shared will stop working."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:380
+#: backend/i18n/frontend-strings.php:374
 msgid "The community goes back to yoursite.com/slug and topic links change again. Your homepage returns to the default WordPress posts page."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:382
+#: backend/i18n/frontend-strings.php:376
 msgid "Yes, make it my homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:384
+#: backend/i18n/frontend-strings.php:378
 msgid "Yes, move it back"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:386
+#: backend/i18n/frontend-strings.php:380
 msgid "Show the community as your homepage?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:388
+#: backend/i18n/frontend-strings.php:382
 msgid "Move the community back to its own page?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:390
+#: backend/i18n/frontend-strings.php:384
 msgid "Homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:392
+#: backend/i18n/frontend-strings.php:386
 msgid "Own page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:394
+#: backend/i18n/frontend-strings.php:388
 msgid "Not set up"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:396
+#: backend/i18n/frontend-strings.php:390
 msgid "Your community is at"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:398
+#: backend/i18n/frontend-strings.php:392
 msgid "Edit this page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:400
+#: backend/i18n/frontend-strings.php:394
 msgid "The web address where people find your community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:402
+#: backend/i18n/frontend-strings.php:396
 msgid "Community address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:404
+#: backend/i18n/frontend-strings.php:398
 msgid "No published page at this address — create one with the shortcode in it, or change the slug below."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:406
+#: backend/i18n/frontend-strings.php:400
 msgid "No page yet — add the shortcode below to a page and publish it to start the community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:408
+#: backend/i18n/frontend-strings.php:402
 msgid "Your homepage is not the community page — pick it in Settings → Reading, or turn off \"Show as homepage\"."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:410
+#: backend/i18n/frontend-strings.php:404
 msgid "Not used while the community is your homepage."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:412
+#: backend/i18n/frontend-strings.php:406
 msgid "The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that contains the shortcode. Changing it changes every topic link."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:414
+#: backend/i18n/frontend-strings.php:408
 msgid "Address slug"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:416
+#: backend/i18n/frontend-strings.php:410
 msgid "e.g. community"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:418
+#: backend/i18n/frontend-strings.php:412
 msgid "This page does not contain the [bit-connect] shortcode, so the community will not show on it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:420
+#: backend/i18n/frontend-strings.php:414
 msgid "Show the community at yoursite.com instead of yoursite.com/slug. It replaces your current homepage — best for a site that is only the community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:422
+#: backend/i18n/frontend-strings.php:416
 msgid "Show as homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:424
+#: backend/i18n/frontend-strings.php:418
 msgid "Saves right away"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:426
+#: backend/i18n/frontend-strings.php:420
 msgid "Needs the page first"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:428
+#: backend/i18n/frontend-strings.php:422
 msgid "Put this on any WordPress page to show the community there. If you have no community page yet, the page you publish with it becomes the community page."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:430
+#: backend/i18n/frontend-strings.php:424
 msgid "Shortcode"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:432
+#: backend/i18n/frontend-strings.php:426
 msgid "Every field is empty, so no card is shown."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:434
+#: backend/i18n/frontend-strings.php:428
 msgid "The last line is typed out one phrase at a time."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:436
+#: backend/i18n/frontend-strings.php:430
 msgid "Shown at the foot of the portal sidebar."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:438
+#: backend/i18n/frontend-strings.php:432
 msgid "Show the card"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:440
+#: backend/i18n/frontend-strings.php:434
 msgid "A small card at the foot of the portal sidebar: a headline, a rotating line of text, and a link. Off by default — it appears on your public pages, so it is your call."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:442
+#: backend/i18n/frontend-strings.php:436
 msgid "Sidebar promo card"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:444
+#: backend/i18n/frontend-strings.php:438
 msgid "Every line is yours to write, and any you leave empty is simply left off the card. Fill in none of them and no card is shown."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:446
+#: backend/i18n/frontend-strings.php:440
 msgid "Top line"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:448
+#: backend/i18n/frontend-strings.php:442
 msgid "e.g. A Bit Apps product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:450
+#: backend/i18n/frontend-strings.php:444
 msgid "Headline"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:452
+#: backend/i18n/frontend-strings.php:446
 msgid "e.g. Built with Bit Connect"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:454
+#: backend/i18n/frontend-strings.php:448
 msgid "Stays put while the phrases below are typed out after it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:456
+#: backend/i18n/frontend-strings.php:450
 msgid "Text before the rotating line"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:458
+#: backend/i18n/frontend-strings.php:452
 msgid "e.g. We also build"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:460
+#: backend/i18n/frontend-strings.php:454
 msgid "One phrase per line, typed out in turn. Up to 10, and short ones read best in a narrow sidebar."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:462
+#: backend/i18n/frontend-strings.php:456
 msgid "Rotating text"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:464
+#: backend/i18n/frontend-strings.php:458
 msgid "e.g. smart WordPress forms"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:466
+#: backend/i18n/frontend-strings.php:460
 msgid "no-code automations"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:468
+#: backend/i18n/frontend-strings.php:462
 msgid "communities like this"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:470
+#: backend/i18n/frontend-strings.php:464
 msgid "Link label"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:472
+#: backend/i18n/frontend-strings.php:466
 msgid "e.g. Explore our plugins"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:474
+#: backend/i18n/frontend-strings.php:468
 msgid "Opened in a new tab. Without one the card is plain text rather than a link."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:476
+#: backend/i18n/frontend-strings.php:470
 msgid "Link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:478
+#: backend/i18n/frontend-strings.php:472
 msgid "The card is hidden. Turn it on to write what it says."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:480
+#: backend/i18n/frontend-strings.php:474
 msgid "Checking…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:482
+#: backend/i18n/frontend-strings.php:476
 msgid "This is already your community page."
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:485
+#: backend/i18n/frontend-strings.php:479
 #, php-format
 msgid "A page already exists at %s. Please choose another name."
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:488
+#: backend/i18n/frontend-strings.php:482
 #, php-format
 msgid "%s is available. Your community page will be created here."
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:491
+#: backend/i18n/frontend-strings.php:485
 #, php-format
 msgid "There is no page at %s yet. Create one with the shortcode in it, or rename your community page to this slug."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:493
+#: backend/i18n/frontend-strings.php:487
 msgid "A page exists here, but it does not contain the [bit-connect] shortcode yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:495
+#: backend/i18n/frontend-strings.php:489
 msgid "This is your community page."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:497
+#: backend/i18n/frontend-strings.php:491
 msgid "A page with the shortcode is ready here."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:499
+#: backend/i18n/frontend-strings.php:493
 msgid "Loading"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:501
+#: backend/i18n/frontend-strings.php:495
 msgid "Dashboard"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:503
+#: backend/i18n/frontend-strings.php:497
 msgid "Stages"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:505
+#: backend/i18n/frontend-strings.php:499
 msgid "Topic Types"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:507
+#: backend/i18n/frontend-strings.php:501
 msgid "Products"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:509
+#: backend/i18n/frontend-strings.php:503
 msgid "Status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:511
+#: backend/i18n/frontend-strings.php:505
 msgid "Manager"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:513
+#: backend/i18n/frontend-strings.php:507
 msgid "Reports"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:515
+#: backend/i18n/frontend-strings.php:509
 msgid "Notifications"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:517
+#: backend/i18n/frontend-strings.php:511
 msgid "SEO"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:523
+#: backend/i18n/frontend-strings.php:517
 msgid "Product by Bit Apps"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:525
+#: backend/i18n/frontend-strings.php:519
 msgid "Failed to reset capabilities"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:527
+#: backend/i18n/frontend-strings.php:521
 msgid "Capabilities reset to role defaults"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:529
+#: backend/i18n/frontend-strings.php:523
 msgid "Failed to update capabilities"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:531
+#: backend/i18n/frontend-strings.php:525
 msgid "Capabilities updated"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:533
+#: backend/i18n/frontend-strings.php:527
 msgid "Manage Users"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:535
+#: backend/i18n/frontend-strings.php:529
 msgid "View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:537
+#: backend/i18n/frontend-strings.php:531
 msgid "View all WordPress users and see the forum capabilities each one holds. Use Role Capabilities to set them per role."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:539
+#: backend/i18n/frontend-strings.php:533
 msgid "Profile Badges"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:541
+#: backend/i18n/frontend-strings.php:535
 msgid "Role Capabilities"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:543
+#: backend/i18n/frontend-strings.php:537
 msgid "Search by name, email or username…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:545
+#: backend/i18n/frontend-strings.php:539
 msgid "No users found."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:547
+#: backend/i18n/frontend-strings.php:541
 msgid "User"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:549
+#: backend/i18n/frontend-strings.php:543
 msgid "Email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:551
+#: backend/i18n/frontend-strings.php:545
 msgid "Roles"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:553
+#: backend/i18n/frontend-strings.php:547
 msgid "Badges"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:555
+#: backend/i18n/frontend-strings.php:549
 msgid "Capabilities"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:557
+#: backend/i18n/frontend-strings.php:551
 msgid "No role"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:559
+#: backend/i18n/frontend-strings.php:553
 msgid "Set by role, on the Role Capabilities screen."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:561
+#: backend/i18n/frontend-strings.php:555
 msgid "Capabilities, set by role"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:563
-msgid "Developer"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:565
-msgid "Group Expert"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:567
-msgid "Name your people beyond what their permissions make them — Developer, Support, Group Expert — and hand the badges out per member."
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:569
-msgid "For example"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:571
-msgid "Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum."
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:573
+#: backend/i18n/frontend-strings.php:557
 msgid "Posts"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:575
+#: backend/i18n/frontend-strings.php:559
 msgid "Voting"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:577
+#: backend/i18n/frontend-strings.php:561
 msgid "Other People’s Content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:579
+#: backend/i18n/frontend-strings.php:563
 msgid "Moderation & Admin"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:581
+#: backend/i18n/frontend-strings.php:565
 msgid "Forum Capabilities by Role"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:583
+#: backend/i18n/frontend-strings.php:567
 msgid "Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:585
+#: backend/i18n/frontend-strings.php:569
 msgid "Could not save notification settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:587
+#: backend/i18n/frontend-strings.php:571
 msgid "Notification settings saved"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:589
+#: backend/i18n/frontend-strings.php:573
 msgid "WordPress could not send the message. Check this site's email configuration."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:591
+#: backend/i18n/frontend-strings.php:575
 msgid "Test email sent to"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:593
+#: backend/i18n/frontend-strings.php:577
 msgid "Test email sent"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:595
+#: backend/i18n/frontend-strings.php:579
 msgid "When batched email goes out, for members who have not chosen for themselves."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:597
+#: backend/i18n/frontend-strings.php:581
 msgid "Digest schedule"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:599
+#: backend/i18n/frontend-strings.php:583
 msgid "Default email frequency"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:601
+#: backend/i18n/frontend-strings.php:585
 msgid "Digest send hour"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:603
+#: backend/i18n/frontend-strings.php:587
 msgid "Who forum email appears to come from."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:605
+#: backend/i18n/frontend-strings.php:589
 msgid "Email delivery"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:607
+#: backend/i18n/frontend-strings.php:591
 msgid "Notifications are sent as"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:609
+#: backend/i18n/frontend-strings.php:593
 msgid "Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:611
+#: backend/i18n/frontend-strings.php:595
 msgid "Send test email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:613
+#: backend/i18n/frontend-strings.php:597
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:615
+#: backend/i18n/frontend-strings.php:599
 msgid "Greeting"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:617
+#: backend/i18n/frontend-strings.php:601
 msgid "Instant email intro"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:619
+#: backend/i18n/frontend-strings.php:603
 msgid "Digest intro"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:621
+#: backend/i18n/frontend-strings.php:605
 msgid "Sign-off"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:623
+#: backend/i18n/frontend-strings.php:607
 msgid "The wording around the list of what happened."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:625
+#: backend/i18n/frontend-strings.php:609
 msgid "Email wording"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:627
+#: backend/i18n/frontend-strings.php:611
 msgid "Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:629
+#: backend/i18n/frontend-strings.php:613
 msgid "Notification settings could not be loaded."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:631
+#: backend/i18n/frontend-strings.php:615
 msgid "The master switch. Off, the forum writes no notifications and sends no email at all."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:633
+#: backend/i18n/frontend-strings.php:617
 msgid "Notifications are on"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:635
+#: backend/i18n/frontend-strings.php:619
 msgid "Notifications are off for everyone"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:637
+#: backend/i18n/frontend-strings.php:621
 msgid "Defaults apply to members who have never opened their own settings. Turn off \"Member may change\" to make your answer final for everyone."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:639
+#: backend/i18n/frontend-strings.php:623
 msgid "What the forum sends"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:641
+#: backend/i18n/frontend-strings.php:625
 msgid "Notification"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:643
+#: backend/i18n/frontend-strings.php:627
 msgid "In app"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:645
+#: backend/i18n/frontend-strings.php:629
 msgid "Member may change"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:647
+#: backend/i18n/frontend-strings.php:631
 msgid "This is always delivered in the app."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:649
+#: backend/i18n/frontend-strings.php:633
 msgid "Only moderators receive this, so there is nothing for a member to change."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:651
+#: backend/i18n/frontend-strings.php:635
 msgid "How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:653
+#: backend/i18n/frontend-strings.php:637
 msgid "Housekeeping"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:655
+#: backend/i18n/frontend-strings.php:639
 msgid "Keep read notifications for"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:657
+#: backend/i18n/frontend-strings.php:641
 msgid "days"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:659
+#: backend/i18n/frontend-strings.php:643
 msgid "Slug & URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:661
+#: backend/i18n/frontend-strings.php:645
 msgid "Portal"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:663
+#: backend/i18n/frontend-strings.php:647
 msgid "Title & logo"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:665
+#: backend/i18n/frontend-strings.php:649
 msgid "Login settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:667
+#: backend/i18n/frontend-strings.php:651
 msgid "Auth"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:669
+#: backend/i18n/frontend-strings.php:653
 msgid "Welcome to Bit Connect"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:671
+#: backend/i18n/frontend-strings.php:655
 msgid "Let's set up your community portal in a few steps."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:673
+#: backend/i18n/frontend-strings.php:657
 msgid "Authentication"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:675
+#: backend/i18n/frontend-strings.php:659
 msgid "Choose how users will log in and register on your portal."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:677
+#: backend/i18n/frontend-strings.php:661
 msgid "Auth Mode"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:679
+#: backend/i18n/frontend-strings.php:663
 msgid "Plugin Default"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:681
+#: backend/i18n/frontend-strings.php:665
 msgid "Login Page Title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:683
+#: backend/i18n/frontend-strings.php:667
 msgid "Welcome back!"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:685
+#: backend/i18n/frontend-strings.php:669
 msgid "Login Page Description"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:687
+#: backend/i18n/frontend-strings.php:671
 msgid "Sign in to continue"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:689
+#: backend/i18n/frontend-strings.php:673
 msgid "Require Email Verification"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:691
+#: backend/i18n/frontend-strings.php:675
 msgid "Custom Login URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:693
+#: backend/i18n/frontend-strings.php:677
 msgid "Custom Registration URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:695
+#: backend/i18n/frontend-strings.php:679
 msgid "Back"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:697
+#: backend/i18n/frontend-strings.php:681
 msgid "Finish Setup"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:699
+#: backend/i18n/frontend-strings.php:683
 msgid "Branding & Access"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:701
+#: backend/i18n/frontend-strings.php:685
 msgid "Set your community title, logo, and who can access the portal."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:703
+#: backend/i18n/frontend-strings.php:687
 msgid "Community Title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:705
+#: backend/i18n/frontend-strings.php:689
 msgid "My Community"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:707
+#: backend/i18n/frontend-strings.php:691
 msgid "Upload"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:709
+#: backend/i18n/frontend-strings.php:693
 msgid "https://example.com/logo.png"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:711
+#: backend/i18n/frontend-strings.php:695
 msgid "Logo Link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:713
+#: backend/i18n/frontend-strings.php:697
 msgid "Default (portal home)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:715
+#: backend/i18n/frontend-strings.php:699
 msgid "Portal Access"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:717
+#: backend/i18n/frontend-strings.php:701
 msgid "Next"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:719
+#: backend/i18n/frontend-strings.php:703
 msgid "Could not create the page. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:721
+#: backend/i18n/frontend-strings.php:705
 msgid "The page was created, but it could not be set as your homepage. You can turn that on later in Settings."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:723
+#: backend/i18n/frontend-strings.php:707
 msgid "Where should your community live?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:725
+#: backend/i18n/frontend-strings.php:709
 msgid "We will create a page for it. You can change this later in Settings."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:727
+#: backend/i18n/frontend-strings.php:711
 msgid "On its own page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:729
+#: backend/i18n/frontend-strings.php:713
 msgid "yoursite.com/community — the rest of your website stays as it is. Recommended."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:731
+#: backend/i18n/frontend-strings.php:715
 msgid "As the homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:733
+#: backend/i18n/frontend-strings.php:717
 msgid "yoursite.com — the community is the first thing visitors see."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:735
+#: backend/i18n/frontend-strings.php:719
 msgid "Your current homepage is replaced, and topic links use the site root (yoursite.com/topic-name). Best for a site that is only the community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:737
+#: backend/i18n/frontend-strings.php:721
 msgid "This replaces your homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:739
+#: backend/i18n/frontend-strings.php:723
 msgid "Page name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:741
+#: backend/i18n/frontend-strings.php:725
 msgid "Only used as the page name in WordPress — visitors see yoursite.com."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:743
+#: backend/i18n/frontend-strings.php:727
 msgid "Want to use your own page instead?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:745
+#: backend/i18n/frontend-strings.php:729
 msgid "Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:747
+#: backend/i18n/frontend-strings.php:731
 msgid "Skip"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:749
+#: backend/i18n/frontend-strings.php:733
 msgid "Create page and continue"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:751
+#: backend/i18n/frontend-strings.php:735
 msgid "Failed to delete department"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:753
+#: backend/i18n/frontend-strings.php:737
 msgid "Department deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:755
+#: backend/i18n/frontend-strings.php:739
 msgid "Product created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:757
+#: backend/i18n/frontend-strings.php:741
 msgid "Failed to update product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:759
+#: backend/i18n/frontend-strings.php:743
 msgid "Product updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:761
+#: backend/i18n/frontend-strings.php:745
 msgid "Manage your products here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:763
+#: backend/i18n/frontend-strings.php:747
 msgid "Add Product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:765
+#: backend/i18n/frontend-strings.php:749
 msgid "Create Product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:767
+#: backend/i18n/frontend-strings.php:751
 msgid "Save Changes"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:769
+#: backend/i18n/frontend-strings.php:753
 msgid "Edit Product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:771
+#: backend/i18n/frontend-strings.php:755
 msgid "Product Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:773
+#: backend/i18n/frontend-strings.php:757
 msgid "Are you sure to delete?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:775
+#: backend/i18n/frontend-strings.php:759
 msgid "Delete"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:777
+#: backend/i18n/frontend-strings.php:761
 msgid "Delete Product"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:779
+#: backend/i18n/frontend-strings.php:763
 msgid "Actions"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:783
+#: backend/i18n/frontend-strings.php:767
 msgid "Kept"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:785
+#: backend/i18n/frontend-strings.php:769
 msgid "Removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:789
+#: backend/i18n/frontend-strings.php:773
 msgid "items dismissed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:791
+#: backend/i18n/frontend-strings.php:775
 msgid "items awaiting review"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:793
+#: backend/i18n/frontend-strings.php:777
 msgid "items kept"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:795
+#: backend/i18n/frontend-strings.php:779
 msgid "items removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:797
+#: backend/i18n/frontend-strings.php:781
 msgid "No report has been dismissed yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:799
+#: backend/i18n/frontend-strings.php:783
 msgid "Nothing is waiting for review."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:801
+#: backend/i18n/frontend-strings.php:785
 msgid "No reported content has been kept yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:803
+#: backend/i18n/frontend-strings.php:787
 msgid "No reported content has been removed yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:805
+#: backend/i18n/frontend-strings.php:789
 msgid "Nothing here yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:807
+#: backend/i18n/frontend-strings.php:791
 msgid "Reports members file from the forum land here for a decision."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:809
+#: backend/i18n/frontend-strings.php:793
 msgid "Grouped by what was reported — several people reporting one item is one decision."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:811
+#: backend/i18n/frontend-strings.php:795
 msgid "items"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:813
+#: backend/i18n/frontend-strings.php:797
 msgid "The report queue could not be loaded."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:815
+#: backend/i18n/frontend-strings.php:799
 msgid "There are more reports than this screen reads at once. Work through these and reload."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:817
+#: backend/i18n/frontend-strings.php:801
 msgid "Showing part of the queue"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:819
+#: backend/i18n/frontend-strings.php:803
 msgid "dismissed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:821
+#: backend/i18n/frontend-strings.php:805
 msgid "kept"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:823
+#: backend/i18n/frontend-strings.php:807
 msgid "removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:825
+#: backend/i18n/frontend-strings.php:809
 msgid "The content was removed."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:827
+#: backend/i18n/frontend-strings.php:811
 msgid "The content is public again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:829
+#: backend/i18n/frontend-strings.php:813
 msgid "That could not be saved."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:831
+#: backend/i18n/frontend-strings.php:815
 msgid "(no content)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:833
+#: backend/i18n/frontend-strings.php:817
 msgid "already removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:835
+#: backend/i18n/frontend-strings.php:819
 msgid "Open in the forum"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:837
+#: backend/i18n/frontend-strings.php:821
 msgid "Written by"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:839
+#: backend/i18n/frontend-strings.php:823
 msgid "first reported"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:841
+#: backend/i18n/frontend-strings.php:825
 msgid "Why it was reported"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:843
+#: backend/i18n/frontend-strings.php:827
 msgid "What reporters wrote"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:845
+#: backend/i18n/frontend-strings.php:829
 msgid "Reported by"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:847
+#: backend/i18n/frontend-strings.php:831
 msgid "Note (optional) — kept on every report closed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:849
+#: backend/i18n/frontend-strings.php:833
 msgid "Keep content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:851
+#: backend/i18n/frontend-strings.php:835
 msgid "The reply and everything posted underneath it are deleted for good."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:853
+#: backend/i18n/frontend-strings.php:837
 msgid "The topic and its replies are deleted for good."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:855
+#: backend/i18n/frontend-strings.php:839
 msgid "Remove it"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:857
+#: backend/i18n/frontend-strings.php:841
 msgid "Delete this permanently?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:859
+#: backend/i18n/frontend-strings.php:843
 msgid "Remove content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:861
+#: backend/i18n/frontend-strings.php:845
 msgid "Dismiss"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:863
+#: backend/i18n/frontend-strings.php:847
 msgid "Author"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:865
+#: backend/i18n/frontend-strings.php:849
 msgid "Votes"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:867
+#: backend/i18n/frontend-strings.php:851
 msgid "Date"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:869
+#: backend/i18n/frontend-strings.php:853
 msgid "Recent Topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:871
+#: backend/i18n/frontend-strings.php:855
 msgid "Total Topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:873
+#: backend/i18n/frontend-strings.php:857
 msgid "Total Comments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:875
+#: backend/i18n/frontend-strings.php:859
 msgid "Total Members"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:877
+#: backend/i18n/frontend-strings.php:861
 msgid "Total Votes"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:879
+#: backend/i18n/frontend-strings.php:863
 msgid "Top Topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:881
+#: backend/i18n/frontend-strings.php:865
 msgid "No topics yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:883
+#: backend/i18n/frontend-strings.php:867
 msgid "Monthly Activity"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:885
+#: backend/i18n/frontend-strings.php:869
 msgid "Failed to update SEO settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:887
+#: backend/i18n/frontend-strings.php:871
 msgid "SEO settings updated"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:889
+#: backend/i18n/frontend-strings.php:873
 msgid "Departments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:891
+#: backend/i18n/frontend-strings.php:875
 msgid "Statuses"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:893
+#: backend/i18n/frontend-strings.php:877
 msgid "Topic types"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:895
+#: backend/i18n/frontend-strings.php:879
 msgid "{name}"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:897
+#: backend/i18n/frontend-strings.php:881
 msgid "A workflow state. Served so visitors can browse it, but left out of the index by default — nobody searches for \"in progress\", and the listing changes constantly."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:899
+#: backend/i18n/frontend-strings.php:883
 msgid "workflow"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:901
+#: backend/i18n/frontend-strings.php:885
 msgid "terms"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:903
+#: backend/i18n/frontend-strings.php:887
 msgid "Taxonomy"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:905
+#: backend/i18n/frontend-strings.php:889
 msgid "Serve the archive URL at all. Switching this off makes it a 404."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:907
+#: backend/i18n/frontend-strings.php:891
 msgid "Route"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:909
+#: backend/i18n/frontend-strings.php:893
 msgid "The route is switched off."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:911
+#: backend/i18n/frontend-strings.php:895
 msgid "Offer the archive to search engines rather than marking it noindex."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:913
+#: backend/i18n/frontend-strings.php:897
 msgid "Indexed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:915
+#: backend/i18n/frontend-strings.php:899
 msgid "Not indexed, so it is never listed — a sitemap asks for indexing."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:917
+#: backend/i18n/frontend-strings.php:901
 msgid "List this taxonomy’s archives in the sitemap."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:919
+#: backend/i18n/frontend-strings.php:903
 msgid "In sitemap"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:921
+#: backend/i18n/frontend-strings.php:905
 msgid "None detected"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:923
+#: backend/i18n/frontend-strings.php:907
 msgid "Current status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:925
+#: backend/i18n/frontend-strings.php:909
 msgid "The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:927
+#: backend/i18n/frontend-strings.php:911
 msgid "Portal is members-only"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:929
+#: backend/i18n/frontend-strings.php:913
 msgid "Search engines and AI crawlers cannot read the portal, because the content they receive is generated by the setting below."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:931
+#: backend/i18n/frontend-strings.php:915
 msgid "Content for crawlers is switched off"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:933
+#: backend/i18n/frontend-strings.php:917
 msgid "SEO plugin detected"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:935
+#: backend/i18n/frontend-strings.php:919
 msgid "It prints the portal tags, using our data"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:937
+#: backend/i18n/frontend-strings.php:921
 msgid "Bit Connect prints the portal tags"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:939
+#: backend/i18n/frontend-strings.php:923
 msgid "Portal URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:941
+#: backend/i18n/frontend-strings.php:925
 msgid "Sitemap"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:943
+#: backend/i18n/frontend-strings.php:927
 msgid "Published topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:945
+#: backend/i18n/frontend-strings.php:929
 msgid "Indexable archive pages"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:947
+#: backend/i18n/frontend-strings.php:931
 msgid "(no archives are indexable)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:949
+#: backend/i18n/frontend-strings.php:933
 msgid "Overview"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:951
+#: backend/i18n/frontend-strings.php:935
 msgid "The portal is a JavaScript app. Search engines and AI crawlers do not run it, so the server sends them plain HTML of the same content."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:953
+#: backend/i18n/frontend-strings.php:937
 msgid "Content for crawlers"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:955
+#: backend/i18n/frontend-strings.php:939
 msgid "Render topics, replies and archives as plain HTML. Switching this off makes the portal invisible to anything that does not run JavaScript."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:957
+#: backend/i18n/frontend-strings.php:941
 msgid "Server-rendered content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:959
+#: backend/i18n/frontend-strings.php:943
 msgid "Topics per rendered page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:961
+#: backend/i18n/frontend-strings.php:945
 msgid "How many topics appear in the server-rendered list. Higher values make each page heavier for every visitor; older topics stay reachable through the sitemap and the older/newer links."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:963
+#: backend/i18n/frontend-strings.php:947
 msgid "Crawling"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:965
+#: backend/i18n/frontend-strings.php:949
 msgid "Who prints the page title, canonical URL and social preview tags for portal routes."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:967
+#: backend/i18n/frontend-strings.php:951
 msgid "Meta tags"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:969
+#: backend/i18n/frontend-strings.php:953
 msgid "Automatic (recommended)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:971
+#: backend/i18n/frontend-strings.php:955
 msgid "If an SEO plugin is active it prints the tags, using the portal data Bit Connect feeds it. Otherwise Bit Connect prints them."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:973
+#: backend/i18n/frontend-strings.php:957
 msgid "Always Bit Connect"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:975
+#: backend/i18n/frontend-strings.php:959
 msgid "Bit Connect prints the tags even when an SEO plugin is active. Use this if your SEO plugin is producing wrong tags on portal pages."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:977
+#: backend/i18n/frontend-strings.php:961
 msgid "Always my SEO plugin"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:979
+#: backend/i18n/frontend-strings.php:963
 msgid "Bit Connect prints no tags of its own. If no supported SEO plugin is active, portal routes get no title or canonical at all."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:981
+#: backend/i18n/frontend-strings.php:965
 msgid "Machine-readable descriptions that let search engines show richer results for discussions."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:983
+#: backend/i18n/frontend-strings.php:967
 msgid "Structured data"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:985
+#: backend/i18n/frontend-strings.php:969
 msgid "Describe topics as forum discussions with their author, dates and replies, and lists as collections."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:987
+#: backend/i18n/frontend-strings.php:971
 msgid "Discussion and collection schema"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:989
+#: backend/i18n/frontend-strings.php:973
 msgid "Show the community as the parent of each topic and archive in search results."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:991
+#: backend/i18n/frontend-strings.php:975
 msgid "Breadcrumb schema"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:993
+#: backend/i18n/frontend-strings.php:977
 msgid "Meta & schema"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:995
+#: backend/i18n/frontend-strings.php:979
 msgid "A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each row is one taxonomy: whether its archive is served, whether search engines may index it, and whether the sitemap lists it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:997
+#: backend/i18n/frontend-strings.php:981
 msgid "Term archives"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:999
+#: backend/i18n/frontend-strings.php:983
 msgid "Archives"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1001
+#: backend/i18n/frontend-strings.php:985
 msgid "These routes always work for visitors. Indexing them puts thin, near-identical pages in front of the topics they link to, so they are excluded by default."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1003
+#: backend/i18n/frontend-strings.php:987
 msgid "What search engines may index"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1005
+#: backend/i18n/frontend-strings.php:989
 msgid "Member profile pages. These are thin and similar to one another, and indexing them publishes member names and activity."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1007
+#: backend/i18n/frontend-strings.php:991
 msgid "Index member profiles"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1009
+#: backend/i18n/frontend-strings.php:993
 msgid "Pages 2, 3, … of the topic list. They exist so crawlers can reach older topics, not to rank themselves."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1011
+#: backend/i18n/frontend-strings.php:995
 msgid "Index paginated list pages"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1013
+#: backend/i18n/frontend-strings.php:997
 msgid "Indexing"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1015
+#: backend/i18n/frontend-strings.php:999
 msgid "How search engines discover the portal, including topics no page links to directly. Archive inclusion is set per taxonomy on the Archives tab."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1017
+#: backend/i18n/frontend-strings.php:1001
 msgid "Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1019
+#: backend/i18n/frontend-strings.php:1003
 msgid "Portal sitemap"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1021
+#: backend/i18n/frontend-strings.php:1005
 msgid "Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1023
+#: backend/i18n/frontend-strings.php:1007
 msgid "Announce in robots.txt"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1025
+#: backend/i18n/frontend-strings.php:1009
 msgid "List the portal landing page as the entry point of the community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1027
+#: backend/i18n/frontend-strings.php:1011
 msgid "Include portal home"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1029
+#: backend/i18n/frontend-strings.php:1013
 msgid "List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1031
+#: backend/i18n/frontend-strings.php:1015
 msgid "Include topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1033
+#: backend/i18n/frontend-strings.php:1017
 msgid "URLs per sitemap page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1035
+#: backend/i18n/frontend-strings.php:1019
 msgid "Large communities are split across several sitemap pages. The sitemap standard allows up to 50,000 URLs per page; smaller pages are lighter to generate."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1037
+#: backend/i18n/frontend-strings.php:1021
 msgid "How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1039
+#: backend/i18n/frontend-strings.php:1023
 msgid "Failed to update settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1041
+#: backend/i18n/frontend-strings.php:1025
 msgid "Settings updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1043
+#: backend/i18n/frontend-strings.php:1027
 msgid "Moderation"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1045
+#: backend/i18n/frontend-strings.php:1029
 msgid "Control what happens to reported content before a moderator has looked at it"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1047
+#: backend/i18n/frontend-strings.php:1031
 msgid "Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1049
+#: backend/i18n/frontend-strings.php:1033
 msgid "Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1051
+#: backend/i18n/frontend-strings.php:1035
 msgid "WordPress Media Limits"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1053
+#: backend/i18n/frontend-strings.php:1037
 msgid "These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1055
+#: backend/i18n/frontend-strings.php:1039
 msgid "Max upload size"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1057
+#: backend/i18n/frontend-strings.php:1041
 msgid "(set by server php.ini via wp_max_upload_size)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1059
+#: backend/i18n/frontend-strings.php:1043
 msgid "Max image dimensions"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1061
+#: backend/i18n/frontend-strings.php:1045
 msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1063
+#: backend/i18n/frontend-strings.php:1047
 msgid "Allowed file types"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1065
+#: backend/i18n/frontend-strings.php:1049
 msgid "On/off your Topic Upvote"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1067
+#: backend/i18n/frontend-strings.php:1051
 msgid "Upvote"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1069
+#: backend/i18n/frontend-strings.php:1053
 msgid "On/off your Comment"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1071
+#: backend/i18n/frontend-strings.php:1055
 msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1073
+#: backend/i18n/frontend-strings.php:1057
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1075
+#: backend/i18n/frontend-strings.php:1059
 msgid "Show and require Topic Type when creating a topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1077
+#: backend/i18n/frontend-strings.php:1061
 msgid "Require Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1079
+#: backend/i18n/frontend-strings.php:1063
 msgid "Show and require Products/Department when creating a topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1081
+#: backend/i18n/frontend-strings.php:1065
 msgid "Require Products/Department"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1083
+#: backend/i18n/frontend-strings.php:1067
 msgid "Choose what members can do on a topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1085
+#: backend/i18n/frontend-strings.php:1069
 msgid "Topic Access Settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1087
+#: backend/i18n/frontend-strings.php:1071
 msgid "Control which fields are shown and required when creating a topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1089
+#: backend/i18n/frontend-strings.php:1073
 msgid "Topic Form Fields"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1091
+#: backend/i18n/frontend-strings.php:1075
 msgid "Manage what data is removed when the plugin is uninstalled"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1093
+#: backend/i18n/frontend-strings.php:1077
 msgid "Data Cleanup"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1095
+#: backend/i18n/frontend-strings.php:1079
 msgid "Please enter a valid Custom Login Page URL, for example https://example.com/login"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1097
+#: backend/i18n/frontend-strings.php:1081
 msgid "Please enter a valid Custom Registration Page URL, for example https://example.com/register"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1099
+#: backend/i18n/frontend-strings.php:1083
 msgid "Failed to delete stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1101
+#: backend/i18n/frontend-strings.php:1085
 msgid "Stage deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1103
+#: backend/i18n/frontend-strings.php:1087
 msgid "Stage created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1105
+#: backend/i18n/frontend-strings.php:1089
 msgid "Failed to update stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1107
+#: backend/i18n/frontend-strings.php:1091
 msgid "Stage updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1109
+#: backend/i18n/frontend-strings.php:1093
 msgid "Edit Stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1111
+#: backend/i18n/frontend-strings.php:1095
 msgid "Create Stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1113
+#: backend/i18n/frontend-strings.php:1097
 msgid "Stage Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1115
+#: backend/i18n/frontend-strings.php:1099
 msgid "Stage name is required"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1117
+#: backend/i18n/frontend-strings.php:1101
 msgid "Enter stage name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1119
+#: backend/i18n/frontend-strings.php:1103
 msgid "Enter stage description (optional)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1121
+#: backend/i18n/frontend-strings.php:1105
 msgid "Icon (light mode)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1123
+#: backend/i18n/frontend-strings.php:1107
 msgid "Stage icon"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1125
+#: backend/i18n/frontend-strings.php:1109
 msgid "Icon (dark mode)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1127
+#: backend/i18n/frontend-strings.php:1111
 msgid "Stage icon for dark mode"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1129
+#: backend/i18n/frontend-strings.php:1113
 msgid "No description"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1131
+#: backend/i18n/frontend-strings.php:1115
 msgid "Icon"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1133
+#: backend/i18n/frontend-strings.php:1117
 msgid "Edit stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1135
+#: backend/i18n/frontend-strings.php:1119
 msgid "Delete Stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1137
+#: backend/i18n/frontend-strings.php:1121
 msgid "Delete stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1139
+#: backend/i18n/frontend-strings.php:1123
 msgid "Stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1141
+#: backend/i18n/frontend-strings.php:1125
 msgid "Manage stages for your project"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1143
+#: backend/i18n/frontend-strings.php:1127
 msgid "Failed to delete status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1145
+#: backend/i18n/frontend-strings.php:1129
 msgid "Status deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1147
+#: backend/i18n/frontend-strings.php:1131
 msgid "Status created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1149
+#: backend/i18n/frontend-strings.php:1133
 msgid "Failed to update status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1151
+#: backend/i18n/frontend-strings.php:1135
 msgid "Status updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1153
+#: backend/i18n/frontend-strings.php:1137
 msgid "Manage status to organize your content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1155
+#: backend/i18n/frontend-strings.php:1139
 msgid "Add Status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1157
+#: backend/i18n/frontend-strings.php:1141
 msgid "Create"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1159
+#: backend/i18n/frontend-strings.php:1143
 msgid "Create Status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1161
+#: backend/i18n/frontend-strings.php:1145
 msgid "Edit Status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1163
+#: backend/i18n/frontend-strings.php:1147
 msgid "Status Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1165
+#: backend/i18n/frontend-strings.php:1149
 msgid "Write a status here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1167
+#: backend/i18n/frontend-strings.php:1151
 msgid "Color"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1169
+#: backend/i18n/frontend-strings.php:1153
 msgid "Status icon"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1171
+#: backend/i18n/frontend-strings.php:1155
 msgid "Status icon for dark mode"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1173
+#: backend/i18n/frontend-strings.php:1157
 msgid "(For Admin)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1175
+#: backend/i18n/frontend-strings.php:1159
 msgid "Write a description here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1177
+#: backend/i18n/frontend-strings.php:1161
 msgid "Default"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1179
+#: backend/i18n/frontend-strings.php:1163
 msgid "No color"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1181
+#: backend/i18n/frontend-strings.php:1165
 msgid "Delete Status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1183
+#: backend/i18n/frontend-strings.php:1167
 msgid "Version"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1185
+#: backend/i18n/frontend-strings.php:1169
 msgid "Installed version"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1187
+#: backend/i18n/frontend-strings.php:1171
 msgid "Looking for more? Bit Connect Pro is a separate add-on."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1189
+#: backend/i18n/frontend-strings.php:1173
 msgid "Get Bit Connect Pro"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1191
+#: backend/i18n/frontend-strings.php:1175
 msgid "About"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1193
+#: backend/i18n/frontend-strings.php:1177
 msgid "Failed to delete tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1195
+#: backend/i18n/frontend-strings.php:1179
 msgid "Tag deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1197
+#: backend/i18n/frontend-strings.php:1181
 msgid "Tag created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1199
+#: backend/i18n/frontend-strings.php:1183
 msgid "Failed to update tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1201
+#: backend/i18n/frontend-strings.php:1185
 msgid "Tag updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1203
+#: backend/i18n/frontend-strings.php:1187
 msgid "Manage tags to organize your content"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1205
+#: backend/i18n/frontend-strings.php:1189
 msgid "Create Tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1207
+#: backend/i18n/frontend-strings.php:1191
 msgid "Edit Tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1209
+#: backend/i18n/frontend-strings.php:1193
 msgid "Tag Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1211
+#: backend/i18n/frontend-strings.php:1195
 msgid "Tag name is required"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1213
+#: backend/i18n/frontend-strings.php:1197
 msgid "Enter tag name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1215
+#: backend/i18n/frontend-strings.php:1199
 msgid "Enter description"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1217
+#: backend/i18n/frontend-strings.php:1201
 msgid "Edit tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1219
+#: backend/i18n/frontend-strings.php:1203
 msgid "Delete Tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1221
+#: backend/i18n/frontend-strings.php:1205
 msgid "Delete tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1223
+#: backend/i18n/frontend-strings.php:1207
 msgid "Failed to delete topic type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1225
+#: backend/i18n/frontend-strings.php:1209
 msgid "Topic type deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1227
+#: backend/i18n/frontend-strings.php:1211
 msgid "Topic type created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1229
+#: backend/i18n/frontend-strings.php:1213
 msgid "Failed to update topic type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1231
+#: backend/i18n/frontend-strings.php:1215
 msgid "Topic type updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1233
+#: backend/i18n/frontend-strings.php:1217
 msgid "Manage your topic types here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1235
+#: backend/i18n/frontend-strings.php:1219
 msgid "Add Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1237
+#: backend/i18n/frontend-strings.php:1221
 msgid "Edit Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1239
+#: backend/i18n/frontend-strings.php:1223
 msgid "Topic Type Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1241
+#: backend/i18n/frontend-strings.php:1225
 msgid "Write Topic Title here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1243
+#: backend/i18n/frontend-strings.php:1227
 msgid "Write Description here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1245
+#: backend/i18n/frontend-strings.php:1229
 msgid "Topic type icon"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1247
+#: backend/i18n/frontend-strings.php:1231
 msgid "Topic type icon for dark mode"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1249
+#: backend/i18n/frontend-strings.php:1233
 msgid "Create Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1251
+#: backend/i18n/frontend-strings.php:1235
 msgid "Delete Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1253
+#: backend/i18n/frontend-strings.php:1237
 msgid "Word document"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1255
+#: backend/i18n/frontend-strings.php:1239
 msgid "GIF image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1257
+#: backend/i18n/frontend-strings.php:1241
 msgid "JPEG image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1259
+#: backend/i18n/frontend-strings.php:1243
 msgid "PDF document"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1261
+#: backend/i18n/frontend-strings.php:1245
 msgid "PNG image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1263
+#: backend/i18n/frontend-strings.php:1247
 msgid "WebP image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1265
+#: backend/i18n/frontend-strings.php:1249
 msgid "Maximum"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1267
+#: backend/i18n/frontend-strings.php:1251
 msgid "Only"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1269
+#: backend/i18n/frontend-strings.php:1253
 msgid "Add Files"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1271
+#: backend/i18n/frontend-strings.php:1255
 msgid "Processing…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1273
+#: backend/i18n/frontend-strings.php:1257
 msgid "Uploading"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1275
+#: backend/i18n/frontend-strings.php:1259
 msgid "Uploaded"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1277
+#: backend/i18n/frontend-strings.php:1261
 msgid "Retry"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1279
+#: backend/i18n/frontend-strings.php:1263
 msgid "Log in to join the conversation."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1281
+#: backend/i18n/frontend-strings.php:1265
 msgid "Create Account"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1283
+#: backend/i18n/frontend-strings.php:1267
 msgid "Login required"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1285
+#: backend/i18n/frontend-strings.php:1269
 msgid "You need to be logged in to perform this action. Please log in or create an account to continue."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1287
+#: backend/i18n/frontend-strings.php:1271
 msgid "Mark all read"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1289
+#: backend/i18n/frontend-strings.php:1273
 msgid "See all notifications"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1291
+#: backend/i18n/frontend-strings.php:1275
 msgid "unread"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1293
+#: backend/i18n/frontend-strings.php:1277
 msgid "You are all caught up"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1295
+#: backend/i18n/frontend-strings.php:1279
 msgid "Nothing yet"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1297
+#: backend/i18n/frontend-strings.php:1281
 msgid "New replies and mentions will appear here."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1299
+#: backend/i18n/frontend-strings.php:1283
 msgid "Replies, mentions and moderation decisions will show up here."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1301
+#: backend/i18n/frontend-strings.php:1285
 msgid "Instant"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1303
+#: backend/i18n/frontend-strings.php:1287
 msgid "Daily"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1305
+#: backend/i18n/frontend-strings.php:1289
 msgid "Weekly"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1307
+#: backend/i18n/frontend-strings.php:1291
 msgid "Never"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1309
+#: backend/i18n/frontend-strings.php:1293
 msgid "That could not be saved. Please check your connection and try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1311
+#: backend/i18n/frontend-strings.php:1295
 msgid "Your notification settings could not be loaded."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1313
+#: backend/i18n/frontend-strings.php:1297
 msgid "Email frequency"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1315
+#: backend/i18n/frontend-strings.php:1299
 msgid "How often email should arrive. This does not change what you are notified about — only when it is sent."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1317
+#: backend/i18n/frontend-strings.php:1301
 msgid "What you are notified about"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1319
+#: backend/i18n/frontend-strings.php:1303
 msgid "Changes save as you make them."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1321
+#: backend/i18n/frontend-strings.php:1305
 msgid "App"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1323
+#: backend/i18n/frontend-strings.php:1307
 msgid "This forum always tells you about this."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1325
+#: backend/i18n/frontend-strings.php:1309
 msgid "Your administrator has set this for everyone."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1327
+#: backend/i18n/frontend-strings.php:1311
 msgid "Email is switched off entirely, so the Email column has no effect until you choose a frequency above."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1329
+#: backend/i18n/frontend-strings.php:1313
 msgid "now"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1331
+#: backend/i18n/frontend-strings.php:1315
 msgid "The forum"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1337
+#: backend/i18n/frontend-strings.php:1321
 msgid "You were given the"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1339
+#: backend/i18n/frontend-strings.php:1323
 msgid "badge"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1341
+#: backend/i18n/frontend-strings.php:1325
 msgid "replied to you in"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1345
+#: backend/i18n/frontend-strings.php:1329
 msgid "mentioned you in"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1349
+#: backend/i18n/frontend-strings.php:1333
 msgid "A moderator reviewed something you reported"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1351
+#: backend/i18n/frontend-strings.php:1335
 msgid "posted a new topic:"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1353
+#: backend/i18n/frontend-strings.php:1337
 msgid "commented on"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1355
+#: backend/i18n/frontend-strings.php:1339
 msgid "The status changed on"
 msgstr ""
 
 #. translators: %d — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1358
+#: backend/i18n/frontend-strings.php:1342
 #, php-format
 msgid "%d people"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1360
+#: backend/i18n/frontend-strings.php:1344
 msgid "upvoted your post in"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1362
+#: backend/i18n/frontend-strings.php:1346
 msgid "No longer available"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1364
+#: backend/i18n/frontend-strings.php:1348
 msgid "You will be notified about new replies."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1366
+#: backend/i18n/frontend-strings.php:1350
 msgid "You will no longer be notified about this topic."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1368
+#: backend/i18n/frontend-strings.php:1352
 msgid "Could not change your follow setting."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1370
+#: backend/i18n/frontend-strings.php:1354
 msgid "You are following this because you took part."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1372
+#: backend/i18n/frontend-strings.php:1356
 msgid "You chose to follow this topic."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1374
+#: backend/i18n/frontend-strings.php:1358
 msgid "You muted this topic."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1376
+#: backend/i18n/frontend-strings.php:1360
 msgid "Notify me when someone replies."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1378
+#: backend/i18n/frontend-strings.php:1362
 msgid "Unfollow"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1380
+#: backend/i18n/frontend-strings.php:1364
 msgid "Follow"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1382
+#: backend/i18n/frontend-strings.php:1366
 msgid "opens in a new tab"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1384
+#: backend/i18n/frontend-strings.php:1368
 msgid "It is now hidden from the forum until a moderator has reviewed it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1388
+#: backend/i18n/frontend-strings.php:1372
 msgid "Your report could not be sent. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1390
+#: backend/i18n/frontend-strings.php:1374
 msgid "Send report"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1392
+#: backend/i18n/frontend-strings.php:1376
 msgid "Report this to a moderator"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1394
+#: backend/i18n/frontend-strings.php:1378
 msgid "The list of reasons could not be loaded, so this cannot be sent right now."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1396
+#: backend/i18n/frontend-strings.php:1380
 msgid "What is wrong with it?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1400
+#: backend/i18n/frontend-strings.php:1384
 msgid "Share"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1402
+#: backend/i18n/frontend-strings.php:1386
 msgid "Share this reply"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1404
+#: backend/i18n/frontend-strings.php:1388
 msgid "Share this topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1406
+#: backend/i18n/frontend-strings.php:1390
 msgid "Links straight to this reply in"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1408
+#: backend/i18n/frontend-strings.php:1392
 msgid "Or copy the link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1410
+#: backend/i18n/frontend-strings.php:1394
 msgid "Link to share"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1412
+#: backend/i18n/frontend-strings.php:1396
 msgid "Copied"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1414
+#: backend/i18n/frontend-strings.php:1398
 msgid "More sharing options"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1417
+#: backend/i18n/frontend-strings.php:1401
 #, php-format
 msgid "Share on %s"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1419
+#: backend/i18n/frontend-strings.php:1403
 msgid "Could not save the topic. Please check your connection and try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1421
+#: backend/i18n/frontend-strings.php:1405
 msgid "Topic created successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1423
+#: backend/i18n/frontend-strings.php:1407
 msgid "Could not update topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1425
+#: backend/i18n/frontend-strings.php:1409
 msgid "Topic updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1427
+#: backend/i18n/frontend-strings.php:1411
 msgid "Public Topic"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1430
+#: backend/i18n/frontend-strings.php:1414
 #, php-format
 msgid "The link you chose was already taken, so this topic is at /%s"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1432
+#: backend/i18n/frontend-strings.php:1416
 msgid "Edit permalink"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1434
+#: backend/i18n/frontend-strings.php:1418
 msgid "Set a custom permalink"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1436
+#: backend/i18n/frontend-strings.php:1420
 msgid "topic-slug"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1438
+#: backend/i18n/frontend-strings.php:1422
 msgid "Links that already point at this topic will stop working."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1440
+#: backend/i18n/frontend-strings.php:1424
 msgid "Letters, numbers and hyphens. Leave blank to build one from the title."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1442
+#: backend/i18n/frontend-strings.php:1426
 msgid "Done"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1444
+#: backend/i18n/frontend-strings.php:1428
 msgid "Checking availability…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1446
+#: backend/i18n/frontend-strings.php:1430
 msgid "Available"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1448
+#: backend/i18n/frontend-strings.php:1432
 msgid "Already taken — this topic will be saved as"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1450
+#: backend/i18n/frontend-strings.php:1434
 msgid "Uploading files..."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1452
+#: backend/i18n/frontend-strings.php:1436
 msgid "Submit"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1454
+#: backend/i18n/frontend-strings.php:1438
 msgid "Create New Topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1456
+#: backend/i18n/frontend-strings.php:1440
 msgid "Update"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1458
+#: backend/i18n/frontend-strings.php:1442
 msgid "Edit Topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1460
+#: backend/i18n/frontend-strings.php:1444
 msgid "Failed to upload image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1462
+#: backend/i18n/frontend-strings.php:1446
 msgid "Topic Title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1464
+#: backend/i18n/frontend-strings.php:1448
 msgid "Please enter a topic title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1466
+#: backend/i18n/frontend-strings.php:1450
 msgid "Topic title cannot exceed 200 characters"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1468
+#: backend/i18n/frontend-strings.php:1452
 msgid "Write a post title"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1470
+#: backend/i18n/frontend-strings.php:1454
 msgid "Permalink"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1472
+#: backend/i18n/frontend-strings.php:1456
 msgid "Slug cannot exceed 200 characters"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1474
+#: backend/i18n/frontend-strings.php:1458
 msgid "Slug must contain at least one letter or number"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1476
+#: backend/i18n/frontend-strings.php:1460
 msgid "Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1478
+#: backend/i18n/frontend-strings.php:1462
 msgid "Please select a topic type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1480
+#: backend/i18n/frontend-strings.php:1464
 msgid "Select a Topic Type"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1482
+#: backend/i18n/frontend-strings.php:1466
 msgid "Products/Department"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1484
+#: backend/i18n/frontend-strings.php:1468
 msgid "Please select a department"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1486
+#: backend/i18n/frontend-strings.php:1470
 msgid "All Products/Department"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1488
+#: backend/i18n/frontend-strings.php:1472
 msgid "Write Your Topic Description Here"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1490
+#: backend/i18n/frontend-strings.php:1474
 msgid "Please enter a description or add an image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1492
+#: backend/i18n/frontend-strings.php:1476
 msgid "Description cannot exceed 10000 characters"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1494
+#: backend/i18n/frontend-strings.php:1478
 msgid "Write your topic description..."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1496
+#: backend/i18n/frontend-strings.php:1480
 msgid "Tag"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1498
+#: backend/i18n/frontend-strings.php:1482
 msgid "Select tags.."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1500
+#: backend/i18n/frontend-strings.php:1484
 msgid "Normal text"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1502
+#: backend/i18n/frontend-strings.php:1486
 msgid "Heading"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1504
+#: backend/i18n/frontend-strings.php:1488
 msgid "Subheading"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1506
+#: backend/i18n/frontend-strings.php:1490
 msgid "Small heading"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1508
+#: backend/i18n/frontend-strings.php:1492
 msgid "Text format"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1510
+#: backend/i18n/frontend-strings.php:1494
 msgid "Bulleted list"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1512
+#: backend/i18n/frontend-strings.php:1496
 msgid "Numbered list"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1514
+#: backend/i18n/frontend-strings.php:1498
 msgid "Code block"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1516
+#: backend/i18n/frontend-strings.php:1500
 msgid "Attach file"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1518
+#: backend/i18n/frontend-strings.php:1502
 msgid "Bold"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1520
+#: backend/i18n/frontend-strings.php:1504
 msgid "Italic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1522
+#: backend/i18n/frontend-strings.php:1506
 msgid "Underline"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1524
+#: backend/i18n/frontend-strings.php:1508
 msgid "Apply link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1526
+#: backend/i18n/frontend-strings.php:1510
 msgid "Cancel link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1528
+#: backend/i18n/frontend-strings.php:1512
 msgid "Insert link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1530
+#: backend/i18n/frontend-strings.php:1514
 msgid "Insert image"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1532
+#: backend/i18n/frontend-strings.php:1516
 msgid "More formatting"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1534
+#: backend/i18n/frontend-strings.php:1518
 msgid "Uploading…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1536
+#: backend/i18n/frontend-strings.php:1520
 msgid "(edited)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1538
+#: backend/i18n/frontend-strings.php:1522
 msgid "Edited by"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1540
+#: backend/i18n/frontend-strings.php:1524
 msgid "All Products"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1542
+#: backend/i18n/frontend-strings.php:1526
 msgid "Search topic, tag, etc."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1544
+#: backend/i18n/frontend-strings.php:1528
 msgid "Newest"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1546
+#: backend/i18n/frontend-strings.php:1530
 msgid "Oldest"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1548
+#: backend/i18n/frontend-strings.php:1532
 msgid "Private"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1550
+#: backend/i18n/frontend-strings.php:1534
 msgid "My Topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1552
+#: backend/i18n/frontend-strings.php:1536
 msgid "Filter by tag"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1555
+#: backend/i18n/frontend-strings.php:1539
 #, php-format
 msgid "%s selected"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1557
+#: backend/i18n/frontend-strings.php:1541
 msgid "comments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1559
+#: backend/i18n/frontend-strings.php:1543
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1561
+#: backend/i18n/frontend-strings.php:1545
 msgid "If an account exists for that username or email, a password reset link has been sent. Please check your inbox."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1563
+#: backend/i18n/frontend-strings.php:1547
 msgid "Check your email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1565
+#: backend/i18n/frontend-strings.php:1549
 msgid "Back to Login"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1567
+#: backend/i18n/frontend-strings.php:1551
 msgid "Forgot Password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1569
+#: backend/i18n/frontend-strings.php:1553
 msgid "Enter your username or email and we'll send you a reset link."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1571
+#: backend/i18n/frontend-strings.php:1555
 msgid "Username or Email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1573
+#: backend/i18n/frontend-strings.php:1557
 msgid "Please enter your username or email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1575
+#: backend/i18n/frontend-strings.php:1559
 msgid "Enter your username or email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1577
+#: backend/i18n/frontend-strings.php:1561
 msgid "Send Reset Link"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1579
+#: backend/i18n/frontend-strings.php:1563
 msgid "Username or email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1581
+#: backend/i18n/frontend-strings.php:1565
 msgid "Password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1583
+#: backend/i18n/frontend-strings.php:1567
 msgid "Forgot password?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1585
+#: backend/i18n/frontend-strings.php:1569
 msgid "Please enter your password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1587
+#: backend/i18n/frontend-strings.php:1571
 msgid "Enter your password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1589
+#: backend/i18n/frontend-strings.php:1573
 msgid "Remember me"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1591
+#: backend/i18n/frontend-strings.php:1575
 msgid "Don't have an account?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1593
+#: backend/i18n/frontend-strings.php:1577
 msgid "New account registration is currently disabled on this site."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1595
+#: backend/i18n/frontend-strings.php:1579
 msgid "Registration is closed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1597
+#: backend/i18n/frontend-strings.php:1581
 msgid "Already have an account?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1599
+#: backend/i18n/frontend-strings.php:1583
 msgid "We sent a verification link to"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1601
+#: backend/i18n/frontend-strings.php:1585
 msgid "Click the link in the email to activate your account."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1603
+#: backend/i18n/frontend-strings.php:1587
 msgid "Almost there!"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1605
+#: backend/i18n/frontend-strings.php:1589
 msgid "Wrong email?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1607
+#: backend/i18n/frontend-strings.php:1591
 msgid "Go back"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1609
+#: backend/i18n/frontend-strings.php:1593
 msgid "Display Name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1611
+#: backend/i18n/frontend-strings.php:1595
 msgid "Display name must be 60 characters or fewer"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1613
+#: backend/i18n/frontend-strings.php:1597
 msgid "Your public display name (optional)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1615
+#: backend/i18n/frontend-strings.php:1599
 msgid "Email Address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1617
+#: backend/i18n/frontend-strings.php:1601
 msgid "Please enter your email address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1619
+#: backend/i18n/frontend-strings.php:1603
 msgid "Please enter a valid email address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1621
+#: backend/i18n/frontend-strings.php:1605
 msgid "Enter your email address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1623
+#: backend/i18n/frontend-strings.php:1607
 msgid "Please choose a password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1625
+#: backend/i18n/frontend-strings.php:1609
 msgid "Password must be at least 6 characters"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1627
+#: backend/i18n/frontend-strings.php:1611
 msgid "Choose a password (min. 6 characters)"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1629
+#: backend/i18n/frontend-strings.php:1613
 msgid "Confirm Password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1631
+#: backend/i18n/frontend-strings.php:1615
 msgid "Please confirm your password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1633
+#: backend/i18n/frontend-strings.php:1617
 msgid "Passwords do not match"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1635
+#: backend/i18n/frontend-strings.php:1619
 msgid "Repeat your password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1637
+#: backend/i18n/frontend-strings.php:1621
 msgid "Register"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1641
+#: backend/i18n/frontend-strings.php:1625
 msgid "Verification failed. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1643
+#: backend/i18n/frontend-strings.php:1627
 msgid "Email Change"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1645
+#: backend/i18n/frontend-strings.php:1629
 msgid "Email Verification"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1647
+#: backend/i18n/frontend-strings.php:1631
 msgid "Verifying your email address…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1649
+#: backend/i18n/frontend-strings.php:1633
 msgid "Go to forum"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1651
+#: backend/i18n/frontend-strings.php:1635
 msgid "Your account now uses this email address."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1653
+#: backend/i18n/frontend-strings.php:1637
 msgid "Your email has been verified. You are now logged in."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1655
+#: backend/i18n/frontend-strings.php:1639
 msgid "Email address updated!"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1657
+#: backend/i18n/frontend-strings.php:1641
 msgid "Email verified!"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1659
+#: backend/i18n/frontend-strings.php:1643
 msgid "Register again"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1661
+#: backend/i18n/frontend-strings.php:1645
 msgid "Could not change your email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1663
+#: backend/i18n/frontend-strings.php:1647
 msgid "Verification failed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1665
+#: backend/i18n/frontend-strings.php:1649
 msgid "We can’t find that page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1667
+#: backend/i18n/frontend-strings.php:1651
 msgid "The link may be broken, or the topic could have been moved or removed. Everything else in the community is still here."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1669
+#: backend/i18n/frontend-strings.php:1653
 msgid "Back to the community"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1671
+#: backend/i18n/frontend-strings.php:1655
 msgid "My Profile"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1673
+#: backend/i18n/frontend-strings.php:1657
 msgid "Log Out"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1675
+#: backend/i18n/frontend-strings.php:1659
 msgid "Open menu"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1677
+#: backend/i18n/frontend-strings.php:1661
 msgid "New"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1679
+#: backend/i18n/frontend-strings.php:1663
 msgid "Account menu"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1681
+#: backend/i18n/frontend-strings.php:1665
 msgid "Main navigation"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1683
+#: backend/i18n/frontend-strings.php:1667
 msgid "Close menu"
 msgstr ""
 
 #. translators: %d — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1686
+#: backend/i18n/frontend-strings.php:1670
 #, php-format
 msgid "%d unread"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1688
+#: backend/i18n/frontend-strings.php:1672
 msgid "All"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1690
+#: backend/i18n/frontend-strings.php:1674
 msgid "Unread"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1692
+#: backend/i18n/frontend-strings.php:1676
 msgid "That is everything."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1694
+#: backend/i18n/frontend-strings.php:1678
 msgid "Please log in to upload images."
 msgstr ""
 
 #. translators: %d — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1697
+#: backend/i18n/frontend-strings.php:1681
 #, php-format
 msgid "Attachment limit reached (maximum %d files)."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1699
+#: backend/i18n/frontend-strings.php:1683
 msgid "Replying to"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1701
+#: backend/i18n/frontend-strings.php:1685
 msgid "Delete comment?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1703
+#: backend/i18n/frontend-strings.php:1687
 msgid "Edit"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1705
+#: backend/i18n/frontend-strings.php:1689
 msgid "Report"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1707
+#: backend/i18n/frontend-strings.php:1691
 msgid "under review"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1709
+#: backend/i18n/frontend-strings.php:1693
 msgid "Out of public view while a moderator reviews a report about it"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1711
+#: backend/i18n/frontend-strings.php:1695
 msgid "Hidden"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1713
+#: backend/i18n/frontend-strings.php:1697
 msgid "Reply"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1715
+#: backend/i18n/frontend-strings.php:1699
 msgid "More actions"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1717
+#: backend/i18n/frontend-strings.php:1701
 msgid "Hide"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1719
+#: backend/i18n/frontend-strings.php:1703
 msgid "Loading more..."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1721
+#: backend/i18n/frontend-strings.php:1705
 msgid "🎉 You're all caught up — no more comments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1723
+#: backend/i18n/frontend-strings.php:1707
 msgid "Remove your upvote"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1725
+#: backend/i18n/frontend-strings.php:1709
 msgid "View image full size"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1727
+#: backend/i18n/frontend-strings.php:1711
 msgid "All comments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1729
+#: backend/i18n/frontend-strings.php:1713
 msgid "Failed to load post"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1731
+#: backend/i18n/frontend-strings.php:1715
 msgid "Failed to load settings"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1733
+#: backend/i18n/frontend-strings.php:1717
 msgid "Failed to vote on post"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1735
+#: backend/i18n/frontend-strings.php:1719
 msgid "Comment posted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1737
+#: backend/i18n/frontend-strings.php:1721
 msgid "Failed to post comment"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1739
+#: backend/i18n/frontend-strings.php:1723
 msgid "Reply posted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1741
+#: backend/i18n/frontend-strings.php:1725
 msgid "Failed to post reply"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1743
+#: backend/i18n/frontend-strings.php:1727
 msgid "Comment updated successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1745
+#: backend/i18n/frontend-strings.php:1729
 msgid "Failed to update comment"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1747
+#: backend/i18n/frontend-strings.php:1731
 msgid "Comment deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1749
+#: backend/i18n/frontend-strings.php:1733
 msgid "Failed to delete comment"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1751
+#: backend/i18n/frontend-strings.php:1735
 msgid "Log in to post a comment."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1753
+#: backend/i18n/frontend-strings.php:1737
 msgid "Failed to load statuses"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1755
+#: backend/i18n/frontend-strings.php:1739
 msgid "Failed to load stages"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1757
+#: backend/i18n/frontend-strings.php:1741
 msgid "This action cannot be undone. Are you sure you want to delete this post?"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1759
+#: backend/i18n/frontend-strings.php:1743
 msgid "Post deleted successfully"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1761
+#: backend/i18n/frontend-strings.php:1745
 msgid "Failed to delete post"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1763
+#: backend/i18n/frontend-strings.php:1747
 msgid "Delete Post"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1765
+#: backend/i18n/frontend-strings.php:1749
 msgid "Topic stage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1767
+#: backend/i18n/frontend-strings.php:1751
 msgid "Topic status"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1769
+#: backend/i18n/frontend-strings.php:1753
 msgid "Only you and the moderators can see this while a report is reviewed. Nothing has been deleted."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1771
+#: backend/i18n/frontend-strings.php:1755
 msgid "Out of public view while a report is reviewed."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1773
+#: backend/i18n/frontend-strings.php:1757
 msgid "Download"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1775
+#: backend/i18n/frontend-strings.php:1759
 msgid "Open"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1777
+#: backend/i18n/frontend-strings.php:1761
 msgid "Show less"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1779
+#: backend/i18n/frontend-strings.php:1763
 msgid "more"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1781
+#: backend/i18n/frontend-strings.php:1765
 msgid "About the author"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1783
+#: backend/i18n/frontend-strings.php:1767
 msgid "Member since"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1785
+#: backend/i18n/frontend-strings.php:1769
 msgid "Upvotes"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1787
+#: backend/i18n/frontend-strings.php:1771
 msgid "Sort comments"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1789
+#: backend/i18n/frontend-strings.php:1773
 msgid "Share on social media"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1791
+#: backend/i18n/frontend-strings.php:1775
 msgid "Topic details"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1793
+#: backend/i18n/frontend-strings.php:1777
 msgid "Related topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1795
+#: backend/i18n/frontend-strings.php:1779
 msgid "Failed to load posts"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1797
+#: backend/i18n/frontend-strings.php:1781
 msgid "Failed to load more posts"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1799
+#: backend/i18n/frontend-strings.php:1783
 msgid "Filters"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1801
+#: backend/i18n/frontend-strings.php:1785
 msgid "Remove filter"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1803
+#: backend/i18n/frontend-strings.php:1787
 msgid "Reset"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1805
+#: backend/i18n/frontend-strings.php:1789
 msgid "Sort by"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1807
+#: backend/i18n/frontend-strings.php:1791
 msgid "Loading posts..."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1809
+#: backend/i18n/frontend-strings.php:1793
 msgid "No posts found"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1811
+#: backend/i18n/frontend-strings.php:1795
 msgid "🎉 You're all caught up — no more topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1813
+#: backend/i18n/frontend-strings.php:1797
 msgid "Back to top"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1815
+#: backend/i18n/frontend-strings.php:1799
 msgid "Could not change your password. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1817
+#: backend/i18n/frontend-strings.php:1801
 msgid "Your password has been changed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1819
+#: backend/i18n/frontend-strings.php:1803
 msgid "Could not start the email change. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1821
+#: backend/i18n/frontend-strings.php:1805
 msgid "Open it from that inbox to finish the change."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1823
+#: backend/i18n/frontend-strings.php:1807
 msgid "Confirmation link sent"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1825
+#: backend/i18n/frontend-strings.php:1809
 msgid "Could not send the reset link. Please try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1827
+#: backend/i18n/frontend-strings.php:1811
 msgid "Open it to set a new password."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1829
+#: backend/i18n/frontend-strings.php:1813
 msgid "Reset link sent to your email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1831
+#: backend/i18n/frontend-strings.php:1815
 msgid "Could not save your profile. Please check your connection and try again."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1833
+#: backend/i18n/frontend-strings.php:1817
 msgid "Profile updated"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1835
+#: backend/i18n/frontend-strings.php:1819
 msgid "Account and security"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1837
+#: backend/i18n/frontend-strings.php:1821
 msgid "Only you can see these. They are never shown on your profile."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1839
+#: backend/i18n/frontend-strings.php:1823
 msgid "Open the link we sent to finish the change."
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1842
+#: backend/i18n/frontend-strings.php:1826
 #, php-format
 msgid "Waiting for you to confirm %s"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1844
+#: backend/i18n/frontend-strings.php:1828
 msgid "We will email the new address to make sure you can read it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1846
+#: backend/i18n/frontend-strings.php:1830
 msgid "Email address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1848
+#: backend/i18n/frontend-strings.php:1832
 msgid "Please enter an email address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1850
+#: backend/i18n/frontend-strings.php:1834
 msgid "you@example.com"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1852
+#: backend/i18n/frontend-strings.php:1836
 msgid "Change email"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1854
+#: backend/i18n/frontend-strings.php:1838
 msgid "You signed in without one, so there is nothing to confirm — just choose a password below."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1856
+#: backend/i18n/frontend-strings.php:1840
 msgid "Your account has no password yet"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1858
+#: backend/i18n/frontend-strings.php:1842
 msgid "Sending…"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1860
+#: backend/i18n/frontend-strings.php:1844
 msgid "Current password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1862
+#: backend/i18n/frontend-strings.php:1846
 msgid "Please enter your current password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1864
+#: backend/i18n/frontend-strings.php:1848
 msgid "New password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1866
+#: backend/i18n/frontend-strings.php:1850
 msgid "Please enter a new password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1868
+#: backend/i18n/frontend-strings.php:1852
 msgid "Confirm new password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1870
+#: backend/i18n/frontend-strings.php:1854
 msgid "Please confirm your new password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1872
+#: backend/i18n/frontend-strings.php:1856
 msgid "Change password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1874
+#: backend/i18n/frontend-strings.php:1858
 msgid "Set password"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1876
+#: backend/i18n/frontend-strings.php:1860
 msgid "Could not update your picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1878
+#: backend/i18n/frontend-strings.php:1862
 msgid "Profile picture updated"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1880
+#: backend/i18n/frontend-strings.php:1864
 msgid "Could not remove your picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1882
+#: backend/i18n/frontend-strings.php:1866
 msgid "Profile picture removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1884
+#: backend/i18n/frontend-strings.php:1868
 msgid "Replace picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1886
+#: backend/i18n/frontend-strings.php:1870
 msgid "Upload a picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1888
+#: backend/i18n/frontend-strings.php:1872
 msgid "Remove picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1890
+#: backend/i18n/frontend-strings.php:1874
 msgid "Change profile picture"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1892
+#: backend/i18n/frontend-strings.php:1876
 msgid "replied to"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1894
+#: backend/i18n/frontend-strings.php:1878
 msgid "Could not update your cover"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1896
+#: backend/i18n/frontend-strings.php:1880
 msgid "Cover image updated"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1898
+#: backend/i18n/frontend-strings.php:1882
 msgid "Could not remove your cover"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1900
+#: backend/i18n/frontend-strings.php:1884
 msgid "Cover image removed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1902
+#: backend/i18n/frontend-strings.php:1886
 msgid "Cover image"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1905
+#: backend/i18n/frontend-strings.php:1889
 #, php-format
 msgid "The strip behind your picture. Wide images work best — up to %s MB."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1907
+#: backend/i18n/frontend-strings.php:1891
 msgid "posted a topic"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1909
+#: backend/i18n/frontend-strings.php:1893
 msgid "Profile picture"
 msgstr ""
 
 #. translators: %s — value(s) inserted by the plugin; keep them in the translation.
-#: backend/i18n/frontend-strings.php:1912
+#: backend/i18n/frontend-strings.php:1896
 #, php-format
 msgid "Shown beside everything you post. JPG, PNG, GIF or WebP, up to %s MB."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1914
+#: backend/i18n/frontend-strings.php:1898
 msgid "Choose what the forum tells you about, and whether it also emails you."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1916
+#: backend/i18n/frontend-strings.php:1900
 msgid "allowed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1918
+#: backend/i18n/frontend-strings.php:1902
 msgid "not allowed"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1920
+#: backend/i18n/frontend-strings.php:1904
 msgid "Permissions"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1922
+#: backend/i18n/frontend-strings.php:1906
 msgid "What you can do"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1924
+#: backend/i18n/frontend-strings.php:1908
 msgid "What this member can do"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1926
+#: backend/i18n/frontend-strings.php:1910
 msgid "Set by your role and any per-member overrides an admin has applied."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1928
+#: backend/i18n/frontend-strings.php:1912
 msgid "Website"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1930
+#: backend/i18n/frontend-strings.php:1914
 msgid "GitHub"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1932
+#: backend/i18n/frontend-strings.php:1916
 msgid "X / Twitter"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1934
+#: backend/i18n/frontend-strings.php:1918
 msgid "LinkedIn"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1936
+#: backend/i18n/frontend-strings.php:1920
 msgid "Mastodon"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1938
+#: backend/i18n/frontend-strings.php:1922
 msgid "Profile details"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1940
+#: backend/i18n/frontend-strings.php:1924
 msgid "How you appear across the community."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1942
+#: backend/i18n/frontend-strings.php:1926
 msgid "Display name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1944
+#: backend/i18n/frontend-strings.php:1928
 msgid "Please enter a display name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1946
+#: backend/i18n/frontend-strings.php:1930
 msgid "Your name"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1948
+#: backend/i18n/frontend-strings.php:1932
 msgid "Links you have already shared keep working — they redirect here."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1950
+#: backend/i18n/frontend-strings.php:1934
 msgid "Profile URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1952
+#: backend/i18n/frontend-strings.php:1936
 msgid "Please enter a profile URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1954
+#: backend/i18n/frontend-strings.php:1938
 msgid "Bio"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1956
+#: backend/i18n/frontend-strings.php:1940
 msgid "Your bio is too long"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1958
+#: backend/i18n/frontend-strings.php:1942
 msgid "A sentence or two about yourself"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1960
+#: backend/i18n/frontend-strings.php:1944
 msgid "Links"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1962
+#: backend/i18n/frontend-strings.php:1946
 msgid "Please enter a valid URL"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1964
+#: backend/i18n/frontend-strings.php:1948
 msgid "Profile"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1966
+#: backend/i18n/frontend-strings.php:1950
 msgid "Joined"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1968
+#: backend/i18n/frontend-strings.php:1952
 msgid "Last active"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1970
+#: backend/i18n/frontend-strings.php:1954
 msgid "Manage profile"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1972
+#: backend/i18n/frontend-strings.php:1956
 msgid "No comments yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1974
+#: backend/i18n/frontend-strings.php:1958
 msgid "No upvoted topics yet."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1976
+#: backend/i18n/frontend-strings.php:1960
 msgid "Upvoted"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1978
+#: backend/i18n/frontend-strings.php:1962
 msgid "Manage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1980
+#: backend/i18n/frontend-strings.php:1964
 msgid "Back to portal"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1982
+#: backend/i18n/frontend-strings.php:1966
 msgid "This member could not be found."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:1984
+#: backend/i18n/frontend-strings.php:1968
 msgid "Profile sections"
 msgstr ""

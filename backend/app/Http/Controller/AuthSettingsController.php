@@ -26,7 +26,6 @@ final class AuthSettingsController
                 [
                     'loginPageUrl'        => $forumUrl . '/login',
                     'registrationPageUrl' => $forumUrl . '/register',
-                    'availableRoles'      => AuthService::assignableRoles(),
                 ]
             )
         );

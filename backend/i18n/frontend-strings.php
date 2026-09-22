@@ -312,12 +312,6 @@ return [
 
     'New accounts' => __('New accounts', 'bit-connect'),
 
-    'The WordPress role people get when they register.' => __('The WordPress role people get when they register.', 'bit-connect'),
-
-    'Registration role' => __('Registration role', 'bit-connect'),
-
-    'Select a role' => __('Select a role', 'bit-connect'),
-
     'New members have to confirm their email address before they can sign in.' => __('New members have to confirm their email address before they can sign in.', 'bit-connect'),
 
     'Require email verification' => __('Require email verification', 'bit-connect'),
@@ -559,16 +553,6 @@ return [
     'Set by role, on the Role Capabilities screen.' => __('Set by role, on the Role Capabilities screen.', 'bit-connect'),
 
     'Capabilities, set by role' => __('Capabilities, set by role', 'bit-connect'),
-
-    'Developer' => __('Developer', 'bit-connect'),
-
-    'Group Expert' => __('Group Expert', 'bit-connect'),
-
-    'Name your people beyond what their permissions make them — Developer, Support, Group Expert — and hand the badges out per member.' => __('Name your people beyond what their permissions make them — Developer, Support, Group Expert — and hand the badges out per member.', 'bit-connect'),
-
-    'For example' => __('For example', 'bit-connect'),
-
-    'Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.' => __('Writing your own badges — name and colour — and assigning them to members is a feature of Bit Connect Pro, a separate plugin. Members see them beside their name across the forum.', 'bit-connect'),
 
     'Posts' => __('Posts', 'bit-connect'),
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Mon Sep 21 2026 17:02:06 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Tue Sep 22 2026 11:49:56 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -120,7 +120,6 @@ msgstr ""
 
 #: frontend/_plugin-commons/components/SupportPage/SupportLinks.tsx:56
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:41
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:20
 msgid "Support"
 msgstr ""
 
@@ -488,7 +487,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-row.tsx:65
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:95
-#: frontend/admin/src/pages/settings/settings.tsx:148
+#: frontend/admin/src/pages/settings/settings.tsx:143
 msgid "Comment"
 msgstr ""
 
@@ -584,7 +583,7 @@ msgstr ""
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:72
 #: frontend/admin/src/pages/notifications/notifications.tsx:74
 #: frontend/admin/src/pages/seo/seo.tsx:350
-#: frontend/admin/src/pages/settings/settings.tsx:201
+#: frontend/admin/src/pages/settings/settings.tsx:196
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
 msgid "Save"
 msgstr ""
@@ -771,55 +770,43 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:146
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:150
 msgid "What happens when someone registers through the built-in form."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:147
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:151
 msgid "New accounts"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:150
-msgid "The WordPress role people get when they register."
-msgstr ""
-
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:151
-msgid "Registration role"
-msgstr ""
-
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:158
-msgid "Select a role"
-msgstr ""
-
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:164
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:154
 msgid "New members have to confirm their email address before they can sign in."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:167
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:157
 msgid "Require email verification"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:182
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:172
 msgid "Where the portal sends people instead of showing its own form."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:183
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:173
 msgid "Your login pages"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:185
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:175
 msgid "The page people sign in on."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:185
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:175
 msgid "Login page URL"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:195
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:185
 msgid "The page people create an account on. Leave empty to reuse the login page."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/auth-section.tsx:198
+#: frontend/admin/src/pages/general/internal/auth-section.tsx:188
 msgid "Registration page URL"
 msgstr ""
 
@@ -1235,7 +1222,7 @@ msgid "SEO"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
-#: frontend/admin/src/pages/settings/settings.tsx:193
+#: frontend/admin/src/pages/settings/settings.tsx:188
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
 msgid "Settings"
 msgstr ""
@@ -1281,28 +1268,27 @@ msgid ""
 "Role Capabilities to set them per role."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:78
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:40
+#: frontend/admin/src/pages/manager/manager.tsx:83
 msgid "Profile Badges"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:80
+#: frontend/admin/src/pages/manager/manager.tsx:86
 msgid "Role Capabilities"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:92
+#: frontend/admin/src/pages/manager/manager.tsx:98
 msgid "Search by name, email or username…"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:104
+#: frontend/admin/src/pages/manager/manager.tsx:110
 msgid "No users found."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:115
+#: frontend/admin/src/pages/manager/manager.tsx:121
 msgid "User"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:116
+#: frontend/admin/src/pages/manager/manager.tsx:122
 #: frontend/admin/src/pages/notifications/notifications.tsx:105
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:135
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:192
@@ -1310,53 +1296,28 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:117
+#: frontend/admin/src/pages/manager/manager.tsx:123
 msgid "Roles"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:118
+#: frontend/admin/src/pages/manager/manager.tsx:124
 msgid "Badges"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:119
+#: frontend/admin/src/pages/manager/manager.tsx:125
 msgid "Capabilities"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/manager.tsx:163
+#: frontend/admin/src/pages/manager/manager.tsx:169
 msgid "No role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:31
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:29
 msgid "Set by role, on the Role Capabilities screen."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:33
+#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:31
 msgid "Capabilities, set by role"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:19
-msgid "Developer"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:21
-msgid "Group Expert"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:44
-msgid ""
-"Name your people beyond what their permissions make them — Developer, "
-"Support, Group Expert — and hand the badges out per member."
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:51
-msgid "For example"
-msgstr ""
-
-#: frontend/admin/src/pages/manager/ui/profile-badges-modal.free.tsx:61
-msgid ""
-"Writing your own badges — name and colour — and assigning them to members "
-"is a feature of Bit Connect Pro, a separate plugin. Members see them beside "
-"their name across the forum."
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:14
@@ -2462,66 +2423,66 @@ msgstr ""
 msgid "Allowed file types"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:140
+#: frontend/admin/src/pages/settings/settings.tsx:135
 msgid "On/off your Topic Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:142
+#: frontend/admin/src/pages/settings/settings.tsx:137
 #: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
 #: frontend/client/src/pages/Post/CommentVoteBox.tsx:51
 #: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
 msgid "Upvote"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:146
+#: frontend/admin/src/pages/settings/settings.tsx:141
 msgid "On/off your Comment"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:163
+#: frontend/admin/src/pages/settings/settings.tsx:158
 msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:165
+#: frontend/admin/src/pages/settings/settings.tsx:160
 msgid "Delete Data on Uninstall"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:175
+#: frontend/admin/src/pages/settings/settings.tsx:170
 msgid "Show and require Topic Type when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:177
+#: frontend/admin/src/pages/settings/settings.tsx:172
 msgid "Require Topic Type"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:181
+#: frontend/admin/src/pages/settings/settings.tsx:176
 msgid "Show and require Products/Department when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:183
+#: frontend/admin/src/pages/settings/settings.tsx:178
 msgid "Require Products/Department"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:219
+#: frontend/admin/src/pages/settings/settings.tsx:214
 msgid "Choose what members can do on a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:220
+#: frontend/admin/src/pages/settings/settings.tsx:215
 msgid "Topic Access Settings"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:228
+#: frontend/admin/src/pages/settings/settings.tsx:223
 msgid "Control which fields are shown and required when creating a topic"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:229
+#: frontend/admin/src/pages/settings/settings.tsx:224
 msgid "Topic Form Fields"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:242
+#: frontend/admin/src/pages/settings/settings.tsx:233
 msgid "Manage what data is removed when the plugin is uninstalled"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:243
+#: frontend/admin/src/pages/settings/settings.tsx:234
 msgid "Data Cleanup"
 msgstr ""
 

@@ -104,6 +104,22 @@ final class AuthSettingsResolutionTest extends TestCase
         $this->assertTrue(AuthService::requiresEmailVerification());
     }
 
+    /**
+     * An earlier release let an administrator pick the role a new member gets.
+     * People who register now get the site's own default role, the one
+     * WordPress's registration form gives, and a role saved back then is
+     * neither read back nor reported to the settings screen.
+     */
+    public function testARegistrationRoleSavedByAnEarlierReleaseIsNotReadBack(): void
+    {
+        $this->storeSettings(['registrationRole' => 'editor', 'requireEmailVerification' => true]);
+
+        $settings = AuthService::getSettings();
+
+        $this->assertArrayNotHasKey('registrationRole', $settings);
+        $this->assertTrue($settings['requireEmailVerification']);
+    }
+
     // -----------------------------------------------------------------------
     // The custom login page
     // -----------------------------------------------------------------------
