@@ -129,18 +129,13 @@ class Notification extends Model
             ->whereNull('read_at')
             ->orderBy('created_at')
             ->desc()
-            // Cast because QueryBuilder::take() is typed for a string.
-            ->take('1')
-            ->get();
+            // first(), not take(1)->get(): since wp-database 2.0, get() always
+            // answers with a Collection, so the old "is it a Model?" test never
+            // matched and repeat events stopped folding into the open row — every
+            // vote wrote a notification of its own. Follow::findFor() had the
+            // same bug.
+            ->first();
 
-        // get() hands back a single Model rather than a list when the limit is 1
-        // and exactly one row matched — see Model::getInstanceFromBuilder(). It
-        // answers [] for no match and false when the query itself failed.
-        // Casting the Model case to an array yields the model's own properties
-        // ($table, $casts, $fillable…) instead of the row, so `$existing->id`
-        // would read as empty and every vote would write a new row while
-        // reporting that it had collapsed. Follow::findFor() carries the same
-        // guard for the same reason.
         return $found instanceof Model ? $found : null;
     }
 
