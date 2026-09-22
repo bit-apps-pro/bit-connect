@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\AtLeastRule;
 use BitApps\BitConnect\Services\PermissionService;
 
 /**
@@ -45,8 +46,9 @@ final class ToggleFollowRequest extends Request
         return [
             'target_type' => ['required', 'string'],
             // Zero is legitimate — it is how "the whole forum" is stored, since
-            // it has no row of its own to point at. min:0 rather than min:1.
-            'target_id' => ['required', 'integer', 'min:0'],
+            // it has no row of its own to point at. AtLeastRule, because
+            // wp-validator's own `min:0` rejects 0.
+            'target_id' => ['required', 'integer', new AtLeastRule(0)],
             'follow'    => ['required', 'boolean'],
         ];
     }

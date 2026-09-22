@@ -11,6 +11,8 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use BitApps\BitConnect\Http\Rules\AtLeastRule;
+use BitApps\BitConnect\Http\Rules\AtMostRule;
 use BitApps\BitConnect\Http\Rules\InRule;
 
 /**
@@ -48,10 +50,13 @@ final class UpdateNotificationSettingsRequest extends Request
         // No sender or wording fields: this endpoint does not accept them,
         // because this plugin does not store them. They belong to the add-on
         // and are posted to the add-on's own endpoint.
+        //
+        // digestHour takes rule objects because hour 0 is midnight, and
+        // wp-validator's own min/max reject any zero.
         return [
             'enabled'          => ['nullable', 'boolean'],
             'types'            => ['nullable', 'array'],
-            'digestHour'       => ['nullable', 'integer', 'min:0', 'max:23'],
+            'digestHour'       => ['nullable', 'integer', new AtLeastRule(0), new AtMostRule(23)],
             'retentionDays'    => ['nullable', 'integer', 'min:7', 'max:3650'],
             'defaultFrequency' => [
                 'nullable',
