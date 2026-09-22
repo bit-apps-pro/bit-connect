@@ -88,6 +88,22 @@ Bit Connect is built for product and service providers, SaaS teams, LMS platform
 
 It can work as a traditional forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
 
+= Source Code =
+
+The JavaScript and CSS this plugin ships under `assets/` and `assets/client/` are compiled, minified bundles generated from human-readable source with Vite. That source is not included in the plugin zip; it is published in full, together with build instructions, in the plugin's public repository:
+
+**https://github.com/bit-apps-pro/bit-connect**
+
+The repository holds everything the plugin is built from: the React + TypeScript admin panel (`frontend/admin/`), the React + TypeScript portal (`frontend/client/`), the Vite configs (`vite.config.mts`, `vite.config.client.mts`), the PHP plugin (`backend/`) and the third-party libraries it bundles, listed in `package.json` and `composer.json`. To rebuild the shipped assets yourself:
+
+`git clone https://github.com/bit-apps-pro/bit-connect.git`
+`cd bit-connect`
+`composer install`
+`pnpm install`
+`pnpm build:free`
+
+That writes `assets/` and `assets/client/`, after which the directory is the plugin. `pnpm prod:free-zip` produces the same installable zip that is published here. Requirements: PHP 8.2+, Node 20+, pnpm 9+, Composer 2. The repository README documents the build in more detail.
+
 = Other Products by Bit Apps =
 
 * [**Bit Form:**](https://bit-form.com/) WordPress form builder for contact forms, multi-step forms, calculations, payments and other form workflows.
@@ -102,7 +118,7 @@ It can work as a traditional forum, but it can also serve as a product community
 
 Join our [Bit Apps Community](https://www.facebook.com/groups/3308027439209387) for the latest plugin updates.
 
-View the full source code on [GitHub](https://github.com/bit-apps-pro/bit-connect/).
+View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/) — see *Source Code* above.
 
 == External Services ==
 

@@ -13,6 +13,10 @@
  * Domain Path:  /languages
  * License:      GPL-2.0-or-later
  * License URI:  https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * The JavaScript and CSS under assets/ are compiled bundles. Their human-readable
+ * source and build instructions are public at
+ * https://github.com/bit-apps-pro/bit-connect
  */
 if (!defined('ABSPATH')) {
     exit;
