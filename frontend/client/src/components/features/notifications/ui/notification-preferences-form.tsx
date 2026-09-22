@@ -7,6 +7,7 @@ import { LuInbox, LuLock, LuMail } from 'react-icons/lu'
 
 import {
   type NotificationPreferenceRow,
+  useFollowForum,
   useNotificationPreferences,
   useSaveNotificationPreferences
 } from '../data/use-notification-preferences'
@@ -67,6 +68,7 @@ export default function NotificationPreferencesForm() {
   const { notificationApi } = useContext(NotifyContext)
   const { isPreferencesError, isPreferencesLoading, preferences } = useNotificationPreferences()
   const { savePreferences } = useSaveNotificationPreferences()
+  const { isTogglingForumFollow, toggleForumFollow } = useFollowForum()
 
   const commit = (payload: Parameters<typeof savePreferences>[0]) => {
     savePreferences(payload).catch(() => {
@@ -112,6 +114,36 @@ export default function NotificationPreferencesForm() {
           optionType="button"
           value={preferences.frequency}
         />
+      </section>
+
+      <section>
+        <Title className="bc-mb-1" level={5}>
+          {__('New topics')}
+        </Title>
+        <div className="bc-flex bc-items-start bc-justify-between bc-gap-4 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-px-4 bc-py-3">
+          <span className="bc-min-w-0">
+            <span className="bc-block bc-text-sm bc-font-medium bc-text-ink">
+              {__('Tell me about every new topic')}
+            </span>
+            <span className="bc-block bc-text-xs bc-text-ink-subtle">
+              {__(
+                'Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.'
+              )}
+            </span>
+          </span>
+          <Switch
+            checked={preferences.followsForum}
+            loading={isTogglingForumFollow}
+            onChange={next => {
+              toggleForumFollow(next).catch(() => {
+                notificationApi?.error({
+                  message: __('That could not be saved. Please check your connection and try again.')
+                })
+              })
+            }}
+            size="small"
+          />
+        </div>
       </section>
 
       <section>

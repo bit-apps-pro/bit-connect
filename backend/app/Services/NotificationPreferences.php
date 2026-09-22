@@ -11,6 +11,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use BitApps\BitConnect\Model\Follow;
 
 /**
  * Answers one question: for this member and this event, which channels fire?
@@ -107,7 +108,7 @@ final class NotificationPreferences
      * with what dispatch actually does — every value below is the same call the
      * dispatcher makes.
      *
-     * @return array{frequency: string, types: array<int, array<string, mixed>>}
+     * @return array{frequency: string, followsForum: bool, types: array<int, array<string, mixed>>}
      */
     public static function screenFor(int $userId): array
     {
@@ -146,7 +147,11 @@ final class NotificationPreferences
 
         return [
             'frequency' => self::frequencyFor($userId),
-            'types'     => $types,
+            // Whether TOPIC_NEW covers every topic for this member, not just the
+            // products and tags they follow. It is a follow row rather than a
+            // preference, but the member switches it on from this screen.
+            'followsForum' => FollowService::stateFor($userId, Follow::TARGET_FORUM, 0)['following'],
+            'types'        => $types,
         ];
     }
 

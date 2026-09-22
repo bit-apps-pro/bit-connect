@@ -17,6 +17,7 @@ describe('appearanceFor', () => {
       'report_filed',
       'report_resolved',
       'topic_new',
+      'topic_posted',
       'topic_reply',
       'topic_status_changed',
       'vote_received'

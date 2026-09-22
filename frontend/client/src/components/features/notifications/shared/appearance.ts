@@ -44,6 +44,8 @@ const APPEARANCE: Record<string, NotificationAppearance> = {
   report_filed: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTriangleAlert },
   report_resolved: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuCircleCheck },
   topic_new: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
+  // The same event as topic_new, sent to moderators, so it looks the same.
+  topic_posted: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
   topic_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuMessageSquare },
   topic_status_changed: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuCircleCheck },
   vote_received: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuHeart }

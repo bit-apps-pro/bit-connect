@@ -125,17 +125,21 @@ class NotificationSettingsTest extends TestCase
         );
     }
 
-    public function testOnlyTheQueueAlertIsModeratorOnly(): void
+    public function testOnlyTheQueueAlertAndTheEveryTopicAlertAreModeratorOnly(): void
     {
+        $moderatorOnly = [NotificationTypes::REPORT_FILED, NotificationTypes::TOPIC_POSTED];
+
         foreach (NotificationTypes::cases() as $type) {
             $this->assertSame(
-                $type === NotificationTypes::REPORT_FILED,
+                \in_array($type, $moderatorOnly, true),
                 NotificationTypes::isModeratorOnly($type),
                 $type->value
             );
         }
 
-        $this->assertNotContains(NotificationTypes::REPORT_FILED, NotificationTypes::memberTypes());
+        foreach ($moderatorOnly as $type) {
+            $this->assertNotContains($type, NotificationTypes::memberTypes());
+        }
     }
 
     /**

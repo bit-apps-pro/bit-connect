@@ -73,6 +73,10 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, when a report enters the queue.')]
     case REPORT_FILED = 'report_filed';
 
+    #[Label('Any new topic is posted')]
+    #[Description('Sent to moderators only, for every topic published anywhere in the forum.')]
+    case TOPIC_POSTED = 'topic_posted';
+
     /**
      * The label, translated.
      *
@@ -102,6 +106,7 @@ enum NotificationTypes: string
             self::BADGE_AWARDED        => __('You are given a badge', 'bit-connect'),
             self::TOPIC_STATUS_CHANGED => __('A topic you follow changes status', 'bit-connect'),
             self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
+            self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
         };
     }
 
@@ -121,6 +126,7 @@ enum NotificationTypes: string
             self::BADGE_AWARDED        => __('An admin awards you a profile badge.', 'bit-connect'),
             self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
+            self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
         };
     }
 
@@ -136,7 +142,7 @@ enum NotificationTypes: string
      */
     public static function isModeratorOnly(NotificationTypes $type): bool
     {
-        return $type === self::REPORT_FILED;
+        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED;
     }
 
     /**
