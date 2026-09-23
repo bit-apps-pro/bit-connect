@@ -104,6 +104,12 @@ The repository holds everything the plugin is built from: the React + TypeScript
 
 That writes `assets/` and `assets/client/`, after which the directory is the plugin. `pnpm prod:free-zip` produces the same installable zip that is published here. Requirements: PHP 8.2+, Node 20+, pnpm 9+, Composer 2. The repository README documents the build in more detail.
 
+= Bundled Third-Party Assets =
+
+The community portal is set in **Outfit**, Copyright 2021 The Outfit Project Authors. The font ships inside the plugin and is served from your own site, so no page contacts a font service. It is licensed under the SIL Open Font License 1.1, and the full licence text is included in the plugin as `LICENSE-Outfit.txt`.
+
+* Outfit — https://github.com/Outfitio/Outfit-Fonts — SIL Open Font License 1.1 — https://scripts.sil.org/OFL
+
 = Other Products by Bit Apps =
 
 * [**Bit Form:**](https://bit-form.com/) WordPress form builder for contact forms, multi-step forms, calculations, payments and other form workflows.

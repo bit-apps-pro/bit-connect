@@ -61,6 +61,15 @@ const filesAndFolders = [
   'composer.json',
 ]
 
+/**
+ * Licences for third-party assets compiled into `assets/`.
+ *
+ * Source path in this repository → path in the built plugin.
+ */
+const bundledAssetLicenses = {
+  'frontend/shared/fonts/OFL.txt': 'LICENSE-Outfit.txt',
+}
+
 console.log('options passed:', {
   outdir,
   pluginSlug,
@@ -104,6 +113,25 @@ try {
     const sourcePath = path.resolve(rootDirectory, item)
     const destinationPath = path.resolve(outputDirectory, item)
     await fse.copy(sourcePath, destinationPath)
+  }
+
+  // The bundled typeface's licence.
+  //
+  // The portal is set in Outfit, which ships inside the plugin rather than
+  // being fetched from Google Fonts — that is what keeps the front end from
+  // contacting a third party. Outfit is licensed under the SIL Open Font
+  // License 1.1, which requires the licence to travel with the font, and the
+  // font files themselves land in `assets/` as hashed build output with no
+  // room for a notice. So the licence is copied to the plugin root, where it
+  // sits beside the plugin's own and a reviewer will look for it.
+  //
+  // Copied rather than kept at the root of this repository, so the font and
+  // the terms it ships under stay in one directory in the source.
+  for (const [source, destination] of Object.entries(bundledAssetLicenses)) {
+    await fse.copy(
+      path.resolve(rootDirectory, source),
+      path.resolve(outputDirectory, destination)
+    )
   }
 
   if (zip)
