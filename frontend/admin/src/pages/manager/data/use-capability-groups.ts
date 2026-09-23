@@ -6,6 +6,14 @@ import useCapabilityGroupsPro from './use-capability-groups.pro'
 export interface CapabilityGroup {
   caps: string[]
   label: string
+  /**
+   * What to call each of this group's capabilities.
+   *
+   * Optional, and only a group whose capabilities this plugin does not declare
+   * needs it: the server sends a translated label for every capability it
+   * recognises, and a slug it has never heard of is not in that map.
+   */
+  labels?: Record<string, string>
 }
 
 /**

@@ -2,13 +2,37 @@ import { __ } from '@common/helpers/i18nWrap'
 import { Button, Checkbox, Modal, Spin, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 
-import useCapabilityGroups from '../data/use-capability-groups'
+import useCapabilityGroups, { type CapabilityGroup } from '../data/use-capability-groups'
 import useCapabilitySettings, { type RoleCapabilities } from '../data/use-capability-settings'
 import useUpdateRoleCapabilities from '../data/use-update-role-capabilities'
+import { FORUM_CAPABILITY_LABELS, type ForumCapability } from '../shared/types'
 
 const { Text, Title } = Typography
 
-const CAP_GROUPS: { caps: string[]; label: string }[] = [
+/**
+ * What to call a capability on screen.
+ *
+ * The server sends a translated label for every capability it recognises, so
+ * that is the first answer. A group may carry its own labels — that is how a
+ * plugin adding a capability names it, since the server's map covers only the
+ * ones declared here. The last resort spells the slug out rather than leaving
+ * the checkbox blank, and strips the plugin prefix so it reads as an action
+ * rather than as a stored key.
+ */
+function capabilityLabel(
+  cap: string,
+  fromServer: Record<string, string> | undefined,
+  fromGroup: Record<string, string> | undefined
+) {
+  return (
+    fromGroup?.[cap]
+    ?? fromServer?.[cap]
+    ?? FORUM_CAPABILITY_LABELS[cap as ForumCapability]
+    ?? cap.replace(/^bit_connect_(forum_)?/, '').replaceAll('_', ' ')
+  )
+}
+
+const CAP_GROUPS: CapabilityGroup[] = [
   {
     caps: ['bit_connect_forum_create_post', 'bit_connect_forum_edit_own_post', 'bit_connect_forum_delete_own_post'],
     label: __('Posts')
@@ -34,11 +58,13 @@ const CAP_GROUPS: { caps: string[]; label: string }[] = [
 ]
 
 interface RoleRowProps {
+  /** The server's translated label per capability slug. */
+  capabilityLabels?: Record<string, string>
   disabled: boolean
   role: RoleCapabilities
 }
 
-function RoleRow({ disabled, role }: RoleRowProps) {
+function RoleRow({ capabilityLabels, disabled, role }: RoleRowProps) {
   const [draft, setDraft] = useState<Record<string, boolean>>(() => ({ ...role.capabilities }))
   const [saving, setSaving] = useState(false)
   const { updateRoleCapabilities } = useUpdateRoleCapabilities()
@@ -91,7 +117,7 @@ function RoleRow({ disabled, role }: RoleRowProps) {
                   onChange={e => toggle(cap, e.target.checked)}
                 >
                   <span className="bc-text-sm bc-leading-tight">
-                    {cap.replace('forum_', '').replaceAll('_', ' ')}
+                    {capabilityLabel(cap, capabilityLabels, group.labels)}
                   </span>
                 </Checkbox>
               ))}
@@ -141,7 +167,12 @@ export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitie
       ) : (
         <div className="bc-flex bc-flex-col bc-gap-4 bc-py-2">
           {capabilitySettings?.roles?.map(role => (
-            <RoleRow disabled={isUpdatingRoleCapabilities} key={role.slug} role={role} />
+            <RoleRow
+              capabilityLabels={capabilitySettings.capabilityLabels}
+              disabled={isUpdatingRoleCapabilities}
+              key={role.slug}
+              role={role}
+            />
           ))}
         </div>
       )}
