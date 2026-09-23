@@ -14,15 +14,14 @@ use WP_User;
  * One member, shaped the way the Manager screen expects.
  *
  * Lifted out of UserManagementController so it has exactly one definition. The
- * Manager row is rendered from this payload wherever it is produced — the free
- * plugin's own list and reset endpoints, and the add-on's capability endpoint,
- * which returns a member it has just written and must return it in the same
- * shape or the row would change shape depending on which plugin answered.
+ * Manager row is rendered from this payload wherever it is produced — the list
+ * and reset endpoints here, and any other endpoint that returns a member and
+ * must return it in the same shape, or the row would change shape depending
+ * on which endpoint answered.
  *
  * This is a formatter, not a feature: it reads what WordPress already knows
  * about a user and puts it in an array. Nothing here is gated, and nothing here
- * should be — the add-on borrows it so the two plugins cannot drift, not to
- * reach past a check.
+ * should be.
  */
 final class MemberPresenter
 {
@@ -59,8 +58,8 @@ final class MemberPresenter
          *
          * Stored ids rather than resolved badges: the row renders the catalog
          * with ticks, so it needs to know what is ticked even for an id no badge
-         * answers to any more. The catalog is a pro feature, so the free plugin
-         * answers with an empty list and the column stays empty.
+         * answers to any more. This plugin keeps no catalog, so with nobody
+         * answering the list is empty and the column stays empty.
          *
          * @param list<string> $ids    assigned badge ids
          * @param int          $userId the member in this row

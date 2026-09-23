@@ -23,12 +23,11 @@ use WP_User_Query;
  *
  * There is no endpoint here that *grants* a per-user capability. This plugin's
  * capability model is per role — the matrix on the Manager screen is the whole
- * of it — and it holds no code that writes a user-level capability. Overriding
- * one person's permissions is the Bit Connect Pro add-on's, endpoint and all.
+ * of it — and it holds no code that writes a user-level capability.
  *
- * Reset stays here because it only ever *removes*: a site that never had the
- * add-on has nothing to clear, and a site that has removed it must still be
- * able to take back permissions it can no longer manage.
+ * Reset stays here because it only ever *removes*: whatever wrote a user-level
+ * override (another plugin, or a hand-edited user), an administrator must be
+ * able to take it back from here.
  */
 final class UserManagementController
 {
@@ -95,8 +94,8 @@ final class UserManagementController
     /**
      * One row of the member list.
      *
-     * Delegates so the add-on's capability endpoint, which returns a member it
-     * has just written, answers in exactly this shape. See MemberPresenter.
+     * Delegates so any other endpoint that returns a member answers in exactly
+     * this shape. See MemberPresenter.
      */
     private function formatUser(WP_User $user): array
     {

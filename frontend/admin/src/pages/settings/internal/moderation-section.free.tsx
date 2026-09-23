@@ -4,19 +4,14 @@ import { Typography } from 'antd'
 const { Text, Title } = Typography
 
 /**
- * Moderation without the add-on: what happens to a reported post, stated.
+ * What happens to a reported post, stated.
  *
  * No number field and no heading shaped like a switch, because there is
- * nothing to set. This plugin holds no code that hides anything on a report
- * count: ReportService asks the public `bit_connect_should_auto_hide` filter
- * and, with nobody answering, the answer is no. A spinner holding "2", or a
- * bold label with nothing under it, would be describing behaviour this forum
- * does not have rather than a setting it declines to save.
- *
- * Reporting itself and the moderation queue are free and unaffected. What the
- * add-on sells is acting on reports *before* a moderator has looked, so that is
- * what this section offers, and it takes no props for the same reason the free
- * badges cell takes none: there is nothing here to change.
+ * nothing to set: reported content stays where it is until a moderator has
+ * looked at it. ReportService asks the public `bit_connect_should_auto_hide`
+ * filter and, with nobody answering, the answer is no. Another plugin may
+ * answer that filter and bring its own settings section with it, which is why
+ * this one is a dispatch sibling and takes no props.
  */
 export default function ModerationSectionFree() {
   return (
@@ -25,14 +20,12 @@ export default function ModerationSectionFree() {
         <Title className="bc-mb-1" level={4}>
           {__('Moderation')}
         </Title>
-        <Text type="secondary">
-          {__('Control what happens to reported content before a moderator has looked at it')}
-        </Text>
+        <Text type="secondary">{__('What happens to reported content')}</Text>
       </div>
 
       <Text className="bc-text-sm" type="secondary">
         {__(
-          'Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.'
+          'Reported content stays visible until a moderator reviews the report and decides what to do with it.'
         )}
       </Text>
     </div>

@@ -51,9 +51,8 @@ describe('sortHierarchicalComments', () => {
     expect(result.map(c => c.id)).toEqual([1, 2, 3])
   })
 
-  it('"mostVoted" sorts by votes desc, breaking ties by newest date', () => {
-    const result = sortHierarchicalComments([older, newer, newest], 'mostVoted')
-    // 2 and 3 both have 5 votes -> newest (3) first; 1 has 2 votes -> last
+  it('an ordering nothing claims falls back to newest-first', () => {
+    const result = sortHierarchicalComments([older, newer, newest], 'somethingElse')
     expect(result.map(c => c.id)).toEqual([3, 2, 1])
   })
 

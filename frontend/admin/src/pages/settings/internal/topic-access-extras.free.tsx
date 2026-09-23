@@ -1,12 +1,11 @@
-import TopicAccessProNote from './topic-access-pro-note'
-
 /**
- * Without the add-on: the note, and nothing else.
+ * Below the Topic Access switches: nothing.
  *
- * A thin wrapper so the dispatch has two real siblings. The note itself is
- * unchanged and is still the only thing this plugin shows below the Topic
- * Access switches.
+ * This plugin has no further topic-access setting, so the slot is empty. The
+ * dispatch keeps two real siblings so another plugin can fill the slot with
+ * its own control.
  */
 export default function TopicAccessExtrasFree() {
-  return <TopicAccessProNote />
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

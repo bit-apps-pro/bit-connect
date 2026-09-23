@@ -343,9 +343,9 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
    * Writes a reply's upvote figures into the thread on screen.
    *
    * A setter and nothing more: this plugin never calls an endpoint to change
-   * them, because upvoting a reply is the Bit Connect Pro add-on's feature.
-   * The add-on's own hook casts the vote and calls this with the answer, and
-   * with the optimistic figure before it. Both copies are rebuilt together —
+   * them, because it does not implement upvotes on replies. A plugin that does
+   * casts the vote and calls this with the answer, and with the optimistic
+   * figure before it. Both copies are rebuilt together —
    * the rendered tree is derived from the raw comments, and the button reads
    * from the derived one.
    */

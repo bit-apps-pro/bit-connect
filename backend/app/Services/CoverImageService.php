@@ -7,8 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
-
 /**
  * The banner strip across the top of a member's profile card.
  *
@@ -34,7 +32,7 @@ class CoverImageService
     /**
      * User meta key holding the attachment id of the cover image.
      */
-    private const META_KEY = Config::VAR_PREFIX . 'cover_id';
+    private const META_KEY = 'bit_connect_cover_id';
 
     /**
      * Attachment id of a member's cover, or 0 when they have none.

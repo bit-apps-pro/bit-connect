@@ -44,7 +44,7 @@ Members can create topics, join threaded discussions, upvote ideas, follow conve
 
 = Easy Community Management =
 
-Run your community from one place. Manage topics, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress easily.
+Run your community from one place. Manage topics, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress.
 
 = User-Friendly Community Dashboard =
 
@@ -52,7 +52,7 @@ See what is happening across your community from a simple dashboard. Track total
 
 = Member Profiles =
 
-Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their topics, comments and activity across the community forum in one place clearly.
+Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their topics, comments and activity across the community forum in one place.
 
 = Organized Discussions and Engagement =
 
@@ -76,7 +76,7 @@ Make your community easier for search engines to understand. Bit Connect handles
 
 = Flexible Community Access and Authentication =
 
-Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed easily.
+Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed.
 
 = Customizable Community Portal =
 
@@ -141,7 +141,7 @@ Installation is free, quick, and easy. Simply search for **Bit Connect** in your
 
 = Manual Alternatives =
 
-Alternatively, you can download the plugin zip file from [wp.org](https://wordpress.org), upload it via the **Plugins → Add New → Upload Plugin** option, and follow the on-screen instructions.
+Alternatively, you can download the plugin zip file from [its WordPress.org page](https://wordpress.org/plugins/bit-connect/), upload it via the **Plugins → Add New → Upload Plugin** option, and follow the on-screen instructions.
 
 == Frequently Asked Questions ==
 
@@ -176,10 +176,11 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 == Changelog ==
 
 = 1.0.1 =
-* Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
-* Settings screens now describe add-on features in plain text, with no disabled controls.
-* Reported content is no longer hidden automatically, and the report threshold setting has gone with it. This plugin queues reports for a moderator to decide; hiding on a count is a feature of Bit Connect Pro, a separate plugin.
+* Removed reply upvoting and author-only private topics.
+* Removed automatic hiding of reported content and its report threshold setting. Reports are queued for a moderator to decide.
+* Settings screens no longer show disabled controls.
 * The Outfit typeface now ships with the plugin instead of loading from Google Fonts, so the portal contacts no third party.
+* Members register with the site's default role, through WordPress's own registration checks.
 
 = 1.0.0 =
 * First stable release.

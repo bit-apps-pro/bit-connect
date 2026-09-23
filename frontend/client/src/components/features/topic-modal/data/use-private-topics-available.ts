@@ -9,7 +9,7 @@ import useHasPrivateTopicsPro from './use-private-topics-available.pro'
  * Read by surfaces that only need to know the feature exists — the topic filter
  * offers a Private option, say — rather than by anything that writes a status.
  * This plugin answers no, because it has no code that makes a topic private;
- * the Bit Connect Pro add-on's implementation answers yes.
+ * a plugin that adds private topics answers through the other sibling.
  *
  * Callers still handle "no, but this visitor is already looking at private
  * topics": a bookmark pointing at that filter has to keep rendering, and an

@@ -24,9 +24,9 @@ interface SettingsSectionProps {
  * A grid of on/off settings.
  *
  * Every switch here is real: it is bound to a stored value and the forum acts
- * on it. There is deliberately no "pro" variant of a row: a switch for
- * something this plugin cannot do would not be a setting. A caller that wants
- * to say what the add-on adds passes `note` and says it in words instead.
+ * on it. There is deliberately no disabled variant of a row: a switch for
+ * something this plugin cannot do would not be a setting. A caller that has
+ * something else to put under the grid passes `note`.
  */
 export default function SettingsSection({
   disabled = false,

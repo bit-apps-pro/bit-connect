@@ -1,9 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { Select } from 'antd'
 
-import useCommentSortOptions from '../data/use-comment-sort-options'
+import { type SortOption } from '@/store/single-post.type'
 
-export type CommentSortOption = 'all' | 'mostVoted' | 'newest'
+import useCommentSortOptions from '../data/use-comment-sort-options'
 
 /**
  * Sort control for the comment thread.
@@ -16,17 +16,17 @@ export default function CommentSortSelect({
   onChange,
   value
 }: {
-  onChange: (value: CommentSortOption) => void
-  value: CommentSortOption
+  onChange: (value: SortOption) => void
+  value: SortOption
 }) {
-  // Two orderings here, three with the add-on. See use-comment-sort-options.
+  // The choices are an extension point — see use-comment-sort-options.
   const options = useCommentSortOptions()
 
   return (
     <Select
       aria-label={__('Sort comments')}
       onChange={next => {
-        if (next === 'newest' || next === 'all' || next === 'mostVoted') onChange(next)
+        if (options.some(option => option.value === next)) onChange(next)
       }}
       options={options}
       value={value}

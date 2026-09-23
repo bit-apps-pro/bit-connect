@@ -13,10 +13,9 @@ export interface VisibilityOption {
  *
  * An extension point rather than a branch. This plugin publishes topics, so its
  * implementation answers with Public and stops there — not "Public, and Private
- * greyed out", which would be a control with nothing behind it. Topics visible
- * only to their author are the Bit Connect Pro add-on's feature: the option,
- * the endpoint that writes the status and the setting that offers it all ship
- * over there, so the add-on's implementation is the one that knows about them.
+ * greyed out", which would be a control with nothing behind it. This plugin has
+ * no option, endpoint or setting for a topic visible only to its author; a
+ * plugin that adds all three supplies the other sibling.
  *
  * Selected at module scope so the call site is a single unconditional hook call
  * and the rules of hooks still hold.

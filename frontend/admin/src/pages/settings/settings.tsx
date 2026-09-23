@@ -224,7 +224,7 @@ export default function Settings() {
           title={__('Topic Form Fields')}
         />
         {/* Takes nothing from this form: this plugin stores no moderation
-            setting. The add-on's section reads and saves its own. */}
+            setting. Another plugin's section would read and save its own. */}
         <ModerationSection />
         <SettingsSection
           disabled={isUpdatingSettings}

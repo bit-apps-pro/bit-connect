@@ -59,11 +59,10 @@ final class UpdateTopicRequest extends Request
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
             'post_name'   => ['nullable', 'string', 'sanitize:title', 'max:200'],
             // Publish is the only status this endpoint sets. Sending it for a
-            // topic that is currently private makes it public, which needs no
-            // add-on: taking privacy away is always available, the same way
-            // clearing a capability override is. Omitting the field leaves the
-            // stored status alone, so an author editing a private topic on a
-            // site without the add-on keeps it private.
+            // topic that is currently private makes it public, the same way
+            // clearing a capability override is always available. Omitting the
+            // field leaves the stored status alone, so an author editing a
+            // private topic keeps it private.
             'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],

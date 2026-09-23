@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+// Every echo below is a string literal; the template tags between them print
+// and escape their own output.
 echo '<!DOCTYPE html><html ';
 language_attributes();
 echo '><head><meta charset="';
@@ -30,4 +31,3 @@ while (have_posts()) {
 echo '</div>';
 wp_footer();
 echo '</body></html>';
-// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

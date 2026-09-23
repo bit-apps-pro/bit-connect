@@ -7,12 +7,13 @@ import SectionCard from './section-card'
 const { Text } = Typography
 
 /**
- * Email wording without the add-on: the built-in lines, shown as text.
+ * Email wording: the built-in lines, shown as text.
  *
  * The four lines the forum actually sends are read from `form`, which the
  * server has already resolved to this plugin's built-in wording — so this
  * shows the real wording rather than a sample of it. They are rendered as
- * quoted text and not as inputs: this plugin has no setting for them.
+ * quoted text and not as inputs: this plugin has no setting for them. Another
+ * plugin may filter the wording and bring its own editor as the other sibling.
  */
 export default function EmailWordingSectionFree({ form }: EmailWordingSectionProps) {
   const lines = [
@@ -28,9 +29,7 @@ export default function EmailWordingSectionFree({ form }: EmailWordingSectionPro
       title={__('Email wording')}
     >
       <Text className="bc-mb-4 bc-block bc-text-sm" type="secondary">
-        {__(
-          'Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.'
-        )}
+        {__('Notification emails use the wording below.')}
       </Text>
 
       <dl className="bc-m-0 bc-flex bc-flex-col bc-gap-3">

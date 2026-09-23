@@ -26,9 +26,9 @@ use WP_User;
  *
  * - Authored badges, handed out by an admin — Developer, Support, Group Expert.
  *   These say what someone *does*, and a forum needs to say it about people
- *   whose permissions are ordinary. Authoring them is a pro feature, so they
- *   arrive through the `bit_connect_assigned_member_badges` filter and the free
- *   plugin simply has nobody to ask.
+ *   whose permissions are ordinary. This plugin has no screen for authoring
+ *   them, so they arrive through the `bit_connect_assigned_member_badges`
+ *   filter, and with nobody answering there are none.
  * - Capabilities answer standing — Admin, Moderator — read from capabilities
  *   rather than role slugs, because caps are granted per role in Manager and
  *   overridable per user, so a moderator can hold forum_moderate under any role
@@ -152,11 +152,10 @@ final class UserBadgeService
         /**
          * Filter the badges an admin authored and handed to this member.
          *
-         * The badge *catalog* — Developer, Support, Group Expert — is a pro
-         * feature, so the free plugin has nobody to ask and this stays empty.
-         * The pro add-on answers with ProfileBadgeService::badgesFor(). What
-         * remains below is free either way: a member's standing (Admin,
-         * Moderator) is read from capabilities, not from the catalog.
+         * This plugin keeps no badge *catalog* (Developer, Support, Group
+         * Expert and the like), so with nobody answering this stays empty.
+         * What follows below does not depend on it: a member's standing
+         * (Admin, Moderator) is read from capabilities, not from a catalog.
          *
          * @param list<array{id: null|string, label: string, tone: string}> $badges assigned badges, highest priority first
          * @param int                                                       $userId the member being labelled

@@ -48,7 +48,21 @@ const PATHS = [
   // Emitted by the Vite build; a plugin's asset folder is not a document root.
   'assets/robots.txt',
   'assets/client/robots.txt',
+  // An intermediate of `pnpm i18n`: every string in it is already merged into
+  // `bit-connect.pot`, which is the one template translate.wordpress.org reads.
+  'languages/frontend.pot',
+  // Imposter does its work at `composer install`, rewriting the bundled
+  // libraries under the plugin's own namespace. Nothing runs it on a site, and
+  // it is the one package in vendor/ that would otherwise ship unprefixed.
+  'vendor/typisttech',
 ]
+
+/**
+ * Keys kept in the shipped composer.json. Everything else in it — the
+ * repository's own scripts and tooling hooks — describes how to develop the
+ * plugin, not what it is, and belongs to the repository.
+ */
+const COMPOSER_KEYS = ['name', 'description', 'type', 'license', 'authors', 'require', 'autoload', 'extra', 'config']
 
 /** Names removed wherever they appear under vendor/. */
 const VENDOR_NAMES = new Set([
@@ -108,5 +122,18 @@ async function pruneVendor(directory) {
 }
 
 await pruneVendor(path.join(buildDirectory, 'vendor'))
+
+const composerFile = path.join(buildDirectory, 'composer.json')
+
+if (await fse.pathExists(composerFile)) {
+  const composer = await fse.readJson(composerFile)
+  const kept = Object.fromEntries(COMPOSER_KEYS.filter(key => key in composer).map(key => [key, composer[key]]))
+
+  if (Object.keys(kept).length !== Object.keys(composer).length) {
+    await fse.writeJson(composerFile, kept, { spaces: 2 })
+    console.log('  trimmed  composer.json to its package description')
+    removed += 1
+  }
+}
 
 console.log(`prune-build: removed ${removed} development artefact(s) from ${pluginSlug}`)

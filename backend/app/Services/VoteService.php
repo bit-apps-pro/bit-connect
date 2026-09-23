@@ -26,9 +26,9 @@ use BitApps\BitConnect\Model\Vote;
  *     "Upvotes" figure on their card and nothing in core announces one
  *
  * Topics only, end to end: this class has no comment-side method at all, and
- * the table it writes has no comment column. Upvoting an individual reply is a
- * separate add-on's feature, and the rows, the column and the cleanup after
- * them all belong to whichever plugin implements it.
+ * the table it writes has no comment column. Upvoting an individual reply is
+ * not implemented here; the rows, the column and the cleanup after them would
+ * all belong to whichever plugin implemented it.
  */
 class VoteService
 {

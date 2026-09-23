@@ -141,7 +141,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         header('Content-Type: application/xml; charset=UTF-8', true);
         status_header(200);
 
-        echo self::renderFeed(self::urls($page)); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
+        self::printFeed(self::urls($page));
 
         exit;
     }
@@ -481,30 +481,28 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
-     * A urlset document for the given entries.
+     * Print a urlset document for the given entries, escaping each value at
+     * the element that carries it.
      *
      * @param array<int, array<string, string>> $urls
      */
-    private static function renderFeed(array $urls): string
+    private static function printFeed(array $urls): void
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
-            . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"%s\">\n", 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         foreach ($urls as $entry) {
             if (empty($entry['loc'])) {
                 continue;
             }
 
-            $xml .= '<url><loc>' . esc_url($entry['loc']) . '</loc>';
-
             if (!empty($entry['lastmod'])) {
-                $xml .= '<lastmod>' . esc_html($entry['lastmod']) . '</lastmod>';
+                printf("<url><loc>%s</loc><lastmod>%s</lastmod></url>\n", esc_url($entry['loc']), esc_html($entry['lastmod']));
+            } else {
+                printf("<url><loc>%s</loc></url>\n", esc_url($entry['loc']));
             }
-
-            $xml .= '</url>' . "\n";
         }
 
-        return $xml . '</urlset>';
+        printf('</urlset>');
     }
 
     /**

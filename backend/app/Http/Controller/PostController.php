@@ -99,7 +99,7 @@ final class PostController
             $hasVoted = !empty($userVote);
         }
 
-        $attachments = get_post_meta($post->ID, '_post_attachments', true) ?: [];
+        $attachments = get_post_meta($post->ID, '_bit_connect_post_attachments', true) ?: [];
 
         return Response::success(
             [

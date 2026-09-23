@@ -109,7 +109,6 @@ final class Plugin
         // Not admin-only: the public portal loads the same module bundle, and
         // its script tag needs type="module" there as much as in wp-admin.
         new HtmlTagModifier();
-        // echo get_rest_url();die;
         new HookProvider();
     }
 

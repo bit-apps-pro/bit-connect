@@ -1,5 +1,5 @@
 /**
- * The Badges cell without the pro add-on: there is no cell.
+ * The Badges cell in this plugin: there is no cell.
  *
  * The column itself is not drawn in this build — `useBadgesAdmin` reports no
  * catalog and the Manager table leaves the track out entirely — so this

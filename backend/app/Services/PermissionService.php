@@ -122,7 +122,6 @@ final class PermissionService
      *
      * There is no canVoteComment() beside this, and no setting behind it,
      * because upvoting an individual reply is not something this plugin does.
-     * It ships in the Bit Connect Pro add-on, which asks its own questions.
      */
     public static function canVotePost(): bool
     {

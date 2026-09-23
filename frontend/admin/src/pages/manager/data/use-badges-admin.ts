@@ -5,7 +5,7 @@ import useBadgesAdminFree from './use-badges-admin.free'
 import useBadgesAdminPro from './use-badges-admin.pro'
 
 export interface BadgesAdmin {
-  /** The catalog, in priority order. Empty without the pro add-on. */
+  /** The catalog, in priority order. Empty unless another plugin keeps one. */
   catalog: ProfileBadge[]
   /**
    * Whether this install can author and assign badges at all.

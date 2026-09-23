@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Tue Sep 22 2026 14:33:30 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Wed Sep 23 2026 13:11:10 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -76,26 +76,26 @@ msgstr ""
 #: frontend/admin/src/pages/general/internal/location-section.tsx:89
 #: frontend/admin/src/pages/products/ui/product-create-modal.tsx:37
 #: frontend/admin/src/pages/products/ui/product-edit-modal.tsx:70
-#: frontend/admin/src/pages/products/ui/products-table.tsx:58
+#: frontend/admin/src/pages/products/ui/products-table.tsx:59
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:276
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:78
 #: frontend/admin/src/pages/stages/stages.tsx:132
 #: frontend/admin/src/pages/status/ui/status-create-modal.tsx:53
 #: frontend/admin/src/pages/status/ui/status-edit-modal.tsx:90
-#: frontend/admin/src/pages/status/ui/status-table.tsx:102
+#: frontend/admin/src/pages/status/ui/status-table.tsx:103
 #: frontend/admin/src/pages/tags/ui/tag-create-modal.tsx:39
 #: frontend/admin/src/pages/tags/ui/tag-edit-modal.tsx:72
 #: frontend/admin/src/pages/tags/ui/tags-table.tsx:52
 #: frontend/admin/src/pages/topic-types/ui/topic-type-edit-modal.tsx:95
 #: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:52
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:97
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:98
 #: frontend/client/src/common/helpers/i18nWrap.test.ts:40
 #: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:90
 #: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:144
 #: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:66
 #: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:117
 #: frontend/client/src/pages/Post/CommentEditor.tsx:464
-#: frontend/client/src/pages/Post/CommentItem.tsx:106
+#: frontend/client/src/pages/Post/CommentItem.tsx:100
 #: frontend/client/src/pages/Post/PostHeader.tsx:167
 msgid "Cancel"
 msgstr ""
@@ -309,7 +309,7 @@ msgstr ""
 #: frontend/admin/src/pages/activity/activity.tsx:146
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:18
 #: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:46
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:298
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:291
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:86
 #: frontend/client/src/pages/User/ui/ProfileCard.tsx:164
 #: frontend/client/src/pages/User/UserProfilePage.tsx:116
@@ -373,12 +373,12 @@ msgid "Took"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
-#: frontend/client/src/pages/Post/CommentItem.tsx:387
+#: frontend/client/src/pages/Post/CommentItem.tsx:379
 msgid "reply"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
-#: frontend/client/src/pages/Post/CommentItem.tsx:387
+#: frontend/client/src/pages/Post/CommentItem.tsx:379
 msgid "replies"
 msgstr ""
 
@@ -541,7 +541,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:35
 #: frontend/admin/src/pages/products/ui/product-create-modal.tsx:43
-#: frontend/client/src/pages/topics/topics.tsx:396
+#: frontend/client/src/pages/topics/topics.tsx:391
 msgid "Product"
 msgstr ""
 
@@ -554,7 +554,7 @@ msgstr ""
 #: frontend/admin/src/pages/seo/internal/archive-matrix.tsx:12
 #: frontend/admin/src/pages/tags/tags.tsx:19
 #: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:144
-#: frontend/client/src/pages/topics/topics.tsx:402
+#: frontend/client/src/pages/topics/topics.tsx:397
 msgid "Tags"
 msgstr ""
 
@@ -689,8 +689,8 @@ msgstr ""
 #: frontend/client/src/pages/Auth/LoginPage.tsx:110
 #: frontend/client/src/pages/Auth/RegisterPage.tsx:71
 #: frontend/client/src/pages/Auth/RegisterPage.tsx:209
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:303
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:312
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:307
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:316
 msgid "Login"
 msgstr ""
 
@@ -1229,8 +1229,8 @@ msgstr ""
 
 #: frontend/admin/src/pages/manager/manager.tsx:122
 #: frontend/admin/src/pages/notifications/notifications.tsx:105
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:135
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:192
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:167
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:224
 #: frontend/client/src/components/features/share/shared/share-targets.ts:120
 msgid "Email"
 msgstr ""
@@ -1276,11 +1276,11 @@ msgstr ""
 msgid "Moderation & Admin"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:123
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:126
 msgid "Forum Capabilities by Role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:126
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:129
 msgid ""
 "Set which forum actions each WordPress role can perform. Changes apply "
 "immediately to all users of that role."
@@ -1322,60 +1322,56 @@ msgstr ""
 msgid "Digest send hour"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:23
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:24
 msgid "Who forum email appears to come from."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:23
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:24
 msgid "Email delivery"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:26
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:27
 msgid "Notifications are sent as"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:31
-msgid ""
-"Taken from your site title and address. A custom sender is a feature of Bit "
-"Connect Pro, a separate plugin."
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:32
+msgid "Taken from your site title and address."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:49
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:48
 msgid "Send test email"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:53
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:52
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:19
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:20
 msgid "Greeting"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:20
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:21
 msgid "Instant email intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:21
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:22
 msgid "Digest intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:22
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:23
 msgid "Sign-off"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:27
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
 msgid "The wording around the list of what happened."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:29
 msgid "Email wording"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:31
-msgid ""
-"Notification emails use the wording below. Editing these lines is a feature "
-"of Bit Connect Pro, a separate plugin."
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:32
+msgid "Notification emails use the wording below."
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/notifications.tsx:43
@@ -1407,7 +1403,7 @@ msgid "What the forum sends"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/notifications.tsx:103
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:129
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:161
 msgid "Notification"
 msgstr ""
 
@@ -1519,7 +1515,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:147
 #: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:125
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:239
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:232
 msgid "Back"
 msgstr ""
 
@@ -1690,36 +1686,40 @@ msgstr ""
 msgid "Product Name"
 msgstr ""
 
-#: frontend/admin/src/pages/products/ui/products-table.tsx:59
+#: frontend/admin/src/pages/products/ui/products-table.tsx:52
+msgid "Edit product"
+msgstr ""
+
+#: frontend/admin/src/pages/products/ui/products-table.tsx:60
 #: frontend/admin/src/pages/stages/stages.tsx:133
-#: frontend/admin/src/pages/status/ui/status-table.tsx:103
+#: frontend/admin/src/pages/status/ui/status-table.tsx:104
 #: frontend/admin/src/pages/tags/ui/tags-table.tsx:53
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:98
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:99
 msgid "Are you sure to delete?"
 msgstr ""
 
-#: frontend/admin/src/pages/products/ui/products-table.tsx:61
+#: frontend/admin/src/pages/products/ui/products-table.tsx:62
 #: frontend/admin/src/pages/stages/stages.tsx:135
-#: frontend/admin/src/pages/status/ui/status-table.tsx:105
+#: frontend/admin/src/pages/status/ui/status-table.tsx:106
 #: frontend/admin/src/pages/tags/ui/tags-table.tsx:55
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:100
-#: frontend/client/src/pages/Post/CommentItem.tsx:109
-#: frontend/client/src/pages/Post/CommentItem.tsx:167
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:101
+#: frontend/client/src/pages/Post/CommentItem.tsx:103
+#: frontend/client/src/pages/Post/CommentItem.tsx:161
 #: frontend/client/src/pages/Post/PostHeader.tsx:170
 #: frontend/client/src/pages/Post/PostHeader.tsx:239
 msgid "Delete"
 msgstr ""
 
-#: frontend/admin/src/pages/products/ui/products-table.tsx:63
-#: frontend/admin/src/pages/products/ui/products-table.tsx:66
+#: frontend/admin/src/pages/products/ui/products-table.tsx:64
+#: frontend/admin/src/pages/products/ui/products-table.tsx:67
 msgid "Delete Product"
 msgstr ""
 
-#: frontend/admin/src/pages/products/ui/products-table.tsx:75
+#: frontend/admin/src/pages/products/ui/products-table.tsx:76
 #: frontend/admin/src/pages/stages/stages.tsx:150
-#: frontend/admin/src/pages/status/ui/status-table.tsx:118
+#: frontend/admin/src/pages/status/ui/status-table.tsx:120
 #: frontend/admin/src/pages/tags/ui/tags-table.tsx:69
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:108
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:115
 msgid "Actions"
 msgstr ""
 
@@ -2311,25 +2311,18 @@ msgstr ""
 msgid "Settings updated successfully"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:26
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:21
 msgid "Moderation"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:29
-msgid "Control what happens to reported content before a moderator has looked at it"
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:23
+msgid "What happens to reported content"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:34
+#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:27
 msgid ""
-"Reported content stays visible until a moderator decides. Hiding a topic or "
-"reply automatically once enough different members have reported it is a "
-"feature of Bit Connect Pro, a separate plugin."
-msgstr ""
-
-#: frontend/admin/src/pages/settings/internal/topic-access-pro-note.tsx:18
-msgid ""
-"Letting an author keep a topic private, so only they and the forum team can "
-"see it, is a feature of Bit Connect Pro, a separate plugin."
+"Reported content stays visible until a moderator reviews the report and "
+"decides what to do with it."
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:44
@@ -2367,8 +2360,6 @@ msgid "On/off your Topic Upvote"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:137
-#: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
-#: frontend/client/src/pages/Post/CommentVoteBox.tsx:51
 #: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
 msgid "Upvote"
 msgstr ""
@@ -2621,46 +2612,54 @@ msgstr ""
 msgid "No color"
 msgstr ""
 
-#: frontend/admin/src/pages/status/ui/status-table.tsx:107
+#: frontend/admin/src/pages/status/ui/status-table.tsx:96
+msgid "Edit status"
+msgstr ""
+
+#: frontend/admin/src/pages/status/ui/status-table.tsx:108
 msgid "Delete Status"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:61
+#: frontend/admin/src/pages/status/ui/status-table.tsx:111
+msgid "Delete status"
+msgstr ""
+
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:60
 msgid "Recommended Plugins"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:66
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:65
 msgid ""
 "The list of other Bit Apps plugins is loaded from bitapps.pro only when you "
 "ask for it. Nothing about this site is sent."
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:70
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:69
 msgid "Show other Bit Apps plugins"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:74
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:73
 msgid "Loading…"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:77
+#: frontend/admin/src/pages/support/internal/recommended-plugins.tsx:76
 msgid "The list could not be loaded right now."
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:23
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:22
 msgid "Version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:26
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:25
 msgid "Installed version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:30
-msgid "Looking for more? Bit Connect Pro is a separate add-on."
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:29
+msgid "Looking for more? Bit Connect Pro is a separate plugin."
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:39
-msgid "Get Bit Connect Pro"
+#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:31
+msgid "Learn about Bit Connect Pro"
 msgstr ""
 
 #: frontend/admin/src/pages/support/support.tsx:34
@@ -2788,8 +2787,24 @@ msgstr ""
 msgid "Create Topic Type"
 msgstr ""
 
-#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:102
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:91
+msgid "Edit topic type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:103
 msgid "Delete Topic Type"
+msgstr ""
+
+#: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:106
+msgid "Delete topic type"
+msgstr ""
+
+#: frontend/client/src/common/hooks/useCapabilityGate.ts:34
+msgid "Ask a site administrator if you think you should be able to."
+msgstr ""
+
+#: frontend/client/src/common/hooks/useCapabilityGate.ts:35
+msgid "Your account does not have permission to do this."
 msgstr ""
 
 #: frontend/client/src/components/features/file-uploader/attachment-validation.ts:28
@@ -2898,63 +2913,78 @@ msgstr ""
 msgid "Replies, mentions and moderation decisions will show up here."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:41
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:42
 msgid "Instant"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:42
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:43
 msgid "Daily"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:43
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:44
 msgid "Weekly"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:44
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:45
 msgid "Never"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:74
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:76
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:140
 msgid "That could not be saved. Please check your connection and try again."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:88
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:90
 msgid "Your notification settings could not be loaded."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:95
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:97
 msgid "Email frequency"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:98
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:100
 msgid ""
 "How often email should arrive. This does not change what you are notified "
 "about — only when it is sent."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:119
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:121
+msgid "New topics"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:126
+msgid "Tell me about every new topic"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:129
+msgid ""
+"Get a notification for every topic posted anywhere on the portal, not only "
+"in the products and tags you follow."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:151
 msgid "What you are notified about"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:121
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:153
 msgid "Changes save as you make them."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:132
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:178
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:164
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:210
 msgid "App"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:184
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:216
 msgid "This forum always tells you about this."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:185
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:196
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:217
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:228
 msgid "Your administrator has set this for everyone."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:209
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:241
 msgid ""
 "Email is switched off entirely, so the Email column has no effect until you "
 "choose a frequency above."
@@ -3004,29 +3034,29 @@ msgstr ""
 msgid "A moderator reviewed something you reported"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:97
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:98
 msgid "posted a new topic:"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:104
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:105
 #: frontend/client/src/pages/User/ui/FeedRow.tsx:80
 msgid "commented on"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:111
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:112
 msgid "The status changed on"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:120
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:121
 msgid "%d people"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:121
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:125
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:122
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:126
 msgid "upvoted your post in"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:239
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:240
 msgid "No longer available"
 msgstr ""
 
@@ -3211,8 +3241,8 @@ msgid "Submit"
 msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:91
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:248
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:265
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:250
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:269
 msgid "Create New Topic"
 msgstr ""
 
@@ -3229,79 +3259,79 @@ msgstr ""
 msgid "Failed to upload image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:167
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:174
 msgid "Topic Title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:170
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:177
 msgid "Please enter a topic title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:171
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:178
 msgid "Topic title cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:174
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:181
 msgid "Write a post title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:182
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:189
 msgid "Permalink"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:185
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:192
 msgid "Slug cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:192
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:199
 msgid "Slug must contain at least one letter or number"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:222
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:229
 msgid "Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:224
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:231
 msgid "Please select a topic type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:226
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:233
 msgid "Select a Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:233
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:240
 msgid "Products/Department"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:235
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:242
 msgid "Please select a department"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:237
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:244
 msgid "All Products/Department"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:247
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:254
 msgid "Write Your Topic Description Here"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:258
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:265
 msgid "Please enter a description or add an image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:261
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:268
 msgid "Description cannot exceed 10000 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:272
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:279
 msgid "Write your topic description..."
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:278
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:285
 msgid "Tag"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:286
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:293
 msgid "Select tags.."
 msgstr ""
 
@@ -3410,17 +3440,17 @@ msgid "Newest"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:56
-#: frontend/client/src/pages/topics/topics.tsx:140
+#: frontend/client/src/pages/topics/topics.tsx:139
 msgid "Oldest"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:68
-#: frontend/client/src/pages/topics/topics.tsx:132
+#: frontend/client/src/pages/topics/topics.tsx:131
 msgid "Private"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:70
-#: frontend/client/src/pages/topics/topics.tsx:130
+#: frontend/client/src/pages/topics/topics.tsx:129
 msgid "My Topics"
 msgstr ""
 
@@ -3606,8 +3636,8 @@ msgid "Repeat your password"
 msgstr ""
 
 #: frontend/client/src/pages/Auth/RegisterPage.tsx:198
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:325
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:332
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:329
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:336
 msgid "Register"
 msgstr ""
 
@@ -3678,23 +3708,23 @@ msgstr ""
 msgid "Back to the community"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:88
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:90
 msgid "My Profile"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:99
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:101
 msgid "Log Out"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:177
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:179
 msgid "Open menu"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:266
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:270
 msgid "New"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:282
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:286
 msgid "Account menu"
 msgstr ""
 
@@ -3734,58 +3764,53 @@ msgstr ""
 msgid "Replying to"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:115
+#: frontend/client/src/pages/Post/CommentItem.tsx:109
 msgid "Delete comment?"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:159
+#: frontend/client/src/pages/Post/CommentItem.tsx:153
 #: frontend/client/src/pages/Post/PostHeader.tsx:229
 msgid "Edit"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:178
+#: frontend/client/src/pages/Post/CommentItem.tsx:172
 #: frontend/client/src/pages/Post/PostHeader.tsx:250
 msgid "Report"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:263
+#: frontend/client/src/pages/Post/CommentItem.tsx:257
 msgid "under review"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:298
+#: frontend/client/src/pages/Post/CommentItem.tsx:292
 msgid "Out of public view while a moderator reviews a report about it"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:301
+#: frontend/client/src/pages/Post/CommentItem.tsx:295
 #: frontend/client/src/pages/Post/PostHeader.tsx:536
 msgid "Hidden"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:342
+#: frontend/client/src/pages/Post/CommentItem.tsx:334
 msgid "Reply"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:361
+#: frontend/client/src/pages/Post/CommentItem.tsx:353
 #: frontend/client/src/pages/Post/PostHeader.tsx:388
 msgid "More actions"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:388
+#: frontend/client/src/pages/Post/CommentItem.tsx:380
 msgid "Hide"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentList.tsx:101
-#: frontend/client/src/pages/topics/topics.tsx:432
+#: frontend/client/src/pages/Post/CommentList.tsx:103
+#: frontend/client/src/pages/topics/topics.tsx:427
 msgid "Loading more..."
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentList.tsx:107
+#: frontend/client/src/pages/Post/CommentList.tsx:109
 msgid "🎉 You're all caught up — no more comments"
-msgstr ""
-
-#: frontend/client/src/pages/Post/CommentVoteBox.tsx:22
-#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
-msgid "Remove your upvote"
 msgstr ""
 
 #: frontend/client/src/pages/Post/ContentBox.tsx:299
@@ -3796,53 +3821,53 @@ msgstr ""
 msgid "All comments"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:71
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:70
 msgid "Failed to load post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:80
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:79
 msgid "Failed to load settings"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:101
-#: frontend/client/src/pages/topics/topics.tsx:289
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:95
+#: frontend/client/src/pages/topics/topics.tsx:284
 #: frontend/client/src/pages/User/UserProfilePage.tsx:136
 msgid "Failed to vote on post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:115
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:109
 msgid "Comment posted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:118
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:112
 msgid "Failed to post comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:131
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:125
 msgid "Reply posted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:134
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:128
 msgid "Failed to post reply"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:150
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:144
 msgid "Comment updated successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:153
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:147
 msgid "Failed to update comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:161
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:155
 msgid "Comment deleted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:164
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:158
 msgid "Failed to delete comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:307
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:300
 msgid "Log in to post a comment."
 msgstr ""
 
@@ -3942,45 +3967,49 @@ msgstr ""
 msgid "Related topics"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:201
+#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
+msgid "Remove your upvote"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:199
 msgid "Failed to load posts"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:218
+#: frontend/client/src/pages/topics/topics.tsx:216
 msgid "Failed to load more posts"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:305
-#: frontend/client/src/pages/topics/topics.tsx:385
+#: frontend/client/src/pages/topics/topics.tsx:300
+#: frontend/client/src/pages/topics/topics.tsx:380
 msgid "Filters"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:345
+#: frontend/client/src/pages/topics/topics.tsx:340
 msgid "Remove filter"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:377
+#: frontend/client/src/pages/topics/topics.tsx:372
 msgid "Reset"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:390
+#: frontend/client/src/pages/topics/topics.tsx:385
 msgid "Sort by"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:411
+#: frontend/client/src/pages/topics/topics.tsx:406
 msgid "Loading posts..."
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:416
+#: frontend/client/src/pages/topics/topics.tsx:411
 msgid "No posts found"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:438
+#: frontend/client/src/pages/topics/topics.tsx:433
 msgid "🎉 You're all caught up — no more topics"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:452
-#: frontend/client/src/pages/topics/topics.tsx:461
+#: frontend/client/src/pages/topics/topics.tsx:447
+#: frontend/client/src/pages/topics/topics.tsx:456
 msgid "Back to top"
 msgstr ""
 

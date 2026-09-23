@@ -14,21 +14,19 @@ use BitApps\BitConnect\Enum\NotificationTypes;
 use WP_Comment;
 
 /**
- * Behaviour this plugin declines to perform, offered to anything that will.
+ * The decisions this plugin lets another plugin make.
  *
- * Every method here answers for itself, and that is the whole design. These
- * are not features this plugin has and withholds: it does not implement them
- * at all. Each one names a decision the plugin deliberately declines to make
- * by itself — whether to hide reported content before a human has looked at
- * it, which asset bundle the pages it renders should load, which capabilities
- * this forum recognises, what else is true of a comment, and what a member's
- * upvote total comes to — and hands it to a listener if there is one. With no
- * listener the plugin's own answer stands, and it is a complete, working
- * behaviour rather than a refusal.
+ * Every method here answers for itself, and that is the whole design. Each
+ * one names a decision the plugin makes with a plain default — whether to
+ * hide reported content before a human has looked at it, which asset bundle
+ * the pages it renders should load, which capabilities this forum recognises,
+ * what else is true of a comment, and what a member's upvote total comes to —
+ * and hands it to a listener if there is one. With no listener the plugin's
+ * own answer stands, and it is a complete, working behaviour.
  *
- * The filters are public. Any plugin may answer them; the Bit Connect Pro
- * add-on is the one that does, but nothing here knows or asks about that, and
- * a site that wanted its own moderation policy could answer them itself.
+ * The filters are public. Any plugin may answer them, and nothing here knows
+ * or asks which one does; a site that wanted its own moderation policy could
+ * answer them itself.
  *
  * Callers ask this class rather than the filter directly, so the extension
  * points are enumerable in one file and a typo in a hook name is a missing
@@ -51,9 +49,9 @@ final class ExtensionPoints
      * Where the admin and portal bundles are, and what their files are stamped
      * with.
      *
-     * This plugin's own build, unless something answers with a fuller one. The
-     * add-on is that something: it ships no view layer, so the pages are still
-     * rendered here and only the files they load change.
+     * This plugin's own build, unless something answers with another. The
+     * pages are still rendered here either way; only the files they load
+     * change.
      *
      * The three travel together on purpose. Asked separately, a listener that
      * answers one and not another produces a URI from one build and a code
@@ -152,10 +150,8 @@ final class ExtensionPoints
      *
      * Everything this plugin knows about a comment is in `$fields` already;
      * this is where a plugin that knows something more about the same comment
-     * adds it. The add-on uses it to attach the reply's upvote count and
-     * whether the reader has cast one — a feature this plugin does not have,
-     * so there is no key here to overwrite and nothing withheld when nobody
-     * answers.
+     * adds it. There is no key here for a listener to overwrite, and nothing
+     * missing from a comment when nobody answers.
      *
      * Trusted no further than the shape: a listener that answers with
      * something that is not an array gets this plugin's own fields sent
@@ -261,9 +257,9 @@ final class ExtensionPoints
      * How many upvotes a member has received.
      *
      * This plugin counts the votes on their topics, which is every vote it
-     * knows how to cast. The add-on adds the ones on their replies. Nobody
-     * answering leaves the topic figure, which is a true total of what this
-     * forum offers rather than a partial one.
+     * knows how to cast. A plugin that counts something else a member can
+     * receive adds it here. Nobody answering leaves the topic figure, which is
+     * a true total of what this forum offers rather than a partial one.
      *
      * @param int $count  votes on this member's topics
      * @param int $userId the member

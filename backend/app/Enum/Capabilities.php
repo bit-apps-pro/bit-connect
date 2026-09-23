@@ -50,10 +50,10 @@ enum Capabilities: string
     case VOTE_POST = 'forum_vote_post';
 
     /*
-     * There is no vote-on-comments capability here. Upvoting an individual
-     * reply is implemented in the Bit Connect Pro add-on, which declares its
-     * own slug through the `bit_connect_capabilities` filter so the roles
-     * screen still lists it and saving that screen does not strip it.
+     * There is no vote-on-comments capability here: this plugin does not
+     * implement upvotes on replies. A plugin that adds a capability of its own
+     * declares its slug through the `bit_connect_capabilities` filter so the
+     * roles screen lists it and saving that screen does not strip it.
      */
 
     // Content authority over other people's words

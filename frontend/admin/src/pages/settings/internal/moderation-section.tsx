@@ -8,8 +8,8 @@ import ModerationSectionPro from './moderation-section.pro'
  * the free build, so Rollup keeps exactly one of them.
  *
  * No props: this plugin's settings form holds nothing for either sibling to
- * read or write. The free one states what happens to a reported post; the
- * add-on's keeps its own number, behind its own endpoint.
+ * read or write. The free one states what happens to a reported post; another
+ * plugin's would keep its own setting, behind its own endpoint.
  */
 export default function ModerationSection() {
   return IS_PRO_ACTIVE ? <ModerationSectionPro /> : <ModerationSectionFree />

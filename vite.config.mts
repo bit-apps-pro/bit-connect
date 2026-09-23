@@ -45,7 +45,7 @@ const codeName = humanId({ capitalize: false, separator: '-' })
 //   }
 //   return version
 // }
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const { DEV_SSL, DEV_SSL_CERT_PATH, DEV_SSL_KEY_PATH, SERVER_VARIABLES } = loadEnv(
     mode,
     process.cwd(),
@@ -96,13 +96,24 @@ export default defineConfig(({ mode }) => {
       }
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` }),
+      // The edition flag, inlined as a literal at its one read site
+      // (common/helpers/pro-access.ts) so every dispatch folds. A plain
+      // constant rather than a `VITE_*` variable: with `envPrefix` matching
+      // nothing, the `import.meta.env` object a library may serialise whole
+      // carries only Vite's built-in keys and says nothing about editions.
+      BIT_CONNECT_PRO_BUILD: JSON.stringify(isPro)
     },
+    envPrefix: 'BIT_CONNECT_VITE_',
     plugins: [
       react({
         babel: {
           plugins: ['@emotion/babel-plugin'],
-          presets: ['jotai/babel/preset']
+          // The jotai preset serves the dev server: debug labels and the
+          // `jotaiAtomCache` preamble that keeps atoms stable across HMR. In a
+          // production build that preamble is dead weight in every module and
+          // keeps otherwise-empty helper modules alive as their own chunks.
+          presets: command === 'serve' ? ['jotai/babel/preset'] : []
         },
         jsxImportSource: '@emotion/react',
         jsxRuntime: 'automatic'

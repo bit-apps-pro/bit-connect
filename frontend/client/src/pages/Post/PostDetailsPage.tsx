@@ -175,9 +175,8 @@ export default function PostDetailsPage() {
 
   const totalCommentCount = countComments(transformedComments)
   const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
-  // Empty unless the add-on supplies it, in which case it brings
-  // the handler that casts the vote. See use-comment-vote.ts.
-  const { onVote: handleCommentVote } = useCommentVote()
+  // Empty unless something supplies a control to draw. See use-comment-vote.ts.
+  const { renderVote } = useCommentVote()
 
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
@@ -312,7 +311,7 @@ export default function PostDetailsPage() {
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
               onReply={handleReply}
-              onVote={handleCommentVote}
+              renderVote={renderVote}
               sortOption={sortOption}
               topicSlug={post.post_name}
               topicTitle={post.post_title}

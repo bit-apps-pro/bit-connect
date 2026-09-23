@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 
 /**
@@ -27,18 +26,18 @@ class ProfileSlugService
     /**
      * Current slug for a member.
      */
-    private const META_SLUG = Config::VAR_PREFIX . 'profile_slug';
+    private const META_SLUG = 'bit_connect_profile_slug';
 
     /**
      * Slugs this member used previously, kept so old links still resolve.
      */
-    private const META_ALIASES = Config::VAR_PREFIX . 'profile_slug_aliases';
+    private const META_ALIASES = 'bit_connect_profile_slug_aliases';
 
     /**
      * Set once a member picks their own slug, after which it stops tracking the
      * display name. See syncUser().
      */
-    private const META_CUSTOM = Config::VAR_PREFIX . 'slug_is_custom';
+    private const META_CUSTOM = 'bit_connect_slug_is_custom';
 
     /**
      * Guards against runaway suffixing if uniqueness can never be satisfied.

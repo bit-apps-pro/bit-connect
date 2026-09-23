@@ -128,10 +128,9 @@ final class ReportService
      * Whether this target should now be hidden from public view.
      *
      * This plugin never hides anything on its own: it takes reports, counts
-     * them and shows them in the moderation queue, and a person decides. Acting
-     * on a count without a person having looked is a behaviour the Bit Connect
-     * Pro add-on adds, through the extension point below — the staff exemption
-     * and the threshold comparison live there with it.
+     * them and shows them in the moderation queue, and a person decides. A
+     * site or plugin that wants a different policy answers the extension point
+     * below; any exemption or threshold it applies is its own.
      */
     public static function shouldAutoHide(string $targetType, int $targetId, int $author, ?int $pending = null): bool
     {

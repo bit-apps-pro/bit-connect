@@ -101,8 +101,7 @@ Route::get('follows', [FollowController::class, 'mine']);
 Route::get('activity-log', [ActivityLogController::class, 'feed']);
 Route::get('activity-log/actions', [ActivityLogController::class, 'actions']);
 
-// Votes. Topics only — upvoting an individual reply ships in the Bit Connect
-// Pro add-on, which registers its own routes for it.
+// Votes. Topics only — this plugin has no route for voting on a reply.
 Route::post('posts/{id}/vote', [VoteController::class, 'togglePostVote']);
 Route::get('posts/{id}/votes', [VoteController::class, 'getPostVotes']);
 
@@ -192,9 +191,9 @@ Route::post('capability-settings/update', [CapabilitySettingsController::class, 
 
 // User Management Routes (forum_manage cap required)
 Route::get('users', [UserManagementController::class, 'getUsers']);
-// Granting a per-user override is the add-on's route, in the add-on's
-// namespace — this plugin has no code that writes a user-level capability.
-// Reset only ever removes, so it needs neither.
+// This plugin has no route that writes a user-level capability; its model is
+// per role. Reset only ever removes, so an administrator can always take back
+// an override however it got there.
 Route::post('users/{id}/capabilities/reset', [UserManagementController::class, 'resetUserCapabilities']);
 
 // There are no profile-badge routes here. The badges a member *wears* ride on

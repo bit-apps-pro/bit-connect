@@ -1,19 +1,18 @@
 import { __ } from '@common/helpers/i18nWrap'
 import config from '@config/config'
 import pluginInfo from '@plugin-commons/components/SupportPage/data/pluginInfoData'
-import { Badge, Button, Space, Typography } from 'antd'
-import { LuCrown } from 'react-icons/lu'
+import { Button, Space, Typography } from 'antd'
 
 import { type VersionPanelProps } from '../shared/types'
 
 const { Title } = Typography
 
 /**
- * The version panel: what is installed, and a link out.
+ * The version panel: what is installed, and one plain link out.
  *
- * The add-on's features are in the add-on, which is a separate plugin
- * distributed separately. The only outbound thing on this screen is the link
- * below, which opens a page in a new tab.
+ * The link names a separate plugin and opens its page in a new tab. It is the
+ * only place this plugin mentions it: a link, not a badge, a lock or a button
+ * beside a control, and nothing on this screen or any other is held back.
  */
 export default function VersionPanelFree({ pluginSlug }: VersionPanelProps) {
   const aboutPlugin = pluginInfo.plugins[pluginSlug as keyof typeof pluginInfo.plugins]
@@ -27,18 +26,10 @@ export default function VersionPanelFree({ pluginSlug }: VersionPanelProps) {
       </div>
 
       <Space wrap>
-        <div>{__('Looking for more? Bit Connect Pro is a separate add-on.')}</div>
-        <Badge dot>
-          <Button
-            href={aboutPlugin.buyLink}
-            icon={<LuCrown />}
-            rel="noopener noreferrer nofollow"
-            target="_blank"
-            type="primary"
-          >
-            {__('Get Bit Connect Pro')}
-          </Button>
-        </Badge>
+        <div>{__('Looking for more? Bit Connect Pro is a separate plugin.')}</div>
+        <Button href={aboutPlugin.buyLink} rel="noopener noreferrer nofollow" target="_blank">
+          {__('Learn about Bit Connect Pro')}
+        </Button>
       </Space>
     </div>
   )

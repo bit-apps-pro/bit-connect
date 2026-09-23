@@ -523,7 +523,7 @@ class TopicService
      */
     public static function formatCommentAttachments(int $commentId): array
     {
-        $attachmentIds = get_comment_meta($commentId, '_comment_attachments', true);
+        $attachmentIds = get_comment_meta($commentId, '_bit_connect_comment_attachments', true);
         $formatted = [];
 
         if (!empty($attachmentIds) && \is_array($attachmentIds)) {
@@ -840,11 +840,10 @@ class TopicService
                 'author_avatar'      => get_avatar_url($comment->user_id ?: $comment->comment_author_email),
                 // Empty for guest comments (user_id 0), which have no profile.
                 'author_slug' => ProfileSlugService::slugFor((int) $comment->user_id),
-                // No `vote` key. Upvoting a reply is the add-on's feature, and
-                // the add-on attaches its own count through commentFields()
-                // below; a forum without it renders a reply with no upvote
-                // control, which is this plugin's complete answer rather than
-                // a blank where something was taken out.
+                // No `vote` key: this plugin does not implement upvotes on
+                // replies, so a reply renders with no upvote control. Another
+                // plugin may attach fields of its own through commentFields()
+                // below.
                 'attachments' => self::formatCommentAttachments((int) $comment->comment_ID),
                 // The topic page reads its comments from here, not from the
                 // comments endpoint, so a badge missing from this shape is a

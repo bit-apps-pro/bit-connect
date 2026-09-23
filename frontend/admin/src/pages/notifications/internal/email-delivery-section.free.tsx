@@ -6,13 +6,14 @@ import { type EmailDeliverySectionProps } from '../shared/types'
 import SectionCard from './section-card'
 
 /**
- * Email delivery without the add-on: what the forum will send as, stated.
+ * Email delivery: what the forum will send as, stated.
  *
  * No inputs, because this plugin has no sender setting: it sends as the site's
- * own identity (NotificationSettings::fromName/fromEmail).
+ * own identity (NotificationSettings::fromName/fromEmail). Another plugin may
+ * filter the sender and bring its own inputs as the other sibling.
  *
  * The test-email button stays. Whether mail leaves this server at all is a
- * question every forum needs answered, and it is not what the add-on sells.
+ * question every forum needs answered.
  */
 export default function EmailDeliverySectionFree({
   isSendingTest,
@@ -28,9 +29,7 @@ export default function EmailDeliverySectionFree({
           <span className="bc-text-ink-subtle">&lt;{payload.effectiveSender.email}&gt;</span>
         </div>
         <div className="bc-text-xs bc-text-ink-subtle">
-          {__(
-            'Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.'
-          )}
+          {__('Taken from your site title and address.')}
         </div>
       </div>
 

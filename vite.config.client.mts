@@ -88,8 +88,11 @@ export default defineConfig(({ command, mode }) => {
       target: 'es2022'
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` }),
+      // See vite.config.mts — the edition flag, inlined at pro-access.ts only.
+      BIT_CONNECT_PRO_BUILD: JSON.stringify(isPro)
     },
+    envPrefix: 'BIT_CONNECT_VITE_',
     optimizeDeps: {
       exclude: ['@wordpress/interactivity'],
       include: ['quill']
@@ -98,7 +101,8 @@ export default defineConfig(({ command, mode }) => {
       react({
         babel: {
           plugins: ['@emotion/babel-plugin'],
-          presets: ['jotai/babel/preset']
+          // See vite.config.mts — dev-server only.
+          presets: command === 'serve' ? ['jotai/babel/preset'] : []
         },
         jsxImportSource: '@emotion/react',
         jsxRuntime: 'automatic'

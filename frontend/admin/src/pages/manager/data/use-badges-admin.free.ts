@@ -1,7 +1,7 @@
 import { type BadgesAdmin } from './use-badges-admin'
 
 /**
- * Badges without the pro add-on: nothing to fetch, nothing to save.
+ * Badges in this plugin: nothing to fetch, nothing to save.
  *
  * A constant rather than a stubbed query — the endpoints do not exist in a
  * free-only install, so asking would be a guaranteed 404 on every Manager load.

@@ -123,27 +123,4 @@ final class LoginController
             ]
         );
     }
-
-    /**
-     * AJAX logout handler.
-     */
-    public function logout()
-    {
-        if (!AuthService::isLoggedIn()) {
-            return Response::error('Not authenticated')->httpStatus(401);
-        }
-
-        $redirect = AuthService::getLogoutRedirect();
-
-        AuthService::logout();
-
-        /*
-         * Fires after a successful AJAX forum logout.
-         *
-         * @param string $redirect Redirect URL after logout.
-         */
-        Hooks::doAction('bit_connect_after_ajax_logout', $redirect);
-
-        return Response::success(['redirect' => $redirect]);
-    }
 }

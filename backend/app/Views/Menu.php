@@ -233,9 +233,9 @@ final class Menu
      * Support.
      *
      * Last in the list: it is the one entry here about the plugin rather than
-     * about the forum — support, the changelog and what the add-on adds. The
-     * entries pass through the `admin_sidebar_menu` filter, so another plugin
-     * can adjust this one like any other.
+     * about the forum — support and the changelog. The entries pass through
+     * the `admin_sidebar_menu` filter, so another plugin can adjust this one
+     * like any other.
      */
     private static function getSupportMenuAttributes()
     {

@@ -297,9 +297,8 @@ enum NotificationSettings: string
      * Sender name: the site's own, unless something supplies another.
      *
      * This plugin sends forum email as the site. It holds no setting for a
-     * sender of its own and no code that would read one — choosing a sender
-     * identity is the Bit Connect Pro add-on's feature, and it arrives by
-     * filtering this value rather than by unlocking a field stored here.
+     * sender of its own and no code that would read one; a plugin that chooses
+     * a sender identity does so by filtering this value.
      *
      * @param mixed $settings the stored notification_settings option
      */
@@ -322,8 +321,8 @@ enum NotificationSettings: string
      *
      * The default is WordPress's own rather than the admin's inbox — replies to
      * a notification should not land in a person's mail. As with fromName, a
-     * chosen address is the add-on's and reaches this through the filter; an
-     * address that is not a valid one is ignored rather than sent.
+     * chosen address reaches this through the filter; an address that is not
+     * a valid one is ignored rather than sent.
      *
      * @param mixed $settings the stored notification_settings option
      */
@@ -365,10 +364,9 @@ enum NotificationSettings: string
          * Filter one line of the wording around a notification email.
          *
          * This plugin's own wording is the default and is what a forum sends;
-         * rewriting it is the Bit Connect Pro add-on's feature, and arrives
-         * here rather than by unlocking a field stored on this side. A filter
-         * that answers with nothing is ignored, for the same reason a blanked
-         * field always was: an email with a hole in it reads as a bug.
+         * a plugin that rewords it does so here. A filter that answers with
+         * nothing is ignored, for the same reason a blanked field always was:
+         * an email with a hole in it reads as a bug.
          *
          * @param string $line     this plugin's wording, already translated
          * @param string $key      one of mailGreeting|mailIntro|mailDigestIntro|mailFooter

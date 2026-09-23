@@ -143,16 +143,9 @@ class BaseView
                 : 0,
         ];
 
-        // Same extension point Head uses for the admin payload. The portal needs
-        // it too — pro features render here, and without the filter the pro
-        // plugin could inject `isPro` into wp-admin but never into the portal.
-        $frontendVars = Hooks::applyFilter('bit_connect_localized_script', $frontendVars);
-
-        if (get_locale() !== 'en_US' && file_exists(Config::get('ROOT_DIR') . '/languages/shortcode-extracted-strings.php')) {
-            $frontendVars['translations'] = include Config::get('ROOT_DIR') . '/languages/shortcode-extracted-strings.php';
-        }
-
-        return $frontendVars;
+        // Same extension point Head uses for the admin payload. The portal
+        // needs it too, so another plugin can add its own keys to both.
+        return Hooks::applyFilter('bit_connect_localized_script', $frontendVars);
     }
 
     public function enqueueAssets()

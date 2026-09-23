@@ -48,8 +48,7 @@ final class UpdateNotificationSettingsRequest extends Request
     public function rules()
     {
         // No sender or wording fields: this endpoint does not accept them,
-        // because this plugin does not store them. They belong to the add-on
-        // and are posted to the add-on's own endpoint.
+        // because this plugin does not store them.
         //
         // digestHour takes rule objects because hour 0 is midnight, and
         // wp-validator's own min/max reject any zero.
@@ -69,9 +68,9 @@ final class UpdateNotificationSettingsRequest extends Request
     public function messages()
     {
         return [
-            'digestHour.min'       => __('Pick an hour between 0 and 23.', 'bit-connect'),
-            'digestHour.max'       => __('Pick an hour between 0 and 23.', 'bit-connect'),
-            'defaultFrequency.in'  => __('That is not a digest frequency this forum offers.', 'bit-connect'),
+            'digestHour.min'      => __('Pick an hour between 0 and 23.', 'bit-connect'),
+            'digestHour.max'      => __('Pick an hour between 0 and 23.', 'bit-connect'),
+            'defaultFrequency.in' => __('That is not a digest frequency this forum offers.', 'bit-connect'),
         ];
     }
 
@@ -114,19 +113,18 @@ final class UpdateNotificationSettingsRequest extends Request
             : NotificationSettings::FREQUENCY_INSTANT;
 
         // Sender identity and email wording are not written here: this plugin
-        // has no setting for either. Sending as something other than the site, and rewriting the lines
-        // around the list, are the Bit Connect Pro add-on's features; it stores
-        // them in its own option and supplies them through the
-        // `bit_connect_mail_from_name`, `bit_connect_mail_from_email` and
-        // `bit_connect_mail_template` filters. Nothing to carry forward, and
-        // nothing this endpoint can overwrite.
+        // has no setting for either. A plugin that sends as something other
+        // than the site, or rewords the lines around the list, supplies them
+        // through the `bit_connect_mail_from_name`, `bit_connect_mail_from_email`
+        // and `bit_connect_mail_template` filters. Nothing to carry forward,
+        // and nothing this endpoint can overwrite.
         return [
             'enabled' => filter_var($validated['enabled'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'types'   => $types,
             // Clamped on the way in as well as on the way out. The cron reads
             // these unsupervised, and an hour of 25 is a digest that never goes.
-            'digestHour'    => NotificationSettings::digestHour($validated),
-            'retentionDays' => NotificationSettings::retentionDays($validated),
+            'digestHour'       => NotificationSettings::digestHour($validated),
+            'retentionDays'    => NotificationSettings::retentionDays($validated),
             'defaultFrequency' => NotificationSettings::isValidFrequency($frequency)
                 ? $frequency
                 : NotificationSettings::FREQUENCY_INSTANT,

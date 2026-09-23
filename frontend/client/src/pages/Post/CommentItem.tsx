@@ -9,7 +9,7 @@ import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
 import { Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { LuEyeOff } from 'react-icons/lu'
 import { Link } from 'react-router'
 
@@ -21,7 +21,6 @@ import { flattenReplies, getVisualDepth, MAX_VISUAL_DEPTH, repliesContain } from
 
 import CommentEditor from './CommentEditor'
 import styles from './CommentThread.module.css'
-import CommentVoteBox from './CommentVoteBox'
 import ContentBox from './ContentBox'
 import AttachmentList from './ui/attachment-list'
 
@@ -33,7 +32,8 @@ interface CommentItemProps {
   onDelete?: (commentId: number) => void
   onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
   onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
-  onVote?: (commentId: number) => void
+  /** Draws the upvote control for this reply, when the forum offers one. */
+  renderVote?: (comment: Comment) => ReactNode
   replyParentId?: number
   topicSlug: string
   topicTitle: string
@@ -46,7 +46,7 @@ export default function CommentItem({
   onDelete,
   onEdit,
   onReply,
-  onVote,
+  renderVote,
   replyParentId,
   topicSlug,
   topicTitle
@@ -82,12 +82,6 @@ export default function CommentItem({
       onReply(replyParentId ?? comment.id, content, attachments)
     }
     setShowReplyEditor(false)
-  }
-
-  const handleVote = () => {
-    if (onVote) {
-      onVote(comment.id)
-    }
   }
 
   const handleEdit = (content: string, attachments?: WPAttachmentData[]) => {
@@ -323,9 +317,7 @@ export default function CommentItem({
 
               {/* Actions */}
               <div className={styles.commentActions}>
-                {onVote && (
-                  <CommentVoteBox isVote={comment.hasVoted} onVote={handleVote} votes={comment.votes} />
-                )}
+                {renderVote?.(comment)}
                 <Button
                   className={`${styles.actionButton} ${styles.actionMeta}`}
                   icon={<MessageOutlined style={{ fontSize: '12px' }} />}
@@ -447,7 +439,7 @@ export default function CommentItem({
                       onDelete={onDelete}
                       onEdit={onEdit}
                       onReply={onReply}
-                      onVote={onVote}
+                      renderVote={renderVote}
                       replyParentId={childrenAtMaxDepth ? comment.id : undefined}
                       topicSlug={topicSlug}
                       topicTitle={topicTitle}

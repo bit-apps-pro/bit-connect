@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use WP_Error;
 use WP_User;
 
@@ -38,11 +37,11 @@ class EmailChangeService
      */
     private const TOKEN_TTL = 86400;
 
-    private const META_PENDING = Config::VAR_PREFIX . 'pending_email';
+    private const META_PENDING = 'bit_connect_pending_email';
 
-    private const META_TOKEN = Config::VAR_PREFIX . 'email_change_token';
+    private const META_TOKEN = 'bit_connect_email_change_token';
 
-    private const META_EXPIRY = Config::VAR_PREFIX . 'email_change_expiry';
+    private const META_EXPIRY = 'bit_connect_email_change_expiry';
 
     /**
      * The address this member is waiting to confirm, or '' when none.

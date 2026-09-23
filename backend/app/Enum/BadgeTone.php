@@ -57,8 +57,8 @@ enum BadgeTone: string
      * A match over literals rather than __($tone->label()): `wp i18n make-pot`
      * reads source, not runtime, so a __() whose argument is an expression puts
      * nothing in the catalog — and a lookup the catalog does not hold returns
-     * the English string in every locale. The Pro add-on's badge catalog screen
-     * wrapped `options()` at the read site, which translated none of these.
+     * the English string in every locale. A screen that wrapped `options()`
+     * in __() at the read site would translate none of these.
      *
      * The #[Label] attributes above remain the English wording every non-display
      * reader gets. EnumLabelTranslationTest asserts the two agree case by case,
@@ -84,9 +84,8 @@ enum BadgeTone: string
      * Every tone as a value/label pair, with the label translated.
      *
      * `EnumHelper::options()` returns the raw #[Label] wording, which is what
-     * non-display readers want. This is the display copy, so the Pro badge
-     * catalog can render the list without wrapping it in a __() the extractor
-     * cannot read.
+     * non-display readers want. This is the display copy, so a screen can
+     * render the list without wrapping it in a __() the extractor cannot read.
      *
      * @return array<int, array{value: int|string, label: string}>
      */

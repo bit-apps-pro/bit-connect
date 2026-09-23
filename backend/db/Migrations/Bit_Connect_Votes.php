@@ -14,10 +14,9 @@ if (!defined('ABSPATH')) {
  * Migration for the votes table: one row per (user, topic).
  *
  * The table holds upvotes on topics, which is the whole of what this plugin
- * lets a member vote on. Upvoting an individual reply is not this plugin's
- * feature and its column is not in this schema — an add-on that implements
- * reply upvoting adds `comment_id` and its unique index itself, in its own
- * migration. Nothing here creates, reads or writes it.
+ * lets a member vote on. There is no comment column in this schema: a plugin
+ * that implemented reply upvoting would add `comment_id` and its unique index
+ * itself, in its own migration. Nothing here creates, reads or writes it.
  *
  * Handles two cases:
  *   - Fresh install: create the table with the current one-row-per-vote schema.
@@ -66,8 +65,9 @@ final class Bit_Connect_Votes extends Migration
      *
      * Everything but the last line is guarded on the one marker of the legacy
      * schema, the `vote_type` column. A table without it is already current —
-     * or carries an add-on's `comment_id` beside this plugin's columns, which
-     * a blind drop-and-recreate of the indexes would disturb for no reason.
+     * or carries another plugin's `comment_id` beside this plugin's columns,
+     * which a blind drop-and-recreate of the indexes would disturb for no
+     * reason.
      */
     private function upgradeExistingTable(string $tableName): void
     {
@@ -78,8 +78,8 @@ final class Bit_Connect_Votes extends Migration
             // COLUMN below would otherwise violate.
             //
             // `unique_comment_vote` is dropped and not recreated. Reply votes
-            // are not this plugin's, so neither is the index over them: an
-            // add-on that implements reply upvoting de-duplicates the rows and
+            // are not this plugin's, so neither is the index over them: a
+            // plugin that implements reply upvoting de-duplicates the rows and
             // adds the index back in its own migration.
             $this->dropIndexIfExists($tableName, 'unique_post_vote');
             $this->dropIndexIfExists($tableName, 'unique_comment_vote');
