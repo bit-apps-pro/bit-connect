@@ -1,20 +1,13 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
-
-import TopicAccessExtrasFree from './topic-access-extras.free'
-import TopicAccessExtrasPro from './topic-access-extras.pro'
+import { type ReactNode } from 'react'
 
 /**
- * Whatever sits below the Topic Access switches.
+ * Below the Topic Access switches: nothing.
  *
- * Dispatch only. In this plugin the slot is empty. Another plugin that adds a
- * topic-access setting of its own — one it stores and serves itself — renders
- * its control here through the other sibling.
- *
- * The slot exists so the settings screen never has to know which of those it
- * is rendering, and so such a switch is not a row in this plugin's settings
- * array writing to this plugin's option — a control here for behaviour that
- * only exists elsewhere is exactly the shape the split removes.
+ * This plugin has no further topic-access setting, so the slot is empty. It
+ * stays a component rather than being removed from the form, so the settings
+ * screen keeps one place for a topic-access control to live.
  */
-export default function TopicAccessExtras() {
-  return IS_PRO_ACTIVE ? <TopicAccessExtrasPro /> : <TopicAccessExtrasFree />
+export default function TopicAccessExtras(): ReactNode {
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

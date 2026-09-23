@@ -6,22 +6,20 @@ import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 import developmentServerOrigin from './scripts/development-server-origin.mjs'
-import proOverlay from './scripts/vite-plugin-pro-overlay.mjs'
+import overlay from './scripts/vite-plugin-overlay.mjs'
 
 const PLUGIN_SLUG = 'bit-connect'
 // See vite.config.mts — BaseView.php prints the portal payload onto this same
 // global, and the default keeps a clean clone (no `.env`) from building
 // `window.undefined`.
 const DEFAULT_SERVER_VARIABLES = `${PLUGIN_SLUG.replace(/-/g, '_')}_`
-// See vite.config.mts — same two-build scheme, one level deeper because the
-// portal bundle lives under the admin bundle's directory.
-const isPro = process.env.VITE_PRO === 'true'
-// See vite.config.mts. BIT_ASSETS_OUT_DIR names the admin bundle's directory, so
-// the portal keeps sitting one level under it exactly as it does here.
-const PRO_OVERLAY_DIR = process.env.BIT_PRO_OVERLAY_DIR
+// See vite.config.mts — same overlay scheme. BIT_ASSETS_OUT_DIR names the admin
+// bundle's directory, so the portal keeps sitting one level under it exactly as
+// it does here.
+const OVERLAY_DIR = process.env.BIT_OVERLAY_DIR
 const ASSETS_DIR = process.env.BIT_ASSETS_OUT_DIR
   ? path.resolve(process.env.BIT_ASSETS_OUT_DIR, 'client')
-  : path.resolve(import.meta.dirname, isPro ? 'pro/assets/client' : 'assets/client')
+  : path.resolve(import.meta.dirname, 'assets/client')
 const codeName = humanId({ capitalize: false, separator: '-' })
 
 // const getVersion = () => {
@@ -88,9 +86,7 @@ export default defineConfig(({ command, mode }) => {
       target: 'es2022'
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` }),
-      // See vite.config.mts — the edition flag, inlined at pro-access.ts only.
-      BIT_CONNECT_PRO_BUILD: JSON.stringify(isPro)
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
     },
     envPrefix: 'BIT_CONNECT_VITE_',
     optimizeDeps: {
@@ -107,9 +103,9 @@ export default defineConfig(({ command, mode }) => {
         jsxImportSource: '@emotion/react',
         jsxRuntime: 'automatic'
       }),
-      proOverlay({
+      overlay({
         appRoot: path.resolve(import.meta.dirname, 'frontend/client'),
-        overlayDir: PRO_OVERLAY_DIR,
+        overlayDir: OVERLAY_DIR,
         mirrorRoot: path.resolve(import.meta.dirname, 'frontend')
       }),
       tsconfigPaths({

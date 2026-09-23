@@ -57,7 +57,7 @@ jobs:
           test -d assets/client
 
       - name: Assert the tree carries free code only
-        run: node scripts/public-repo/assert-no-pro.mjs --tree .
+        run: node scripts/assert-self-contained.mjs
 
       # Deliberately not `composer analyze`: PHPStan has pre-existing findings
       # tracked upstream, and a workflow that is red for reasons unrelated to
