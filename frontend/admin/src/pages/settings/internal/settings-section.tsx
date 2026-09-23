@@ -66,13 +66,11 @@ export default function SettingsSection({
       </div>
 
       {/*
-        Rendered bare, with no wrapper of its own. `note` is a React element and
-        so always truthy — even when the component it names renders nothing — so
-        wrapping it here emitted an empty spacer under the grid on every install
-        whose note had nothing to say. Spacing belongs to whatever fills the
-        slot, which is the only thing that knows whether it drew anything.
+        The caller passes `note` only when something actually filled the slot —
+        an unconditional `<Slot />` element would be truthy however little it
+        drew, and this wrapper would then space out nothing.
       */}
-      {note}
+      {note && <div className="bc-mt-4">{note}</div>}
     </div>
   )
 }

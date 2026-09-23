@@ -1,17 +1,19 @@
-import { type ReactNode } from 'react'
+import { type ComponentType } from 'react'
 
 /**
- * Below the Topic Access switches: nothing.
+ * Extra controls below the Topic Access switches, if a plugin adds any.
  *
- * This plugin has no further topic-access setting, so the slot is empty. It
- * stays a component rather than being removed from the form, so the settings
- * screen keeps one place for a topic-access control to live.
+ * A declaration, not a component: this plugin has no further topic-access
+ * setting, so there is nothing here to render and this says so by being `null`
+ * rather than by being a component that draws nothing. The settings screen
+ * checks before it renders, so an empty slot costs no markup — not even the
+ * margin that would sit above a control.
  *
- * Returning `null` has to draw nothing at all, spacing included — see the note
- * in `settings-section.tsx`. Anything that fills this slot brings its own top
- * margin.
+ * The slot exists because a topic-access control belongs under that grid
+ * rather than in it. A row in the grid writes to this plugin's settings blob
+ * through this plugin's endpoint; anything below it keeps its own option and
+ * its own endpoint, which is the whole difference.
  */
-export default function TopicAccessExtras(): ReactNode {
-  // eslint-disable-next-line unicorn/no-null
-  return null
-}
+const TopicAccessExtras: ComponentType | null = null
+
+export default TopicAccessExtras
