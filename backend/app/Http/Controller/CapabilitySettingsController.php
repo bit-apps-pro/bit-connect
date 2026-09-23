@@ -23,7 +23,7 @@ use BitApps\BitConnect\Services\ExtensionPoints;
  *
  * POST /capability-settings/update
  *   Updates capabilities for a single role.
- *   Body: { "role": "subscriber", "capabilities": { "forum_create_post": true, ... } }
+ *   Body: { "role": "subscriber", "capabilities": { "bit_connect_forum_create_post": true, ... } }
  */
 final class CapabilitySettingsController
 {

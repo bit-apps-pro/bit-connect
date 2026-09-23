@@ -117,12 +117,12 @@ export default function CommentItem({
   const avatarSize = avatarSizes[visualDepth] ?? 22
 
   // Same rule the server applies in CommentController. The two halves are not
-  // symmetrical and that is the design: forum_delete_any removes anyone's
+  // symmetrical and that is the design: bit_connect_forum_delete_any removes anyone's
   // reply, while editing never leaves the author. A moderator who thinks a
   // reply has to go removes it; nothing rewrites it in the author's name.
   const isOwner = user?.id && comment.userId && user.id === comment.userId
-  const canEdit = Boolean(isOwner && can('forum_edit_own_comment'))
-  const canDelete = can('forum_delete_any') || Boolean(isOwner && can('forum_delete_own_comment'))
+  const canEdit = Boolean(isOwner && can('bit_connect_forum_edit_own_comment'))
+  const canDelete = can('bit_connect_forum_delete_any') || Boolean(isOwner && can('bit_connect_forum_delete_own_comment'))
 
   // A reply opens with the author already named. Under a nested thread "Reply"
   // is ambiguous on its own: the answer lands beside three others, and past the
@@ -286,7 +286,7 @@ export default function CommentItem({
                       Same chip as the topic header's, because it is the same
                       fact about a smaller thing; a warning-yellow Tag here and a
                       grey chip up there made one state look like two. */}
-                  {comment.hidden && (isOwner || can('forum_moderate')) && (
+                  {comment.hidden && (isOwner || can('bit_connect_forum_moderate')) && (
                     <span
                       className="bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-2 bc-py-0.5 bc-text-[11px] bc-font-medium bc-text-ink"
                       title={__('Out of public view while a moderator reviews a report about it')}

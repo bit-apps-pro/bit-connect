@@ -42,13 +42,13 @@ export default function StatusEditModal() {
   useEffect(() => {
     if (status && status.id) {
       form.setFieldsValue({
-        color: status.meta?.color,
+        color: status.meta?.bit_connect_color,
         description: status.description,
-        icon_dark_id: status.meta?.icon_dark_id || 0,
-        icon_dark_url: status.meta?.icon_dark_url,
+        icon_dark_id: status.meta?.bit_connect_icon_dark_id || 0,
+        icon_dark_url: status.meta?.bit_connect_icon_dark_url,
         icon_file_name: status.iconFileName,
-        icon_id: status.meta?.icon_id || 0,
-        icon_url: status.meta?.icon_url,
+        icon_id: status.meta?.bit_connect_icon_id || 0,
+        icon_url: status.meta?.bit_connect_icon_url,
         name: status.name,
         slug: status.slug
       })
@@ -68,11 +68,11 @@ export default function StatusEditModal() {
       const formattedBody = {
         description: values.description,
         meta: {
-          color: values.color,
-          icon_dark_id: values.icon_dark_id || 0,
-          icon_dark_url: values.icon_dark_url,
-          icon_id: values.icon_id || 0,
-          icon_url: values.icon_url
+          bit_connect_color: values.color,
+          bit_connect_icon_dark_id: values.icon_dark_id || 0,
+          bit_connect_icon_dark_url: values.icon_dark_url,
+          bit_connect_icon_id: values.icon_id || 0,
+          bit_connect_icon_url: values.icon_url
         },
         name: values.name,
         ...(values.slug ? { slug: slugify(values.slug) } : {})

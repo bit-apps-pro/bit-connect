@@ -20,9 +20,9 @@ use BitApps\BitConnect\Services\PermissionService;
 final class ResolveReportRequest extends Request
 {
     /**
-     * Reviewing is forum_moderate.
+     * Reviewing is bit_connect_forum_moderate.
      *
-     * Resolving as "removed" deletes the content, and that needs forum_delete_any
+     * Resolving as "removed" deletes the content, and that needs bit_connect_forum_delete_any
      * on top — checked in the controller, where the decision being made is known.
      * A moderator without the red pen still works the queue: they can keep
      * content or dismiss the report, and are refused only the ending that

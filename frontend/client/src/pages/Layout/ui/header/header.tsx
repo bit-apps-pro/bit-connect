@@ -260,7 +260,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                   />
                 }
                 onClick={() => {
-                  if (canAct('forum_create_post')) setCreateModalOpen(true)
+                  if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
                 }}
                 shape="round"
                 size="middle"

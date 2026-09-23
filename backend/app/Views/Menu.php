@@ -63,7 +63,7 @@ final class Menu
             'name'  => __('Bit Connect', 'bit-connect'),
             // Derived, not grantable: WordPress takes one capability string per
             // entry and cannot say "manage or moderate". Gating the parent on
-            // forum_manage alone would hide the whole menu from a moderator,
+            // bit_connect_forum_manage alone would hide the whole menu from a moderator,
             // and with it the Activity screen that is theirs to read.
             'capability' => AdminAccessService::CAP,
             'slug'       => Config::SLUG,
@@ -140,9 +140,9 @@ final class Menu
     }
 
     /**
-     * The one screen under this menu that answers to forum_moderate.
+     * The one screen under this menu that answers to bit_connect_forum_moderate.
      *
-     * Everything else here is settings and belongs to forum_manage; reviewing
+     * Everything else here is settings and belongs to bit_connect_forum_manage; reviewing
      * what was done to a member's post does not.
      */
     private static function getActivityMenuAttributes()
@@ -157,7 +157,7 @@ final class Menu
     }
 
     /**
-     * The moderation queue. forum_moderate, like Activity — working through
+     * The moderation queue. bit_connect_forum_moderate, like Activity — working through
      * reports is not an administrative act.
      *
      * Carries the waiting count as a bubble, in the markup core uses for

@@ -148,7 +148,7 @@ class Head
                 'lang'              => get_locale(),
                 'currentUserAvatar' => get_avatar_url(get_current_user_id()),
                 // The admin app needs these to decide where to land. Its root
-                // route is the dashboard, which answers to forum_manage — a
+                // route is the dashboard, which answers to bit_connect_forum_manage — a
                 // moderator arriving there sees a screen of failed requests, so
                 // the router sends them to Activity instead.
                 'canManage'       => WpCapabilities::check(Capabilities::MANAGE->value),

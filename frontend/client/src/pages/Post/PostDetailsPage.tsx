@@ -87,7 +87,7 @@ export default function PostDetailsPage() {
 
   const handlePostVote = async () => {
     if (!post?.ID) return
-    requireCapability('forum_vote_post', async () => {
+    requireCapability('bit_connect_forum_vote_post', async () => {
       try {
         await toggleVote(post.ID)
       } catch (error_) {
@@ -99,7 +99,7 @@ export default function PostDetailsPage() {
   }
 
   const handlePostComment = async (content: string, attachments?: WPAttachmentData[]) => {
-    requireCapability('forum_create_comment', async () => {
+    requireCapability('bit_connect_forum_create_comment', async () => {
       try {
         await createComment(
           content,

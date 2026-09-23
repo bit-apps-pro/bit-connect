@@ -383,7 +383,7 @@ final class AuthService
      * This no longer creates custom WP roles. Instead it:
      * 1. Runs the legacy cap migration (one-time, idempotent)
      * 2. Initialises default capability settings (one-time, idempotent)
-     * 3. Grants forum_manage to the administrator role as a safe default
+     * 3. Grants bit_connect_forum_manage to the administrator role as a safe default
      *
      * Called from InstallerProvider::registerActivator().
      */

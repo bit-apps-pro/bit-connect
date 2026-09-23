@@ -18,8 +18,8 @@ use WP_User;
  * One resolver for every surface that names a member — the comment byline, the
  * topic byline and the profile card — so the three cannot disagree about who a
  * person is. They did: the comment byline asked AuthService::hasModeratorRole(),
- * which answers manage_options || forum_manage, so a member holding
- * forum_moderate alone (the colleague who corrects a teammate's reply) carried
+ * which answers manage_options || bit_connect_forum_manage, so a member holding
+ * bit_connect_forum_moderate alone (the colleague who corrects a teammate's reply) carried
  * no badge on their comments while their profile page called them a Moderator.
  *
  * Two sources feed it, and they answer different questions:
@@ -31,7 +31,7 @@ use WP_User;
  *   filter, and with nobody answering there are none.
  * - Capabilities answer standing — Admin, Moderator — read from capabilities
  *   rather than role slugs, because caps are granted per role in Manager and
- *   overridable per user, so a moderator can hold forum_moderate under any role
+ *   overridable per user, so a moderator can hold bit_connect_forum_moderate under any role
  *   slug and an administrator can have it taken away.
  *
  * An assigned badge wins. Someone given a Developer badge is being described
@@ -210,7 +210,7 @@ final class UserBadgeService
      */
     private static function standing($user): array
     {
-        // Ordered by authority: forum_manage outranks forum_moderate, and an
+        // Ordered by authority: bit_connect_forum_manage outranks bit_connect_forum_moderate, and an
         // admin holds both, so the first match wins.
         if (user_can($user, Capabilities::MANAGE->value)) {
             return [['id' => null, 'label' => __('Admin', 'bit-connect'), 'tone' => BadgeTone::ADMIN->value]];

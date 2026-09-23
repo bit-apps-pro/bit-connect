@@ -627,8 +627,8 @@ final class CommentController
             // Superseded by author_badge; kept until the portal stops reading it,
             // because post-commons.ts defaults a missing value to false and would
             // silently un-badge every staff comment. Note this now answers true
-            // for a forum_moderate-only member, where the old
-            // hasModeratorRole() check (manage_options || forum_manage) said no.
+            // for a bit_connect_forum_moderate-only member, where the old
+            // hasModeratorRole() check (manage_options || bit_connect_forum_manage) said no.
             'isAdmin' => $authorBadge !== null,
         ], (int) $comment->comment_ID);
     }

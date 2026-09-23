@@ -29,7 +29,7 @@ final class TermOrderService
     /**
      * Term meta holding the admin-defined position, zero-based.
      */
-    public const ORDER_META_KEY = 'order';
+    public const ORDER_META_KEY = 'bit_connect_order';
 
     /**
      * Taxonomies whose terms an admin can drag into an order.

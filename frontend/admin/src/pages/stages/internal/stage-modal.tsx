@@ -38,11 +38,11 @@ export default function StageModal({
     if (stage) {
       form.setFieldsValue({
         description: stage.description,
-        icon_dark_id: stage.meta?.icon_dark_id || 0,
-        icon_dark_url: stage.meta?.icon_dark_url,
+        icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
+        icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
         icon_file_name: stage.iconFileName,
-        icon_id: stage.meta?.icon_id || 0,
-        icon_url: stage.meta?.icon_url,
+        icon_id: stage.meta?.bit_connect_icon_id || 0,
+        icon_url: stage.meta?.bit_connect_icon_url,
         name: stage.name,
         slug: stage.slug
       })

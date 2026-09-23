@@ -29,13 +29,25 @@ final class CapabilityService
 
     private const REVOKE_EDIT_ANY_OPTION = 'bit_connect_caps_revoke_edit_any_v4';
 
+    private const PREFIXED_SLUGS_OPTION = 'bit_connect_caps_prefixed_v5';
+
+    /**
+     * The prefix every capability slug carried before it was namespaced.
+     *
+     * `forum_create_post` became `bit_connect_forum_create_post`, and so on:
+     * the rename is the plugin prefix in front of the old slug, for this
+     * plugin's own capabilities and for any a listener declared alongside
+     * them. See migratePrefixedSlugs().
+     */
+    private const UNPREFIXED_SLUG = '/^forum_[a-z_]+$/';
+
     // -------------------------------------------------------------------------
     // Settings persistence
     // -------------------------------------------------------------------------
 
     /**
      * Returns the saved capability settings array.
-     * Format: ['role_slug' => ['forum_create_post' => true, ...], ...].
+     * Format: ['role_slug' => ['bit_connect_forum_create_post' => true, ...], ...].
      */
     public static function getSettings(): array
     {
@@ -233,7 +245,7 @@ final class CapabilityService
 
     /**
      * Hands the content-authority capabilities to everyone who held
-     * forum_moderate before they were split out of it.
+     * bit_connect_forum_moderate before they were split out of it.
      *
      * Before the split, that one capability meant "edit and delete anyone's
      * content" on top of running the forum. Separating those powers would
@@ -241,7 +253,7 @@ final class CapabilityService
      * nothing to explain why. So the upgrade grants what was already held, and
      * an admin narrows it afterwards in Manager if that is what they want.
      *
-     * contentAuthorityCaps() is down to forum_delete_any now that editing other
+     * contentAuthorityCaps() is down to bit_connect_forum_delete_any now that editing other
      * people's content has been withdrawn. A site upgrading straight past both
      * changes runs this and revokeEditAny() in turn and ends up with the same
      * result as one that ran them a release apart.
@@ -295,11 +307,11 @@ final class CapabilityService
     }
 
     /**
-     * Per-user overrides that granted forum_moderate get the same treatment.
+     * Per-user overrides that granted bit_connect_forum_moderate get the same treatment.
      *
      * Role settings are only half the story — UserManagementController writes
      * explicit per-user caps that beat the role, so a member could hold
-     * forum_moderate personally and be missed by the role sweep above.
+     * bit_connect_forum_moderate personally and be missed by the role sweep above.
      *
      * Called from migrateModerateSplit(), so it inherits that one-time guard —
      * it must not be wired into a request path on its own.
@@ -415,6 +427,89 @@ final class CapabilityService
         return $revoked;
     }
 
+    /**
+     * Renames every `forum_*` capability to its `bit_connect_forum_*` slug.
+     *
+     * Capabilities are stored by name in every role and in each user's own
+     * overrides, so a site that already granted them keeps working only if
+     * the grants move with the rename. This walks the roles, the users holding
+     * a per-user override, and the saved settings, and carries each old slug
+     * over under its prefixed name.
+     *
+     * The rule is the prefix, not a fixed list: a slug another plugin declared
+     * through `bit_connect_capabilities` under the old convention moves the
+     * same way, which matters because this runs before such a listener has
+     * registered and cannot ask it. The one slug that stays behind is the
+     * withdrawn `forum_edit_any`, which revokeEditAny() has already removed
+     * by the time this runs.
+     *
+     * Runs once behind its own option, like the upgrades above.
+     *
+     * @return int how many roles and users were changed
+     */
+    public static function migratePrefixedSlugs(): int
+    {
+        if (get_option(self::PREFIXED_SLUGS_OPTION)) {
+            return 0;
+        }
+
+        $changed = 0;
+
+        foreach (array_keys(wp_roles()->get_names()) as $roleSlug) {
+            $role = get_role($roleSlug);
+
+            if (!$role instanceof WP_Role) {
+                continue;
+            }
+
+            $renamed = false;
+
+            foreach (self::prefixedRenames(array_keys((array) $role->capabilities)) as $old => $new) {
+                $role->add_cap($new, (bool) $role->capabilities[$old]);
+                $role->remove_cap($old);
+                $renamed = true;
+            }
+
+            if ($renamed) {
+                ++$changed;
+            }
+        }
+
+        $settings = self::getSettings();
+        $settingsChanged = false;
+
+        foreach ($settings as $roleSlug => $caps) {
+            if (!\is_array($caps)) {
+                continue;
+            }
+
+            foreach (self::prefixedRenames(array_keys($caps)) as $old => $new) {
+                $settings[$roleSlug][$new] = $caps[$old];
+                unset($settings[$roleSlug][$old]);
+                $settingsChanged = true;
+            }
+        }
+
+        if ($settingsChanged) {
+            update_option(self::OPTION_NAME, $settings);
+        }
+
+        $changed += self::migratePrefixedSlugsForUsers();
+
+        update_option(self::PREFIXED_SLUGS_OPTION, true);
+
+        // The administrator whose request ran this had their capabilities
+        // resolved before the roles changed, and would be refused the very
+        // screen they were opening. Re-read them from the renamed roles.
+        $current = wp_get_current_user();
+
+        if ($changed > 0 && \is_object($current) && method_exists($current, 'get_role_caps')) {
+            $current->get_role_caps();
+        }
+
+        return $changed;
+    }
+
     // -------------------------------------------------------------------------
     // Public API for admin UI
     // -------------------------------------------------------------------------
@@ -466,6 +561,76 @@ final class CapabilityService
         self::saveSettings($settings);
 
         return true;
+    }
+
+    /**
+     * Per-user overrides get the same rename.
+     *
+     * Called from migratePrefixedSlugs(), so it inherits that one-time guard.
+     */
+    private static function migratePrefixedSlugsForUsers(): int
+    {
+        $users = get_users(
+            [
+                'fields' => 'ID',
+                // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Narrowing on the indexed capabilities meta is what keeps this off a full user-table scan.
+                'meta_key'   => $GLOBALS['wpdb']->get_blog_prefix() . 'capabilities',
+                'meta_value' => 'forum_',
+                // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+                'meta_compare' => 'LIKE',
+            ]
+        );
+
+        $changed = 0;
+
+        foreach ($users as $userId) {
+            $user = get_userdata((int) $userId);
+
+            if (!$user) {
+                continue;
+            }
+
+            // $user->caps holds explicit per-user entries only — a role grant
+            // reaches ->allcaps but not this, and roles are handled above.
+            $renames = self::prefixedRenames(array_keys((array) $user->caps));
+
+            if ($renames === []) {
+                continue;
+            }
+
+            foreach ($renames as $old => $new) {
+                $user->add_cap($new, (bool) $user->caps[$old]);
+                $user->remove_cap($old);
+            }
+
+            ++$changed;
+        }
+
+        return $changed;
+    }
+
+    /**
+     * Old slug => new slug, for the slugs in a list that still need renaming.
+     *
+     * @param array<int, int|string> $slugs
+     *
+     * @return array<string, string>
+     */
+    private static function prefixedRenames(array $slugs): array
+    {
+        $renames = [];
+
+        foreach ($slugs as $slug) {
+            if (!\is_string($slug) || $slug === Capabilities::WITHDRAWN_EDIT_ANY) {
+                continue;
+            }
+
+            if (preg_match(self::UNPREFIXED_SLUG, $slug) === 1) {
+                $renames[$slug] = 'bit_connect_' . $slug;
+            }
+        }
+
+        return $renames;
     }
 
     /**

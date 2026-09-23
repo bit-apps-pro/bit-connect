@@ -23,7 +23,7 @@ final class StatusService
     /**
      * Term meta flagging the default status.
      */
-    public const DEFAULT_META_KEY = 'is_default';
+    public const DEFAULT_META_KEY = 'bit_connect_is_default';
 
     /**
      * Status terms in the admin-defined order.

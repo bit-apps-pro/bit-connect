@@ -767,15 +767,15 @@ class TopicService
 
         $meta = [];
         if (\in_array('color', $metaKeys, true)) {
-            $color = get_term_meta($term->term_id, 'color', true);
+            $color = get_term_meta($term->term_id, 'bit_connect_color', true);
             $meta['color'] = $color !== '' ? $color : null;
         }
         if (\in_array('icon', $metaKeys, true)) {
-            $iconUrl = get_term_meta($term->term_id, 'icon_url', true);
+            $iconUrl = get_term_meta($term->term_id, 'bit_connect_icon_url', true);
             if ($iconUrl !== '') {
                 $meta['icon'] = $iconUrl;
             } else {
-                $iconId = (int) get_term_meta($term->term_id, 'icon_id', true);
+                $iconId = (int) get_term_meta($term->term_id, 'bit_connect_icon_id', true);
                 $meta['icon'] = $iconId > 0 ? wp_get_attachment_image_url($iconId, 'full') : null;
             }
         }

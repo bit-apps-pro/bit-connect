@@ -88,7 +88,7 @@ final class ReportController
 
         // The queue only helps if somebody is told there is something in it.
         // Recipients are resolved by the dispatcher — everyone holding
-        // forum_moderate — so this stays correct as capabilities are moved
+        // bit_connect_forum_moderate — so this stays correct as capabilities are moved
         // around rather than freezing today's moderators into the call site.
         $snapshot = $this->describeForNotice($targetType, (int) $validated['target_id']);
 
@@ -171,7 +171,7 @@ final class ReportController
 
         $isRemoval = $status === ReportStatus::RESOLVED_REMOVED;
 
-        // Removal is a second power, not part of forum_moderate. A moderator who
+        // Removal is a second power, not part of bit_connect_forum_moderate. A moderator who
         // may work the queue but not delete other people's words keeps the other
         // two endings; this one they cannot reach.
         if ($isRemoval && !PermissionService::canDeleteAny()) {

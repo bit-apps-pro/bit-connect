@@ -37,18 +37,18 @@ class UserProfileService
      * readable as the enum grows rather than showing one flat list of twelve.
      */
     private const CAPABILITY_GROUPS = [
-        'forum_create_post'        => 'Posting',
-        'forum_edit_own_post'      => 'Posting',
-        'forum_delete_own_post'    => 'Posting',
-        'forum_create_comment'     => 'Commenting',
-        'forum_edit_own_comment'   => 'Commenting',
-        'forum_delete_own_comment' => 'Commenting',
-        'forum_vote_post'          => 'Voting',
-        'forum_delete_any'         => 'Other People\'s Content',
-        'forum_moderate'           => 'Moderation',
-        'forum_pin_post'           => 'Moderation',
-        'forum_lock_post'          => 'Moderation',
-        'forum_manage'             => 'Administration',
+        'bit_connect_forum_create_post'        => 'Posting',
+        'bit_connect_forum_edit_own_post'      => 'Posting',
+        'bit_connect_forum_delete_own_post'    => 'Posting',
+        'bit_connect_forum_create_comment'     => 'Commenting',
+        'bit_connect_forum_edit_own_comment'   => 'Commenting',
+        'bit_connect_forum_delete_own_comment' => 'Commenting',
+        'bit_connect_forum_vote_post'          => 'Voting',
+        'bit_connect_forum_delete_any'         => 'Other People\'s Content',
+        'bit_connect_forum_moderate'           => 'Moderation',
+        'bit_connect_forum_pin_post'           => 'Moderation',
+        'bit_connect_forum_lock_post'          => 'Moderation',
+        'bit_connect_forum_manage'             => 'Administration',
     ];
 
     private TopicService $topicService;

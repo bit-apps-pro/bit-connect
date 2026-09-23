@@ -28,26 +28,26 @@ enum Capabilities: string
 
     // Content authoring
     #[Label('Create Topics/Posts')]
-    case CREATE_POST = 'forum_create_post';
+    case CREATE_POST = 'bit_connect_forum_create_post';
 
     #[Label('Edit Own Posts')]
-    case EDIT_OWN_POST = 'forum_edit_own_post';
+    case EDIT_OWN_POST = 'bit_connect_forum_edit_own_post';
 
     #[Label('Delete Own Posts')]
-    case DELETE_OWN_POST = 'forum_delete_own_post';
+    case DELETE_OWN_POST = 'bit_connect_forum_delete_own_post';
 
     #[Label('Create Comments/Replies')]
-    case CREATE_COMMENT = 'forum_create_comment';
+    case CREATE_COMMENT = 'bit_connect_forum_create_comment';
 
     #[Label('Edit Own Comments')]
-    case EDIT_OWN_COMMENT = 'forum_edit_own_comment';
+    case EDIT_OWN_COMMENT = 'bit_connect_forum_edit_own_comment';
 
     #[Label('Delete Own Comments')]
-    case DELETE_OWN_COMMENT = 'forum_delete_own_comment';
+    case DELETE_OWN_COMMENT = 'bit_connect_forum_delete_own_comment';
 
     // Voting
     #[Label('Vote on Posts')]
-    case VOTE_POST = 'forum_vote_post';
+    case VOTE_POST = 'bit_connect_forum_vote_post';
 
     /*
      * There is no vote-on-comments capability here: this plugin does not
@@ -70,7 +70,7 @@ enum Capabilities: string
      * need to change, the author changes them.
      */
     #[Label('Delete Any Content')]
-    case DELETE_ANY = 'forum_delete_any';
+    case DELETE_ANY = 'bit_connect_forum_delete_any';
 
     // Moderation
     /*
@@ -82,17 +82,17 @@ enum Capabilities: string
      * another member's votes and permissions.
      */
     #[Label('Moderate (Reports, Locked Threads)')]
-    case MODERATE = 'forum_moderate';
+    case MODERATE = 'bit_connect_forum_moderate';
 
     #[Label('Pin/Unpin Topics')]
-    case PIN_POST = 'forum_pin_post';
+    case PIN_POST = 'bit_connect_forum_pin_post';
 
     #[Label('Lock/Unlock Topics')]
-    case LOCK_POST = 'forum_lock_post';
+    case LOCK_POST = 'bit_connect_forum_lock_post';
 
     // Administration
     #[Label('Manage Forum Settings')]
-    case MANAGE = 'forum_manage';
+    case MANAGE = 'bit_connect_forum_manage';
 
     /**
      * A capability this plugin used to grant and no longer recognises.

@@ -15,8 +15,8 @@ Stored in `wp_options` under `bit_connect_capability_settings`.
 ```php
 // Example stored value:
 [
-  'subscriber' => ['forum_create_post' => true, 'forum_vote_post' => true, ...],
-  'editor'     => ['forum_moderate' => true, 'forum_manage' => true, ...],
+  'subscriber' => ['bit_connect_forum_create_post' => true, 'bit_connect_forum_vote_post' => true, ...],
+  'editor'     => ['bit_connect_forum_moderate' => true, 'bit_connect_forum_manage' => true, ...],
 ]
 ```
 
@@ -24,8 +24,8 @@ When the admin saves Role Capabilities, `CapabilityService::applySettings()` run
 
 ```php
 // For every WP role, add or remove each forum_* cap
-$role->add_cap('forum_create_post', true);   // grants to all subscribers
-$role->remove_cap('forum_moderate');          // removes from all subscribers
+$role->add_cap('bit_connect_forum_create_post', true);   // grants to all subscribers
+$role->remove_cap('bit_connect_forum_moderate');          // removes from all subscribers
 ```
 
 WordPress stores role capabilities in `wp_options` under `wp_user_roles`. Every user in that role inherits the caps automatically — no per-user migration needed.
@@ -41,18 +41,18 @@ Stored in `wp_usermeta` under `wp_capabilities` (WordPress's own meta key).
 When the admin saves caps for a specific user via the Manager popover:
 
 ```php
-$user->add_cap('forum_create_post', true);   // grant above role
-$user->add_cap('forum_create_post', false);  // revoke even if role grants it
-$user->remove_cap('forum_create_post');      // remove override, fall back to role
+$user->add_cap('bit_connect_forum_create_post', true);   // grant above role
+$user->add_cap('bit_connect_forum_create_post', false);  // revoke even if role grants it
+$user->remove_cap('bit_connect_forum_create_post');      // remove override, fall back to role
 ```
 
 The critical difference between `add_cap(false)` and `remove_cap()`:
 
 | Method | Effect |
 |--------|--------|
-| `add_cap('forum_create_post', true)` | User always has this cap, even if role doesn't |
-| `add_cap('forum_create_post', false)` | User never has this cap, even if role does |
-| `remove_cap('forum_create_post')` | Remove user-level override — falls back to role |
+| `add_cap('bit_connect_forum_create_post', true)` | User always has this cap, even if role doesn't |
+| `add_cap('bit_connect_forum_create_post', false)` | User never has this cap, even if role does |
+| `remove_cap('bit_connect_forum_create_post')` | Remove user-level override — falls back to role |
 
 **How to change:** Admin panel → Manager → click the `X/12 caps` button on any user row.
 
@@ -65,8 +65,8 @@ The critical difference between `add_cap(false)` and `remove_cap()`:
 Every forum action checks via WordPress core:
 
 ```php
-current_user_can('forum_create_post')
-current_user_can('forum_moderate')
+current_user_can('bit_connect_forum_create_post')
+current_user_can('bit_connect_forum_moderate')
 ```
 
 WordPress resolves caps in this order:
@@ -80,18 +80,18 @@ WordPress resolves caps in this order:
 
 | Capability | Purpose |
 |---|---|
-| `forum_create_post` | Submit new topics |
-| `forum_edit_own_post` | Edit own topics |
-| `forum_delete_own_post` | Delete own topics |
-| `forum_create_comment` | Post comments |
-| `forum_edit_own_comment` | Edit own comments |
-| `forum_delete_own_comment` | Delete own comments |
-| `forum_vote_post` | Vote on topics |
-| `forum_vote_comment` | Vote on comments |
-| `forum_moderate` | Moderate content (edit/delete any post/comment) |
-| `forum_pin_post` | Pin topics |
-| `forum_lock_post` | Lock topics |
-| `forum_manage` | Access admin panel, manage all settings |
+| `bit_connect_forum_create_post` | Submit new topics |
+| `bit_connect_forum_edit_own_post` | Edit own topics |
+| `bit_connect_forum_delete_own_post` | Delete own topics |
+| `bit_connect_forum_create_comment` | Post comments |
+| `bit_connect_forum_edit_own_comment` | Edit own comments |
+| `bit_connect_forum_delete_own_comment` | Delete own comments |
+| `bit_connect_forum_vote_post` | Vote on topics |
+| `bit_connect_forum_vote_comment` | Vote on comments |
+| `bit_connect_forum_moderate` | Moderate content (edit/delete any post/comment) |
+| `bit_connect_forum_pin_post` | Pin topics |
+| `bit_connect_forum_lock_post` | Lock topics |
+| `bit_connect_forum_manage` | Access admin panel, manage all settings |
 
 ---
 
@@ -129,7 +129,7 @@ Manager → Role Capabilities → Subscriber row → check Vote Posts + Vote Com
 
 **Remove Create Posts from one specific user:**
 Manager → find user → click caps button → uncheck Create Posts → Save.
-This stores `add_cap('forum_create_post', false)` on that user — they cannot create posts even though subscriber role grants it.
+This stores `add_cap('bit_connect_forum_create_post', false)` on that user — they cannot create posts even though subscriber role grants it.
 
 **Restore a user to their role defaults:**
 Manager → find user → click caps button → click "Reset to role".

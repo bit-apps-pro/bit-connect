@@ -11,6 +11,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
+use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Plugin;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
@@ -169,6 +170,9 @@ class HookProvider
 
             include $this->_pluginBackend . 'hooks' . DIRECTORY_SEPARATOR . 'api.php';
             $router->register();
+
+            // Each route's permission_callback asks its Request's authorize().
+            RestPermission::register();
         }
     }
 

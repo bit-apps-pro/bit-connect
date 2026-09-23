@@ -48,7 +48,7 @@ export default function TopicTypesTable() {
       dataIndex: 'color',
       key: 'color',
       render: (_: unknown, record: TopicType) => {
-        if (record.meta?.color) {
+        if (record.meta?.bit_connect_color) {
           return (
             // The raw swatch alongside the chip the portal will actually
             // render: the picked colour is never painted as a solid fill, so a
@@ -56,12 +56,12 @@ export default function TopicTypesTable() {
             <div className="bc-flex bc-items-center bc-gap-2">
               <div
                 className="bc-h-6 bc-w-6 bc-shrink-0 bc-rounded bc-border bc-border-line-strong"
-                style={{ backgroundColor: record.meta.color }}
+                style={{ backgroundColor: record.meta.bit_connect_color }}
               />
-              <Tag className="bc-m-0" {...chipTagProps(record.meta.color)}>
+              <Tag className="bc-m-0" {...chipTagProps(record.meta.bit_connect_color)}>
                 {record.name}
               </Tag>
-              <Text type="secondary">{record.meta.color}</Text>
+              <Text type="secondary">{record.meta.bit_connect_color}</Text>
             </div>
           )
         }

@@ -1876,4 +1876,40 @@ require_once __DIR__ . '/doubles/wpdb.php';
 
 require_once __DIR__ . '/doubles/extension-points.php';
 
+if (!class_exists('WP_REST_Request')) {
+    /**
+     * The four readers wp-kit's Request::setApiRequest() calls, backed by
+     * plain arrays a test hands in.
+     */
+    class WP_REST_Request
+    {
+        public function __construct(
+            private array $body = [],
+            private array $query = [],
+            private array $url = []
+        ) {
+        }
+
+        public function get_body_params()
+        {
+            return $this->body;
+        }
+
+        public function get_json_params()
+        {
+            return [];
+        }
+
+        public function get_query_params()
+        {
+            return $this->query;
+        }
+
+        public function get_url_params()
+        {
+            return $this->url;
+        }
+    }
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';

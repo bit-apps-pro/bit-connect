@@ -7,11 +7,11 @@ import { pickThemedIcon } from './themed-icon'
 // value. An `<img src="">` re-requests the page itself in some browsers.
 describe('pickThemedIcon', () => {
   it('uses the base icon in the light theme', () => {
-    expect(pickThemedIcon({ icon_url: '/light.svg' }, false)).toBe('/light.svg')
+    expect(pickThemedIcon({ bit_connect_icon_url: '/light.svg' }, false)).toBe('/light.svg')
   })
 
   it('uses the dark override when the admin uploaded one', () => {
-    expect(pickThemedIcon({ icon_dark_url: '/dark.svg', icon_url: '/light.svg' }, true)).toBe(
+    expect(pickThemedIcon({ bit_connect_icon_dark_url: '/dark.svg', bit_connect_icon_url: '/light.svg' }, true)).toBe(
       '/dark.svg'
     )
   })
@@ -19,20 +19,20 @@ describe('pickThemedIcon', () => {
   // Dark falls back to light, never the reverse: the base icon is the one every
   // term has, and the dark slot is an opt-in override.
   it('falls back to the base icon in the dark theme', () => {
-    expect(pickThemedIcon({ icon_url: '/light.svg' }, true)).toBe('/light.svg')
+    expect(pickThemedIcon({ bit_connect_icon_url: '/light.svg' }, true)).toBe('/light.svg')
   })
 
   it('never uses the dark override in the light theme', () => {
-    expect(pickThemedIcon({ icon_dark_url: '/dark.svg' }, false)).toBeUndefined()
+    expect(pickThemedIcon({ bit_connect_icon_dark_url: '/dark.svg' }, false)).toBeUndefined()
   })
 
   it('reads an unset meta as no icon rather than as an empty one', () => {
-    expect(pickThemedIcon({ icon_dark_url: '', icon_url: '' }, false)).toBeUndefined()
-    expect(pickThemedIcon({ icon_dark_url: '', icon_url: '' }, true)).toBeUndefined()
+    expect(pickThemedIcon({ bit_connect_icon_dark_url: '', bit_connect_icon_url: '' }, false)).toBeUndefined()
+    expect(pickThemedIcon({ bit_connect_icon_dark_url: '', bit_connect_icon_url: '' }, true)).toBeUndefined()
   })
 
   it('falls back to the base icon when only the dark slot is empty', () => {
-    expect(pickThemedIcon({ icon_dark_url: '', icon_url: '/light.svg' }, true)).toBe('/light.svg')
+    expect(pickThemedIcon({ bit_connect_icon_dark_url: '', bit_connect_icon_url: '/light.svg' }, true)).toBe('/light.svg')
   })
 
   it('answers nothing for a term with no icon at all', () => {

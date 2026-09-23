@@ -26,7 +26,7 @@ final class DefaultTermServiceTest extends TestCase
 
     private const STATUSES = 'bit-connect-statuses';
 
-    private const META = 'is_default';
+    private const META = 'bit_connect_is_default';
 
     protected function tearDown(): void
     {

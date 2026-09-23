@@ -55,7 +55,7 @@ class PermissionServiceTest extends TestCase
      * user here at once, and the answer is still no.
      *
      * This replaces a test that asserted the opposite. It had been failing on
-     * its own since forum_edit_any was split out of forum_moderate, because it
+     * its own since forum_edit_any was split out of bit_connect_forum_moderate, because it
      * granted the moderation flag and expected the editing one.
      */
     public function testNoCapabilityLetsAnyoneEditSomebodyElsesPost(): void
@@ -73,7 +73,7 @@ class PermissionServiceTest extends TestCase
 
     /**
      * The same, for comments, and beside the removal it is contrasted with:
-     * forum_delete_any takes a reply down, and nothing rewrites one.
+     * bit_connect_forum_delete_any takes a reply down, and nothing rewrites one.
      */
     public function testModeratorMayDeleteAnothersCommentButNotEditIt(): void
     {

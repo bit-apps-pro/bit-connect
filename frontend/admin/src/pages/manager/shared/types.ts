@@ -1,32 +1,32 @@
 import { type ResponseType } from '@common/request/types'
 
 export type ForumCapability =
-  | 'forum_create_comment'
-  | 'forum_create_post'
-  | 'forum_delete_any'
-  | 'forum_delete_own_comment'
-  | 'forum_delete_own_post'
-  | 'forum_edit_own_comment'
-  | 'forum_edit_own_post'
-  | 'forum_lock_post'
-  | 'forum_manage'
-  | 'forum_moderate'
-  | 'forum_pin_post'
-  | 'forum_vote_post'
+  | 'bit_connect_forum_create_comment'
+  | 'bit_connect_forum_create_post'
+  | 'bit_connect_forum_delete_any'
+  | 'bit_connect_forum_delete_own_comment'
+  | 'bit_connect_forum_delete_own_post'
+  | 'bit_connect_forum_edit_own_comment'
+  | 'bit_connect_forum_edit_own_post'
+  | 'bit_connect_forum_lock_post'
+  | 'bit_connect_forum_manage'
+  | 'bit_connect_forum_moderate'
+  | 'bit_connect_forum_pin_post'
+  | 'bit_connect_forum_vote_post'
 
 export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
-  forum_create_comment: 'Create Comments',
-  forum_create_post: 'Create Posts',
-  forum_delete_any: 'Delete Any Content',
-  forum_delete_own_comment: 'Delete Own Comments',
-  forum_delete_own_post: 'Delete Own Posts',
-  forum_edit_own_comment: 'Edit Own Comments',
-  forum_edit_own_post: 'Edit Own Posts',
-  forum_lock_post: 'Lock Topics',
-  forum_manage: 'Manage Forum',
-  forum_moderate: 'Moderate',
-  forum_pin_post: 'Pin Topics',
-  forum_vote_post: 'Vote Posts'
+  bit_connect_forum_create_comment: 'Create Comments',
+  bit_connect_forum_create_post: 'Create Posts',
+  bit_connect_forum_delete_any: 'Delete Any Content',
+  bit_connect_forum_delete_own_comment: 'Delete Own Comments',
+  bit_connect_forum_delete_own_post: 'Delete Own Posts',
+  bit_connect_forum_edit_own_comment: 'Edit Own Comments',
+  bit_connect_forum_edit_own_post: 'Edit Own Posts',
+  bit_connect_forum_lock_post: 'Lock Topics',
+  bit_connect_forum_manage: 'Manage Forum',
+  bit_connect_forum_moderate: 'Moderate',
+  bit_connect_forum_pin_post: 'Pin Topics',
+  bit_connect_forum_vote_post: 'Vote Posts'
 }
 
 export const ALL_FORUM_CAPABILITIES: ForumCapability[] = Object.keys(

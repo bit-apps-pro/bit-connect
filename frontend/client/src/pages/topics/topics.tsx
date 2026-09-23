@@ -277,7 +277,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   }
 
   const handlePostVote = async (postId: number) => {
-    if (!canAct('forum_vote_post')) return
+    if (!canAct('bit_connect_forum_vote_post')) return
     try {
       await toggleVote(postId)
     } catch {

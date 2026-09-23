@@ -10,25 +10,25 @@ const { Text, Title } = Typography
 
 const CAP_GROUPS: { caps: string[]; label: string }[] = [
   {
-    caps: ['forum_create_post', 'forum_edit_own_post', 'forum_delete_own_post'],
+    caps: ['bit_connect_forum_create_post', 'bit_connect_forum_edit_own_post', 'bit_connect_forum_delete_own_post'],
     label: __('Posts')
   },
   {
-    caps: ['forum_create_comment', 'forum_edit_own_comment', 'forum_delete_own_comment'],
+    caps: ['bit_connect_forum_create_comment', 'bit_connect_forum_edit_own_comment', 'bit_connect_forum_delete_own_comment'],
     label: __('Comments')
   },
   {
     // Topics only. Voting on a reply is the add-on's capability, and the
     // add-on contributes its own row — see use-capability-groups.
-    caps: ['forum_vote_post'],
+    caps: ['bit_connect_forum_vote_post'],
     label: __('Voting')
   },
   {
-    caps: ['forum_delete_any'],
+    caps: ['bit_connect_forum_delete_any'],
     label: __('Other People\u2019s Content')
   },
   {
-    caps: ['forum_moderate', 'forum_pin_post', 'forum_lock_post', 'forum_manage'],
+    caps: ['bit_connect_forum_moderate', 'bit_connect_forum_pin_post', 'bit_connect_forum_lock_post', 'bit_connect_forum_manage'],
     label: __('Moderation & Admin')
   }
 ]

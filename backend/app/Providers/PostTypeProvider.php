@@ -50,7 +50,7 @@ class PostTypeProvider
      * name. Both paths resolve the edit_post meta capability, which is why one
      * filter closes them together.
      *
-     * Scoped to editing on purpose. delete_post is untouched: forum_delete_any
+     * Scoped to editing on purpose. delete_post is untouched: bit_connect_forum_delete_any
      * is a capability this forum still grants, and an administrator being able
      * to remove content is not the thing being prevented here.
      *
@@ -222,7 +222,7 @@ class PostTypeProvider
     {
         register_term_meta(
             Taxonomies::STATUSES->value,
-            'color',
+            'bit_connect_color',
             [
                 'show_in_rest'      => true,
                 'single'            => true,
@@ -233,7 +233,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::STATUSES->value,
-            'icon_url',
+            'bit_connect_icon_url',
             [
                 'type'              => 'string',
                 'single'            => true,
@@ -244,7 +244,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::STATUSES->value,
-            'icon_id',
+            'bit_connect_icon_id',
             [
                 'type'              => 'integer',
                 'single'            => true,
@@ -255,7 +255,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::TOPIC_TYPES->value,
-            'color',
+            'bit_connect_color',
             [
                 'show_in_rest'      => true,
                 'single'            => true,
@@ -266,7 +266,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::STAGES->value,
-            'icon_url',
+            'bit_connect_icon_url',
             [
                 'type'              => 'string',
                 'single'            => true,
@@ -277,7 +277,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::STAGES->value,
-            'icon_id',
+            'bit_connect_icon_id',
             [
                 'type'              => 'integer',
                 'single'            => true,
@@ -320,7 +320,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::TOPIC_TYPES->value,
-            'icon_url',
+            'bit_connect_icon_url',
             [
                 'type'              => 'string',
                 'single'            => true,
@@ -331,7 +331,7 @@ class PostTypeProvider
 
         register_term_meta(
             Taxonomies::TOPIC_TYPES->value,
-            'icon_id',
+            'bit_connect_icon_id',
             [
                 'type'              => 'integer',
                 'single'            => true,
@@ -403,7 +403,7 @@ class PostTypeProvider
         foreach ($iconTaxonomies as $taxonomy) {
             register_term_meta(
                 $taxonomy,
-                'icon_dark_url',
+                'bit_connect_icon_dark_url',
                 [
                     'type'              => 'string',
                     'single'            => true,
@@ -414,7 +414,7 @@ class PostTypeProvider
 
             register_term_meta(
                 $taxonomy,
-                'icon_dark_id',
+                'bit_connect_icon_dark_id',
                 [
                     'type'              => 'integer',
                     'single'            => true,

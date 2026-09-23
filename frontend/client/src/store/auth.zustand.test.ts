@@ -41,7 +41,7 @@ beforeEach(() => {
 
 describe('signing in', () => {
   it('keeps the member and what they may do', async () => {
-    vi.mocked(loginApi).mockResolvedValue({ data: member(['forum_create_post']) } as never)
+    vi.mocked(loginApi).mockResolvedValue({ data: member(['bit_connect_forum_create_post']) } as never)
 
     await useAuthStore.getState().login({ password: 'x', username: 'rahim' })
 
@@ -55,12 +55,12 @@ describe('signing in', () => {
   // Gating on a capability rather than on a role name is the rule: a role says
   // nothing about what Manager granted it.
   it('answers what the member may do from their capabilities', async () => {
-    vi.mocked(loginApi).mockResolvedValue({ data: member(['forum_create_post']) } as never)
+    vi.mocked(loginApi).mockResolvedValue({ data: member(['bit_connect_forum_create_post']) } as never)
 
     await useAuthStore.getState().login({ password: 'x', username: 'rahim' })
 
-    expect(useAuthStore.getState().can('forum_create_post')).toBe(true)
-    expect(useAuthStore.getState().can('forum_moderate')).toBe(false)
+    expect(useAuthStore.getState().can('bit_connect_forum_create_post')).toBe(true)
+    expect(useAuthStore.getState().can('bit_connect_forum_moderate')).toBe(false)
   })
 
   it('leaves the member signed out when a refusal comes back', async () => {
@@ -195,12 +195,12 @@ describe('signing up', () => {
 
 describe('checking who is signed in', () => {
   it('adopts the member the server reports', async () => {
-    vi.mocked(getCurrentUserApi).mockResolvedValue({ data: member(['forum_moderate']) } as never)
+    vi.mocked(getCurrentUserApi).mockResolvedValue({ data: member(['bit_connect_forum_moderate']) } as never)
 
     await useAuthStore.getState().checkAuth()
 
     expect(useAuthStore.getState().isLoggedIn).toBe(true)
-    expect(useAuthStore.getState().can('forum_moderate')).toBe(true)
+    expect(useAuthStore.getState().can('bit_connect_forum_moderate')).toBe(true)
   })
 
   it('clears the session when the server reports nobody', async () => {
@@ -254,17 +254,17 @@ describe('signing out', () => {
 
 describe('setting the member directly', () => {
   it('recomputes what they may do', () => {
-    useAuthStore.getState().setUser(member(['forum_pin_post']) as never)
+    useAuthStore.getState().setUser(member(['bit_connect_forum_pin_post']) as never)
 
     expect(useAuthStore.getState().isLoggedIn).toBe(true)
-    expect(useAuthStore.getState().can('forum_pin_post')).toBe(true)
+    expect(useAuthStore.getState().can('bit_connect_forum_pin_post')).toBe(true)
   })
 
   it('signs them out when handed nothing', () => {
-    useAuthStore.getState().setUser(member(['forum_pin_post']) as never)
+    useAuthStore.getState().setUser(member(['bit_connect_forum_pin_post']) as never)
     useAuthStore.getState().setUser(undefined)
 
     expect(useAuthStore.getState().isLoggedIn).toBe(false)
-    expect(useAuthStore.getState().can('forum_pin_post')).toBe(false)
+    expect(useAuthStore.getState().can('bit_connect_forum_pin_post')).toBe(false)
   })
 })

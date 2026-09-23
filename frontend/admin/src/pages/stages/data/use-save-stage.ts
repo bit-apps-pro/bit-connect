@@ -14,10 +14,10 @@ export interface ErrorResponse {
 export interface StageRequestBody {
   description?: string
   meta: {
-    icon_dark_id?: number
-    icon_dark_url?: string
-    icon_id?: number
-    icon_url?: string
+    bit_connect_icon_dark_id?: number
+    bit_connect_icon_dark_url?: string
+    bit_connect_icon_id?: number
+    bit_connect_icon_url?: string
   }
   name: string
   slug?: string

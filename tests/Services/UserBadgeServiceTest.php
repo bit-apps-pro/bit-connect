@@ -13,8 +13,8 @@ use WP_User;
  *
  * Three surfaces name a member — the comment byline, the topic byline and the
  * profile card — and they used to disagree. The comment byline asked a helper
- * that answers manage_options || forum_manage, so the colleague who holds
- * forum_moderate alone carried no badge on their comments while their profile
+ * that answers manage_options || bit_connect_forum_manage, so the colleague who holds
+ * bit_connect_forum_moderate alone carried no badge on their comments while their profile
  * page called them a Moderator. One resolver is what stops that recurring.
  *
  * The other rule worth guarding: a badge is not authority. isStaff() reads
@@ -68,7 +68,7 @@ final class UserBadgeServiceTest extends TestCase
     }
 
     /**
-     * The case the shared resolver exists for: forum_moderate alone used to
+     * The case the shared resolver exists for: bit_connect_forum_moderate alone used to
      * carry no badge on comments.
      */
     public function testSomeoneWhoOnlyModeratesIsAModerator(): void

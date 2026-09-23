@@ -3,7 +3,7 @@ export interface Product {
   id: number
   meta?: {
     /** Admin-defined position, written by dragging rows. Absent until first dragged. */
-    order?: number
+    bit_connect_order?: number
   }
   name: string
   slug: string
