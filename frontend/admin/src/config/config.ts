@@ -39,15 +39,9 @@ interface ConfigType {
   DATE_FORMAT: string
   FREE_VERSION: string
   IS_DEV: boolean
-  IS_PRO: boolean
-  IS_PRO_EXIST: boolean
-  KEY?: string
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
-  PRO_API_URL: string
-  PRO_SLUG?: string
-  PRO_VERSION?: string
   PRODUCT_NAME: string
   REDIRECT_URI: string
   ROOT_URL: string
@@ -63,7 +57,7 @@ interface ConfigType {
 const windowOrigin = typeof window === 'undefined' ? '' : window.location.origin
 
 const config = {
-  AJAX_URL: getServerVariable('ajaxURL', 'http://bit-pi.site/wp-admin/admin-ajax.php'),
+  AJAX_URL: getServerVariable('ajaxURL', `${windowOrigin}/wp-admin/admin-ajax.php`),
   API_URL: getServerVariable('apiURL', `${windowOrigin}/wp-json/bit-connect/v1`),
   // Read straight off SERVER_VARIABLES rather than through getServerVariable:
   // that helper warns on any falsy value, and `false` here is a normal answer,
@@ -73,22 +67,13 @@ const config = {
   DATE_FORMAT: getServerVariable('dateFormat', 'F j, Y'),
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
-  IS_PRO: SERVER_VARIABLES?.isPro === '1',
-  IS_PRO_EXIST: getServerVariable('isProExist', '0') === '1',
-  KEY: getServerVariable('key'), // license key
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL', ''),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'bit-connect'),
-  // Pro routes register under their own REST namespace, so they cannot be
-  // addressed through API_URL. Sent by the pro plugin; the fallback only
-  // matters before it has loaded, when nothing calls a pro route anyway.
-  PRO_API_URL: getServerVariable('proApiURL', `${windowOrigin}/wp-json/bit-connect-pro/v1`),
-  PRO_SLUG: getServerVariable('proSlug'),
-  PRO_VERSION: getServerVariable('proPluginVersion'),
   PRODUCT_NAME: 'Bit Connect',
   REDIRECT_URI: getServerVariable('redirectUri', ''),
   ROOT_URL: getServerVariable('rootURL', 'http://.local'),
-  ROUTE_PREFIX: getServerVariable('routePrefix', 'bit_pi_'),
+  ROUTE_PREFIX: getServerVariable('routePrefix', 'bit_connect_'),
   SITE_BASE_URL: getServerVariable('siteBaseURL', ''),
   SITE_URL: getServerVariable('siteURL', ''),
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),

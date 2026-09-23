@@ -165,7 +165,7 @@ class TopicService
         //
         // The author is not a stranger to their own topic: they keep the URL,
         // marked as hidden, while it stays out of every listing for everyone.
-        if (!PermissionService::canViewPost($post)) {
+        if (!self::isReadable($post)) {
             return null;
         }
 
@@ -173,7 +173,10 @@ class TopicService
     }
 
     /**
-     * Get a single topic by ID.
+     * Get a single topic by ID, whatever its status.
+     *
+     * For the write paths, which run their own permission checks. Anything
+     * that shows a topic to the current user goes through getReadableTopicById().
      */
     public function getTopicById(int $id): ?array
     {
@@ -183,12 +186,56 @@ class TopicService
             return null;
         }
 
-        // Same rule as the slug lookup: an id is as easy to hold as a URL.
-        if (!PermissionService::canViewPost($post)) {
+        return $this->prepareTopicData($post, true);
+    }
+
+    /**
+     * Get a single topic by ID, or null when the current user may not read it.
+     */
+    public function getReadableTopicById(int $id): ?array
+    {
+        $post = get_post($id);
+
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !self::isReadable($post)) {
             return null;
         }
 
         return $this->prepareTopicData($post, true);
+    }
+
+    /**
+     * Whether the current user may read this topic.
+     *
+     * The single-topic twin of the listing query's status list and
+     * `perm => readable`: a lookup by ID or slug bypasses both, so it has to
+     * ask the same question itself.
+     *
+     * - Published: anyone.
+     * - Hidden by moderation: moderators, and the author, who keeps the URL
+     *   marked as hidden while it stays out of every listing.
+     * - Private: the author, and whoever may read others' private posts —
+     *   exactly who `perm => readable` admits.
+     * - Anything else (draft, pending, trash): nobody. The portal writes none
+     *   of them, so a topic in one reached it some other way.
+     */
+    public static function isReadable(WP_Post $post): bool
+    {
+        switch ($post->post_status) {
+            case 'publish':
+                return true;
+
+            case ContentVisibilityService::HIDDEN_STATUS:
+                return ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
+
+            case 'private':
+                $postType = get_post_type_object($post->post_type);
+
+                return ContentVisibilityService::isOwnContent((int) $post->post_author)
+                    || ($postType && current_user_can($postType->cap->read_private_posts));
+
+            default:
+                return false;
+        }
     }
 
     /**
@@ -397,16 +444,10 @@ class TopicService
             return false;
         }
 
-        $voteService = new VoteService();
-
-        // Delete votes for all comments on this post
-        $comments = get_comments(['post_id' => $id, 'fields' => 'ids']);
-        foreach ($comments as $commentId) {
-            $voteService->deleteCommentVotes((int) $commentId);
-        }
-
-        // Delete post votes
-        $voteService->deletePostVotes($id);
+        // The topic's own votes. Its replies are deleted by wp_delete_post()
+        // below, which fires `deleted_comment` for each one — anything holding
+        // data against a reply cleans up on that hook rather than here.
+        (new VoteService())->deletePostVotes($id);
 
         $result = wp_delete_post($id, true);
 
@@ -485,21 +526,6 @@ class TopicService
 
         return [
             'total'    => Vote::getPostVoteCount($postId),
-            'hasVoted' => $hasVoted,
-        ];
-    }
-
-    public static function getCommentVoteStatus(int $commentId): ?array
-    {
-        $hasVoted = false;
-        if (is_user_logged_in()) {
-            $currentUserId = get_current_user_id();
-            $userVote = Vote::hasUserVotedComment($currentUserId, $commentId);
-            $hasVoted = !empty($userVote);
-        }
-
-        return [
-            'total'    => Vote::getCommentVoteCount($commentId),
             'hasVoted' => $hasVoted,
         ];
     }
@@ -746,9 +772,10 @@ class TopicService
             return null;
         }
 
+        // The name is stored escaped ("API &amp; Integrations"); JSON wants the text.
         $data = [
             'term_id'          => $term->term_id,
-            'name'             => $term->name,
+            'name'             => wp_specialchars_decode($term->name, ENT_QUOTES),
             'slug'             => $term->slug,
             'taxonomy'         => $term->taxonomy,
             'description'      => $term->description,
@@ -802,7 +829,7 @@ class TopicService
         // Once for the topic, not once per reply — the listener reads post
         // meta. 0 on a forum without the add-on, which makes every comparison
         // below a miss and every `pinned` false.
-        $pinnedId = ProFeatures::pinnedCommentId($postId);
+        $pinnedId = ExtensionPoints::pinnedCommentId($postId);
 
         $formattedComments = [];
         foreach ($comments as $comment) {
@@ -816,7 +843,7 @@ class TopicService
                 ? ContentVisibilityService::tombstone()
                 : $comment->comment_content;
 
-            $formattedComments[] = [
+            $formattedComments[] = ExtensionPoints::commentFields([
                 'comment_ID'      => $comment->comment_ID,
                 'comment_post_ID' => $comment->comment_post_ID,
                 'comment_author'  => $comment->comment_author,
@@ -837,7 +864,11 @@ class TopicService
                 'author_avatar'      => get_avatar_url($comment->user_id ?: $comment->comment_author_email),
                 // Empty for guest comments (user_id 0), which have no profile.
                 'author_slug' => ProfileSlugService::slugFor((int) $comment->user_id),
-                'vote'        => self::getCommentVoteStatus((int) $comment->comment_ID),
+                // No `vote` key. Upvoting a reply is the add-on's feature, and
+                // the add-on attaches its own count through commentFields()
+                // below; a forum without it renders a reply with no upvote
+                // control, which is this plugin's complete answer rather than
+                // a blank where something was taken out.
                 'attachments' => self::formatCommentAttachments((int) $comment->comment_ID),
                 // The topic page reads its comments from here, not from the
                 // comments endpoint, so a badge missing from this shape is a
@@ -862,7 +893,7 @@ class TopicService
                 'pinned' => $pinnedId > 0
                     && (int) $comment->comment_ID === $pinnedId
                     && (int) $comment->comment_parent === 0,
-            ];
+            ], (int) $comment->comment_ID);
         }
 
         return $formattedComments;

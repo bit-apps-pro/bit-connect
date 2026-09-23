@@ -34,6 +34,9 @@ final class UserStatsCacheTest extends TestCase
         $GLOBALS['__wp_transients'] = [];
         $GLOBALS['__wpdb_calls'] = [];
         $GLOBALS['__wpdb_get_var'] = '2';
+        // Nobody answering the extension points, which is a forum with no
+        // add-on installed.
+        $GLOBALS['__wp_filters'] = [];
 
         $this->seedMember(self::MEMBER, '2026-01-05 08:00:00');
     }
@@ -46,14 +49,34 @@ final class UserStatsCacheTest extends TestCase
         unset($GLOBALS['__wpdb_get_var']);
     }
 
+    /**
+     * `votes_received` is one query now, not two.
+     *
+     * It used to add the votes on the member's replies to the votes on their
+     * topics — 2 and 2 making 4. Upvoting a reply moved to the Bit Connect Pro
+     * add-on, so this plugin counts the half it still implements and offers
+     * the total to a listener through ExtensionPoints::votesReceived(). With
+     * nobody listening the figure is the topics count on its own.
+     */
     public function testAMembersTotalsAreCountedAndReported(): void
     {
         $stats = $this->stats->forUser(self::MEMBER);
 
         $this->assertSame(2, $stats['topics']);
         $this->assertSame(2, $stats['comments']);
-        $this->assertSame(4, $stats['votes_received']);
+        $this->assertSame(2, $stats['votes_received']);
         $this->assertSame('2026-01-05 08:00:00', $stats['registered_at']);
+    }
+
+    /**
+     * The add-on's half of the upvote total arrives through the filter.
+     */
+    public function testAListenerCanAddTheVotesThisPluginDoesNotCount(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_votes_received'] =
+            static fn($count): int => (int) $count + 5;
+
+        $this->assertSame(7, $this->stats->forUser(self::MEMBER)['votes_received']);
     }
 
     /**

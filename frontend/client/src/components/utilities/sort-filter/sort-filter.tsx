@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { __ } from '@common/helpers/i18nWrap'
+import useHasPrivateTopics from '@features/topic-modal/data/use-private-topics-available'
 import { Grid, Select } from 'antd'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
 
-import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
@@ -13,7 +13,7 @@ const FILTER_KEYS = ['sort', 'visibility', 'my_topics', 'topic-types'] as const
 export default function SortFilter({ loading = false }: { loading?: boolean }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useAuthStore()
-  const { topicAccess } = useAdminSettingsStore(s => s.settings)
+  const hasPrivateTopics = useHasPrivateTopics()
 
   const currentValue = (() => {
     if (searchParams.get('my_topics') === 'true') return 'my_topics'
@@ -59,16 +59,17 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
         value: topic.slug
       })),
       // The Private filter is dropped with the feature: without it the option
-      // is a filter that can only ever come back empty, since no new private
-      // topic can be created. It stays while the visitor is actually looking at
-      // that filter, so an existing bookmark does not land on a Select with a
-      // value it cannot show.
-      ...(isLoggedIn && (topicAccess?.privateTopic || currentValue === 'private')
+      // is a filter that can only ever come back empty, since this plugin has
+      // no code that makes a topic private. It stays while the visitor is
+      // actually looking at that filter, so an existing bookmark — or a forum
+      // that already holds private topics, which stay readable here — does not
+      // land on a Select with a value it cannot show.
+      ...(isLoggedIn && (hasPrivateTopics || currentValue === 'private')
         ? [{ label: __('Private'), value: 'private' }]
         : []),
       ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : [])
     ],
-    [topicTypes, isLoggedIn, topicAccess?.privateTopic, currentValue]
+    [topicTypes, isLoggedIn, hasPrivateTopics, currentValue]
   )
 
   const screens = Grid.useBreakpoint()

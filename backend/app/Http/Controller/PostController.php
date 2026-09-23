@@ -7,16 +7,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Requests\CreatePostRequest;
-use BitApps\BitConnect\Http\Requests\FilterPostRequest;
 use BitApps\BitConnect\Http\Requests\GetAllPostsRequest;
 use BitApps\BitConnect\Http\Requests\GetPostRequest;
 use BitApps\BitConnect\Model\Vote;
-use BitApps\BitConnect\Services\PermissionService;
-use WP_Query;
+use BitApps\BitConnect\Services\TopicService;
 
 final class PostController
 {
@@ -83,9 +81,13 @@ final class PostController
         $postId = $request->id;
 
         $post = get_post($postId);
-        // A private or hidden topic answers exactly like a missing one, so the
-        // response does not confirm that there is something behind the id.
-        if (!$post || !PermissionService::canViewPost($post)) {
+
+        // get_post() answers for any post on the site, of any type and status.
+        // This endpoint serves forum topics, and only the ones the viewer may
+        // read — otherwise a guest could page through drafts and private posts
+        // by ID. A private or hidden topic answers exactly like a missing one,
+        // so the response does not confirm that there is something behind it.
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Post not found', 404);
         }
 
@@ -135,74 +137,5 @@ final class PostController
                 'attachments'    => $attachments,
             ]
         );
-    }
-
-    public function filter(FilterPostRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $taxonomyFilters = [
-            'stages'      => $validatedData['stages'] ?? null,
-            'departments' => $validatedData['departments'] ?? null,
-            'topic-types' => $validatedData['topic-types'] ?? null,
-            'statuses'    => $validatedData['statuses'] ?? null,
-            'tags'        => $validatedData['tags'] ?? null,
-        ];
-
-        $taxQuery = [];
-        foreach ($taxonomyFilters as $taxonomy => $term) {
-            if (!empty($term)) {
-                $terms = array_map('trim', explode(',', $term));
-                $taxQuery[] = [
-                    'taxonomy' => $taxonomy,
-                    'field'    => 'slug',
-                    'terms'    => $terms,
-                    'operator' => 'IN',
-                ];
-            }
-        }
-
-        if (empty($taxQuery)) {
-            return Response::error('At least one taxonomy filter is required (stages, departments, topic-types, statuses, or tags)');
-        }
-
-        if (\count($taxQuery) > 1) {
-            $taxQuery['relation'] = 'AND';
-        }
-
-        $query = new WP_Query(
-            [
-                'post_type'      => Config::SLUG,
-                'post_status'    => 'publish',
-                'posts_per_page' => -1,
-                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Topics are filtered by taxonomy by design; there is no meta equivalent.
-                'tax_query' => $taxQuery,
-            ]
-        );
-
-        if (!$query->have_posts()) {
-            return Response::success([]);
-        }
-
-        $data = [];
-        foreach ($query->posts as $post) {
-            $authorId = (int) $post->post_author;
-            $data[] = [
-                'id'            => $post->ID,
-                'title'         => get_the_title($post),
-                'excerpt'       => get_the_excerpt($post),
-                'content'       => get_the_content(null, false, $post),
-                'link'          => get_permalink($post),
-                'date'          => get_the_date('Y-m-d', $post),
-                'author'        => get_the_author_meta('display_name', $authorId),
-                'author_email'  => get_the_author_meta('user_email', $authorId),
-                'author_avatar' => get_avatar_url($authorId),
-                'author_posts'  => get_author_posts_url($authorId),
-            ];
-        }
-
-        wp_reset_postdata();
-
-        return Response::success($data);
     }
 }

@@ -68,7 +68,6 @@ interface ConfigType {
   FREE_VERSION: string
   IS_DEV: boolean
   IS_LOGGED_IN: boolean
-  IS_PRO: boolean
   LOGIN_PAGE_CUSTOMIZATION: { banner: string; description: string; title: string }
   LOGO_LIGHT: string
   LOGO_PERMALINK_CUSTOM: string
@@ -123,10 +122,7 @@ const portalFilters = getServerVariable('portalFilters', {}) ?? {}
 const promo = getServerVariable('promo', {}) ?? {}
 
 const config = {
-  API_URL: getServerVariable(
-    'apiURL',
-    'http://backend.connect.btcd-test.io:8004/wp-json/bit-connect/v1'
-  ),
+  API_URL: getServerVariable('apiURL', `${siteURL}/wp-json/bit-connect/v1`),
   AUTH_MODE:
     (getServerVariable('authMode', 'plugin_default') as 'custom_url' | 'plugin_default') ??
     'plugin_default',
@@ -150,7 +146,6 @@ const config = {
   IS_DEV: import.meta.env.DEV,
   IS_LOGGED_IN:
     getServerVariable('isLoggedIn', false) === true || getServerVariable('isLoggedIn', false) === '1',
-  IS_PRO: SERVER_VARIABLES?.isPro === '1',
   LOGIN_PAGE_CUSTOMIZATION: getServerVariable('loginPageCustomization', {
     banner: '',
     description: '',
@@ -204,7 +199,7 @@ const config = {
     maxUploadBytes: 5 * 1024 * 1024
   }) ?? { bigImageThresholdPx: 2560, maxUploadBytes: 5 * 1024 * 1024 },
   WP_REGISTER_URL: getServerVariable('wpRegisterURL', `${siteURL}/wp-login.php?action=register`),
-  WP_REST_URL: getServerVariable('wpRestURL', 'http://backend.connect.btcd-test.io:8004/wp-json/wp/v2')
+  WP_REST_URL: getServerVariable('wpRestURL', `${siteURL}/wp-json/wp/v2`)
 } as const satisfies ConfigType
 
 export default config

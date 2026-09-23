@@ -1,4 +1,5 @@
 import config from '@config/config'
+import { decodeTermFields } from '@shared/text/decode-terms'
 
 import { type QueryParam, type ResponseType } from './types'
 
@@ -43,7 +44,7 @@ export async function wpApi<PAYLOAD, RESPONSE_DATA>(
       throw responseData
     }
 
-    return responseData as ResponseType<RESPONSE_DATA>
+    return decodeTermFields(responseData) as ResponseType<RESPONSE_DATA>
   } catch (error) {
     throw { errors: error }
   }

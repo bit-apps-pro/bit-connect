@@ -3,13 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { type TopicComment } from '@/types/wordpress-post'
 
-import { toggleCommentVoteApi } from './data/toggle-comment-vote-api'
 import { toggleVoteApi } from './data/toggle-vote-api'
 import { sortHierarchicalComments, transformTopicCommentsToComments } from './helper/post-commons'
 import { useSinglePostStore } from './single-post.zustand'
 
 vi.mock('./data/toggle-vote-api', () => ({ toggleVoteApi: vi.fn() }))
-vi.mock('./data/toggle-comment-vote-api', () => ({ toggleCommentVoteApi: vi.fn() }))
 
 const makePost = (id: number, total: number, hasVoted = false): Topic =>
   ({
@@ -58,7 +56,6 @@ const commentVote = (id: number) =>
 describe('useSinglePostStore vote buttons', () => {
   beforeEach(() => {
     vi.mocked(toggleVoteApi).mockReset()
-    vi.mocked(toggleCommentVoteApi).mockReset()
     useSinglePostStore.setState({
       comments: [],
       error: undefined,
@@ -100,26 +97,19 @@ describe('useSinglePostStore vote buttons', () => {
     expect(postVote()).toEqual({ hasVoted: false, total: 3 })
   })
 
-  it('moves a comment count on the click rather than on the response', async () => {
+  /**
+   * The store no longer casts a reply's vote, it only shows one.
+   *
+   * Upvoting a reply moved to the Bit Connect Pro add-on, which owns the
+   * request and the optimistic step and writes the result here. What is left
+   * is a setter, so what is worth pinning is that it reaches both copies of
+   * the thread: the raw comments and the derived tree the button reads from.
+   */
+  it('writes a reply vote into both the raw comments and the rendered tree', () => {
     seedComments([makeComment(90, 2)])
-    const settle = pending(vi.mocked(toggleCommentVoteApi))
 
-    const voting = useSinglePostStore.getState().toggleCommentVote(90)
-
-    expect(commentVote(90)).toBe(3)
-
-    settle({ hasVoted: true, votes: 7 })
-    await voting
+    useSinglePostStore.getState().setCommentVote(90, { hasVoted: true, total: 7 })
 
     expect(commentVote(90)).toBe(7)
-  })
-
-  it('puts a comment count back when the vote is refused', async () => {
-    seedComments([makeComment(90, 2)])
-    vi.mocked(toggleCommentVoteApi).mockRejectedValue(new Error('Network down'))
-
-    await expect(useSinglePostStore.getState().toggleCommentVote(90)).rejects.toThrow('Network down')
-
-    expect(commentVote(90)).toBe(2)
   })
 })

@@ -50,11 +50,12 @@ final class TaxonomyController
                 $terms = TermOrderService::sort($terms);
             }
 
+            // Names are stored escaped ("API &amp; Integrations"); JSON wants the text.
             $termsData = [];
             foreach ($terms as $term) {
                 $termsData[] = [
                     'id'     => $term->term_id,
-                    'name'   => $term->name,
+                    'name'   => wp_specialchars_decode($term->name, ENT_QUOTES),
                     'slug'   => $term->slug,
                     'count'  => $term->count,
                     'parent' => $term->parent,
@@ -89,7 +90,7 @@ final class TaxonomyController
         foreach ($terms as $position => $term) {
             $data[] = [
                 'id'    => (int) $term->term_id,
-                'name'  => $term->name,
+                'name'  => wp_specialchars_decode($term->name, ENT_QUOTES),
                 'slug'  => $term->slug,
                 'order' => $position,
             ];

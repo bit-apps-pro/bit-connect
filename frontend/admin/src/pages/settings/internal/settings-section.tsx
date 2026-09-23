@@ -24,11 +24,9 @@ interface SettingsSectionProps {
  * A grid of on/off settings.
  *
  * Every switch here is real: it is bound to a stored value and the forum acts
- * on it. There is deliberately no "pro" variant of a row — a switch rendered
- * forced-off with a crown beside it is a control for something this plugin
- * cannot do, and WordPress.org reads that as a built-in feature held back
- * pending payment (Plugin Directory guideline 6). A caller that wants to say
- * what the add-on adds passes `note` and says it in words instead.
+ * on it. There is deliberately no "pro" variant of a row: a switch for
+ * something this plugin cannot do would not be a setting. A caller that wants
+ * to say what the add-on adds passes `note` and says it in words instead.
  */
 export default function SettingsSection({
   disabled = false,

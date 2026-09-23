@@ -132,28 +132,17 @@ class Follow extends Model
      */
     public static function findFor(int $userId, string $targetType, int $targetId)
     {
+        // first(), not take(1)->get(): since wp-database 2.0, get() always answers
+        // with a Collection, so the old "is it a Model?" test never matched and
+        // this said "not following" about every row — unfollow did nothing and a
+        // second follow tried to insert a duplicate.
         $found = static::select(['*'])
             ->where('user_id', $userId)
             ->where('target_type', $targetType)
             ->where('target_id', $targetId)
-            ->take('1')
-            ->get();
+            ->first();
 
-        // get() hands back a single Model rather than a list when the limit is 1
-        // and exactly one row matched — see Model::getInstanceFromBuilder(). It
-        // answers [] for no match and false when the query itself failed. Casting
-        // the Model case to an array yields the model's own properties ($table,
-        // $casts, $fillable…) and not the row, so every column read off it comes
-        // back empty: a muted follow read as unmuted and the button said Unfollow
-        // on a thread the member had already silenced.
-        // get() always hands back a Collection now — an empty one for no match —
-        // so the row is its first item. The bare-Model branch is kept for a
-        // query builder that still answers a one-row match with the model itself.
-        if ($found instanceof Model) {
-            return $found;
-        }
-
-        return $found instanceof Collection ? ($found->first() ?: null) : null;
+        return $found instanceof Model ? $found : null;
     }
 
     /**

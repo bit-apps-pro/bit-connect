@@ -1,5 +1,4 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
 import { Alert, Button, Descriptions, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,7 +7,7 @@ import useUpdateSettings from './data/use-update-settings'
 import { type ErrorResponse } from './data/use-update-settings'
 import ModerationSection from './internal/moderation-section'
 import SettingsSection from './internal/settings-section'
-import TopicAccessProNote from './internal/topic-access-pro-note'
+import TopicAccessExtras from './internal/topic-access-extras'
 import {
   type CleanupSettings,
   type SettingsFormData,
@@ -88,10 +87,6 @@ export default function Settings() {
     if (settings) {
       setForm({
         cleanup: { ...settings.cleanup },
-        // Defaulted here as well as on the server: an admin bundle newer than
-        // the stored settings would otherwise put `undefined` in the input and
-        // save it back as a threshold of nothing.
-        moderation: { autoHideThreshold: settings.moderation?.autoHideThreshold ?? 2 },
         topicAccess: { ...settings.topicAccess },
         topicFormFields: { ...settings.topicFormFields }
       })
@@ -108,7 +103,6 @@ export default function Settings() {
         if (!prev) return prev
         const updated: SettingsFormData = {
           cleanup: { ...prev.cleanup },
-          moderation: { ...prev.moderation },
           topicAccess: { ...prev.topicAccess },
           topicFormFields: { ...prev.topicFormFields }
         }
@@ -149,29 +143,11 @@ export default function Settings() {
         label: __('Comment'),
         value: form.topicAccess.comment ?? false
       },
-      // Rows for the two add-on features are added only when the add-on is
-      // there to answer for them. A row rendered switched-off-and-disabled is
-      // a control for something this plugin cannot do, which reads as a
-      // built-in feature held back pending payment — see TopicAccessProNote,
-      // which says the same thing in words instead.
-      ...(IS_PRO_ACTIVE
-        ? [
-            {
-              description: __('On/off your Topic comment Upvote'),
-              key: 'commentUpvote',
-              label: __('Comment Upvote'),
-              value: form.topicAccess.commentUpvote ?? false
-            },
-            {
-              description: __(
-                'Let authors keep a topic private, visible only to them and the forum team'
-              ),
-              key: 'privateTopic',
-              label: __('Private Topic'),
-              value: form.topicAccess.privateTopic ?? false
-            }
-          ]
-        : [])
+      // Neither comment upvoting nor private topics is here, for the same
+      // reason: both settings are the add-on's, stored in the add-on's
+      // options and rendered by the add-on's own section, because the
+      // features they switch are entirely over there. A switch here for
+      // either would be a control with nothing behind it.
     ]
   }, [form])
 
@@ -230,7 +206,7 @@ export default function Settings() {
       <div className="bc-px-5">
         <SettingsSection
           disabled={isUpdatingSettings}
-          note={IS_PRO_ACTIVE ? undefined : <TopicAccessProNote />}
+          note={<TopicAccessExtras />}
           onChange={(key, value) =>
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }
@@ -247,13 +223,9 @@ export default function Settings() {
           subtitle={__('Control which fields are shown and required when creating a topic')}
           title={__('Topic Form Fields')}
         />
-        <ModerationSection
-          autoHideThreshold={form?.moderation?.autoHideThreshold ?? 2}
-          disabled={isUpdatingSettings}
-          onChange={autoHideThreshold =>
-            setForm(prev => (prev ? { ...prev, moderation: { autoHideThreshold } } : prev))
-          }
-        />
+        {/* Takes nothing from this form: this plugin stores no moderation
+            setting. The add-on's section reads and saves its own. */}
+        <ModerationSection />
         <SettingsSection
           disabled={isUpdatingSettings}
           onChange={(key, value) => handleSettingChange('cleanup', key as keyof CleanupSettings, value)}

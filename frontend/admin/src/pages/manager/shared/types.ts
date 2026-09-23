@@ -12,7 +12,6 @@ export type ForumCapability =
   | 'forum_manage'
   | 'forum_moderate'
   | 'forum_pin_post'
-  | 'forum_vote_comment'
   | 'forum_vote_post'
 
 export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
@@ -27,7 +26,6 @@ export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
   forum_manage: 'Manage Forum',
   forum_moderate: 'Moderate',
   forum_pin_post: 'Pin Topics',
-  forum_vote_comment: 'Vote Comments',
   forum_vote_post: 'Vote Posts'
 }
 

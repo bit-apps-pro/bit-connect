@@ -4,10 +4,9 @@ import { useCallback, useState } from 'react'
 
 import useBadgesAdmin from './data/use-badges-admin'
 import useResetUserCapabilities from './data/use-reset-user-capabilities'
-import useUpdateUserCapabilities from './data/use-update-user-capabilities'
+import useUserCapabilitiesAdmin from './data/use-user-capabilities-admin'
 import useUsers from './data/use-users'
 import { type ForumCapability } from './shared/types'
-import BadgesColumnHeader from './ui/badges-column-header'
 import CapabilityPopover from './ui/capability-popover'
 import ProfileBadgesModal from './ui/profile-badges-modal'
 import RoleCapabilitiesModal from './ui/role-capabilities-modal'
@@ -25,11 +24,22 @@ export default function Manager() {
   const [badgeModalOpen, setBadgeModalOpen] = useState(false)
 
   const { isUsersFetching, usersData } = useUsers({ page, perPage: 20, search: debouncedSearch })
-  const { isUpdating, updateUserCapabilities } = useUpdateUserCapabilities()
+  // One hook for per-user overrides, so this page never names the pro-only
+  // endpoint and the free build can drop it. See use-user-capabilities-admin.ts.
+  const { isUpdating, saveUserCapabilities } = useUserCapabilitiesAdmin()
   const { isResetting, resetUserCapabilities } = useResetUserCapabilities()
   // One hook for the whole badge feature, so this page never names the pro-only
   // endpoints and the free build can drop them. See use-badges-admin.ts.
-  const { catalog, isSavingBadges, maxPerMember, saveUserBadges } = useBadgesAdmin()
+  const { catalog, hasBadgeCatalog, isSavingBadges, maxPerMember, saveUserBadges } = useBadgesAdmin()
+
+  // The Badges column exists only where badges do. Written as a style rather
+  // than a Tailwind arbitrary value because the two templates have to differ
+  // between builds, and only the free tree is scanned for classes — an
+  // arbitrary `grid-cols-[…]` that appeared solely in the add-on's source
+  // would be purged out of the pro bundle.
+  const gridTemplateColumns = hasBadgeCatalog
+    ? '40px 1fr 1fr 140px 160px 120px'
+    : '40px 1fr 1fr 140px 120px'
 
   const handleSearch = useCallback((value: string) => {
     setDebouncedSearch(value)
@@ -38,9 +48,9 @@ export default function Manager() {
 
   const handleSaveCaps = useCallback(
     async (userId: number, caps: Record<ForumCapability, boolean>) => {
-      await updateUserCapabilities({ capabilities: caps, userId })
+      await saveUserCapabilities(userId, caps)
     },
-    [updateUserCapabilities]
+    [saveUserCapabilities]
   )
 
   return (
@@ -51,14 +61,27 @@ export default function Manager() {
           <Title className="bc-mb-2" level={2}>
             {__('Manage Users')}
           </Title>
+          {/* Two sentences, because this screen does two different jobs
+              depending on what is installed — and the standing one has to
+              describe what an admin can actually do here. */}
           <Text type="secondary">
-            {__(
-              'View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role.'
-            )}
+            {hasBadgeCatalog
+              ? __(
+                  'View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role.'
+                )
+              : __(
+                  'View all WordPress users and see the forum capabilities each one holds. Use Role Capabilities to set them per role.'
+                )}
           </Text>
         </div>
         <div className="bc-flex bc-shrink-0 bc-gap-2">
-          <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile Badges')}</Button>
+          {/* Only where a catalog can exist. A button that opens a description
+              of a feature this plugin does not have is a placeholder for it,
+              and this plugin draws none: what the add-on adds is said once, in
+              words, on the Support screen. */}
+          {hasBadgeCatalog && (
+            <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile Badges')}</Button>
+          )}
           <Button onClick={() => setRoleModalOpen(true)} type="primary">
             {__('Role Capabilities')}
           </Button>
@@ -90,12 +113,15 @@ export default function Manager() {
         {!isUsersFetching && Boolean(usersData?.users?.length) && (
           <>
             {/* Table header */}
-            <div className="bc-grid bc-grid-cols-[40px_1fr_1fr_140px_160px_100px] bc-gap-3 bc-py-2 bc-px-3 bc-bg-surface-sunken bc-rounded-t bc-border bc-border-solid bc-border-line bc-text-xs bc-font-semibold bc-text-ink-muted bc-uppercase bc-tracking-wide">
+            <div
+              className="bc-grid bc-gap-3 bc-py-2 bc-px-3 bc-bg-surface-sunken bc-rounded-t bc-border bc-border-solid bc-border-line bc-text-xs bc-font-semibold bc-text-ink-muted bc-uppercase bc-tracking-wide"
+              style={{ gridTemplateColumns }}
+            >
               <div />
               <div>{__('User')}</div>
               <div>{__('Email')}</div>
               <div>{__('Roles')}</div>
-              <BadgesColumnHeader />
+              {hasBadgeCatalog && <div>{__('Badges')}</div>}
               <div>{__('Capabilities')}</div>
             </div>
 
@@ -103,12 +129,13 @@ export default function Manager() {
             <div className="bc-border bc-border-t-0 bc-border-solid bc-border-line bc-rounded-b bc-overflow-hidden">
               {usersData?.users?.map((user, idx) => (
                 <div
-                  className={`bc-grid bc-grid-cols-[40px_1fr_1fr_140px_160px_100px] bc-gap-3 bc-items-center bc-py-3 bc-px-3 ${
+                  className={`bc-grid bc-gap-3 bc-items-center bc-py-3 bc-px-3 ${
                     idx === (usersData.users?.length ?? 0) - 1
                       ? ''
                       : 'bc-border-b bc-border-solid bc-border-line'
                   }`}
                   key={user.ID}
+                  style={{ gridTemplateColumns }}
                 >
                   <Avatar size={32} src={user.avatar}>
                     {user.display_name.charAt(0).toUpperCase()}
@@ -144,13 +171,15 @@ export default function Manager() {
                     )}
                   </div>
 
-                  <UserBadgesPopover
-                    catalog={catalog}
-                    disabled={isSavingBadges}
-                    maxPerMember={maxPerMember}
-                    onSave={badgeIds => saveUserBadges(user.ID, badgeIds)}
-                    user={user}
-                  />
+                  {hasBadgeCatalog && (
+                    <UserBadgesPopover
+                      catalog={catalog}
+                      disabled={isSavingBadges}
+                      maxPerMember={maxPerMember}
+                      onSave={badgeIds => saveUserBadges(user.ID, badgeIds)}
+                      user={user}
+                    />
+                  )}
 
                   <CapabilityPopover
                     disabled={isUpdating || isResetting}

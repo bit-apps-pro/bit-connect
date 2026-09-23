@@ -97,7 +97,8 @@ function describe(item: NotificationItem) {
         </>
       )
     }
-    case 'topic_new': {
+    case 'topic_new':
+    case 'topic_posted': {
       return (
         <>
           {name} {__('posted a new topic:')} {subject}

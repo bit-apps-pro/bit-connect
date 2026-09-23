@@ -1,6 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
@@ -10,16 +11,17 @@ import { Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import LoginGate from '@/components/features/login-warning-modal/ui/login-gate'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
+import { type ForumCapability } from '@/store/helper/capabilities'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { type Comment } from '@/types/post'
 
 import Error404 from '../Error404/Error404'
 import CommentEditor from './CommentEditor'
 import CommentList from './CommentList'
+import useCommentVote from './data/use-comment-vote'
 import PostHeader from './PostHeader'
 import useCommentFocus from './shared/use-comment-focus'
 import AttachmentList from './ui/attachment-list'
@@ -56,13 +58,12 @@ export default function PostDetailsPage() {
     post,
     setSortOption,
     sortOption,
-    toggleCommentVote,
     toggleVote,
     transformedComments,
     updateComment
   } = useSinglePostStore()
   const { can, isLoggedIn } = useAuthStore()
-  const { open: openLoginWarning } = useLoginWarningStore()
+  const canAct = useCapabilityGate()
 
   useEffect(() => {
     if (postName) {
@@ -82,18 +83,13 @@ export default function PostDetailsPage() {
     )
   }, [fetchSettings])
 
-  const requireLogin = (action: () => void) => {
-    if (!isLoggedIn) {
-      openLoginWarning()
-      return false
-    }
-    action()
-    return true
+  const requireCapability = (capability: ForumCapability, action: () => void) => {
+    if (canAct(capability)) action()
   }
 
   const handlePostVote = async () => {
     if (!post?.ID) return
-    requireLogin(async () => {
+    requireCapability('forum_vote_post', async () => {
       try {
         await toggleVote(post.ID)
       } catch (error_) {
@@ -104,20 +100,8 @@ export default function PostDetailsPage() {
     })
   }
 
-  const handleCommentVote = async (commentId: number) => {
-    requireLogin(async () => {
-      try {
-        await toggleCommentVote(commentId)
-      } catch (error_) {
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to vote on comment')
-        })
-      }
-    })
-  }
-
   const handlePostComment = async (content: string, attachments?: WPAttachmentData[]) => {
-    requireLogin(async () => {
+    requireCapability('forum_create_comment', async () => {
       try {
         await createComment(
           content,
@@ -192,17 +176,16 @@ export default function PostDetailsPage() {
   const focusedCommentId = useCommentFocus(isTopicReady)
 
   const totalCommentCount = countComments(transformedComments)
-  const {
-    comment: canComment,
-    commentUpvote: canCommentUpvote,
-    upvote: canPostUpvote
-  } = settings.topicAccess
+  const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
+  // Empty unless the add-on supplies it, in which case it brings
+  // the handler that casts the vote. See use-comment-vote.ts.
+  const { onVote: handleCommentVote } = useCommentVote()
 
   // A member the role settings deny cannot vote; a disabled control says so up
   // front rather than a 400 after the click. A guest keeps a live control, and
-  // the click asks them to sign in.
+  // the click asks them to sign in. Replies have no such check here: upvoting
+  // one is the add-on's feature, and its handler brings its own gate.
   const memberMayVotePost = !isLoggedIn || can('forum_vote_post')
-  const memberMayVoteComment = !isLoggedIn || can('forum_vote_comment')
 
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
@@ -337,7 +320,7 @@ export default function PostDetailsPage() {
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
               onReply={handleReply}
-              onVote={canCommentUpvote && memberMayVoteComment ? handleCommentVote : undefined}
+              onVote={handleCommentVote}
               sortOption={sortOption}
               topicAuthorId={Number(post.post_author) || 0}
               topicSlug={post.post_name}

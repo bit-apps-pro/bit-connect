@@ -20,6 +20,8 @@ export interface NotificationPreferenceRow {
 }
 
 interface NotificationPreferences {
+  /** Following the whole forum: every new topic arrives, not just followed products and tags. */
+  followsForum: boolean
   frequency: 'daily' | 'instant' | 'never' | 'weekly'
   types: NotificationPreferenceRow[]
 }
@@ -83,4 +85,24 @@ export function useSaveNotificationPreferences() {
   })
 
   return { isSavingPreferences: isPending, savePreferences: mutateAsync }
+}
+
+/**
+ * Follow or unfollow the whole forum, the "every new topic" switch.
+ *
+ * Writes through the follow endpoint, where the row lives, and then re-reads the
+ * screen, which is where the switch gets its state.
+ */
+export function useFollowForum() {
+  const queryClient = useQueryClient()
+
+  const { isPending, mutateAsync } = useMutation({
+    mutationFn: (follow: boolean) =>
+      post<{ follow: boolean; target_id: number; target_type: string }, unknown>('follows/toggle', {
+        body: { follow, target_id: 0, target_type: 'forum' }
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [PREFERENCES_KEY] })
+  })
+
+  return { isTogglingForumFollow: isPending, toggleForumFollow: mutateAsync }
 }

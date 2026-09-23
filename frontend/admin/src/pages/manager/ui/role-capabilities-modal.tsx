@@ -1,7 +1,8 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { Button, Checkbox, Modal, Spin, Typography } from 'antd'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
+import useCapabilityGroups from '../data/use-capability-groups'
 import useCapabilitySettings, { type RoleCapabilities } from '../data/use-capability-settings'
 import useUpdateRoleCapabilities from '../data/use-update-role-capabilities'
 
@@ -17,7 +18,9 @@ const CAP_GROUPS: { caps: string[]; label: string }[] = [
     label: __('Comments')
   },
   {
-    caps: ['forum_vote_post', 'forum_vote_comment'],
+    // Topics only. Voting on a reply is the add-on's capability, and the
+    // add-on contributes its own row — see use-capability-groups.
+    caps: ['forum_vote_post'],
     label: __('Voting')
   },
   {
@@ -39,6 +42,9 @@ function RoleRow({ disabled, role }: RoleRowProps) {
   const [draft, setDraft] = useState<Record<string, boolean>>(() => ({ ...role.capabilities }))
   const [saving, setSaving] = useState(false)
   const { updateRoleCapabilities } = useUpdateRoleCapabilities()
+  // Empty without the add-on. See use-capability-groups.
+  const extraGroups = useCapabilityGroups()
+  const groups = useMemo(() => [...CAP_GROUPS, ...extraGroups], [extraGroups])
 
   const toggle = (cap: string, checked: boolean) => setDraft(prev => ({ ...prev, [cap]: checked }))
 
@@ -68,7 +74,7 @@ function RoleRow({ disabled, role }: RoleRowProps) {
       </div>
 
       <div className="bc-grid bc-grid-cols-2 md:bc-grid-cols-4 bc-gap-4">
-        {CAP_GROUPS.map(group => (
+        {groups.map(group => (
           <div key={group.label}>
             <Text
               className="bc-block bc-mb-2 bc-text-xs bc-uppercase bc-tracking-wide bc-font-semibold"
@@ -108,7 +114,10 @@ export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitie
 
   return (
     <Modal
-      footer={undefined}
+      // No footer: each role saves with its own button. `undefined` would
+      // render antd's default Cancel/OK, and OK had nothing to confirm.
+      // eslint-disable-next-line unicorn/no-null
+      footer={null}
       onCancel={onClose}
       open={open}
       title={

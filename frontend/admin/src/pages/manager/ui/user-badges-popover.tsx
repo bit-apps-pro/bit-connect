@@ -10,9 +10,7 @@ import UserBadgesPopoverPro from './user-badges-popover.pro'
  * Dispatch only — see the two siblings. `IS_PRO_ACTIVE` folds to a literal
  * `false` in the free build (the bundle flag is the left half of the `&&`), so
  * Rollup drops the pro cell and everything it imports from the free bundle
- * entirely; in the pro build the same constant still respects the license, so
- * an expired subscription falls back to the upsell cell rather than to a
- * working control whose requests the server would refuse.
+ * entirely.
  */
 export default function UserBadgesPopover(props: UserBadgesPopoverProps) {
   return IS_PRO_ACTIVE ? <UserBadgesPopoverPro {...props} /> : <UserBadgesPopoverFree />

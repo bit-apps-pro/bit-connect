@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
     verifiedTokens.add(token)
 
     const confirm =
-      isEmailChange && userId ? verifyEmailChangeApi(token, userId) : verifyEmailApi(token, userId)
+      isEmailChange && userId ? verifyEmailChangeApi(token, userId) : verifyEmailApi(token)
 
     confirm
       .then(async response => {

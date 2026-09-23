@@ -73,6 +73,10 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, when a report enters the queue.')]
     case REPORT_FILED = 'report_filed';
 
+    #[Label('Any new topic is posted')]
+    #[Description('Sent to moderators only, for every topic published anywhere in the forum.')]
+    case TOPIC_POSTED = 'topic_posted';
+
     /**
      * The label, translated.
      *
@@ -102,6 +106,7 @@ enum NotificationTypes: string
             self::BADGE_AWARDED        => __('You are given a badge', 'bit-connect'),
             self::TOPIC_STATUS_CHANGED => __('A topic you follow changes status', 'bit-connect'),
             self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
+            self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
         };
     }
 
@@ -121,6 +126,7 @@ enum NotificationTypes: string
             self::BADGE_AWARDED        => __('An admin awards you a profile badge.', 'bit-connect'),
             self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
+            self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
         };
     }
 
@@ -136,7 +142,30 @@ enum NotificationTypes: string
      */
     public static function isModeratorOnly(NotificationTypes $type): bool
     {
-        return $type === self::REPORT_FILED;
+        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED;
+    }
+
+    /**
+     * Types this plugin raises by itself.
+     *
+     * All but one. Nothing here awards a profile badge — the catalogue, the
+     * assignment screen and the endpoint behind them are not part of this
+     * plugin — so BADGE_AWARDED is a case this forum can render and deliver but
+     * never originates. It stays in the enum because it must: a badge awarded
+     * by another plugin arrives as this type, and dropping the case would leave
+     * the mailer and the notification list unable to read a row they are handed.
+     *
+     * What it should not do is appear as a preference row on a forum where
+     * nothing can raise it, for exactly the reason isModeratorOnly() exists —
+     * a row that can never fire is a promise the forum will not keep. The
+     * screens ask ExtensionPoints::notifiableTypes() rather than cases(), and
+     * a plugin that does award badges puts the row back by answering the
+     * filter. Delivery is not gated on any of this: whoever raises the event,
+     * the member gets it.
+     */
+    public static function isDispatchedHere(NotificationTypes $type): bool
+    {
+        return $type !== self::BADGE_AWARDED;
     }
 
     /**

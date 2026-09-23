@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Input, Radio, Select, Switch, Typography } from 'antd'
+import { Input, Radio, Switch, Typography } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import {
@@ -142,24 +142,14 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
               </SettingRow>
             </SectionCard>
 
+            {/* No role picker here: people who register get the site's "New
+                User Default Role" from Settings → General, the same role
+                WordPress's own registration form gives, so the forum's form
+                can never hand out more than WordPress does. */}
             <SectionCard
               subtitle={__('What happens when someone registers through the built-in form.')}
               title={__('New accounts')}
             >
-              <SettingRow
-                description={__('The WordPress role people get when they register.')}
-                label={__('Registration role')}
-              >
-                <Select
-                  className="bc-w-full"
-                  disabled={disabled}
-                  onChange={value => onPatch({ registrationRole: value })}
-                  options={form.availableRoles}
-                  placeholder={__('Select a role')}
-                  value={form.registrationRole || undefined}
-                />
-              </SettingRow>
-
               <SettingRow
                 description={__(
                   'New members have to confirm their email address before they can sign in.'

@@ -27,6 +27,16 @@ declare const SERVER_VARIABLES: {
   canManage?: boolean
   canModerate?: boolean
   canRegister?: '0' | '1' | boolean
+  /**
+   * Whether this forum offers upvoting on replies.
+   *
+   * A slot, not a setting. This plugin never sends it and nothing in this
+   * tree reads it — upvoting a reply ships in Bit Connect Pro, which fills
+   * this in and whose overlay is the only code that looks at it. Declared
+   * here because the payload has one shape, and the add-on's modules are
+   * type-checked against it.
+   */
+  commentUpvote?: string
   communityTitle?: string
   currentUser?: null | {
     avatar: string
@@ -47,9 +57,6 @@ declare const SERVER_VARIABLES: {
   defaultStageSlug?: string
   defaultStatusSlug?: string
   isLoggedIn?: '0' | '1' | boolean
-  isPro: string
-  isProExist?: string
-  key?: string
   loggedInUserName: string
   loginPageCustomization?: {
     banner: string
@@ -75,8 +82,6 @@ declare const SERVER_VARIABLES: {
     prefix?: string
     url?: string
   }
-  proPluginVersion?: string
-  proSlug?: string
   redirectUri: string
   restNonce: string
   rootURL: string

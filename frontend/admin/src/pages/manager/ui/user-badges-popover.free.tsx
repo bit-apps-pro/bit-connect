@@ -1,20 +1,17 @@
-import { __ } from '@common/helpers/i18nWrap'
-import { Typography } from 'antd'
-
 /**
- * The Badges cell without the pro add-on.
+ * The Badges cell without the pro add-on: there is no cell.
  *
- * The column stays rather than disappearing, so the free and pro builds lay the
- * table out identically. The cell itself is inert and says only that there is
- * nothing here: the upsell lives once in the column heading, not once per
- * member, and a cell that looks clickable but cannot do anything is worse than
- * an empty one. It takes no props — there is no catalog to show and nothing to
- * save.
+ * The column itself is not drawn in this build — `useBadgesAdmin` reports no
+ * catalog and the Manager table leaves the track out entirely — so this
+ * neutral answer is what the dispatch resolves to and nothing renders it. It
+ * exists so the import graph resolves and so the free build never reaches the
+ * assignment popover.
+ *
+ * No empty column is drawn in its place either. A column that can never hold
+ * anything is not a column; it is an advert with a table's chrome on. What
+ * the add-on adds is said once, in words, on the Support screen.
  */
 export default function UserBadgesPopoverFree() {
-  return (
-    <Typography.Text aria-label={__('No badges')} className="bc-text-sm" type="secondary">
-      —
-    </Typography.Text>
-  )
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

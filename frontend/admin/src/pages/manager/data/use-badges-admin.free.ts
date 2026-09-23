@@ -11,10 +11,11 @@ const EMPTY_CATALOG: BadgesAdmin['catalog'] = []
 export default function useBadgesAdminFree(): BadgesAdmin {
   return {
     catalog: EMPTY_CATALOG,
+    hasBadgeCatalog: false,
     isSavingBadges: false,
     maxPerMember: 0,
     saveUserBadges: async () => {
-      /* No catalog to assign from. The free cell opens the upsell instead. */
+      /* No catalog to assign from, and no Badges column that could ask. */
     }
   }
 }

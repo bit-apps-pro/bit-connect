@@ -255,6 +255,7 @@ final class NotificationMailer
                 return \sprintf(__('%1$s replied to you in %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::TOPIC_NEW:
+            case NotificationTypes::TOPIC_POSTED:
                 // translators: 1: member name, 2: topic title
                 return \sprintf(__('%1$s posted a new topic: %2$s', 'bit-connect'), $who, $named);
 

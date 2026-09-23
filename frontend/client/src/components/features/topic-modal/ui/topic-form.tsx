@@ -13,11 +13,11 @@ import { slugify } from '@utils/slug'
 import { type FormInstance } from 'antd'
 import { Form, Input, Radio, Select } from 'antd'
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from 'react'
-import { LuGlobe, LuLock } from 'react-icons/lu'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
+import useVisibilityOptions from '../data/use-visibility-options'
 import { BLANK_TOPIC_SEO, type TopicSeo } from '../shared/type'
 import PermalinkField from './permalink-field'
 import SearchAppearanceField, { isUsableImageUrl } from './search-appearance-field'
@@ -41,7 +41,7 @@ export default function TopicForm({
   topicId?: number
 }) {
   const { files: storedFiles } = useFileStore()
-  const { topicAccess, topicFormFields } = useAdminSettingsStore(s => s.settings)
+  const { topicFormFields } = useAdminSettingsStore(s => s.settings)
   const { notificationApi } = useContext(NotifyContext)
   const [isSlugEdited, setIsSlugEdited] = useState(false)
   // Lives here rather than in the field: the Form.Item owns the label, and a
@@ -136,45 +136,23 @@ export default function TopicForm({
     [taxonomies]
   )
 
-  // Private topics are a Pro feature the admin also has to switch on, and the
-  // server reports that combined answer in `topicAccess.privateTopic`. It is
-  // still offered while editing a topic that is already private: the server
-  // refuses only a *move* into private, so hiding the option there would leave
-  // the radio with nothing selected and quietly publish the topic on save.
-  const visibilityOptions = useMemo(() => {
-    const options = [
-      {
-        label: (
-          <div className="bc-flex bc-items-center bc-gap-2">
-            <LuGlobe size={16} />
-            {__('Public Topic')}
-          </div>
-        ),
-        value: 'publish'
-      }
-    ]
-
-    const isAlreadyPrivate = form.getFieldValue('post_status') === 'private'
-
-    if (topicAccess?.privateTopic || isAlreadyPrivate) {
-      options.push({
-        label: (
-          <div className="bc-flex bc-items-center bc-gap-2">
-            <LuLock size={16} />
-            {__('Private Topic')}
-          </div>
-        ),
-        value: 'private'
-      })
-    }
-
-    return options
-  }, [topicAccess?.privateTopic, form])
+  // What this forum can make a topic. This plugin publishes topics and says so
+  // with one option; the add-on's implementation knows about the rest. Passing
+  // the topic's current status lets an implementation keep offering a choice
+  // the topic is already using, so editing does not silently change it.
+  const visibilityOptions = useVisibilityOptions(form.getFieldValue('post_status'))
 
   return (
     // Field labels read as headings for their control, so they carry weight; antd
     // exposes no font-weight token for them, hence the one-off descendant rule.
-    <Form className="[&_.ant-form-item-label>label]:bc-font-semibold" form={form} layout="vertical">
+    <Form
+      className="[&_.ant-form-item-label>label]:bc-font-semibold"
+      form={form}
+      layout="vertical"
+      // antd builds field ids from the form name. Unnamed, the create and edit
+      // forms both render `#post_title`, and a label can reach the wrong input.
+      name={isEditMode ? 'topic-edit' : 'topic-create'}
+    >
       {/* Hidden rather than unrendered when only one visibility is on offer: a
           radio group of one is a control with nothing to decide, but the field
           still has to register `publish` so the payload is identical either way.

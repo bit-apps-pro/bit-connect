@@ -23,8 +23,6 @@ Object.defineProperty(window, 'matchMedia', {
 Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true })
 
 Object.defineProperty(window, 'SERVER_VARIABLES', {
-  value: {
-    isPro: '1'
-  },
+  value: {},
   writable: true
 })

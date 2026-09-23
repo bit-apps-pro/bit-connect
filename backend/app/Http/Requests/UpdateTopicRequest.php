@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
 
 /**
@@ -58,7 +59,13 @@ final class UpdateTopicRequest extends Request
             'post_content' => ['nullable', 'string', 'max:10000'],
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
             'post_name'   => ['nullable', 'string', 'sanitize:title', 'max:200'],
-            'post_status' => ['nullable', 'string', 'sanitize:text'],
+            // Publish is the only status this endpoint sets. Sending it for a
+            // topic that is currently private makes it public, which needs no
+            // add-on: taking privacy away is always available, the same way
+            // clearing a capability override is. Omitting the field leaves the
+            // stored status alone, so an author editing a private topic on a
+            // site without the add-on keeps it private.
+            'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
             'departments' => ['nullable', 'integer', 'min:1'],

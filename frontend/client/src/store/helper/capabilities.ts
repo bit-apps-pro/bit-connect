@@ -15,7 +15,6 @@ export type ForumCapability =
   | 'forum_manage'
   | 'forum_moderate'
   | 'forum_pin_post'
-  | 'forum_vote_comment'
   | 'forum_vote_post'
 
 /** cap => granted. Partial: an older payload may not carry every slug. */
@@ -46,7 +45,6 @@ const LEGACY_OWNER_CAPS = [
   'forum_delete_own_post',
   'forum_edit_own_comment',
   'forum_edit_own_post',
-  'forum_vote_comment',
   'forum_vote_post'
 ] as const satisfies readonly ForumCapability[]
 

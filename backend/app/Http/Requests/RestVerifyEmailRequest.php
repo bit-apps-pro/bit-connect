@@ -9,10 +9,13 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 
 /**
- * Request for verifying an email address via token.
+ * Confirm a parked registration by its token.
  *
- * @property string   $token
- * @property null|int $user_id
+ * The token alone names the registration — it is the key the pending data was
+ * parked under — so nothing else is accepted. An earlier release also took a
+ * `user_id` for a per-user meta token that nothing ever wrote.
+ *
+ * @property string $token
  */
 final class RestVerifyEmailRequest extends Request
 {
@@ -24,8 +27,7 @@ final class RestVerifyEmailRequest extends Request
     public function rules()
     {
         return [
-            'token'   => ['required', 'string'],
-            'user_id' => ['nullable', 'integer'],
+            'token' => ['required', 'string', 'max:64'],
         ];
     }
 

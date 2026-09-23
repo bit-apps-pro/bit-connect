@@ -1,11 +1,8 @@
-/* eslint-disable newline-per-chained-call */
 import { describe, expect, it } from 'vitest'
 
 import {
   _if,
   assign,
-  bitCipher,
-  bitDecipher,
   checkValidEmail,
   cn,
   combineMerge,
@@ -171,17 +168,6 @@ describe('isObjectEqual', () => {
   it('is order-sensitive (JSON.stringify based)', () => {
     // eslint-disable-next-line perfectionist/sort-objects -- the differing key order IS the assertion; sorting these would make the two objects identical and invert the expected result
     expect(isObjectEqual({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(false)
-  })
-})
-
-describe('bitCipher / bitDecipher', () => {
-  it('round-trips a string', () => {
-    const original = 'hello world 123'
-    expect(bitDecipher(bitCipher(original))).toBe(original)
-  })
-
-  it('does not store the plaintext', () => {
-    expect(bitCipher('secret')).not.toContain('secret')
   })
 })
 

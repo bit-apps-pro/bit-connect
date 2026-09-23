@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\Requests\GetNotificationSettingsRequest;
 use BitApps\BitConnect\Http\Requests\SendTestNotificationEmailRequest;
 use BitApps\BitConnect\Http\Requests\UpdateNotificationSettingsRequest;
 use BitApps\BitConnect\Providers\CronProvider;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\NotificationPreferences;
 
@@ -102,7 +103,9 @@ final class NotificationSettingsController
 
         $catalog = [];
 
-        foreach (NotificationTypes::cases() as $type) {
+        // Not cases(): a type nothing on this forum raises is not a default an
+        // admin has any use for setting. See ExtensionPoints::notifiableTypes().
+        foreach (ExtensionPoints::notifiableTypes() as $type) {
             $catalog[] = [
                 'type'        => $type->value,
                 'label'       => NotificationTypes::translatedLabel($type),

@@ -85,7 +85,7 @@ final class CapabilityService
 
             $roleCaps = $settings[$roleSlug] ?? [];
 
-            foreach (Capabilities::values() as $cap) {
+            foreach (ExtensionPoints::capabilities() as $cap) {
                 if (!empty($roleCaps[$cap])) {
                     $role->add_cap($cap, true);
                 } else {
@@ -117,7 +117,7 @@ final class CapabilityService
                 continue;
             }
 
-            foreach (Capabilities::values() as $cap) {
+            foreach (ExtensionPoints::capabilities() as $cap) {
                 $role->remove_cap($cap);
             }
         }
@@ -358,8 +358,9 @@ final class CapabilityService
      *
      * The capability was withdrawn: nobody edits content they did not write.
      * Dropping the enum case alone would not have been enough to enforce that.
-     * applySettings() only ever walks Capabilities::values(), so a slug no
-     * longer listed there is never passed to remove_cap() — the grant would sit
+     * applySettings() only ever walks ExtensionPoints::capabilities(), so a
+     * slug no longer listed there — this plugin's or any listener's — is never
+     * passed to remove_cap(). The grant would sit
      * on the live role indefinitely, invisible to Manager and still answered by
      * current_user_can() if any code asked for it. This removes it for real.
      *
@@ -435,7 +436,7 @@ final class CapabilityService
             $savedCaps = $settings[$roleSlug] ?? [];
             $caps = [];
 
-            foreach (Capabilities::values() as $cap) {
+            foreach (ExtensionPoints::capabilities() as $cap) {
                 $caps[$cap] = !empty($savedCaps[$cap]);
             }
 
@@ -461,7 +462,7 @@ final class CapabilityService
         }
 
         $settings = self::getSettings();
-        $settings[$roleSlug] = array_intersect_key($caps, array_flip(Capabilities::values()));
+        $settings[$roleSlug] = array_intersect_key($caps, array_flip(ExtensionPoints::capabilities()));
         self::saveSettings($settings);
 
         return true;
@@ -524,7 +525,7 @@ final class CapabilityService
      */
     private static function sanitizeSettings(array $settings): array
     {
-        $validCaps = array_flip(Capabilities::values());
+        $validCaps = array_flip(ExtensionPoints::capabilities());
         $validRoles = array_keys(wp_roles()->get_names());
         $clean = [];
 

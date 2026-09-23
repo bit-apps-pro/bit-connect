@@ -21,7 +21,6 @@ use BitApps\BitConnect\Services\AuthService;
  * @property string $redirectAfterLogin
  * @property string $redirectAfterLogout
  * @property bool   $requireEmailVerification
- * @property string $registrationRole
  */
 final class UpdateAuthSettingsRequest extends Request
 {
@@ -113,7 +112,6 @@ final class UpdateAuthSettingsRequest extends Request
             'redirectAfterLogin'       => esc_url_raw((string) ($this->redirectAfterLogin ?? '')),
             'redirectAfterLogout'      => esc_url_raw((string) ($this->redirectAfterLogout ?? '')),
             'requireEmailVerification' => (bool) ($this->requireEmailVerification ?? $defaults['requireEmailVerification']),
-            'registrationRole'         => AuthService::sanitizeRegistrationRole((string) ($this->registrationRole ?? '')),
         ];
     }
 

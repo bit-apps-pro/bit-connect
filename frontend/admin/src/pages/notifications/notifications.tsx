@@ -8,6 +8,7 @@ import {
   useSendTestEmail,
   useUpdateNotificationSettings
 } from './data/use-notification-settings'
+import DigestScheduleSection from './internal/digest-schedule-section'
 import EmailDeliverySection from './internal/email-delivery-section'
 import EmailWordingSection from './internal/email-wording-section'
 import SectionCard from './internal/section-card'
@@ -175,6 +176,15 @@ export default function NotificationSettingsPage() {
             </table>
           </div>
         </SectionCard>
+
+        <DigestScheduleSection
+          enabled={enabled}
+          form={form}
+          isSendingTest={isSendingTest}
+          payload={payload}
+          sendTestEmail={sendTestEmail}
+          set={set}
+        />
 
         <EmailDeliverySection
           enabled={enabled}

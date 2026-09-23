@@ -70,7 +70,7 @@ class ShortCode
             global $post;
             // Add topic details to state in the new format
             $stateData['topicDetails'] = [
-                'topic' => $topicService->getTopicById($post->ID),
+                'topic' => $topicService->getReadableTopicById($post->ID),
             ];
         }
 

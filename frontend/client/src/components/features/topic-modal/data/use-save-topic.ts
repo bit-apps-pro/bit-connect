@@ -1,7 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import { type Response } from '@common/helpers/request'
-import queryRequest from '@common/helpers/request'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormInstance } from 'antd'
 import { useContext } from 'react'
@@ -10,18 +9,22 @@ import { usePostsStore } from '@/store/posts.zustand'
 
 import { slugDisclosure } from '../shared/slug-disclosure'
 import { type SaveTopicPayload, type Topic } from '../shared/type'
+import useTopicRequest from './use-topic-request'
 
 export default function useSaveTopic(form: FormInstance) {
   const { notificationApi } = useContext(NotifyContext)
   const fetchAllPosts = usePostsStore(state => state.fetchAllPosts)
   const queryClient = useQueryClient()
+  // Which endpoint a topic goes to depends on the visibility it was given.
+  // See use-topic-request.
+  const topicRequest = useTopicRequest()
 
   const { error, isError, isPending, mutateAsync } = useMutation<
     Response<Topic>,
     Response<string> | Response<ValidationType<SaveTopicPayload>>,
     SaveTopicPayload
   >({
-    mutationFn: async (data: SaveTopicPayload) => queryRequest<Topic>('topics', data),
+    mutationFn: async (data: SaveTopicPayload) => topicRequest.create(data),
     mutationKey: ['topics', 'store'],
     onError: error => {
       if (error.code === 'VALIDATION' && error.data && typeof error.data === 'object') {

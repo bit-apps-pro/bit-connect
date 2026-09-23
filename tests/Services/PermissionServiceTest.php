@@ -3,7 +3,6 @@
 namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Enum\Capabilities;
-use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\PermissionService;
 use PHPUnit\Framework\TestCase;
 use WP_Comment;
@@ -162,73 +161,6 @@ class PermissionServiceTest extends TestCase
         $this->assertFalse($capabilities[Capabilities::CREATE_POST->value]);
     }
 
-    public function testAnyoneMayReadAPublishedTopic(): void
-    {
-        $this->assertTrue(PermissionService::canViewPost($this->makeStatusPost(1, 'publish')));
-    }
-
-    /**
-     * The regression: a private topic was excluded from every listing and then
-     * served in full by the slug lookup the topic page uses, to a visitor who
-     * was not signed in at all.
-     */
-    public function testGuestMayNotReadAPrivateTopic(): void
-    {
-        $this->assertFalse(PermissionService::canViewPost($this->makeStatusPost(1, 'private')));
-    }
-
-    public function testAnotherMemberMayNotReadAPrivateTopic(): void
-    {
-        $GLOBALS['__wp_current_user_id'] = 2;
-        $this->grant(Capabilities::CREATE_POST->value, Capabilities::CREATE_COMMENT->value);
-
-        $this->assertFalse(PermissionService::canViewPost($this->makeStatusPost(1, 'private')));
-    }
-
-    public function testAuthorAndModeratorMayReadAPrivateTopic(): void
-    {
-        $GLOBALS['__wp_current_user_id'] = 1;
-        $this->assertTrue(PermissionService::canViewPost($this->makeStatusPost(1, 'private')));
-
-        $GLOBALS['__wp_current_user_id'] = 2;
-        $this->grant(Capabilities::MODERATE->value);
-        $this->assertTrue(PermissionService::canViewPost($this->makeStatusPost(1, 'private')));
-    }
-
-    public function testHiddenTopicFollowsTheHiddenContentRule(): void
-    {
-        $hidden = $this->makeStatusPost(1, ContentVisibilityService::HIDDEN_STATUS);
-
-        $this->assertFalse(PermissionService::canViewPost($hidden));
-
-        $GLOBALS['__wp_current_user_id'] = 1;
-        $this->assertTrue(PermissionService::canViewPost($hidden));
-
-        $GLOBALS['__wp_current_user_id'] = 2;
-        $this->assertFalse(PermissionService::canViewPost($hidden));
-
-        $this->grant(Capabilities::MODERATE->value);
-        $this->assertTrue(PermissionService::canViewPost($hidden));
-    }
-
-    public function testDraftsAreForTheAuthorAndModeratorsOnly(): void
-    {
-        $draft = $this->makeStatusPost(1, 'draft');
-
-        $this->assertFalse(PermissionService::canViewPost($draft));
-
-        $GLOBALS['__wp_current_user_id'] = 1;
-        $this->assertTrue(PermissionService::canViewPost($draft));
-    }
-
-    public function testCanViewPostResolvesAnIdAndRefusesAMissingOne(): void
-    {
-        $GLOBALS['__wp_posts'][7] = $this->makeStatusPost(1, 'publish');
-
-        $this->assertTrue(PermissionService::canViewPost(7));
-        $this->assertFalse(PermissionService::canViewPost(8));
-    }
-
     private function grant(string ...$caps): void
     {
         foreach ($caps as $cap) {
@@ -250,17 +182,5 @@ class PermissionServiceTest extends TestCase
         $comment->user_id = $userId;
 
         return $comment;
-    }
-
-    // -------------------------------------------------------------------------
-    // Reading
-    // -------------------------------------------------------------------------
-
-    private function makeStatusPost(int $author, string $status): WP_Post
-    {
-        $post = $this->makePost($author);
-        $post->post_status = $status;
-
-        return $post;
     }
 }

@@ -6,8 +6,6 @@ import { type AdminSettings } from '../admin-settings.type'
 const defaultSettings: AdminSettings = {
   topicAccess: {
     comment: false,
-    commentUpvote: false,
-    privateTopic: false,
     upvote: false
   },
   topicFormFields: {
@@ -26,9 +24,6 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
   return {
     topicAccess: {
       comment: settingsData.topicAccess?.comment ?? defaultSettings.topicAccess.comment,
-      commentUpvote:
-        settingsData.topicAccess?.commentUpvote ?? defaultSettings.topicAccess.commentUpvote,
-      privateTopic: settingsData.topicAccess?.privateTopic ?? defaultSettings.topicAccess.privateTopic,
       upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
     },
     topicFormFields: {

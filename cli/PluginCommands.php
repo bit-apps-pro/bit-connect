@@ -5,8 +5,6 @@ namespace BitApps\BitConnect\CLI;
 use BitApps\BitConnect\Config;
 use WP_CLI;
 
-// require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-include_once ABSPATH . 'wp-admin/includes/plugin.php';
 class PluginCommands
 {
     public const PRO_PLUGIN_INDEX = Config::PRO_PLUGIN_SLUG . '/' . Config::PRO_PLUGIN_SLUG . '.php';
@@ -42,6 +40,9 @@ class PluginCommands
     {
         $proPluginDir = WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . Config::PRO_PLUGIN_SLUG;
 
+        // is_plugin_active() is an admin-side function, not loaded under WP-CLI.
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
         if (file_exists($proPluginDir) && is_plugin_active(self::PRO_PLUGIN_INDEX)) {
             $isDeactivated = shell_exec('wp plugin deactivate ' . Config::PRO_PLUGIN_SLUG);
 
@@ -58,7 +59,7 @@ class PluginCommands
     public function toggleDev($_, $assocArgs)
     {
         if (!isset($assocArgs['active'])) {
-            WP_CLI::error('missing parameter use wp bit-pi use toggleDev --active=y|n');
+            WP_CLI::error('missing parameter use wp bit-connect use toggleDev --active=y|n');
 
             return;
         }

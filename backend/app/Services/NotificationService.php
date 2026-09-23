@@ -394,6 +394,7 @@ final class NotificationService
                 return $author === null ? [] : [$author];
 
             case NotificationTypes::REPORT_FILED:
+            case NotificationTypes::TOPIC_POSTED:
                 return NotificationRecipients::moderatorIds();
 
             default:

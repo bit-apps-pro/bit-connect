@@ -21,6 +21,8 @@ use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
+use BitApps\BitConnect\Services\NotificationPreferences;
+use BitApps\BitConnect\Services\NotificationRecipients;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\StageService;
@@ -148,10 +150,6 @@ final class TopicController
     {
         $validatedData = $request->validated();
 
-        if (!$this->mayUseStatus($validatedData['post_status'] ?? null)) {
-            return $this->refusePrivateTopic();
-        }
-
         // Prepare data for service
         $topicData = [
             'post_title'   => $validatedData['post_title'],
@@ -207,7 +205,7 @@ final class TopicController
         $validatedData = $request->validated();
         $id = $validatedData['id'];
 
-        $topic = $this->topicService->getTopicById($id);
+        $topic = $this->topicService->getReadableTopicById($id);
 
         if (!$topic) {
             return Response::error('Topic not found', self::HTTP_NOT_FOUND);
@@ -290,17 +288,12 @@ final class TopicController
                 $updateData['post_name'] = $validatedData['post_name'];
             }
             if (isset($validatedData['post_status'])) {
-                // Only a *move* into private is refused. A topic that is already
-                // private stays editable after the feature is switched off or a
-                // license lapses — otherwise turning the setting off would trap
-                // its author, unable to fix a typo in something they wrote,
-                // which is not what "stop offering private topics" should mean.
-                $wasPrivate = (string) ($existingTopic['post_status'] ?? '') === 'private';
-
-                if (!$wasPrivate && !$this->mayUseStatus($validatedData['post_status'])) {
-                    return $this->refusePrivateTopic();
-                }
-
+                // Validation admits 'publish' and nothing else, so this either
+                // leaves a public topic public or makes a private one public.
+                // Both are this plugin's to do. A topic that is already private
+                // stays editable here: the field simply is not sent, so its
+                // status is untouched and its author can still fix a typo in
+                // it.
                 $updateData['post_status'] = $validatedData['post_status'];
             }
             if (isset($validatedData['topic-types'])) {
@@ -408,6 +401,10 @@ final class TopicController
      * stops being usable past a handful of topics a week, and a bell full of
      * things nobody asked for is the fastest way to teach people to ignore it.
      *
+     * Moderators are the exception: they get TOPIC_POSTED for every topic,
+     * because keeping an eye on everything is their job. It is a separate type so
+     * they can switch it off without losing the topics they follow.
+     *
      * @param array<string, mixed> $topic as returned by TopicService::createTopic()
      */
     private function notifyNewTopic(array $topic): void
@@ -454,14 +451,36 @@ final class TopicController
             );
         }
 
+        $followers = NotificationRecipients::newTopicAudience($topicId);
+
         NotificationService::dispatch(
             NotificationTypes::TOPIC_NEW,
             NotificationService::TARGET_TOPIC,
             $topicId,
             $context,
             $topicId,
-            null,
+            $followers,
             $mentioned
+        );
+
+        // Moderators hear about every topic, followed or not, so nothing new
+        // reaches the portal unseen. A moderator who was already told as a
+        // follower is skipped: one topic is one row. Only the followers who
+        // actually took the TOPIC_NEW row count as told — one who switched that
+        // type off must still get this one.
+        $toldAsFollower = array_filter(
+            $followers,
+            static fn (int $id): bool => NotificationPreferences::wantsInApp($id, NotificationTypes::TOPIC_NEW)
+        );
+
+        NotificationService::dispatch(
+            NotificationTypes::TOPIC_POSTED,
+            NotificationService::TARGET_TOPIC,
+            $topicId,
+            $context,
+            $topicId,
+            null,
+            array_merge($mentioned, $toldAsFollower)
         );
     }
 
@@ -637,32 +656,4 @@ final class TopicController
         }
     }
 
-    /**
-     * Whether the forum currently accepts a topic in this status.
-     *
-     * Only 'private' is gated. Anything else — 'publish', or the hidden status
-     * moderation applies — is not this method's business, so it passes through
-     * and the existing handling decides.
-     *
-     * The portal already hides the Private option when it is unavailable, but
-     * that is presentation: the request can still arrive from a stale tab, a
-     * second browser, or anything speaking to the API directly.
-     *
-     * @param null|string $status
-     */
-    private function mayUseStatus($status): bool
-    {
-        if ((string) $status !== 'private') {
-            return true;
-        }
-
-        return PermissionService::canUsePrivateTopics();
-    }
-
-    private function refusePrivateTopic()
-    {
-        return Response::error(
-            __('Private topics are not available on this forum.', 'bit-connect')
-        )->httpStatus(403);
-    }
 }

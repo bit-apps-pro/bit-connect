@@ -5,6 +5,7 @@ namespace BitApps\BitConnect\Tests\Services;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\NotificationPreferences;
 use PHPUnit\Framework\TestCase;
 
@@ -208,11 +209,6 @@ class NotificationPreferencesTest extends TestCase
 
     public function testAnUnknownFrequencyFallsBackToTheForumDefault(): void
     {
-        // The forum default is only the forum's to set on a licensed site;
-        // without one every read of it is instant, which would not exercise
-        // the fallback this is about.
-        $this->licence();
-
         $GLOBALS['__wp_user_meta'][self::MEMBER][NotificationPreferences::META_KEY] = ['frequency' => 'hourly'];
         $this->storeSettings(['defaultFrequency' => NotificationSettings::FREQUENCY_WEEKLY]);
 
@@ -239,6 +235,39 @@ class NotificationPreferencesTest extends TestCase
 
         $this->assertNotContains(NotificationTypes::REPORT_FILED->value, $memberTypes);
         $this->assertContains(NotificationTypes::REPORT_FILED->value, $moderatorTypes);
+    }
+
+    public function testTheEveryTopicRowIsAModeratorsAlone(): void
+    {
+        $memberTypes = array_column(NotificationPreferences::screenFor(self::MEMBER)['types'], 'type');
+        $moderatorTypes = array_column(NotificationPreferences::screenFor(self::MODERATOR)['types'], 'type');
+
+        $this->assertNotContains(NotificationTypes::TOPIC_POSTED->value, $memberTypes);
+        $this->assertContains(NotificationTypes::TOPIC_POSTED->value, $moderatorTypes);
+        $this->assertFalse(NotificationPreferences::wantsInApp(self::MEMBER, NotificationTypes::TOPIC_POSTED));
+    }
+
+    /**
+     * The "every new topic" switch reads the member's forum follow row, so the
+     * screen and newTopicAudience() cannot disagree.
+     */
+    public function testTheScreenReportsWhetherTheMemberFollowsTheWholeForum(): void
+    {
+        $GLOBALS['__bc_follows'] = [];
+
+        $this->assertFalse(NotificationPreferences::screenFor(self::MEMBER)['followsForum']);
+
+        $GLOBALS['__bc_follows'] = [
+            ['user_id' => self::MEMBER, 'target_type' => Follow::TARGET_FORUM, 'target_id' => 0, 'muted' => 0, 'source' => 'manual'],
+        ];
+
+        $this->assertTrue(NotificationPreferences::screenFor(self::MEMBER)['followsForum']);
+
+        $GLOBALS['__bc_follows'][0]['muted'] = 1;
+
+        $this->assertFalse(NotificationPreferences::screenFor(self::MEMBER)['followsForum']);
+
+        $GLOBALS['__bc_follows'] = [];
     }
 
     /**
@@ -323,11 +352,4 @@ class NotificationPreferencesTest extends TestCase
         NotificationPreferences::flushSettings();
     }
 
-    /**
-     * Turn the pro licence on for tests that need a forum-set digest cadence.
-     */
-    private function licence(): void
-    {
-        bc_test_install_pro_addon(['notification_delivery', 'notification_wording']);
-    }
 }

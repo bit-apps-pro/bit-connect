@@ -373,18 +373,33 @@ final class TopicServiceWriteTest extends TestCase
         $this->assertSame([], $GLOBALS['__bc_votes']);
     }
 
-    public function testDeletingATopicTakesTheVotesOnItsRepliesToo(): void
+    /**
+     * A reply's votes are not this plugin's to reap.
+     *
+     * This plugin cannot cast a vote on a reply, has no column for one and no
+     * query that reads one, so it does not go looking for rows to delete on
+     * behalf of whatever wrote them. An add-on that implements reply upvoting
+     * owns the column and clears it on `deleted_comment`, which WordPress
+     * fires for every reply that goes with the topic being deleted here.
+     *
+     * Asserted rather than left implicit because the loop that used to do it
+     * was in this method, and a future edit that "tidies up" by putting it
+     * back would quietly move the feature's storage into a plugin that does
+     * not have the feature.
+     */
+    public function testDeletingATopicLeavesReplyVotesToThePluginThatWroteThem(): void
     {
         $this->seedTopic(20, []);
         $this->seedComment(50, 20);
-        $GLOBALS['__bc_votes'] = [
+        $replyVotes = [
             ['user_id' => 3, 'post_id' => null, 'comment_id' => 50],
             ['user_id' => 4, 'post_id' => null, 'comment_id' => 99],
         ];
+        $GLOBALS['__bc_votes'] = $replyVotes;
 
         $this->topics->deleteTopic(20);
 
-        $this->assertSame([['user_id' => 4, 'post_id' => null, 'comment_id' => 99]], $GLOBALS['__bc_votes']);
+        $this->assertSame($replyVotes, $GLOBALS['__bc_votes']);
     }
 
     /**

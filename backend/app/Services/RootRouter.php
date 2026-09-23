@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
@@ -72,6 +73,7 @@ final class RootRouter
     public static function registerFrontPageNotice(): void
     {
         Hooks::addAction('admin_notices', [self::class, 'renderFrontPageNotice']);
+        Hooks::addAction('admin_post_' . self::noticeDismissAction(), [self::class, 'dismissFrontPageNotice']);
     }
 
     /**
@@ -233,7 +235,7 @@ final class RootRouter
      */
     public static function renderFrontPageNotice(): void
     {
-        if (!Capabilities::check('manage_options') || PortalLocation::isFrontPageBound()) {
+        if (!self::shouldShowFrontPageNotice(get_current_user_id())) {
             return;
         }
 
@@ -245,9 +247,88 @@ final class RootRouter
             'bit-connect'
         );
 
-        // Dismissible: this shows on every admin screen, and a warning an
-        // administrator cannot silence is a nag whether or not it is correct.
-        printf('<div class="notice notice-warning is-dismissible"><p>%s</p></div>', esc_html($message));
+        $dismissUrl = wp_nonce_url(
+            admin_url('admin-post.php?action=' . self::noticeDismissAction()),
+            self::noticeDismissAction()
+        );
+
+        // This shows on every admin screen, and a warning an administrator
+        // cannot silence is a nag whether or not it is correct. The close button
+        // hides it for one page load; the link remembers the dismissal for this
+        // user until the front page is changed again.
+        printf(
+            '<div class="notice notice-warning is-dismissible"><p>%s <a href="%s">%s</a></p></div>',
+            esc_html($message),
+            esc_url($dismissUrl),
+            esc_html__('Don’t show this again', 'bit-connect')
+        );
+    }
+
+    /**
+     * Whether the front-page warning is due for this user.
+     *
+     * Root mode on, front page pointed elsewhere, administrator, and not
+     * dismissed for the front page as it is set right now.
+     */
+    public static function shouldShowFrontPageNotice(int $userId): bool
+    {
+        if (!Capabilities::check('manage_options') || PortalLocation::isFrontPageBound()) {
+            return false;
+        }
+
+        $dismissed = (string) get_user_meta($userId, self::noticeDismissedMetaKey(), true);
+
+        return $dismissed !== self::frontPageState();
+    }
+
+    /**
+     * Remember that this user has seen the warning about the current front page.
+     */
+    public static function rememberFrontPageNoticeDismissal(int $userId): void
+    {
+        update_user_meta($userId, self::noticeDismissedMetaKey(), self::frontPageState());
+    }
+
+    /**
+     * The `admin-post.php` handler behind the notice's "Don't show this again".
+     */
+    public static function dismissFrontPageNotice(): void
+    {
+        if (!Capabilities::check('manage_options')) {
+            wp_die(esc_html__('You are not allowed to do that.', 'bit-connect'), 403);
+        }
+
+        check_admin_referer(self::noticeDismissAction());
+
+        self::rememberFrontPageNoticeDismissal(get_current_user_id());
+
+        $referer = wp_get_referer();
+        wp_safe_redirect($referer !== false ? $referer : admin_url());
+
+        exit;
+    }
+
+    /**
+     * The front-page setting the dismissal is bound to.
+     *
+     * Dismissing forever would hide a warning that becomes true again the next
+     * time the front page is moved, so the dismissal is remembered against the
+     * setting it was given for: point the front page somewhere else that is
+     * still not the portal, and the warning returns.
+     */
+    private static function frontPageState(): string
+    {
+        return (string) get_option('show_on_front') . ':' . (int) get_option('page_on_front');
+    }
+
+    private static function noticeDismissedMetaKey(): string
+    {
+        return Config::withPrefix('front_page_notice_dismissed');
+    }
+
+    private static function noticeDismissAction(): string
+    {
+        return Config::withPrefix('dismiss_front_page_notice');
     }
 
     /**

@@ -34,16 +34,13 @@ final class AvatarController
             return Response::error($fileError)->httpStatus(self::HTTP_BAD_REQUEST);
         }
 
-        include_once ABSPATH . 'wp-admin/includes/file.php';
-
-        include_once ABSPATH . 'wp-admin/includes/media.php';
-
-        include_once ABSPATH . 'wp-admin/includes/image.php';
-
         // The server-verified file, never the raw $_FILES entry. Assigned to a
         // variable first because wp_handle_upload() takes it by reference and
         // will not accept a method call.
         $file = $request->validatedFile();
+
+        // wp_handle_upload() is an admin-side function, not loaded on REST requests.
+        require_once ABSPATH . 'wp-admin/includes/file.php';
         $uploaded = wp_handle_upload($file, ['test_form' => false]);
 
         if (isset($uploaded['error'])) {
@@ -77,6 +74,8 @@ final class AvatarController
 
         // Generates the sized images AvatarService serves; without this every
         // avatar would fall back to the full-size original.
+        // wp_generate_attachment_metadata() is admin-side too.
+        require_once ABSPATH . 'wp-admin/includes/image.php';
         wp_update_attachment_metadata(
             $attachmentId,
             wp_generate_attachment_metadata($attachmentId, $uploaded['file'])

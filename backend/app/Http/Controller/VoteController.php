@@ -8,13 +8,20 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
-use BitApps\BitConnect\Http\Requests\GetCommentVotesRequest;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Requests\GetPostVotesRequest;
-use BitApps\BitConnect\Http\Requests\ToggleCommentVoteRequest;
 use BitApps\BitConnect\Http\Requests\TogglePostVoteRequest;
-use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\VoteService;
 
+/**
+ * Upvoting a topic.
+ *
+ * Topics only. Upvoting an individual reply is not a thing this plugin does
+ * withhold — it is a thing this plugin does not implement: there is no route,
+ * no service method and no request class for it here. That feature ships in
+ * the Bit Connect Pro add-on, which registers its own endpoints.
+ */
 final class VoteController
 {
     private VoteService $voteService;
@@ -42,40 +49,17 @@ final class VoteController
         return Response::success($result['data']);
     }
 
-    public function toggleCommentVote(ToggleCommentVoteRequest $request)
-    {
-        $commentId = (int) $request->id;
-        $comment = get_comment($commentId);
-
-        if (!$comment) {
-            return Response::error(__('Comment not found.', 'bit-connect'))->httpStatus(404);
-        }
-
-        $result = $this->voteService->toggleCommentVote(get_current_user_id(), $commentId);
-
-        if (!$result['success']) {
-            return Response::error($result['message'])->httpStatus(!empty($result['denied']) ? 403 : 400);
-        }
-
-        return Response::success($result['data']);
-    }
-
     public function getPostVotes(GetPostVotesRequest $request)
     {
         // Even a count says a private topic exists; answer as for a missing one.
-        if (!PermissionService::canViewPost((int) $request->id)) {
+        $post = get_post((int) $request->id);
+
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Post not found', 404);
         }
 
         return Response::success(
             $this->voteService->getPostVoteStatus((int) $request->id, get_current_user_id())
-        );
-    }
-
-    public function getCommentVotes(GetCommentVotesRequest $request)
-    {
-        return Response::success(
-            $this->voteService->getCommentVoteStatus((int) $request->id, get_current_user_id())
         );
     }
 }

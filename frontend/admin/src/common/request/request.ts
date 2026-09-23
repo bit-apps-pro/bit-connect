@@ -58,27 +58,3 @@ export async function request<PAYLOAD, RESPONSE_DATA>(
     throw { errors: error }
   }
 }
-
-/**
- * A call to a Bit Connect Pro route.
- *
- * Identical to request() apart from the namespace: pro registers its routes
- * under `bit-connect-pro/v1`, while API_URL names the free plugin's. Calling
- * request() for a pro route addresses the wrong namespace and gets a 404 that
- * looks like a broken endpoint rather than a wrong URL.
- */
-export async function proRequest<PAYLOAD, RESPONSE_DATA>(
-  uri: string,
-  options?: Omit<Partial<RequestInit>, 'body'> & {
-    body?: PAYLOAD
-    headers?: Record<string, string>
-    method: string
-    queryParam?: QueryParam
-  }
-): Promise<ResponseType<RESPONSE_DATA>> {
-  return request<PAYLOAD, RESPONSE_DATA>(uri, {
-    ...options,
-    baseUrl: config.PRO_API_URL,
-    method: options?.method || 'GET'
-  })
-}
