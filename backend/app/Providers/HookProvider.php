@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Plugin;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ProfileSlugService;
@@ -56,6 +57,10 @@ class HookProvider
         // Sitemap: list portal routes instead of the CPT's own permalinks, and
         // 301 the CPT permalink to its portal equivalent.
         PortalSitemap::register();
+
+        // A members-only forum stays closed on the routes core serves topics
+        // through by itself — REST, feeds, search, taxonomy archives, oEmbed.
+        MembersOnlyGuard::register();
 
         // Same correction for links to a single comment, which core builds from
         // the CPT permalink the sitemap just excluded. Global rather than on the

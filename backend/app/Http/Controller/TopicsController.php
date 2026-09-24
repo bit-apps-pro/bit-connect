@@ -47,7 +47,9 @@ class TopicsController
 
         // A page past the end is not a thin page, it is no page — answering 200
         // would turn every out-of-range number into an indexable empty listing.
-        if ($page > 1 && empty($viewData['topics'])) {
+        // A members-only portal's guest was given no topics to count, and gets
+        // the sign-in prompt instead.
+        if ($page > 1 && empty($viewData['topics']) && !TopicsView::isClosed()) {
             return (new NotFoundController())->index($request);
         }
 

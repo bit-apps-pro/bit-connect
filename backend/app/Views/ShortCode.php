@@ -61,12 +61,16 @@ class ShortCode
         $viewManager = $this->ssrHandler->getViewManager(); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
         $topicService = new TopicService();
 
+        // A members-only portal's guest gets no topics in the hydration state —
+        // see TopicsView::isClosed().
+        $isClosed = TopicsView::isClosed();
+
         $stateData = [
-            'data' => $topicService->getAllTopics()
+            'data' => $isClosed ? [] : $topicService->getAllTopics()
         ];
 
         // If we're on a single bit-connect post page, add topic details and comments for SSR
-        if (is_singular(PostTypes::BIT_CONNECT->value) && get_the_ID()) {
+        if (!$isClosed && is_singular(PostTypes::BIT_CONNECT->value) && get_the_ID()) {
             global $post;
             // Add topic details to state in the new format
             $stateData['topicDetails'] = [
@@ -79,7 +83,7 @@ class ShortCode
             $stateData,
             [
                 'data'   => (new PostController())->all()->getData(),
-                'stages' => StageService::ordered(),
+                'stages' => $isClosed ? [] : StageService::ordered(),
             ]
         );
 

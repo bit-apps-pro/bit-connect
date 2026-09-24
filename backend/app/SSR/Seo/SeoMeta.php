@@ -41,6 +41,12 @@ final class SeoMeta
      */
     public static function forTopics(array $topics, int $page = 1): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled()) {
             return;
         }
@@ -87,6 +93,12 @@ final class SeoMeta
      */
     public static function forTopic(?array $topic): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled() || empty($topic) || ($topic['post_status'] ?? '') !== 'publish') {
             return;
         }
@@ -124,6 +136,12 @@ final class SeoMeta
      */
     public static function forArchive(WP_Term $term, array $topics): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled()) {
             return;
         }
@@ -174,6 +192,14 @@ final class SeoMeta
      */
     public static function forProfile(string $displayName = '', string $url = ''): void
     {
+        // The member's name would otherwise reach the title of a page the
+        // portal refuses to show.
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
@@ -368,6 +394,31 @@ final class SeoMeta
         self::printHead();
 
         return (string) ob_get_clean();
+    }
+
+    /**
+     * Describe a content route of a members-only portal.
+     *
+     * Every such route shows a logged-out visitor the same sign-in prompt, so
+     * each is kept out of the index and named only by the community — never by
+     * the topic, term or member it would have shown. Left undescribed, the
+     * site's SEO plugin was not stood down and printed the portal page's own
+     * `index` robots onto every one of them.
+     */
+    private static function forMembersOnly(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title'       => $community,
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
     }
 
     /**

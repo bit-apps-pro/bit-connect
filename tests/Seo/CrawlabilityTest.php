@@ -315,8 +315,30 @@ final class CrawlabilityTest extends TestCase
         $this->assertSame('', SeoContent::forTopics([$this->topic]));
         $this->assertSame('', SeoContent::forTopic($this->topic));
 
+        // Described rather than left bare: an undescribed route leaves the
+        // site's SEO plugin printing the portal page's `index` robots onto it.
         SeoMeta::forTopic($this->topic);
-        $this->assertSame('', SeoMeta::head());
+        $head = SeoMeta::head();
+
+        $this->assertStringContainsString('<meta name="robots" content="noindex,nofollow" />', $head);
+        $this->assertStringNotContainsString($this->topic['post_title'], $head);
+        $this->assertStringNotContainsString('application/ld+json', $head);
+        $this->assertStringNotContainsString('canonical', $head);
+    }
+
+    public function testRestrictedPortalKeepsEveryContentRouteOutOfTheIndex(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('general_settings')]['portalAccess'] = 'logged_in';
+
+        SeoMeta::forTopics([$this->topic]);
+        $this->assertStringContainsString('content="noindex,nofollow"', SeoMeta::head());
+
+        // A member's name must not reach the title of a page the portal refuses.
+        SeoMeta::forProfile('Jane Member', 'https://example.com/community/user/jane');
+        $head = SeoMeta::head();
+        $this->assertStringContainsString('content="noindex,nofollow"', $head);
+        $this->assertStringNotContainsString('Jane Member', $head);
+        $this->assertSame('Acme Community', SeoMeta::meta()['title']);
     }
 
     public function testDraftTopicIsNeverRendered(): void

@@ -248,8 +248,12 @@ final class TermArchiveTest extends TestCase
 
         $this->assertSame('', SeoContent::forArchive($term, [$this->makeTopic()]));
 
+        // Kept out of the index and named only by the community, never the term.
         SeoMeta::forArchive($term, [$this->makeTopic()]);
-        $this->assertSame('', SeoMeta::head());
+        $head = SeoMeta::head();
+        $this->assertStringContainsString('<meta name="robots" content="noindex,nofollow" />', $head);
+        $this->assertStringNotContainsString('Billing', $head);
+        $this->assertStringNotContainsString('canonical', $head);
     }
 
     // -----------------------------------------------------------------------

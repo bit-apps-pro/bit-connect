@@ -45,7 +45,11 @@ class TopicDetailsController
         // The single-segment route is a catch-all: any slug that is not a topic
         // lands here. Rendering the shell anyway and answering 200 would make
         // every typo and every deleted topic an indexable page.
-        if (empty($viewData['topic'])) {
+        //
+        // Not for a visitor a members-only portal turns away: they were given
+        // no topic to look for, and get the portal's sign-in prompt whether or
+        // not the slug exists — which is also what keeps it from saying so.
+        if (empty($viewData['topic']) && !TopicsView::isClosed()) {
             return (new NotFoundController())->index($request);
         }
 

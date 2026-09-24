@@ -349,6 +349,35 @@ if (!function_exists('get_post')) {
     }
 }
 
+if (!function_exists('get_post_type')) {
+    function get_post_type($postId = null)
+    {
+        $post = $GLOBALS['__wp_posts'][$postId] ?? null;
+
+        return $post ? $post->post_type : false;
+    }
+}
+
+if (!function_exists('get_post_types')) {
+    /**
+     * The registered types, keyed by name the way core returns them. The
+     * filter argument is ignored: every type here is public and searchable.
+     */
+    function get_post_types($args = [])
+    {
+        $types = $GLOBALS['__wp_post_types'] ?? ['post', 'page', 'attachment', 'bit-connect'];
+
+        return array_combine($types, $types);
+    }
+}
+
+if (!function_exists('is_admin')) {
+    function is_admin(): bool
+    {
+        return !empty($GLOBALS['__wp_is_admin']);
+    }
+}
+
 if (!function_exists('get_comment')) {
     function get_comment($commentId)
     {
@@ -748,6 +777,13 @@ if (!function_exists('wp_register_script')) {
         $GLOBALS['__wp_scripts'][$handle] = ['registered' => true, 'enqueued' => false, 'after' => []];
 
         return true;
+    }
+}
+
+if (!function_exists('wp_register_script_module')) {
+    function wp_register_script_module($id, $src, $deps = [], $version = false): void
+    {
+        $GLOBALS['__wp_script_modules'][$id] = $src;
     }
 }
 
