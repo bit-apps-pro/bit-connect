@@ -1,5 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { Alert, Button, Checkbox, Form, Input } from 'antd'
 import { useEffect } from 'react'
 import { LuLogIn } from 'react-icons/lu'
@@ -17,6 +19,7 @@ interface LoginFormValues {
 }
 
 export default function LoginPage() {
+  usePageTitle(__('Log in'))
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
@@ -83,7 +86,7 @@ export default function LoginPage() {
               <span>{__('Password')}</span>
               <Link
                 className="bc-text-xs bc-text-primary hover:bc-text-primary/80 bc-font-medium bc-no-underline"
-                to={`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`}
+                to={routePath(`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`)}
               >
                 {__('Forgot password?')}
               </Link>
@@ -117,7 +120,7 @@ export default function LoginPage() {
           {__("Don't have an account?")}{' '}
           <Link
             className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-            to={`/register?redirect_to=${encodeURIComponent(redirectTo)}`}
+            to={routePath(`/register?redirect_to=${encodeURIComponent(redirectTo)}`)}
           >
             {__('Registration')}
           </Link>

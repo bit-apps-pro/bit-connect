@@ -10,6 +10,7 @@ import logo from '@resource/img/logo.svg'
 import ThemeToggle from '@utilities/theme-toggle'
 import { userProfilePath } from '@utilities/user-link'
 import { externalLoginUrl, externalRegisterUrl, registrationIsOffered } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { Avatar, Button, Dropdown, Grid } from 'antd'
 import { useEffect } from 'react'
 import { LuChevronDown, LuLogIn, LuLogOut, LuMenu, LuPlus, LuUser, LuUserPlus } from 'react-icons/lu'
@@ -313,7 +314,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                 ) : (
                   <Link
                     className="bc-no-underline"
-                    to={`/login?redirect_to=${encodeURIComponent(currentPath)}`}
+                    to={routePath(`/login?redirect_to=${encodeURIComponent(currentPath)}`)}
                   >
                     <Button icon={<LuLogIn size={16} />} type="primary">
                       {__('Login')}
@@ -334,7 +335,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                   ) : (
                     <Link
                       className="bc-hidden bc-no-underline md:bc-block"
-                      to={`/register?redirect_to=${encodeURIComponent(currentPath)}`}
+                      to={routePath(`/register?redirect_to=${encodeURIComponent(currentPath)}`)}
                     >
                       <Button icon={<LuUserPlus size={16} />}>{__('Register')}</Button>
                     </Link>

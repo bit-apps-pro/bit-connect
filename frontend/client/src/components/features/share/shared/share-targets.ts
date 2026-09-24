@@ -17,6 +17,7 @@ import { LuMail } from 'react-icons/lu'
 import { SiFacebook, SiLinkedin, SiReddit, SiTelegram, SiWhatsapp, SiX } from 'react-icons/si'
 
 import { portalUrl } from '@/utils/auth-urls'
+import { routePath } from '@/utils/route-path'
 
 /** What is being shared — a whole topic, or one reply inside it. */
 export type ShareTargetType = 'comment' | 'topic'
@@ -177,7 +178,9 @@ export function commentIdFromFragment(hash: string): number | undefined {
  * outside ASCII in `post_name`, and that escaped form is what the route matches.
  */
 export function buildShareUrl(topicSlug: string, commentId?: number): string {
-  const base = portalUrl(`/${topicSlug}`)
+  // In the site's permalink form, so a shared link is the canonical URL
+  // itself rather than one that 301s to it.
+  const base = portalUrl(routePath(`/${topicSlug}`))
 
   return commentId ? `${base}${commentFragment(commentId)}` : base
 }

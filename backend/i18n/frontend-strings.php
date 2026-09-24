@@ -1478,6 +1478,8 @@ return [
 
     'comments' => __('comments', 'bit-connect'),
 
+    'Reset password' => __('Reset password', 'bit-connect'),
+
     'Something went wrong. Please try again.' => __('Something went wrong. Please try again.', 'bit-connect'),
 
     'If an account exists for that username or email, a password reset link has been sent. Please check your inbox.' => __('If an account exists for that username or email, a password reset link has been sent. Please check your inbox.', 'bit-connect'),
@@ -1498,6 +1500,8 @@ return [
 
     'Send Reset Link' => __('Send Reset Link', 'bit-connect'),
 
+    'Log in' => __('Log in', 'bit-connect'),
+
     'Username or email' => __('Username or email', 'bit-connect'),
 
     'Password' => __('Password', 'bit-connect'),
@@ -1511,6 +1515,8 @@ return [
     'Remember me' => __('Remember me', 'bit-connect'),
 
     'Don\'t have an account?' => __('Don\'t have an account?', 'bit-connect'),
+
+    'Sign up' => __('Sign up', 'bit-connect'),
 
     'New account registration is currently disabled on this site.' => __('New account registration is currently disabled on this site.', 'bit-connect'),
 
@@ -1558,6 +1564,8 @@ return [
 
     'Register' => __('Register', 'bit-connect'),
 
+    'Verify email' => __('Verify email', 'bit-connect'),
+
     'Invalid verification link.' => __('Invalid verification link.', 'bit-connect'),
 
     'Verification failed. Please try again.' => __('Verification failed. Please try again.', 'bit-connect'),
@@ -1583,6 +1591,8 @@ return [
     'Could not change your email' => __('Could not change your email', 'bit-connect'),
 
     'Verification failed' => __('Verification failed', 'bit-connect'),
+
+    'Page not found' => __('Page not found', 'bit-connect'),
 
     'We can’t find that page' => __('We can’t find that page', 'bit-connect'),
 

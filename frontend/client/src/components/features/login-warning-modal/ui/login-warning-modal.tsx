@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { routePath } from '@utils/route-path'
 import { Button, Modal } from 'antd'
 import { LuLogIn, LuUserPlus } from 'react-icons/lu'
 import { useLocation, useNavigate } from 'react-router'
@@ -16,12 +17,12 @@ export default function LoginWarningModal() {
 
   const handleLogin = () => {
     close()
-    navigate(`/login${redirectParam}`)
+    navigate(routePath(`/login${redirectParam}`))
   }
 
   const handleSignup = () => {
     close()
-    navigate(`/register${redirectParam}`)
+    navigate(routePath(`/register${redirectParam}`))
   }
 
   return (

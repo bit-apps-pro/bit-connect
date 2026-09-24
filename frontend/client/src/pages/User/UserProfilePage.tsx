@@ -1,5 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { type Topic } from '@features/topic-modal/shared/type'
 import TabNav, { type TabItem } from '@utilities/tab-nav'
 import TopicCard from '@utilities/topic-card'
@@ -67,6 +68,7 @@ export default function UserProfilePage() {
   // which only arrives with the profile response. The lists below therefore
   // wait on `userId` rather than firing off the URL param directly.
   const { isLoadingProfile, notFound, profile, stats, userId } = useUserProfile(userSlug)
+  usePageTitle(profile?.display_name || (notFound ? __('Page not found') : undefined))
 
   const { isLoggedIn, user } = useAuthStore()
   const isOwnProfile = Boolean(isLoggedIn && user?.id && Number(user.id) === Number(userId))

@@ -1,4 +1,5 @@
 import MemberBadge from '@utilities/member-badge'
+import { routePath } from '@utils/route-path'
 import { Avatar } from 'antd'
 import { Link } from 'react-router'
 
@@ -11,7 +12,7 @@ import { type MemberBadge as MemberBadgeType } from '@/types/member-badge'
  * author now includes as `author_slug` — so a byline can build the URL without
  * a lookup per author.
  */
-export const userProfilePath = (slug: string) => `/user/${encodeURIComponent(slug)}`
+export const userProfilePath = (slug: string) => routePath(`/user/${encodeURIComponent(slug)}`)
 
 interface UserLinkProps {
   avatar?: string

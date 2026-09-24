@@ -2,6 +2,7 @@ import { cn } from '@common/helpers/globalHelpers'
 import config from '@config/config'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
+import { routePath } from '@utils/route-path'
 import { theme } from 'antd'
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
@@ -46,7 +47,7 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
   // behind a second URL. The server 301s that archive back here, and this keeps
   // the nav from relying on the redirect. `?stage=` still works for links
   // already shared — see pages/topics/topics.tsx.
-  const to = path === config.DEFAULT_STAGE_SLUG ? '/' : `/stage/${path}`
+  const to = path === config.DEFAULT_STAGE_SLUG ? '/' : routePath(`/stage/${path}`)
 
   return (
     <NavLink

@@ -92,8 +92,12 @@ interface ConfigType {
     prefix: string
     url: string
   }
+  /** The WordPress site title, for page titles when no community title is set. */
+  SITE_NAME: string
   SITE_URL: string
   TIME_FORMAT: string
+  /** Whether portal URLs end in a slash — see utils/route-path.ts. */
+  TRAILING_SLASH: boolean
   /** Seed for the bell's badge, so it is right on first paint. */
   UNREAD_NOTIFICATIONS: number
   WP_LOGIN_URL: string
@@ -186,8 +190,13 @@ const config = {
     prefix: promo.prefix ?? '',
     url: promo.url ?? ''
   },
+  SITE_NAME: getServerVariable('siteName', '') ?? '',
   SITE_URL: siteURL,
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
+  // Read straight off the payload rather than through getServerVariable, which
+  // treats `false` — the answer on any site without trailing slashes — as a
+  // missing value.
+  TRAILING_SLASH: SERVER_VARIABLES?.trailingSlash === true,
   // Read through Number() rather than as a fallback default: zero is the
   // commonest correct answer, and getServerVariable treats a falsy value as
   // "missing" — so a member with nothing unread would otherwise warn on every

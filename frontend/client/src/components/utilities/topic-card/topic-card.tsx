@@ -8,6 +8,7 @@ import { Link } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
+import { routePath } from '@/utils/route-path'
 import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
@@ -85,7 +86,7 @@ export default function TopicCard({
       <div className="bc-flex bc-min-w-0 bc-max-w-full bc-flex-1 bc-flex-col">
         {/* The link stretches over the whole card (see topic-card.css), so the
             target is the card rather than the title text alone. */}
-        <Link className="topic-card__link" to={`/${topic.post_name}`}>
+        <Link className="topic-card__link" to={routePath(`/${topic.post_name}`)}>
           {/* One chip holds the card's right edge, aligned down the list so the
               column can be scanned on its own. Which chip depends on the width:
               below md the topic type, since that is what a reader scans a phone

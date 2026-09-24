@@ -120,6 +120,14 @@ class BaseView
             'wpRegisterURL'          => wp_registration_url(),
             'loginPageCustomization' => AuthService::getSettings()['loginPageCustomization'] ?? ['banner' => '', 'title' => '', 'description' => ''],
             'communityTitle'         => $generalSettings['communityTitle'] ?? '',
+            // The title the server falls back to when no community title is
+            // set, so a page title set in the browser matches the server's.
+            'siteName' => get_bloginfo('name'),
+            // Whether the site's permalinks end in a slash. The app builds its
+            // own links, and without this every one of them named a URL that
+            // WordPress answers with a 301 to the slashed form — see
+            // utils/route-path.ts.
+            'trailingSlash' => str_ends_with((string) get_option('permalink_structure'), '/'),
             'logoLight'              => $generalSettings['logoLight'] ?? '',
             'logoPermalinkMode'      => $generalSettings['logoPermalinkMode'] ?? 'default',
             'logoPermalinkCustom'    => $generalSettings['logoPermalinkCustom'] ?? '',

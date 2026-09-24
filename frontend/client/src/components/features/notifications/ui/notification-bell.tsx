@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { routePath } from '@utils/route-path'
 import { Badge, Button, Dropdown, Grid } from 'antd'
 import { useEffect, useState } from 'react'
 import { LuBell } from 'react-icons/lu'
@@ -113,7 +114,7 @@ export default function NotificationBell() {
             block
             onClick={() => {
               setOpen(false)
-              navigate('/notifications')
+              navigate(routePath('/notifications'))
             }}
             size="small"
             type="text"
@@ -135,7 +136,7 @@ export default function NotificationBell() {
       // half again as wide as the icon it holds. Squared off, it matches the
       // menu button at the other end of the bar.
       className="bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0"
-      onClick={isMobile ? () => navigate('/notifications') : undefined}
+      onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
       type="text"
     >
       {/* `count` is capped by antd at `overflowCount`; 99+ is plenty and a

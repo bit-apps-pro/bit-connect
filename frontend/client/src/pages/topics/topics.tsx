@@ -3,6 +3,8 @@ import './topics.css'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
+import usePageTitle from '@common/hooks/usePageTitle'
+import { type TaxonomiesResponse } from '@features/topic-modal/data/use-taxonomies'
 import ProductFilter from '@utilities/product-filter'
 import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
@@ -18,6 +20,15 @@ import { useSearchParams } from 'react-router'
 import config from '@/config/config'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
+
+/** The taxonomy each archive filter key names — see pages/topics/archive.tsx. */
+const ARCHIVE_TAXONOMY: Record<string, keyof TaxonomiesResponse> = {
+  departments: 'bit-connect-departments',
+  stages: 'bit-connect-stages',
+  statuses: 'bit-connect-statuses',
+  tags: 'bit-connect-tags',
+  'topic-types': 'bit-connect-topic-types'
+}
 
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
@@ -85,6 +96,15 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const topicTypes = taxonomies?.['bit-connect-topic-types'] || []
   const departments = taxonomies?.['bit-connect-departments'] || []
   const tagTerms = taxonomies?.['bit-connect-tags'] || []
+
+  // The tab title, as the server sets it: the community name for the listing,
+  // "Term — Community" for an archive. Left alone until the term's name has
+  // loaded, rather than flashing the bare community name first.
+  const [archiveKey, archiveSlug] = archiveFilter ? (Object.entries(archiveFilter)[0] ?? []) : []
+  const archiveName = archiveKey
+    ? taxonomies?.[ARCHIVE_TAXONOMY[archiveKey]]?.find(term => term.slug === archiveSlug)?.name
+    : ''
+  usePageTitle(archiveName)
 
   const clearSort = () =>
     setSearchParams(prev => {

@@ -4,6 +4,7 @@ import { Skeleton } from 'antd'
 import { LuMessageCircle } from 'react-icons/lu'
 import { Link } from 'react-router'
 
+import { routePath } from '@/utils/route-path'
 import { relativeTime } from '@/utils/utils'
 
 import useRelatedTopics from '../data/use-related-topics'
@@ -41,7 +42,7 @@ export default function RelatedTopics({
                   so the whole row highlights rather than just the text. */}
               <Link
                 className="bc--mx-2 bc-block bc-rounded-lg bc-px-2 bc-py-2 bc-no-underline bc-transition-colors hover:bc-bg-surface-sunken"
-                to={`/${related.post_name}`}
+                to={routePath(`/${related.post_name}`)}
               >
                 <span className="bc-line-clamp-2 bc-block bc-text-[13px] bc-font-medium bc-leading-[1.35] bc-text-ink">
                   {related.post_title}

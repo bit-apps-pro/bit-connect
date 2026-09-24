@@ -3,6 +3,7 @@ import { LuArrowLeft, LuCompass, LuHouse } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 
 import { __ } from '../../common/helpers/i18nWrap'
+import usePageTitle from '../../common/hooks/usePageTitle'
 
 /**
  * The portal's own not-found screen.
@@ -18,6 +19,7 @@ import { __ } from '../../common/helpers/i18nWrap'
  */
 export default function Error404() {
   const navigate = useNavigate()
+  usePageTitle(__('Page not found'))
 
   return (
     <div className="bc-flex bc-w-full bc-items-center bc-justify-center bc-px-4 bc-py-14 sm:bc-py-20">

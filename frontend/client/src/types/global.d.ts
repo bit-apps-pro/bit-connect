@@ -88,9 +88,13 @@ declare const SERVER_VARIABLES: {
   routePrefix: string
   settings: string
   siteBaseURL: string
+  /** The WordPress site title — the page-title fallback with no community title. */
+  siteName?: string
   siteURL: string
   timeFormat: string
   timeZone: string
+  /** Whether the site's permalinks end in a slash (BaseView.php). */
+  trailingSlash?: boolean
   translations?: Record<string, string>
   /** Seed for the notification bell's badge. Absent during the SSR prerender. */
   unreadNotifications?: number

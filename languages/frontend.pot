@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Thu Sep 24 2026 15:55:37 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Thu Sep 24 2026 16:16:04 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -310,10 +310,10 @@ msgstr ""
 #: frontend/admin/src/pages/activity/activity.tsx:146
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:42
 #: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:46
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:299
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:305
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:86
 #: frontend/client/src/pages/User/ui/ProfileCard.tsx:164
-#: frontend/client/src/pages/User/UserProfilePage.tsx:116
+#: frontend/client/src/pages/User/UserProfilePage.tsx:118
 msgid "Comments"
 msgstr ""
 
@@ -450,7 +450,7 @@ msgid "Sorry, the page you visited does not exist."
 msgstr ""
 
 #: frontend/admin/src/pages/Error404/Error404.tsx:18
-#: frontend/client/src/pages/Error404/Error404.tsx:32
+#: frontend/client/src/pages/Error404/Error404.tsx:34
 msgid "404"
 msgstr ""
 
@@ -542,7 +542,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:35
 #: frontend/admin/src/pages/products/ui/product-create-modal.tsx:47
-#: frontend/client/src/pages/topics/topics.tsx:400
+#: frontend/client/src/pages/topics/topics.tsx:420
 msgid "Product"
 msgstr ""
 
@@ -555,7 +555,7 @@ msgstr ""
 #: frontend/admin/src/pages/seo/internal/archive-rows.tsx:10
 #: frontend/admin/src/pages/tags/tags.tsx:19
 #: frontend/client/src/components/utilities/tag-filter/tag-filter.tsx:144
-#: frontend/client/src/pages/topics/topics.tsx:406
+#: frontend/client/src/pages/topics/topics.tsx:426
 msgid "Tags"
 msgstr ""
 
@@ -684,14 +684,14 @@ msgid "Page addresses"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:121
-#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:50
-#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:33
-#: frontend/client/src/pages/Auth/LoginPage.tsx:59
-#: frontend/client/src/pages/Auth/LoginPage.tsx:110
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:71
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:209
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:310
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:319
+#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:55
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:34
+#: frontend/client/src/pages/Auth/LoginPage.tsx:62
+#: frontend/client/src/pages/Auth/LoginPage.tsx:113
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:74
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:212
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:311
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:320
 msgid "Login"
 msgstr ""
 
@@ -705,8 +705,8 @@ msgid "Copy"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:132
-#: frontend/client/src/pages/Auth/LoginPage.tsx:122
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:119
+#: frontend/client/src/pages/Auth/LoginPage.tsx:125
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:122
 msgid "Registration"
 msgstr ""
 
@@ -1147,11 +1147,12 @@ msgstr ""
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
 #: frontend/admin/src/pages/notifications/notifications.tsx:61
 #: frontend/admin/src/pages/notifications/notifications.tsx:82
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:77
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:90
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:126
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:78
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:132
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:132
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:42
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:92
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:128
 #: frontend/client/src/pages/User/ui/ManageSection.tsx:149
 #: frontend/client/src/pages/User/ui/ManageSection.tsx:153
 msgid "Notifications"
@@ -1164,7 +1165,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:38
 #: frontend/admin/src/pages/settings/settings.tsx:188
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:133
 msgid "Settings"
 msgstr ""
 
@@ -1233,7 +1234,7 @@ msgstr ""
 #: frontend/admin/src/pages/notifications/notifications.tsx:104
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:167
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:224
-#: frontend/client/src/components/features/share/shared/share-targets.ts:120
+#: frontend/client/src/components/features/share/shared/share-targets.ts:121
 msgid "Email"
 msgstr ""
 
@@ -1262,7 +1263,7 @@ msgid "Capabilities, set by role"
 msgstr ""
 
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:38
-#: frontend/client/src/pages/User/UserProfilePage.tsx:115
+#: frontend/client/src/pages/User/UserProfilePage.tsx:117
 msgid "Posts"
 msgstr ""
 
@@ -1521,7 +1522,7 @@ msgstr ""
 
 #: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:147
 #: frontend/admin/src/pages/onboarding/steps/step-branding.tsx:125
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:240
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:246
 msgid "Back"
 msgstr ""
 
@@ -1779,7 +1780,7 @@ msgid "No reported content has been removed yet."
 msgstr ""
 
 #: frontend/admin/src/pages/reports/reports.tsx:74
-#: frontend/client/src/pages/User/UserProfilePage.tsx:43
+#: frontend/client/src/pages/User/UserProfilePage.tsx:44
 msgid "Nothing here yet."
 msgstr ""
 
@@ -1936,7 +1937,7 @@ msgid "Top Topics"
 msgstr ""
 
 #: frontend/admin/src/pages/root/internals/TopExecutedFlows.tsx:10
-#: frontend/client/src/pages/User/UserProfilePage.tsx:44
+#: frontend/client/src/pages/User/UserProfilePage.tsx:45
 msgid "No topics yet."
 msgstr ""
 
@@ -2640,39 +2641,39 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
-#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:48
+#: frontend/client/src/components/features/login-warning-modal/ui/login-gate.tsx:49
 msgid "Log in to join the conversation."
 msgstr ""
 
-#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:36
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:37
 msgid "Create Account"
 msgstr ""
 
-#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:42
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:43
 msgid "Login required"
 msgstr ""
 
-#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:46
+#: frontend/client/src/components/features/login-warning-modal/ui/login-warning-modal.tsx:47
 msgid ""
 "You need to be logged in to perform this action. Please log in or create an "
 "account to continue."
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:95
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:109
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:96
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:111
 msgid "Mark all read"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:121
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:122
 msgid "See all notifications"
 msgstr ""
 
-#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
+#: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:132
 msgid "unread"
 msgstr ""
 
 #: frontend/client/src/components/features/notifications/ui/notification-placeholders.tsx:39
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:96
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:98
 msgid "You are all caught up"
 msgstr ""
 
@@ -2814,7 +2815,7 @@ msgid "posted a new topic:"
 msgstr ""
 
 #: frontend/client/src/components/features/notifications/ui/notification-row.tsx:111
-#: frontend/client/src/pages/User/ui/FeedRow.tsx:80
+#: frontend/client/src/pages/User/ui/FeedRow.tsx:81
 msgid "commented on"
 msgstr ""
 
@@ -3089,8 +3090,8 @@ msgid "Submit"
 msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:91
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:253
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:272
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:254
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:273
 msgid "Create New Topic"
 msgstr ""
 
@@ -3293,17 +3294,17 @@ msgid "Newest"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:56
-#: frontend/client/src/pages/topics/topics.tsx:148
+#: frontend/client/src/pages/topics/topics.tsx:168
 msgid "Oldest"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:68
-#: frontend/client/src/pages/topics/topics.tsx:140
+#: frontend/client/src/pages/topics/topics.tsx:160
 msgid "Private"
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:70
-#: frontend/client/src/pages/topics/topics.tsx:138
+#: frontend/client/src/pages/topics/topics.tsx:158
 msgid "My Topics"
 msgstr ""
 
@@ -3315,269 +3316,290 @@ msgstr ""
 msgid "%s selected"
 msgstr ""
 
-#: frontend/client/src/components/utilities/topic-card/topic-card.tsx:154
+#: frontend/client/src/components/utilities/topic-card/topic-card.tsx:155
 msgid "comments"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:30
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:18
+msgid "Reset password"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:33
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:42
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:45
 msgid ""
 "If an account exists for that username or email, a password reset link has "
 "been sent. Please check your inbox."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:45
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:48
 msgid "Check your email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:52
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:109
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:55
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:112
 msgid "Back to Login"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:62
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:65
 msgid "Forgot Password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:65
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:68
 msgid "Enter your username or email and we'll send you a reset link."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:85
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:88
 msgid "Username or Email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:87
-#: frontend/client/src/pages/Auth/LoginPage.tsx:75
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:90
+#: frontend/client/src/pages/Auth/LoginPage.tsx:78
 msgid "Please enter your username or email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:93
-#: frontend/client/src/pages/Auth/LoginPage.tsx:77
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:96
+#: frontend/client/src/pages/Auth/LoginPage.tsx:80
 msgid "Enter your username or email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:99
+#: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:102
 msgid "Send Reset Link"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:73
+#: frontend/client/src/pages/Auth/LoginPage.tsx:22
+msgid "Log in"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/LoginPage.tsx:76
 msgid "Username or email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:83
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:158
+#: frontend/client/src/pages/Auth/LoginPage.tsx:86
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:161
 msgid "Password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:88
+#: frontend/client/src/pages/Auth/LoginPage.tsx:91
 #: frontend/client/src/pages/User/ui/account-security-form.tsx:171
 msgid "Forgot password?"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:93
+#: frontend/client/src/pages/Auth/LoginPage.tsx:96
 msgid "Please enter your password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:95
+#: frontend/client/src/pages/Auth/LoginPage.tsx:98
 msgid "Enter your password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:99
+#: frontend/client/src/pages/Auth/LoginPage.tsx:102
 msgid "Remember me"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/LoginPage.tsx:117
+#: frontend/client/src/pages/Auth/LoginPage.tsx:120
 msgid "Don't have an account?"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:62
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:23
+msgid "Sign up"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:65
 msgid "New account registration is currently disabled on this site."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:63
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:66
 msgid "Registration is closed"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:66
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:204
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:69
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:207
 msgid "Already have an account?"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:85
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:88
 msgid "We sent a verification link to"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:86
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:89
 msgid "Click the link in the email to activate your account."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:89
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:92
 msgid "Almost there!"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:92
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:95
 msgid "Wrong email?"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:94
-#: frontend/client/src/pages/Error404/Error404.tsx:56
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:97
+#: frontend/client/src/pages/Error404/Error404.tsx:58
 msgid "Go back"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:139
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:142
 msgid "Display Name"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:141
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:144
 #: frontend/client/src/pages/User/ui/profile-details-form.tsx:118
 msgid "Display name must be 60 characters or fewer"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:143
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:146
 msgid "Your public display name (optional)"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:147
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:150
 msgid "Email Address"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:150
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:153
 msgid "Please enter your email address"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:151
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:154
 #: frontend/client/src/pages/User/ui/account-security-form.tsx:115
 msgid "Please enter a valid email address"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:154
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:157
 msgid "Enter your email address"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:161
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:164
 msgid "Please choose a password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:162
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:165
 #: frontend/client/src/pages/User/ui/account-security-form.tsx:188
 msgid "Password must be at least 6 characters"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:167
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:170
 msgid "Choose a password (min. 6 characters)"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:173
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:176
 msgid "Confirm Password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:176
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:179
 msgid "Please confirm your password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:182
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:185
 #: frontend/client/src/pages/User/ui/account-security-form.tsx:205
 msgid "Passwords do not match"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:187
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:190
 msgid "Repeat your password"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/RegisterPage.tsx:198
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:332
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:339
+#: frontend/client/src/pages/Auth/RegisterPage.tsx:201
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:333
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:340
 msgid "Register"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:35
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:20
+msgid "Verify email"
+msgstr ""
+
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:38
 msgid "Invalid verification link."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:61
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:72
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:64
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:75
 msgid "Verification failed. Please try again."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:79
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:82
 msgid "Email Change"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:79
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:82
 msgid "Email Verification"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:83
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:86
 msgid "Verifying your email address…"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:96
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:99
 msgid "Go to forum"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:102
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:105
 msgid "Your account now uses this email address."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:103
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:106
 msgid "Your email has been verified. You are now logged in."
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:105
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:108
 msgid "Email address updated!"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:105
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:108
 msgid "Email verified!"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:116
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:119
 msgid "Register again"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:122
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:125
 msgid "Could not change your email"
 msgstr ""
 
-#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:122
+#: frontend/client/src/pages/Auth/VerifyEmailPage.tsx:125
 msgid "Verification failed"
 msgstr ""
 
-#: frontend/client/src/pages/Error404/Error404.tsx:35
+#: frontend/client/src/pages/Error404/Error404.tsx:22
+#: frontend/client/src/pages/User/UserProfilePage.tsx:71
+msgid "Page not found"
+msgstr ""
+
+#: frontend/client/src/pages/Error404/Error404.tsx:37
 msgid "We can’t find that page"
 msgstr ""
 
-#: frontend/client/src/pages/Error404/Error404.tsx:38
+#: frontend/client/src/pages/Error404/Error404.tsx:40
 msgid ""
 "The link may be broken, or the topic could have been moved or removed. "
 "Everything else in the community is still here."
 msgstr ""
 
-#: frontend/client/src/pages/Error404/Error404.tsx:53
+#: frontend/client/src/pages/Error404/Error404.tsx:55
 msgid "Back to the community"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:93
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:94
 msgid "My Profile"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:104
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:105
 msgid "Log Out"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:182
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:183
 msgid "Open menu"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:273
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:274
 msgid "New"
 msgstr ""
 
-#: frontend/client/src/pages/Layout/ui/header/header.tsx:289
+#: frontend/client/src/pages/Layout/ui/header/header.tsx:290
 msgid "Account menu"
 msgstr ""
 
@@ -3589,19 +3611,19 @@ msgstr ""
 msgid "Close menu"
 msgstr ""
 
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:96
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:98
 msgid "%d unread"
 msgstr ""
 
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:129
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
 msgid "All"
 msgstr ""
 
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:130
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:132
 msgid "Unread"
 msgstr ""
 
-#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:176
+#: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:178
 msgid "That is everything."
 msgstr ""
 
@@ -3671,7 +3693,7 @@ msgid "Hide"
 msgstr ""
 
 #: frontend/client/src/pages/Post/CommentList.tsx:107
-#: frontend/client/src/pages/topics/topics.tsx:436
+#: frontend/client/src/pages/topics/topics.tsx:456
 msgid "Loading more..."
 msgstr ""
 
@@ -3687,57 +3709,57 @@ msgstr ""
 msgid "All comments"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:72
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:73
 msgid "Failed to load post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:81
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:82
 msgid "Failed to load settings"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:97
-#: frontend/client/src/pages/topics/topics.tsx:293
-#: frontend/client/src/pages/User/UserProfilePage.tsx:136
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:98
+#: frontend/client/src/pages/topics/topics.tsx:313
+#: frontend/client/src/pages/User/UserProfilePage.tsx:138
 msgid "Failed to vote on post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:111
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:112
 msgid "Comment posted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:114
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:115
 msgid "Failed to post comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:127
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:128
 msgid "Reply posted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:130
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:131
 msgid "Failed to post reply"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:146
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:147
 msgid "Comment updated successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:149
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:150
 msgid "Failed to update comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:157
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:158
 msgid "Comment deleted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:160
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:161
 msgid "Failed to delete comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:312
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:318
 msgid "This topic is locked. New comments are closed."
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:318
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:324
 msgid "Log in to post a comment."
 msgstr ""
 
@@ -3832,8 +3854,8 @@ msgstr ""
 msgid "Topic details"
 msgstr ""
 
-#: frontend/client/src/pages/Post/ui/RelatedTopics.tsx:31
 #: frontend/client/src/pages/Post/ui/RelatedTopics.tsx:32
+#: frontend/client/src/pages/Post/ui/RelatedTopics.tsx:33
 msgid "Related topics"
 msgstr ""
 
@@ -3845,45 +3867,45 @@ msgstr ""
 msgid "Voting is not available to you"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:208
+#: frontend/client/src/pages/topics/topics.tsx:228
 msgid "Failed to load posts"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:225
+#: frontend/client/src/pages/topics/topics.tsx:245
 msgid "Failed to load more posts"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:309
-#: frontend/client/src/pages/topics/topics.tsx:389
+#: frontend/client/src/pages/topics/topics.tsx:329
+#: frontend/client/src/pages/topics/topics.tsx:409
 msgid "Filters"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:349
+#: frontend/client/src/pages/topics/topics.tsx:369
 msgid "Remove filter"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:381
+#: frontend/client/src/pages/topics/topics.tsx:401
 msgid "Reset"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:394
+#: frontend/client/src/pages/topics/topics.tsx:414
 msgid "Sort by"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:415
+#: frontend/client/src/pages/topics/topics.tsx:435
 msgid "Loading posts..."
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:420
+#: frontend/client/src/pages/topics/topics.tsx:440
 msgid "No posts found"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:442
+#: frontend/client/src/pages/topics/topics.tsx:462
 msgid "🎉 You're all caught up — no more topics"
 msgstr ""
 
-#: frontend/client/src/pages/topics/topics.tsx:456
-#: frontend/client/src/pages/topics/topics.tsx:465
+#: frontend/client/src/pages/topics/topics.tsx:476
+#: frontend/client/src/pages/topics/topics.tsx:485
 msgid "Back to top"
 msgstr ""
 
@@ -4046,7 +4068,7 @@ msgstr ""
 msgid "Change profile picture"
 msgstr ""
 
-#: frontend/client/src/pages/User/ui/CommentRow.tsx:22
+#: frontend/client/src/pages/User/ui/CommentRow.tsx:23
 msgid "replied to"
 msgstr ""
 
@@ -4075,7 +4097,7 @@ msgstr ""
 msgid "The strip behind your picture. Wide images work best — up to %s MB."
 msgstr ""
 
-#: frontend/client/src/pages/User/ui/FeedRow.tsx:44
+#: frontend/client/src/pages/User/ui/FeedRow.tsx:45
 msgid "posted a topic"
 msgstr ""
 
@@ -4205,34 +4227,34 @@ msgstr ""
 msgid "Manage profile"
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:42
+#: frontend/client/src/pages/User/UserProfilePage.tsx:43
 msgid "No comments yet."
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:45
+#: frontend/client/src/pages/User/UserProfilePage.tsx:46
 msgid "No upvoted topics yet."
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:114
+#: frontend/client/src/pages/User/UserProfilePage.tsx:116
 msgid "Overview"
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:119
+#: frontend/client/src/pages/User/UserProfilePage.tsx:121
 msgid "Upvoted"
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:119
+#: frontend/client/src/pages/User/UserProfilePage.tsx:121
 msgid "Manage"
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:146
+#: frontend/client/src/pages/User/UserProfilePage.tsx:148
 msgid "Back to portal"
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:154
+#: frontend/client/src/pages/User/UserProfilePage.tsx:156
 msgid "This member could not be found."
 msgstr ""
 
-#: frontend/client/src/pages/User/UserProfilePage.tsx:260
+#: frontend/client/src/pages/User/UserProfilePage.tsx:262
 msgid "Profile sections"
 msgstr ""

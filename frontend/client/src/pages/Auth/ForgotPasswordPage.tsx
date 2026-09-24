@@ -1,4 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
+import { routePath } from '@utils/route-path'
 import { Alert, Button, Form, Input, Result } from 'antd'
 import { useState } from 'react'
 import { LuMailCheck, LuSend } from 'react-icons/lu'
@@ -13,6 +15,7 @@ interface ForgotPasswordFormValues {
 }
 
 export default function ForgotPasswordPage() {
+  usePageTitle(__('Reset password'))
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
   const [isLoading, setIsLoading] = useState(false)
@@ -47,7 +50,7 @@ export default function ForgotPasswordPage() {
         <p className="bc-text-center bc-text-sm bc-text-ink-muted bc-mt-2 bc-mb-0">
           <Link
             className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-            to={`/login?redirect_to=${encodeURIComponent(redirectTo)}`}
+            to={routePath(`/login?redirect_to=${encodeURIComponent(redirectTo)}`)}
           >
             {__('Back to Login')}
           </Link>
@@ -104,7 +107,7 @@ export default function ForgotPasswordPage() {
       <p className="bc-text-center bc-text-sm bc-text-ink-muted bc-mt-4 bc-mb-0">
         <Link
           className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-          to={`/login?redirect_to=${encodeURIComponent(redirectTo)}`}
+          to={routePath(`/login?redirect_to=${encodeURIComponent(redirectTo)}`)}
         >
           {__('Back to Login')}
         </Link>

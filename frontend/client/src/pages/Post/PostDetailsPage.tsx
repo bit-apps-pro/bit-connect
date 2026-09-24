@@ -2,6 +2,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
@@ -174,6 +175,11 @@ export default function PostDetailsPage() {
   // because the hook below it cannot be called conditionally.
   const isTopicReady = Boolean(post && isSameSlug(post.post_name, postName ?? ''))
   const focusedCommentId = useCommentFocus(isTopicReady)
+
+  // The search title a manager set, else the topic's own — the same choice the
+  // server makes for <title>. Only once this topic is the one loaded, so the
+  // previous topic's title never lands on this URL.
+  usePageTitle(isTopicReady ? post?.seo?.title || post?.post_title : undefined)
 
   const totalCommentCount = countComments(transformedComments)
   const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess

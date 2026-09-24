@@ -4,6 +4,7 @@ import TopicArchive from '@pages/topics/archive'
 import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { createAntDesignStyleContainer } from '@utils/themeUtils'
 import { App as AntApp, ConfigProvider, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
@@ -85,7 +86,8 @@ function VerifyEmailRedirect() {
   const emailToken = params.get('bit_connect_email_token')
   const uid = params.get('bit_connect_uid')
 
-  if (pathname === '/verify-email') return
+  // Either permalink form — see utils/route-path.ts.
+  if (pathname.replace(/\/+$/, '') === '/verify-email') return
 
   // An email *change* confirmation. Handled by the same page but a different
   // endpoint, so the token is forwarded under its own name rather than being
@@ -94,7 +96,9 @@ function VerifyEmailRedirect() {
     return (
       <Navigate
         replace
-        to={`/verify-email?email_token=${encodeURIComponent(emailToken)}&uid=${encodeURIComponent(uid)}`}
+        to={routePath(
+          `/verify-email?email_token=${encodeURIComponent(emailToken)}&uid=${encodeURIComponent(uid)}`
+        )}
       />
     )
   }
@@ -103,7 +107,7 @@ function VerifyEmailRedirect() {
     const destination = uid
       ? `/verify-email?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}`
       : `/verify-email?token=${encodeURIComponent(token)}`
-    return <Navigate replace to={destination} />
+    return <Navigate replace to={routePath(destination)} />
   }
 }
 
@@ -120,7 +124,7 @@ function PortalAccessGuard({ children }: { children: React.ReactNode }) {
       return
     }
     const redirect = encodeURIComponent(redirectPath)
-    return <Navigate replace to={`/login?redirect_to=${redirect}`} />
+    return <Navigate replace to={routePath(`/login?redirect_to=${redirect}`)} />
   }
   return <>{children}</>
 }
@@ -143,10 +147,20 @@ export default function AppRoutes() {
 
   useEffect(() => {
     if (navigateUrl && navigateUrl !== '') {
-      navigate(navigateUrl, { replace: true })
+      navigate(routePath(navigateUrl), { replace: true })
       setNavigateUrl('')
     }
   }, [navigate, navigateUrl, setNavigateUrl])
+
+  // Every link the app builds goes through routePath(), but a path can still
+  // arrive in the other form — a notification target, a link an extension
+  // builds. Settle it here, without a history entry, so the address bar always
+  // names the URL the server treats as canonical.
+  const { hash, pathname, search } = useLocation()
+  useEffect(() => {
+    const settled = routePath(pathname)
+    if (settled !== pathname) navigate(`${settled}${search}${hash}`, { replace: true })
+  }, [hash, navigate, pathname, search])
 
   return (
     <ConfigProvider

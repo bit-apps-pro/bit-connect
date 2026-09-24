@@ -1,3 +1,5 @@
+import { routePath } from './route-path'
+
 /**
  * WordPress stores a post slug percent-encoded. `sanitize_title()` runs the
  * title through `utf8_uri_encode()` and its final cleanup keeps `%`, so
@@ -51,9 +53,11 @@ export const slugRedirectPath = (
   nextSlug: string
 ): string | undefined => {
   if (!nextSlug || isSameSlug(nextSlug, previousSlug)) return undefined
-  if (!isSameSlug(pathname.replace(/^\//, ''), previousSlug)) return undefined
+  // Either permalink form: the address bar carries the site's, trailing slash
+  // or not.
+  if (!isSameSlug(pathname.replaceAll(/^\/|\/+$/g, ''), previousSlug)) return undefined
 
-  return `/${nextSlug}`
+  return routePath(`/${nextSlug}`)
 }
 
 /**

@@ -1,4 +1,5 @@
 import { __, sprintf } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import {
   ignoreBadgeFailure,
   NotificationPreferencesForm,
@@ -38,6 +39,7 @@ type Tab = 'all' | 'settings' | 'unread'
  * while they are staring at a notification they would rather not have had.
  */
 export default function NotificationsPage() {
+  usePageTitle(__('Notifications'))
   const [tab, setTab] = useState<Tab>('all')
   const sentinelRef = useRef<HTMLDivElement>(null)
 

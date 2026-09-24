@@ -46,6 +46,11 @@ describe('slugRedirectPath', () => {
     expect(slugRedirectPath('/old-slug', 'old-slug', 'new-slug-2')).toBe('/new-slug-2')
   })
 
+  // On a site whose permalinks end in a slash the address bar carries it.
+  it('recognises the current route with a trailing slash', () => {
+    expect(slugRedirectPath('/old-slug/', 'old-slug', 'new-slug')).toBe('/new-slug')
+  })
+
   it('stays put when the slug did not move', () => {
     expect(slugRedirectPath('/same-slug', 'same-slug', 'same-slug')).toBeUndefined()
   })
