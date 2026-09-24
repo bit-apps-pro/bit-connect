@@ -7,7 +7,7 @@ import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
 import { normalizeAttachments, type TopicAttachmentInfo } from '@features/topic-modal/shared/type'
 import { isSameSlug } from '@utils/slug'
-import { Button, Flex, Space, Tag, Typography } from 'antd'
+import { Alert, Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
@@ -296,10 +296,21 @@ export default function PostDetailsPage() {
               <CommentSortSelect onChange={setSortOption} value={sortOption} />
             </Flex>
 
-            {canComment && (
-              <LoginGate message={__('Log in to post a comment.')}>
-                <CommentEditor onSubmit={handlePostComment} />
-              </LoginGate>
+            {/* A locked topic says so where the editor would be, instead of
+              offering a box the server will refuse. */}
+            {post.is_locked ? (
+              <Alert
+                className="bc-mb-4"
+                message={__('This topic is locked. New comments are closed.')}
+                showIcon
+                type="info"
+              />
+            ) : (
+              canComment && (
+                <LoginGate message={__('Log in to post a comment.')}>
+                  <CommentEditor onSubmit={handlePostComment} />
+                </LoginGate>
+              )
             )}
 
             <CommentList
@@ -310,7 +321,7 @@ export default function PostDetailsPage() {
               onDelete={handleDeleteComment}
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
-              onReply={handleReply}
+              onReply={post.is_locked ? undefined : handleReply}
               renderVote={renderVote}
               sortOption={sortOption}
               topicSlug={post.post_name}

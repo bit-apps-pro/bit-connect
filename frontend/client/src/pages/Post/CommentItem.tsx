@@ -318,21 +318,24 @@ export default function CommentItem({
               {/* Actions */}
               <div className={styles.commentActions}>
                 {renderVote?.(comment)}
-                <Button
-                  className={`${styles.actionButton} ${styles.actionMeta}`}
-                  icon={<MessageOutlined style={{ fontSize: '12px' }} />}
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      openLoginWarning()
-                      return
-                    }
-                    setShowReplyEditor(!showReplyEditor)
-                  }}
-                  size="small"
-                  type="text"
-                >
-                  {__('Reply')}
-                </Button>
+                {/* No handler means the thread takes no replies (a locked topic). */}
+                {onReply && (
+                  <Button
+                    className={`${styles.actionButton} ${styles.actionMeta}`}
+                    icon={<MessageOutlined style={{ fontSize: '12px' }} />}
+                    onClick={() => {
+                      if (!isLoggedIn) {
+                        openLoginWarning()
+                        return
+                      }
+                      setShowReplyEditor(!showReplyEditor)
+                    }}
+                    size="small"
+                    type="text"
+                  >
+                    {__('Reply')}
+                  </Button>
+                )}
                 {/* Out in the row rather than in the menu beside it: a link to
                     one reply is the thing people leave a thread to send, and
                     it is offered to everyone — the menu can be empty for a

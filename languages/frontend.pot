@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Wed Sep 23 2026 13:59:31 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Thu Sep 24 2026 12:54:37 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -307,7 +307,7 @@ msgid "Topics"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/activity.tsx:146
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:18
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:42
 #: frontend/admin/src/pages/root/internals/TotalExecutions.tsx:46
 #: frontend/client/src/pages/Post/PostDetailsPage.tsx:291
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:86
@@ -373,12 +373,12 @@ msgid "Took"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
-#: frontend/client/src/pages/Post/CommentItem.tsx:379
+#: frontend/client/src/pages/Post/CommentItem.tsx:382
 msgid "reply"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-detail.tsx:103
-#: frontend/client/src/pages/Post/CommentItem.tsx:379
+#: frontend/client/src/pages/Post/CommentItem.tsx:382
 msgid "replies"
 msgstr ""
 
@@ -519,8 +519,8 @@ msgid "Unsaved changes"
 msgstr ""
 
 #: frontend/admin/src/pages/general/general.tsx:225
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:72
-#: frontend/admin/src/pages/notifications/notifications.tsx:74
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:98
+#: frontend/admin/src/pages/notifications/notifications.tsx:73
 #: frontend/admin/src/pages/seo/seo.tsx:350
 #: frontend/admin/src/pages/settings/settings.tsx:196
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
@@ -1143,8 +1143,8 @@ msgid "Reports"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:36
-#: frontend/admin/src/pages/notifications/notifications.tsx:62
-#: frontend/admin/src/pages/notifications/notifications.tsx:83
+#: frontend/admin/src/pages/notifications/notifications.tsx:61
+#: frontend/admin/src/pages/notifications/notifications.tsx:82
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:77
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:131
@@ -1228,7 +1228,7 @@ msgid "User"
 msgstr ""
 
 #: frontend/admin/src/pages/manager/manager.tsx:122
-#: frontend/admin/src/pages/notifications/notifications.tsx:105
+#: frontend/admin/src/pages/notifications/notifications.tsx:104
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:167
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:224
 #: frontend/client/src/components/features/share/shared/share-targets.ts:120
@@ -1251,36 +1251,36 @@ msgstr ""
 msgid "No role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:29
+#: frontend/admin/src/pages/manager/ui/capability-popover.tsx:21
 msgid "Set by role, on the Role Capabilities screen."
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/capability-popover.free.tsx:31
+#: frontend/admin/src/pages/manager/ui/capability-popover.tsx:23
 msgid "Capabilities, set by role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:14
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:38
 #: frontend/client/src/pages/User/UserProfilePage.tsx:115
 msgid "Posts"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:24
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:48
 msgid "Voting"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:28
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:52
 msgid "Other People’s Content"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:32
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:56
 msgid "Moderation & Admin"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:126
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:152
 msgid "Forum Capabilities by Role"
 msgstr ""
 
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:129
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:155
 msgid ""
 "Set which forum actions each WordPress role can perform. Changes apply "
 "immediately to all users of that role."
@@ -1322,122 +1322,126 @@ msgstr ""
 msgid "Digest send hour"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:24
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:23
 msgid "Who forum email appears to come from."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:24
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:23
 msgid "Email delivery"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:27
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:26
 msgid "Notifications are sent as"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:32
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:31
 msgid "Taken from your site title and address."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:48
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:47
 msgid "Send test email"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-delivery-section.free.tsx:52
+#: frontend/admin/src/pages/notifications/internal/email-delivery-section.tsx:51
 msgid "Sent to your own address, using the settings as last saved."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:20
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:19
 msgid "Greeting"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:21
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:20
 msgid "Instant email intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:22
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:21
 msgid "Digest intro"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:23
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:22
 msgid "Sign-off"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:28
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:27
 msgid "The wording around the list of what happened."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:29
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:28
 msgid "Email wording"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/internal/email-wording-section.free.tsx:32
+#: frontend/admin/src/pages/notifications/internal/email-wording-section.tsx:31
 msgid "Notification emails use the wording below."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:43
+#: frontend/admin/src/pages/notifications/notifications.tsx:42
 msgid "Notification settings could not be loaded."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:80
+#: frontend/admin/src/pages/notifications/notifications.tsx:79
 msgid ""
 "The master switch. Off, the forum writes no notifications and sends no "
 "email at all."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:88
+#: frontend/admin/src/pages/notifications/notifications.tsx:87
 msgid "Notifications are on"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:88
+#: frontend/admin/src/pages/notifications/notifications.tsx:87
 msgid "Notifications are off for everyone"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:94
+#: frontend/admin/src/pages/notifications/notifications.tsx:93
 msgid ""
 "Defaults apply to members who have never opened their own settings. Turn "
 "off \"Member may change\" to make your answer final for everyone."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:97
+#: frontend/admin/src/pages/notifications/notifications.tsx:96
 msgid "What the forum sends"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:103
+#: frontend/admin/src/pages/notifications/notifications.tsx:102
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:161
 msgid "Notification"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:104
+#: frontend/admin/src/pages/notifications/notifications.tsx:103
 msgid "In app"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:107
+#: frontend/admin/src/pages/notifications/notifications.tsx:106
 msgid "Member may change"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:132
+#: frontend/admin/src/pages/notifications/notifications.tsx:130
 msgid "This is always delivered in the app."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:158
+#: frontend/admin/src/pages/notifications/notifications.tsx:131
+msgid "Always"
+msgstr ""
+
+#: frontend/admin/src/pages/notifications/notifications.tsx:154
 msgid "Only moderators receive this, so there is nothing for a member to change."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:201
+#: frontend/admin/src/pages/notifications/notifications.tsx:197
 msgid ""
 "How long read notifications are kept. Unread ones are never removed by age "
 "— nobody has seen them yet."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:204
+#: frontend/admin/src/pages/notifications/notifications.tsx:200
 msgid "Housekeeping"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:208
+#: frontend/admin/src/pages/notifications/notifications.tsx:204
 msgid "Keep read notifications for"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:211
+#: frontend/admin/src/pages/notifications/notifications.tsx:207
 msgid "days"
 msgstr ""
 
@@ -2311,15 +2315,15 @@ msgstr ""
 msgid "Settings updated successfully"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:21
+#: frontend/admin/src/pages/settings/internal/moderation-section.tsx:19
 msgid "Moderation"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:23
+#: frontend/admin/src/pages/settings/internal/moderation-section.tsx:21
 msgid "What happens to reported content"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/internal/moderation-section.free.tsx:27
+#: frontend/admin/src/pages/settings/internal/moderation-section.tsx:25
 msgid ""
 "Reported content stays visible until a moderator reviews the report and "
 "decides what to do with it."
@@ -2646,19 +2650,19 @@ msgstr ""
 msgid "The list could not be loaded right now."
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:22
+#: frontend/admin/src/pages/support/internal/version-panel.tsx:22
 msgid "Version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:25
+#: frontend/admin/src/pages/support/internal/version-panel.tsx:25
 msgid "Installed version"
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:29
+#: frontend/admin/src/pages/support/internal/version-panel.tsx:29
 msgid "Looking for more? Bit Connect Pro is a separate plugin."
 msgstr ""
 
-#: frontend/admin/src/pages/support/internal/version-panel.free.tsx:31
+#: frontend/admin/src/pages/support/internal/version-panel.tsx:31
 msgid "Learn about Bit Connect Pro"
 msgstr ""
 
@@ -3187,7 +3191,7 @@ msgstr ""
 msgid "Topic updated successfully"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/data/use-visibility-options.free.ts:21
+#: frontend/client/src/components/features/topic-modal/data/use-visibility-options.ts:26
 msgid "Public Topic"
 msgstr ""
 
@@ -3435,7 +3439,7 @@ msgid "Search topic, tag, etc."
 msgstr ""
 
 #: frontend/client/src/components/utilities/sort-filter/sort-filter.tsx:55
-#: frontend/client/src/pages/Post/data/use-comment-sort-options.free.ts:11
+#: frontend/client/src/pages/Post/data/use-comment-sort-options.ts:14
 msgid "Newest"
 msgstr ""
 
@@ -3791,16 +3795,16 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:334
+#: frontend/client/src/pages/Post/CommentItem.tsx:336
 msgid "Reply"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:353
+#: frontend/client/src/pages/Post/CommentItem.tsx:356
 #: frontend/client/src/pages/Post/PostHeader.tsx:388
 msgid "More actions"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:380
+#: frontend/client/src/pages/Post/CommentItem.tsx:383
 msgid "Hide"
 msgstr ""
 
@@ -3817,7 +3821,7 @@ msgstr ""
 msgid "View image full size"
 msgstr ""
 
-#: frontend/client/src/pages/Post/data/use-comment-sort-options.free.ts:12
+#: frontend/client/src/pages/Post/data/use-comment-sort-options.ts:15
 msgid "All comments"
 msgstr ""
 
@@ -3867,7 +3871,11 @@ msgstr ""
 msgid "Failed to delete comment"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostDetailsPage.tsx:300
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:304
+msgid "This topic is locked. New comments are closed."
+msgstr ""
+
+#: frontend/client/src/pages/Post/PostDetailsPage.tsx:310
 msgid "Log in to post a comment."
 msgstr ""
 

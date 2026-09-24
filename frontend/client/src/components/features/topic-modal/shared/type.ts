@@ -102,6 +102,8 @@ export interface Topic {
    */
   hidden?: boolean
   ID: number
+  /** A moderator closed the thread: its comments stay readable, but nobody can add one. */
+  is_locked?: boolean
   menu_order: number
   permalink: string
   ping_status: string

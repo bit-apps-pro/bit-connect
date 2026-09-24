@@ -1,7 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { Alert, Button, InputNumber, Skeleton, Switch, Tooltip, Typography } from 'antd'
 import { useEffect, useState } from 'react'
-import { LuLock } from 'react-icons/lu'
 
 import {
   useNotificationSettings,
@@ -124,24 +123,21 @@ export default function NotificationSettingsPage() {
                         <div className="bc-text-xs bc-text-ink-subtle">{info.description}</div>
                       </td>
                       <td className="bc-py-3 bc-text-center">
-                        {/* Locked where the forum sends it regardless — an
-                            admin switch that changes nothing is worse than no
-                            switch at all. */}
-                        <Tooltip
-                          title={
-                            info.mandatoryInApp ? __('This is always delivered in the app.') : undefined
-                          }
-                        >
-                          <span className="bc-inline-flex bc-items-center bc-gap-1">
-                            <Switch
-                              checked={info.mandatoryInApp || row.inapp}
-                              disabled={!enabled || info.mandatoryInApp}
-                              onChange={next => setType(info.type, { inapp: next })}
-                              size="small"
-                            />
-                            {info.mandatoryInApp && <LuLock className="bc-text-ink-subtle" size={12} />}
-                          </span>
-                        </Tooltip>
+                        {/* Where the forum sends it regardless, say so in words:
+                            an admin switch that changes nothing is worse than
+                            no switch at all. */}
+                        {info.mandatoryInApp ? (
+                          <Tooltip title={__('This is always delivered in the app.')}>
+                            <span className="bc-text-xs bc-text-ink-subtle">{__('Always')}</span>
+                          </Tooltip>
+                        ) : (
+                          <Switch
+                            checked={row.inapp}
+                            disabled={!enabled}
+                            onChange={next => setType(info.type, { inapp: next })}
+                            size="small"
+                          />
+                        )}
                       </td>
                       <td className="bc-py-3 bc-text-center">
                         <Switch

@@ -601,6 +601,8 @@ return [
 
     'This is always delivered in the app.' => __('This is always delivered in the app.', 'bit-connect'),
 
+    'Always' => __('Always', 'bit-connect'),
+
     'Only moderators receive this, so there is nothing for a member to change.' => __('Only moderators receive this, so there is nothing for a member to change.', 'bit-connect'),
 
     'How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet.' => __('How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet.', 'bit-connect'),
@@ -1728,6 +1730,8 @@ return [
     'Comment deleted successfully' => __('Comment deleted successfully', 'bit-connect'),
 
     'Failed to delete comment' => __('Failed to delete comment', 'bit-connect'),
+
+    'This topic is locked. New comments are closed.' => __('This topic is locked. New comments are closed.', 'bit-connect'),
 
     'Log in to post a comment.' => __('Log in to post a comment.', 'bit-connect'),
 
