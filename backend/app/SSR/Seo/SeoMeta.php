@@ -239,6 +239,32 @@ final class SeoMeta
     }
 
     /**
+     * Describe a portal URL that matched nothing.
+     *
+     * The status is already 404; this is what makes the head agree. Without a
+     * described route the site's SEO plugin is not stood down, and prints the
+     * portal page's own `index` robots and canonical onto the missing URL.
+     * `follow` rather than `nofollow`: the portal's navigation is still on the
+     * page, and it leads somewhere real.
+     */
+    public static function forNotFound(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            // translators: %s: community name.
+            'title'       => \sprintf(__('Page not found — %s', 'bit-connect'), $community),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,follow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
      * Describe a sign-in, sign-up or password screen.
      *
      * These are forms, not content: they are kept out of search results.
@@ -438,7 +464,7 @@ final class SeoMeta
      * so there is never a competing graph to make way for. A site whose own
      * code has a reason to drop or rewrite a document has
      * `bit_connect_seo_json_ld`, which receives the list — each entry a
-     * schema.org document, told apart by its `@type`.
+     * schema.org document, told apart by its schema.org type.
      *
      * @param array<string, mixed> $primary    the page's own description
      * @param array<string, mixed> $breadcrumb its place in the portal

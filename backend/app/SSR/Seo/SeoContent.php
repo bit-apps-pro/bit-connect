@@ -226,7 +226,12 @@ HTML,
      */
     public static function portalUrl(string $path = ''): string
     {
-        return PortalLocation::url($path);
+        // In the site's own permalink form. On the usual trailing-slash
+        // structure WordPress 301s `/portal/topic` to `/portal/topic/`, so a
+        // canonical, og:url, schema or sitemap entry without the slash named a
+        // redirect rather than the page. PortalLocation::url() stays bare: the
+        // app's router and mention links build on it.
+        return user_trailingslashit(PortalLocation::url($path));
     }
 
     /**

@@ -19,10 +19,11 @@ if (!defined('ABSPATH')) {
 // Root route - matches frontend route '/'
 Route::get('/', [new TopicsController(), 'index']);
 
-// Paginated list - matches frontend route '/page/:pageNumber'. These pages are a
-// crawl path to topics older than the first screenful, not index entries; see
-// SeoMeta::forTopics().
-Route::get('/page/{pageNumber}', [new TopicsController(), 'index']);
+// Paginated list - matches frontend route '/page/:pageNumber'. The placeholder is
+// `{page}`, not the frontend's name: the router binds placeholders to controller
+// parameters by name, and as `{pageNumber}` it never reached `$page`, so every
+// page rendered — and described itself — as page 1. See SeoMeta::forTopics().
+Route::get('/page/{page}', [new TopicsController(), 'index']);
 
 // The member's own notifications - matches frontend route '/notifications'.
 // Declared before the single-segment '/{slug}' route below, which would

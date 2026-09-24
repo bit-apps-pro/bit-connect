@@ -129,6 +129,52 @@ final class PortalSitemapPagingTest extends TestCase
         $this->assertSame('', PortalSitemap::advertiseInRobotsTxt('', true));
     }
 
+    // -----------------------------------------------------------------------
+    // SEO plugins do not manage the portal's content a second time.
+    // -----------------------------------------------------------------------
+
+    /**
+     * A taxonomy's own archive 301s to the portal's; listed by an SEO plugin it
+     * is a sitemap entry that redirects.
+     */
+    public function testOwnTaxonomiesAreExcludedFromSeoPluginSitemaps(): void
+    {
+        $this->assertTrue(PortalSitemap::excludeTaxonomyFromSeoPlugin(false, Taxonomies::TOPIC_TYPES->value));
+        $this->assertTrue(PortalSitemap::excludeTaxonomyFromSeoPlugin(false, Taxonomies::TAGS->value));
+        // Anyone else's is left to the plugin.
+        $this->assertFalse(PortalSitemap::excludeTaxonomyFromSeoPlugin(false, 'category'));
+    }
+
+    public function testOwnTypesLeaveAListKeyedByName(): void
+    {
+        $filtered = PortalSitemap::removeOwnKeys([
+            'post'                          => 'post',
+            'bit-connect'                   => 'bit-connect',
+            Taxonomies::STAGES->value       => 'stages',
+        ]);
+
+        $this->assertSame(['post' => 'post'], $filtered);
+    }
+
+    public function testOwnTypesAreAddedToAnExclusionList(): void
+    {
+        $names = PortalSitemap::appendOwnNames(['attachment']);
+
+        $this->assertContains('attachment', $names);
+        $this->assertContains('bit-connect', $names);
+        $this->assertContains(Taxonomies::STATUSES->value, $names);
+    }
+
+    public function testOwnTypesLeaveAListOfNamesOrRows(): void
+    {
+        $this->assertSame(['post'], PortalSitemap::removeOwnFromList(['post', 'bit-connect']));
+        $this->assertSame(
+            [['name' => 'category']],
+            PortalSitemap::removeOwnFromList([['name' => 'category'], ['name' => Taxonomies::TAGS->value]])
+        );
+        $this->assertSame('not-a-list', PortalSitemap::removeOwnFromList('not-a-list'));
+    }
+
     public function testRobotsTxtAlwaysAnnouncesAPublishedSitemap(): void
     {
         $this->assertSame(

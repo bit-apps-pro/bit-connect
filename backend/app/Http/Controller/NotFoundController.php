@@ -8,8 +8,8 @@ if (!defined('ABSPATH')) {
 }
 
 
-use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\BaseView;
 
@@ -73,22 +73,12 @@ class NotFoundController
         status_header(404);
         nocache_headers();
 
-        // Emitted independently of SeoMeta, which stands down when a dedicated
-        // SEO plugin is active — "do not index this" is not a preference to hand
-        // off. The status alone is authoritative for search engines; this covers
-        // the crawlers that read markup more eagerly than headers.
-        Hooks::addAction(
-            'wp_head',
-            static function (): void {
-                printf('%s' . "\n", '<meta name="robots" content="noindex,follow" />');
-
-                // The main query has been swapped to the portal page, so core's
-                // canonical would announce this missing URL as the portal's
-                // landing page. A canonical pointing away from a noindex page is
-                // the one pairing that can carry the noindex to its target.
-                Hooks::removeAction('wp_head', 'rel_canonical');
-            },
-            1
-        );
+        // The status alone is authoritative for search engines; the head covers
+        // the crawlers that read markup more eagerly than headers. Described as
+        // a route like any other, so SeoMeta prints the noindex and drops core's
+        // canonical — which would announce this missing URL as the portal's
+        // landing page — and the site's SEO plugin is stood down rather than
+        // printing the portal page's own `index` tags beside it.
+        SeoMeta::forNotFound();
     }
 }

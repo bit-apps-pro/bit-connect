@@ -151,7 +151,10 @@ final class PortalTaxonomies
      */
     public static function url(string $segment, string $termSlug): string
     {
-        return PortalLocation::url($segment . '/' . $termSlug);
+        // In the site's permalink form, like SeoContent::portalUrl(): this is
+        // the archive's canonical, sitemap entry and redirect target, and a
+        // missing trailing slash would make each of them a 301.
+        return user_trailingslashit(PortalLocation::url($segment . '/' . $termSlug));
     }
 
     /**

@@ -117,6 +117,98 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         // same reason they are removed from core's.
         Hooks::addFilter('wpseo_sitemap_exclude_post_type', [self::class, 'excludeCptFromSeoPlugin'], 10, 2);
         Hooks::addFilter('rank_math/sitemap/exclude_post_type', [self::class, 'excludeCptFromSeoPlugin'], 10, 2);
+
+        // And the taxonomies' own archives, which 301 to the portal's: listed
+        // by an SEO plugin they are sitemap entries that redirect.
+        Hooks::addFilter('wpseo_sitemap_exclude_taxonomy', [self::class, 'excludeTaxonomyFromSeoPlugin'], 10, 2);
+        Hooks::addFilter('rank_math/sitemap/exclude_taxonomy', [self::class, 'excludeTaxonomyFromSeoPlugin'], 10, 2);
+
+        // Beyond the sitemap, each plugin offers the CPT and taxonomies as
+        // content it manages — Rank Math's and SEOPress's settings screens list
+        // them, AIOSEO includes every public type in its sitemap by default.
+        // That is a second set of controls over URLs the portal already owns,
+        // and a switch there could put the redirecting permalinks straight back
+        // into a sitemap. Removed from each plugin's own list of what it
+        // manages, so the controls do not appear and cannot be re-enabled.
+        Hooks::addFilter('rank_math/excluded_post_types', [self::class, 'removeOwnKeys']);
+        Hooks::addFilter('rank_math/excluded_taxonomies', [self::class, 'removeOwnKeys']);
+        Hooks::addFilter('seopress_post_types', [self::class, 'removeOwnKeys']);
+        Hooks::addFilter('seopress_get_taxonomies_list', [self::class, 'removeOwnKeys']);
+        Hooks::addFilter('wpseo_indexable_excluded_post_types', [self::class, 'appendOwnNames']);
+        Hooks::addFilter('wpseo_indexable_excluded_taxonomies', [self::class, 'appendOwnNames']);
+        Hooks::addFilter('aioseo_public_post_types', [self::class, 'removeOwnFromList']);
+        Hooks::addFilter('aioseo_public_taxonomies', [self::class, 'removeOwnFromList']);
+    }
+
+    /**
+     * Drop one of the plugin's taxonomies from an SEO plugin's sitemap.
+     *
+     * @param bool   $excluded
+     * @param string $taxonomy
+     *
+     * @return bool
+     */
+    public static function excludeTaxonomyFromSeoPlugin($excluded, $taxonomy)
+    {
+        return \in_array($taxonomy, self::ownNames(), true) ? true : $excluded;
+    }
+
+    /**
+     * Remove the plugin's types from a list keyed by name.
+     *
+     * @param mixed $items
+     *
+     * @return mixed
+     */
+    public static function removeOwnKeys($items)
+    {
+        if (!\is_array($items)) {
+            return $items;
+        }
+
+        foreach (self::ownNames() as $name) {
+            unset($items[$name]);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Add the plugin's types to a list of names to leave alone.
+     *
+     * @param mixed $names
+     *
+     * @return mixed
+     */
+    public static function appendOwnNames($names)
+    {
+        if (!\is_array($names)) {
+            return $names;
+        }
+
+        return array_values(array_unique(array_merge($names, self::ownNames())));
+    }
+
+    /**
+     * Remove the plugin's types from a list of names or of `['name' => …]` rows.
+     *
+     * @param mixed $items
+     *
+     * @return mixed
+     */
+    public static function removeOwnFromList($items)
+    {
+        if (!\is_array($items)) {
+            return $items;
+        }
+
+        $own = self::ownNames();
+
+        return array_values(array_filter($items, static function ($item) use ($own) {
+            $name = \is_array($item) ? ($item['name'] ?? '') : $item;
+
+            return !\in_array($name, $own, true);
+        }));
     }
 
     /**
@@ -673,6 +765,22 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         self::$subtypes = $subtypes;
 
         return $subtypes;
+    }
+
+    /**
+     * The post type and taxonomies whose URLs the portal serves in their place.
+     *
+     * @return array<int, string>
+     */
+    private static function ownNames(): array
+    {
+        $names = [PostTypes::BIT_CONNECT->value];
+
+        foreach (Taxonomies::cases() as $taxonomy) {
+            $names[] = $taxonomy->value;
+        }
+
+        return $names;
     }
 
     /**
