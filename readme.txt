@@ -90,11 +90,11 @@ It can work as a traditional forum, but it can also serve as a product community
 
 = Source Code =
 
-The JavaScript and CSS this plugin ships under `assets/` and `assets/client/` are compiled, minified bundles generated from human-readable source with Vite. That source is not included in the plugin zip; it is published in full, together with build instructions, in the plugin's public repository:
+The files in `assets/` are minified builds. The full source code is on GitHub:
 
 **https://github.com/bit-apps-pro/bit-connect**
 
-The repository holds everything the plugin is built from: the React + TypeScript admin panel (`frontend/admin/`), the React + TypeScript portal (`frontend/client/`), the Vite configs (`vite.config.mts`, `vite.config.client.mts`), the PHP plugin (`backend/`) and the third-party libraries it bundles, listed in `package.json` and `composer.json`. To rebuild the shipped assets yourself:
+To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 
 `git clone https://github.com/bit-apps-pro/bit-connect.git`
 `cd bit-connect`
@@ -102,13 +102,9 @@ The repository holds everything the plugin is built from: the React + TypeScript
 `pnpm install`
 `pnpm build:free`
 
-That writes `assets/` and `assets/client/`, after which the directory is the plugin. `pnpm prod:free-zip` produces the same installable zip that is published here. Requirements: PHP 8.2+, Node 20+, pnpm 9+, Composer 2. The repository README documents the build in more detail.
+= Bundled Font =
 
-= Bundled Third-Party Assets =
-
-The community portal is set in **Outfit**, Copyright 2021 The Outfit Project Authors. The font ships inside the plugin and is served from your own site, so no page contacts a font service. It is licensed under the SIL Open Font License 1.1, and the full licence text is included in the plugin as `LICENSE-Outfit.txt`.
-
-* Outfit — https://github.com/Outfitio/Outfit-Fonts — SIL Open Font License 1.1 — https://scripts.sil.org/OFL
+The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), included in the plugin and served from your own site. It is licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Outfit.txt`. Source: https://github.com/Outfitio/Outfit-Fonts
 
 = Other Products by Bit Apps =
 
