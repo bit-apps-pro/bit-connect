@@ -45,7 +45,7 @@ function TopicEntry({ occurredAt, topic }: { occurredAt: string; topic: Topic })
       <Kind icon={<LuSquarePen size={13} />}>{__('posted a topic')}</Kind>
 
       <Link
-        className="bc-mt-1 bc-block bc-text-[15px] bc-font-semibold bc-leading-snug bc-text-ink bc-no-underline hover:bc-text-primary"
+        className="bc-mt-1 bc-line-clamp-2 bc-break-words bc-text-[15px] bc-font-semibold bc-leading-snug bc-text-ink bc-no-underline hover:bc-text-primary"
         to={routePath(`/${topic.post_name}`)}
       >
         {topic.post_title}
@@ -90,7 +90,7 @@ function CommentEntry({ comment, occurredAt }: { comment: UserComment; occurredA
       {/* Plain text rather than rendered HTML: the feed is a scannable list, and
           a comment's headings, images and quotes would break the rhythm. */}
       <Link
-        className="bc-mt-1 bc-line-clamp-2 bc-block bc-text-[14px] bc-leading-[1.45] bc-text-ink bc-no-underline"
+        className="bc-mt-1 bc-line-clamp-2 bc-break-words bc-text-[14px] bc-leading-[1.45] bc-text-ink bc-no-underline"
         to={routePath(`/${comment.post_name}`)}
       >
         {plainText(comment.comment_content)}
