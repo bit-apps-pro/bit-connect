@@ -851,25 +851,19 @@ return [
 
     'Topic types' => __('Topic types', 'bit-connect'),
 
-    'Indexed, not in sitemap' => __('Indexed, not in sitemap', 'bit-connect'),
-
-    'Indexed and in sitemap' => __('Indexed and in sitemap', 'bit-connect'),
-
-    'Served, hidden from search' => __('Served, hidden from search', 'bit-connect'),
-
-    'Not served (404)' => __('Not served (404)', 'bit-connect'),
-
     '{name}' => __('{name}', 'bit-connect'),
 
     'terms' => __('terms', 'bit-connect'),
 
     'None detected' => __('None detected', 'bit-connect'),
 
-    'Current status' => __('Current status', 'bit-connect'),
-
     'The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public.' => __('The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public.', 'bit-connect'),
 
     'Portal is members-only' => __('Portal is members-only', 'bit-connect'),
+
+    'WordPress is set to discourage search engines (Settings → Reading), so the portal sitemap is not published and nothing is announced in robots.txt.' => __('WordPress is set to discourage search engines (Settings → Reading), so the portal sitemap is not published and nothing is announced in robots.txt.', 'bit-connect'),
+
+    'Search engines are discouraged' => __('Search engines are discouraged', 'bit-connect'),
 
     'Custom code on this site has switched off the plain HTML sent to search engines and AI crawlers, so they cannot read the portal or its titles and link previews.' => __('Custom code on this site has switched off the plain HTML sent to search engines and AI crawlers, so they cannot read the portal or its titles and link previews.', 'bit-connect'),
 
@@ -883,63 +877,26 @@ return [
 
     'Sitemap' => __('Sitemap', 'bit-connect'),
 
-    'Published topics' => __('Published topics', 'bit-connect'),
+    'Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.' => __('Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.', 'bit-connect'),
 
-    'Indexable archive pages' => __('Indexable archive pages', 'bit-connect'),
+    'In the sitemap' => __('In the sitemap', 'bit-connect'),
 
-    '(no archives are indexable)' => __('(no archives are indexable)', 'bit-connect'),
+    /* translators: %1$s, %2$s — value(s) inserted by the plugin; keep them in the translation. */
+    '1 home page · %1$s topics · %2$s archive pages' => __('1 home page · %1$s topics · %2$s archive pages', 'bit-connect'),
 
-    'The portal sitemap is off. Its URL returns “not found” and nothing is announced in robots.txt.' => __('The portal sitemap is off. Its URL returns “not found” and nothing is announced in robots.txt.', 'bit-connect'),
+    'How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes.' => __('How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes.', 'bit-connect'),
 
-    'Your portal sitemap:' => __('Your portal sitemap:', 'bit-connect'),
-
-    'Submit this to Google Search Console. It is an index: one sitemap per content type — the topics, then each taxonomy’s archives — so you can see at a glance what is listed.' => __('Submit this to Google Search Console. It is an index: one sitemap per content type — the topics, then each taxonomy’s archives — so you can see at a glance what is listed.', 'bit-connect'),
-
-    'Overview' => __('Overview', 'bit-connect'),
-
-    'A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each step below adds to the one before it: an archive has to be served to be indexed, and indexed to be worth listing in the sitemap.' => __('A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Each step below adds to the one before it: an archive has to be served to be indexed, and indexed to be worth listing in the sitemap.', 'bit-connect'),
+    'A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Switched on, a taxonomy’s archives are indexed and listed in the sitemap. Switched off, they still work for visitors but are hidden from search.' => __('A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Switched on, a taxonomy’s archives are indexed and listed in the sitemap. Switched off, they still work for visitors but are hidden from search.', 'bit-connect'),
 
     'Term archives' => __('Term archives', 'bit-connect'),
 
-    'Archives' => __('Archives', 'bit-connect'),
+    'Profile pages always work for visitors. Indexing them puts member names and activity in search results, so it is off until you choose it.' => __('Profile pages always work for visitors. Indexing them puts member names and activity in search results, so it is off until you choose it.', 'bit-connect'),
 
-    'These routes always work for visitors. Indexing them puts thin, near-identical pages in front of the topics they link to, so they are excluded by default.' => __('These routes always work for visitors. Indexing them puts thin, near-identical pages in front of the topics they link to, so they are excluded by default.', 'bit-connect'),
+    'Member profiles' => __('Member profiles', 'bit-connect'),
 
-    'What search engines may index' => __('What search engines may index', 'bit-connect'),
+    'Show member profile pages in search results, each with its own title, description and canonical address.' => __('Show member profile pages in search results, each with its own title, description and canonical address.', 'bit-connect'),
 
-    'Member profile pages. These are thin and similar to one another, and indexing them publishes member names and activity.' => __('Member profile pages. These are thin and similar to one another, and indexing them publishes member names and activity.', 'bit-connect'),
-
-    'Index member profiles' => __('Index member profiles', 'bit-connect'),
-
-    'Pages 2, 3, … of the topic list. They exist so crawlers can reach older topics, not to rank themselves.' => __('Pages 2, 3, … of the topic list. They exist so crawlers can reach older topics, not to rank themselves.', 'bit-connect'),
-
-    'Index paginated list pages' => __('Index paginated list pages', 'bit-connect'),
-
-    'Indexing' => __('Indexing', 'bit-connect'),
-
-    'How search engines discover the portal, including topics no page links to directly. Archive inclusion is set per taxonomy on the Archives tab.' => __('How search engines discover the portal, including topics no page links to directly. Archive inclusion is set per taxonomy on the Archives tab.', 'bit-connect'),
-
-    'Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry.' => __('Publish the portal sitemap at all. Switching this off removes the file and its robots.txt entry.', 'bit-connect'),
-
-    'Portal sitemap' => __('Portal sitemap', 'bit-connect'),
-
-    'Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap.' => __('Announce the sitemap in robots.txt. This is how search engines find it without you submitting it, and it survives whichever SEO plugin owns the main sitemap.', 'bit-connect'),
-
-    'Announce in robots.txt' => __('Announce in robots.txt', 'bit-connect'),
-
-    'List the portal landing page as the entry point of the community.' => __('List the portal landing page as the entry point of the community.', 'bit-connect'),
-
-    'Include portal home' => __('Include portal home', 'bit-connect'),
-
-    'List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be.' => __('List every published topic. This is the main way deep topics get found, and switching it off usually means they will not be.', 'bit-connect'),
-
-    'Include topics' => __('Include topics', 'bit-connect'),
-
-    'Each content type gets its own sitemap, split across numbered pages once it holds more URLs than this. The sitemap standard allows up to 50,000 per page; smaller pages are lighter to generate.' => __('Each content type gets its own sitemap, split across numbered pages once it holds more URLs than this. The sitemap standard allows up to 50,000 per page; smaller pages are lighter to generate.', 'bit-connect'),
-
-    'URLs per sitemap page' => __('URLs per sitemap page', 'bit-connect'),
-
-    'How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes.' => __('How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes.', 'bit-connect'),
+    'Show profiles in search' => __('Show profiles in search', 'bit-connect'),
 
     'Failed to update settings' => __('Failed to update settings', 'bit-connect'),
 
@@ -1947,6 +1904,8 @@ return [
     'No comments yet.' => __('No comments yet.', 'bit-connect'),
 
     'No upvoted topics yet.' => __('No upvoted topics yet.', 'bit-connect'),
+
+    'Overview' => __('Overview', 'bit-connect'),
 
     'Upvoted' => __('Upvoted', 'bit-connect'),
 

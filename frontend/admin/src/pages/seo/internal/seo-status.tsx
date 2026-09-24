@@ -1,4 +1,4 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { Alert, Descriptions, Tag, Typography } from 'antd'
 
 import { SEO_PLUGIN_LABELS, type SeoDiagnostics } from '../shared/types'
@@ -18,15 +18,16 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
     ? (SEO_PLUGIN_LABELS[diagnostics.seoPlugin] ?? diagnostics.seoPlugin)
     : __('None detected')
 
-  const indexableArchives = Object.entries(diagnostics.archives).filter(
-    ([, archive]) => archive.indexable
-  )
-  const archiveUrlCount = indexableArchives.reduce((total, [, archive]) => total + archive.terms, 0)
+  // Every portal page that goes to search, counted the way the sitemap lists
+  // them: the landing page, each topic, and each archive shown in search.
+  const archivePageCount = Object.values(diagnostics.archives)
+    .filter(archive => archive.indexable)
+    .reduce((total, archive) => total + archive.terms, 0)
 
   return (
     <div className="bc-mb-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-6">
       <Title className="bc-mb-4" level={4}>
-        {__('Current status')}
+        {__('Status')}
       </Title>
 
       {!diagnostics.portalIsPublic && (
@@ -36,6 +37,18 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
             'The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public.'
           )}
           message={__('Portal is members-only')}
+          showIcon
+          type="warning"
+        />
+      )}
+
+      {diagnostics.portalIsPublic && diagnostics.searchEnginesDiscouraged && (
+        <Alert
+          className="bc-mb-4"
+          description={__(
+            'WordPress is set to discourage search engines (Settings → Reading), so the portal sitemap is not published and nothing is announced in robots.txt.'
+          )}
+          message={__('Search engines are discouraged')}
           showIcon
           type="warning"
         />
@@ -71,26 +84,33 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
 
         <Descriptions.Item label={__('Sitemap')}>
           {diagnostics.sitemapUrl ? (
-            <a href={diagnostics.sitemapUrl} rel="noreferrer" target="_blank">
-              {diagnostics.sitemapUrl}
-            </a>
+            <>
+              <a href={diagnostics.sitemapUrl} rel="noreferrer" target="_blank">
+                {diagnostics.sitemapUrl}
+              </a>
+              <p className="bc-mb-0 bc-mt-1 bc-text-sm bc-text-ink-muted">
+                {__(
+                  'Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.'
+                )}
+              </p>
+            </>
           ) : (
             '—'
           )}
         </Descriptions.Item>
 
-        <Descriptions.Item label={__('Published topics')}>
-          <span className="bc-font-medium">{diagnostics.publishedTopics}</span>
-        </Descriptions.Item>
-
-        <Descriptions.Item label={__('Indexable archive pages')}>
-          <span className="bc-font-medium">{archiveUrlCount}</span>
-          <span className="bc-ml-2 bc-text-xs bc-text-ink-subtle">
-            {indexableArchives.length > 0
-              ? `(${indexableArchives.map(([segment]) => `/${segment}`).join(', ')})`
-              : __('(no archives are indexable)')}
-          </span>
-        </Descriptions.Item>
+        {diagnostics.sitemapUrl && (
+          <Descriptions.Item label={__('In the sitemap')}>
+            <span className="bc-font-medium">
+              {sprintf(
+                // translators: 1: number of topics, 2: number of archive pages.
+                __('1 home page · %1$s topics · %2$s archive pages'),
+                diagnostics.publishedTopics,
+                archivePageCount
+              )}
+            </span>
+          </Descriptions.Item>
+        )}
       </Descriptions>
     </div>
   )

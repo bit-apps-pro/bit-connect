@@ -5,7 +5,6 @@ namespace BitApps\BitConnect\SSR\Seo;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
-use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
@@ -41,6 +40,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      */
     public const SUBTYPE_TOPICS = 'topics';
 
+    private const URLS_PER_PAGE = 2000;
+
     private const FEED_QUERY_VAR = 'bit_connect_sitemap';
 
     private const FEED_PAGE_QUERY_VAR = 'bit_connect_sitemap_page';
@@ -48,6 +49,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     private const FEED_TYPE_QUERY_VAR = 'bit_connect_sitemap_type';
 
     private const FEED_XSL_QUERY_VAR = 'bit_connect_sitemap_xsl';
+
+    private const FEED_LEGACY_QUERY_VAR = 'bit_connect_sitemap_legacy';
 
     /**
      * Term archive URLs per taxonomy segment, for one request.
@@ -117,11 +120,25 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
+     * Whether the portal sitemap is being served at all.
+     */
+    public static function isPublished(): bool
+    {
+        return self::hasPublicPortal();
+    }
+
+    /**
      * Absolute URL of the standalone portal sitemap.
      */
     public static function feedUrl(): string
     {
-        return home_url('/bit-connect-sitemap.xml');
+        // Not `bit-connect-sitemap.xml`, which it once was: Yoast and Rank Math
+        // both route every `…-sitemap.xml` to their own sitemaps, ahead of any
+        // rule of ours — Yoast re-adds its rules on every read of the rewrite
+        // option — and 404 a type they do not know. On exactly the sites where
+        // an SEO plugin owns the main sitemap, the portal's index was
+        // unreachable. The old address still redirects here.
+        return home_url('/bit-connect-sitemap-index.xml');
     }
 
     /**
@@ -168,11 +185,14 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         // exactly the installs this feed exists for — the ones where an SEO
         // plugin has switched core's sitemaps off.
         $rules = [
-            '^bit-connect-sitemap\.xml$'                       => 'index.php?' . self::FEED_QUERY_VAR . '=1',
+            '^bit-connect-sitemap-index\.xml$'                 => 'index.php?' . self::FEED_QUERY_VAR . '=1',
             '^bit-connect-sitemap-([a-z\d_-]+)-([0-9]+)\.xml$' => 'index.php?' . self::FEED_QUERY_VAR . '=1'
                 . '&' . self::FEED_TYPE_QUERY_VAR . '=$matches[1]'
                 . '&' . self::FEED_PAGE_QUERY_VAR . '=$matches[2]',
-            '^bit-connect-sitemap\.xsl$' => 'index.php?' . self::FEED_XSL_QUERY_VAR . '=1',
+            // Like the index, clear of the SEO plugins' `…sitemap.xsl` rule.
+            '^bit-connect-sitemap-style\.xsl$' => 'index.php?' . self::FEED_XSL_QUERY_VAR . '=1',
+            // The index's old address, redirected wherever it still reaches us.
+            '^bit-connect-sitemap\.xml$' => 'index.php?' . self::FEED_LEGACY_QUERY_VAR . '=1',
         ];
 
         foreach ($rules as $regex => $target) {
@@ -209,6 +229,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         $vars[] = self::FEED_TYPE_QUERY_VAR;
         $vars[] = self::FEED_PAGE_QUERY_VAR;
         $vars[] = self::FEED_XSL_QUERY_VAR;
+        $vars[] = self::FEED_LEGACY_QUERY_VAR;
 
         return $vars;
     }
@@ -227,6 +248,12 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             status_header(200);
 
             self::printStylesheet();
+
+            exit;
+        }
+
+        if (get_query_var(self::FEED_LEGACY_QUERY_VAR) !== '') {
+            wp_safe_redirect(self::feedUrl(), 301);
 
             exit;
         }
@@ -291,7 +318,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      */
     public static function advertiseInRobotsTxt($output, $public)
     {
-        if (!$public || !self::hasPublicPortal() || !SeoSettings::sitemap('inRobotsTxt')) {
+        if (!$public || !self::hasPublicPortal()) {
             return $output;
         }
 
@@ -433,7 +460,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         }
 
         $pageNum = max(1, $pageNum);
-        $perPage = SeoSettings::sitemapUrlsPerPage();
+        $perPage = self::urlsPerPage();
 
         // The type's fixed head — the landing page, or every term archive of
         // one taxonomy — then, for the topics sitemap, the topics. Cut into
@@ -664,7 +691,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             return self::archiveUrls($subtype);
         }
 
-        return SeoSettings::sitemap('includeHome') ? [SeoContent::portalUrl()] : [];
+        return [SeoContent::portalUrl()];
     }
 
     /**
@@ -675,7 +702,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      */
     private static function topicCount(string $subtype): int
     {
-        if ($subtype !== self::SUBTYPE_TOPICS || !SeoSettings::sitemap('includeTopics')) {
+        if ($subtype !== self::SUBTYPE_TOPICS) {
             return 0;
         }
 
@@ -708,7 +735,22 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             return 0;
         }
 
-        return max(1, (int) ceil($total / SeoSettings::sitemapUrlsPerPage()));
+        return max(1, (int) ceil($total / self::urlsPerPage()));
+    }
+
+    /**
+     * URLs per sitemap page.
+     *
+     * Fixed rather than a setting: any size up to the 50,000 a sitemap may carry
+     * works, and this one is light to generate on any host. A site with a reason
+     * to differ has `bit_connect_sitemap_urls_per_page`, clamped to what the
+     * protocol allows.
+     */
+    private static function urlsPerPage(): int
+    {
+        $perPage = (int) Hooks::applyFilter('bit_connect_sitemap_urls_per_page', self::URLS_PER_PAGE);
+
+        return max(1, min(50000, $perPage));
     }
 
     /**
@@ -878,7 +920,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
 
     private static function stylesheetUrl(): string
     {
-        return home_url('/bit-connect-sitemap.xsl');
+        return home_url('/bit-connect-sitemap-style.xsl');
     }
 
     /**
@@ -1006,8 +1048,12 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         // Keyed to the portal being public rather than to the rendered markup:
         // a sitemap is worth publishing even with the HTML fallback switched
         // off, because JavaScript-rendering crawlers reach these URLs anyway.
+        //
+        // And to the site allowing search engines at all. "Discourage search
+        // engines" switches core's own sitemap off, and a site that asked for
+        // it must not be advertising a sitemap of its community instead.
         return (string) Config::getOption('portal_page', '') !== ''
             && SeoContent::isPortalPublic()
-            && (bool) SeoSettings::sitemap('enabled');
+            && (string) get_option('blog_public', '1') !== '0';
     }
 }

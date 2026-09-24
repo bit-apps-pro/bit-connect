@@ -7,6 +7,7 @@ use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Http\Requests\UpdateSeoSettingsRequest;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoContent;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use PHPUnit\Framework\TestCase;
@@ -62,11 +63,10 @@ final class SeoSettingsTest extends TestCase
     public function testAnInstallThatNeverSavedSettingsGetsTheOldBehaviour(): void
     {
         $this->assertTrue(SeoContent::isEnabled());
-        $this->assertTrue((bool) SeoSettings::sitemap('enabled'));
+        $this->assertTrue(PortalSitemap::isPublished());
 
         // Routes that were never indexed stay that way.
         $this->assertFalse(SeoSettings::bool('indexProfiles'));
-        $this->assertFalse(SeoSettings::bool('indexPagination'));
         $this->assertFalse(SeoSettings::archiveIndexable('status'));
     }
 
@@ -76,8 +76,7 @@ final class SeoSettingsTest extends TestCase
 
         $this->assertTrue(SeoSettings::bool('indexProfiles'));
         // Never stored, so it must not read as "switched off".
-        $this->assertTrue((bool) SeoSettings::sitemap('enabled'));
-        $this->assertTrue(SeoSettings::archiveEnabled('tag'));
+        $this->assertTrue(SeoSettings::archiveIndexable('tag'));
     }
 
     // -----------------------------------------------------------------------
@@ -118,18 +117,26 @@ final class SeoSettingsTest extends TestCase
         $this->assertFalse(SeoContent::isPortalPublic());
     }
 
-    public function testDisablingAnArchiveRemovesItsRouteEntirely(): void
+    public function testAWithdrawnRouteSwitchServesTheArchiveAsNoindex(): void
     {
-        $this->store(['archives' => ['tag' => false]]);
+        // Saved while the screen could still 404 an archive. The sidebar links
+        // to stage archives, so the route comes back — hidden from search.
+        $this->store(['archives' => ['stage' => false], 'indexArchives' => ['stage' => true]]);
 
-        $this->assertArrayNotHasKey('tag', PortalTaxonomies::map());
-        $this->assertSame('', PortalTaxonomies::taxonomyFor('tag'));
-        // Not just unindexed — the URL stops resolving.
-        $this->assertNull(PortalTaxonomies::resolve('tag', 'anything'));
+        $this->assertContains('stage', PortalTaxonomies::segments());
+        $this->assertFalse(SeoSettings::archiveIndexable('stage'));
+        $this->assertArrayNotHasKey('archives', SeoSettings::all());
+    }
+
+    public function testEveryArchiveIsServedWhateverItsIndexing(): void
+    {
+        $this->store(['indexArchives' => ['tag' => false, 'status' => false]]);
+
         // Checked against the segment list rather than the pattern string —
         // "tag" is a substring of "stage", so a substring assertion would pass
         // or fail for the wrong reason.
-        $this->assertNotContains('tag', PortalTaxonomies::segments());
+        $this->assertContains('tag', PortalTaxonomies::segments());
+        $this->assertContains('status', PortalTaxonomies::segments());
     }
 
     public function testIndexStageArchivesFlipsTheirRobotsTag(): void
@@ -149,17 +156,16 @@ final class SeoSettingsTest extends TestCase
     public function testIndexProfilesFlipsTheProfileRobotsTag(): void
     {
         $this->store(['indexProfiles' => true]);
-        SeoMeta::forProfile('Casey');
+        SeoMeta::forProfile('Casey', 'https://example.com/community/user/casey');
 
         $this->assertStringNotContainsString('noindex', SeoMeta::head());
     }
 
-    public function testIndexPaginationFlipsTheDeeperPageRobotsTag(): void
+    public function testAWithdrawnPaginationSettingIsDropped(): void
     {
-        $this->store(['indexPagination' => true]);
-        SeoMeta::forTopics([$this->makeTopic()], 3);
+        $this->store(['indexPagination' => false]);
 
-        $this->assertStringNotContainsString('noindex', SeoMeta::head());
+        $this->assertArrayNotHasKey('indexPagination', SeoSettings::all());
     }
 
     public function testAWithdrawnSchemaToggleNoLongerSilencesADocument(): void
@@ -216,57 +222,49 @@ final class SeoSettingsTest extends TestCase
 
         $this->assertTrue($data['indexProfiles']);
         // Everything unmentioned keeps its default rather than becoming false.
-        $this->assertTrue($data['sitemap']['enabled']);
-        $this->assertFalse($data['indexPagination']);
-        $this->assertTrue($data['archives']['tag']);
+        $this->assertTrue($data['indexArchives']['tag']);
         $this->assertTrue($data['indexArchives']['topic']);
         $this->assertFalse($data['indexArchives']['status']);
-        $this->assertSame(2000, $data['sitemap']['urlsPerPage']);
+        // The whole of what the screen saves now.
+        $this->assertSame(['indexProfiles', 'indexArchives'], array_keys($data));
     }
 
     public function testStringBooleansFromAFormPostAreUnderstood(): void
     {
         $request = $this->makeUpdateRequest([
-            'sitemap'       => ['inRobotsTxt' => 'false'],
             'indexProfiles' => 'true',
-            'archives'      => ['tag' => '0'],
+            'indexArchives' => ['tag' => '0', 'topic' => 'true'],
         ]);
         $data = $request->toSettingsData();
 
-        $this->assertFalse($data['sitemap']['inRobotsTxt']);
         $this->assertTrue($data['indexProfiles']);
-        $this->assertFalse($data['archives']['tag']);
+        $this->assertFalse($data['indexArchives']['tag']);
+        $this->assertTrue($data['indexArchives']['topic']);
     }
 
-    public function testSitemapContentTypesAreControlledIndividually(): void
+    public function testAWithdrawnSitemapGroupIsDropped(): void
     {
-        $this->store(['sitemap' => ['includeTopics' => false]]);
+        $this->store(['sitemap' => ['enabled' => false, 'includeTopics' => false, 'urlsPerPage' => 100]]);
 
-        $this->assertFalse((bool) SeoSettings::sitemap('includeTopics'));
-        // Untouched keys keep their defaults.
-        $this->assertTrue((bool) SeoSettings::sitemap('includeHome'));
-        $this->assertTrue((bool) SeoSettings::sitemap('enabled'));
+        $this->assertArrayNotHasKey('sitemap', SeoSettings::all());
+        $this->assertTrue(PortalSitemap::isPublished());
     }
 
-    public function testSitemapArchivesAreControlledPerTaxonomy(): void
+    public function testTheSitemapListsExactlyTheIndexableArchives(): void
     {
-        $this->store(['sitemap' => ['archives' => ['tag' => false]]]);
+        $this->store(['indexArchives' => ['tag' => false]]);
 
         $this->assertFalse(PortalTaxonomies::isSitemapListed('tag'));
         $this->assertTrue(PortalTaxonomies::isSitemapListed('topic'));
     }
 
-    public function testANoindexArchiveIsNeverListedInTheSitemap(): void
+    public function testAWithdrawnSitemapExclusionListsAnIndexableArchive(): void
     {
-        // Asking for it explicitly does not override the contradiction: a
-        // sitemap asks for indexing, so listing a noindex URL asks for two
-        // opposite things.
-        $this->store([
-            'indexArchives' => ['stage' => false],
-            'sitemap'       => ['archives' => ['stage' => true]],
-        ]);
+        // Saved while an indexable archive could be kept out of the sitemap —
+        // which only made it slower to find.
+        $this->store(['sitemap' => ['archives' => ['tag' => false]]]);
 
-        $this->assertFalse(PortalTaxonomies::isSitemapListed('stage'));
+        $this->assertTrue(PortalTaxonomies::isSitemapListed('tag'));
     }
 
     public function testTheIndexableFilterAlsoDecidesTheSitemap(): void
@@ -274,10 +272,7 @@ final class SeoSettingsTest extends TestCase
         // The head and the sitemap have to give the same answer. Opening stage
         // archives through the filter without this listed them as indexable
         // pages that no sitemap advertised.
-        $this->store([
-            'indexArchives' => ['stage' => false],
-            'sitemap'       => ['archives' => ['stage' => true]],
-        ]);
+        $this->store(['indexArchives' => ['stage' => false]]);
 
         $GLOBALS['__wp_filters']['bit_connect_archive_indexable'] = static fn ($indexable, $segment)
             => $segment === 'stage' ? true : $indexable;
@@ -295,33 +290,11 @@ final class SeoSettingsTest extends TestCase
         $this->assertFalse(PortalTaxonomies::isSitemapListed('tag'));
     }
 
-    public function testAPartialSitemapPayloadKeepsItsArchiveDefaults(): void
+    public function testAPostedSitemapGroupIsNotSaved(): void
     {
         $data = $this->makeUpdateRequest(['sitemap' => ['includeHome' => false]])->toSettingsData();
 
-        $this->assertFalse($data['sitemap']['includeHome']);
-        $this->assertTrue($data['sitemap']['archives']['tag']);
-        $this->assertSame(2000, $data['sitemap']['urlsPerPage']);
-    }
-
-    public function testSitemapPageSizeIsClamped(): void
-    {
-        $this->store(['sitemap' => ['urlsPerPage' => 999999]]);
-        $this->assertSame(50000, SeoSettings::sitemapUrlsPerPage());
-
-        $this->store(['sitemap' => ['urlsPerPage' => 1]]);
-        $this->assertSame(100, SeoSettings::sitemapUrlsPerPage());
-    }
-
-    public function testAnArchiveCannotBeIndexableWhileItsRouteIsOff(): void
-    {
-        $this->store([
-            'archives'      => ['tag' => false],
-            'indexArchives' => ['tag' => true],
-        ]);
-
-        // Indexing a route that 404s would advertise a dead URL.
-        $this->assertFalse(SeoSettings::archiveIndexable('tag'));
+        $this->assertArrayNotHasKey('sitemap', $data);
     }
 
     public function testEachArchiveSegmentHasItsOwnIndexingSwitch(): void

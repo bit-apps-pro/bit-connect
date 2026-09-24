@@ -46,42 +46,32 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $title = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $page = max(1, $page);
         $url = SeoContent::pageUrl($page);
 
-        // Pages after the first exist to give a crawler a route to topics deeper
-        // than the first screenful — they are not themselves worth ranking, and
-        // indexing them would put near-identical listings in front of the topic
-        // pages they link to. Self-canonical rather than pointing at page 1:
-        // noindex on a page whose canonical names a different URL can carry the
-        // noindex across to that URL.
-        if ($page > 1) {
-            self::$meta = [
-                'title' => \sprintf(
-                    // translators: 1: community name, 2: page number.
-                    __('%1$s — page %2$s', 'bit-connect'),
-                    $title,
-                    number_format_i18n($page)
-                ),
-                'description' => '',
-                'canonical'   => $url,
-                'image'       => '',
-                'type'        => 'website',
-                'robots'      => SeoSettings::bool('indexPagination') ? '' : 'noindex,follow',
-                'jsonLd'      => [],
-            ];
-
-            return;
-        }
+        // Pages after the first are indexable and self-canonical, as Google's
+        // pagination guidance asks: each is a distinct set of topics under a
+        // title naming its page. They were once noindex, but a page left noindex
+        // is crawled less and less until its links stop being followed — which
+        // is the one job these pages have, reaching topics deeper than the first
+        // screenful. Never canonical to page 1, which would disown them.
+        $title = $page > 1
+            ? \sprintf(
+                // translators: 1: community name, 2: page number.
+                __('%1$s — page %2$s', 'bit-connect'),
+                $community,
+                number_format_i18n($page)
+            )
+            : $community;
 
         self::$meta = [
             'title'       => $title,
-            'description' => self::listDescription($topics, $title),
-            // Always the bare portal URL: the list is also served under filter
-            // and sort query strings, and every one of those is the same set of
-            // topics in a different order. Pointing them all here is what keeps
-            // the permutations out of the index.
+            'description' => self::listDescription($topics, $community),
+            // The bare page URL: the list is also served under filter and sort
+            // query strings, and every one of those is the same set of topics in
+            // a different order. Pointing them all here is what keeps the
+            // permutations out of the index.
             'canonical' => $url,
             'image'     => self::siteImage(),
             'type'      => 'website',
@@ -174,13 +164,15 @@ final class SeoMeta
     /**
      * Describe a member profile route.
      *
-     * A profile is thin, largely duplicated across members and assembled
-     * client-side, so it is deliberately kept out of the index — without this it
+     * Kept out of the index by default: a profile is thin, assembled
+     * client-side, and publishes a member's name and activity. Without this it
      * inherits the portal page's title and canonical and competes with the
      * topics themselves. `follow` is retained so the topics a member links to
      * are still discovered.
+     *
+     * @param string $url the profile's own address, its canonical when indexed
      */
-    public static function forProfile(string $displayName = ''): void
+    public static function forProfile(string $displayName = '', string $url = ''): void
     {
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
@@ -191,14 +183,24 @@ final class SeoMeta
             // translators: 1: member display name, 2: community name.
             : \sprintf(__('%1$s — %2$s', 'bit-connect'), $displayName, $community);
 
+        // Indexed only when the site asks for it — a profile publishes a member's
+        // name and activity, which is the owner's call rather than an SEO
+        // default. An indexed profile needs a canonical of its own, or it is an
+        // indexable page with none; a noindex one must not name one, since
+        // noindex beside a canonical pointing elsewhere can carry across.
+        $indexable = SeoSettings::bool('indexProfiles') && $displayName !== '' && $url !== '';
+
         self::$meta = [
             'title'       => $title,
-            'description' => '',
-            'canonical'   => '',
-            'image'       => '',
-            'type'        => 'profile',
-            'robots'      => SeoSettings::bool('indexProfiles') ? '' : 'noindex,follow',
-            'jsonLd'      => [],
+            'description' => $indexable
+                // translators: 1: member display name, 2: community name.
+                ? \sprintf(__('%1$s’s profile and discussions in the %2$s community.', 'bit-connect'), $displayName, $community)
+                : '',
+            'canonical' => $indexable ? $url : '',
+            'image'     => '',
+            'type'      => 'profile',
+            'robots'    => $indexable ? '' : 'noindex,follow',
+            'jsonLd'    => [],
         ];
     }
 

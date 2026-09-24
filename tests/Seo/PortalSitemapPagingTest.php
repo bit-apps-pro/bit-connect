@@ -86,31 +86,21 @@ final class PortalSitemapPagingTest extends TestCase
         $this->assertSame(['topics'], PortalSitemap::subtypes());
     }
 
-    public function testATaxonomyExcludedFromTheSitemapGetsNoSitemap(): void
+    public function testATaxonomyHiddenFromSearchGetsNoSitemap(): void
     {
-        $this->store(['sitemap' => ['archives' => ['tag' => false]]]);
+        $this->store(['indexArchives' => ['tag' => false]]);
         $GLOBALS['__wp_terms'] = [$this->makeTerm('mobile', Taxonomies::TAGS->value)];
 
         $this->assertNotContains('tag', PortalSitemap::subtypes());
     }
 
-    public function testExcludedTopicsGetNoSitemapOfTheirOwn(): void
-    {
-        $this->store(['sitemap' => ['includeHome' => false, 'includeTopics' => false]]);
-        $GLOBALS['__wp_post_counts'] = ['publish' => 5000];
-        $GLOBALS['__wp_terms'] = [$this->makeTerm('mobile', Taxonomies::TAGS->value)];
-
-        $this->assertSame(['tag'], PortalSitemap::subtypes());
-    }
-
     /**
      * The landing page rides with the topics rather than in a sitemap of its
-     * own — the same place core puts the front page.
+     * own — the same place core puts the front page — so a portal with no
+     * topics yet still publishes it.
      */
     public function testThePortalHomeKeepsTheTopicsSitemapAliveOnItsOwn(): void
     {
-        $this->store(['sitemap' => ['includeHome' => true, 'includeTopics' => false]]);
-
         $this->assertSame(['topics'], PortalSitemap::subtypes());
         $this->assertSame(
             [['loc' => 'https://example.com/community']],
@@ -118,11 +108,33 @@ final class PortalSitemapPagingTest extends TestCase
         );
     }
 
-    public function testAnEmptyPortalPublishesNoSitemapsAtAll(): void
+    public function testAWithdrawnSitemapSettingNoLongerDropsTopicsOrHome(): void
     {
-        $this->store(['sitemap' => ['includeHome' => false, 'includeTopics' => false]]);
+        // Saved while the screen could still leave these out.
+        $this->store(['sitemap' => ['enabled' => false, 'includeHome' => false, 'includeTopics' => false]]);
+        $GLOBALS['__wp_post_counts'] = ['publish' => 2];
 
-        $this->assertSame([], PortalSitemap::subtypes());
+        $this->assertTrue(PortalSitemap::isPublished());
+        $this->assertSame(['topics'], PortalSitemap::subtypes());
+        $this->assertSame('https://example.com/community', PortalSitemap::urls('topics', 1)[0]['loc']);
+    }
+
+    public function testASiteDiscouragingSearchEnginesPublishesNoSitemap(): void
+    {
+        // WordPress's own "Discourage search engines" switches core's sitemap
+        // off, and ours with it.
+        $GLOBALS['__wp_options']['blog_public'] = '0';
+
+        $this->assertFalse(PortalSitemap::isPublished());
+        $this->assertSame('', PortalSitemap::advertiseInRobotsTxt('', true));
+    }
+
+    public function testRobotsTxtAlwaysAnnouncesAPublishedSitemap(): void
+    {
+        $this->assertSame(
+            "Sitemap: https://example.com/bit-connect-sitemap-index.xml\n",
+            PortalSitemap::advertiseInRobotsTxt('', true)
+        );
     }
 
     // -----------------------------------------------------------------------
@@ -139,13 +151,47 @@ final class PortalSitemapPagingTest extends TestCase
         PortalSitemap::registerFeedRewrite();
 
         $this->assertArrayHasKey(
-            '^bit-connect-sitemap\.xml$',
+            '^bit-connect-sitemap-index\.xml$',
             $GLOBALS['__wp_added_rewrite_rules']
         );
         $this->assertArrayHasKey(
             '^bit-connect-sitemap-([a-z\d_-]+)-([0-9]+)\.xml$',
             $GLOBALS['__wp_added_rewrite_rules']
         );
+    }
+
+    /**
+     * Yoast and Rank Math both route `([^/]+?)-sitemap([0-9]+)?\.xml$` and
+     * `([a-z]+)?-?sitemap\.xsl$` to themselves, ahead of any rule of ours, and
+     * 404 a type they do not know. None of the portal's addresses may match.
+     */
+    public function testNoPortalSitemapAddressIsClaimedByAnSeoPlugin(): void
+    {
+        $addresses = [
+            PortalSitemap::feedUrl(),
+            PortalSitemap::feedPageUrl('topics', 1),
+            PortalSitemap::feedPageUrl('tag', 12),
+            'https://example.com/bit-connect-sitemap-style.xsl',
+        ];
+
+        foreach ($addresses as $address) {
+            $path = ltrim((string) parse_url($address, PHP_URL_PATH), '/');
+
+            $this->assertDoesNotMatchRegularExpression('#([^/]+?)-sitemap([0-9]+)?\.xml$#', $path, $path);
+            $this->assertDoesNotMatchRegularExpression('#([a-z]+)?-?sitemap\.xsl$#', $path, $path);
+            $this->assertDoesNotMatchRegularExpression('#sitemap_index\.xml$#', $path, $path);
+        }
+    }
+
+    public function testTheOldIndexAddressIsStillRouted(): void
+    {
+        PortalSitemap::registerFeedRewrite();
+
+        $this->assertSame(
+            'index.php?bit_connect_sitemap_legacy=1',
+            $GLOBALS['__wp_added_rewrite_rules']['^bit-connect-sitemap\.xml$'] ?? ''
+        );
+        $this->assertContains('bit_connect_sitemap_legacy', PortalSitemap::addFeedQueryVar([]));
     }
 
     public function testTypedPageRouteCarriesBothTheTypeAndThePageNumber(): void
@@ -185,7 +231,7 @@ final class PortalSitemapPagingTest extends TestCase
 
         // The index keeps the unnumbered URL, so the robots.txt line and any
         // submitted sitemap stay valid as the community grows.
-        $this->assertSame('https://example.com/bit-connect-sitemap.xml', PortalSitemap::feedUrl());
+        $this->assertSame('https://example.com/bit-connect-sitemap-index.xml', PortalSitemap::feedUrl());
     }
 
     // -----------------------------------------------------------------------
@@ -194,7 +240,7 @@ final class PortalSitemapPagingTest extends TestCase
 
     public function testTopicsAreDividedByTheConfiguredPageSize(): void
     {
-        $this->store(['sitemap' => ['includeHome' => false, 'urlsPerPage' => 100]]);
+        $GLOBALS['__wp_filters']['bit_connect_sitemap_urls_per_page'] = 100;
         $GLOBALS['__wp_post_counts'] = ['publish' => 250];
 
         $this->assertSame(3, (new PortalSitemap())->get_max_num_pages('topics'));
@@ -207,7 +253,7 @@ final class PortalSitemapPagingTest extends TestCase
      */
     public function testATaxonomyPagesIndependentlyOfTheTopics(): void
     {
-        $this->store(['sitemap' => ['urlsPerPage' => 100]]);
+        $GLOBALS['__wp_filters']['bit_connect_sitemap_urls_per_page'] = 100;
         $this->seedTags(250);
         $GLOBALS['__wp_post_counts'] = ['publish' => 250];
 
@@ -224,7 +270,7 @@ final class PortalSitemapPagingTest extends TestCase
      */
     public function testThePortalHomeConsumesTopicBudget(): void
     {
-        $this->store(['sitemap' => ['includeHome' => true, 'urlsPerPage' => 100]]);
+        $GLOBALS['__wp_filters']['bit_connect_sitemap_urls_per_page'] = 100;
         $GLOBALS['__wp_post_counts'] = ['publish' => 100];
 
         // 1 + 100 = 101 entries, so two pages. Counting topics alone would have
@@ -234,7 +280,7 @@ final class PortalSitemapPagingTest extends TestCase
 
     public function testATaxonomySitemapListsItsArchivesOnePageAtATime(): void
     {
-        $this->store(['sitemap' => ['urlsPerPage' => 100]]);
+        $GLOBALS['__wp_filters']['bit_connect_sitemap_urls_per_page'] = 100;
         $this->seedTags(150);
 
         $this->assertCount(100, PortalSitemap::urls('tag', 1));
@@ -301,15 +347,8 @@ final class PortalSitemapPagingTest extends TestCase
         $entries = (new PortalSitemap())->get_sitemap_entries();
 
         $this->assertCount(1, $entries);
-        $this->assertSame('https://example.com/bit-connect-sitemap.xml', $entries[0]['loc']);
+        $this->assertSame('https://example.com/bit-connect-sitemap-index.xml', $entries[0]['loc']);
         $this->assertArrayHasKey('lastmod', $entries[0]);
-    }
-
-    public function testTheGroupedEntryIsOmittedWhenThePortalPublishesNothing(): void
-    {
-        $this->store(['sitemap' => ['includeHome' => false, 'includeTopics' => false]]);
-
-        $this->assertSame([], (new PortalSitemap())->get_sitemap_entries());
     }
 
     /**
@@ -347,7 +386,7 @@ final class PortalSitemapPagingTest extends TestCase
         $GLOBALS['__wp_post_counts'] = ['publish' => 1];
         $this->seedTags(1);
 
-        $expected = '<?xml-stylesheet type="text/xsl" href="https://example.com/bit-connect-sitemap.xsl" ?>';
+        $expected = '<?xml-stylesheet type="text/xsl" href="https://example.com/bit-connect-sitemap-style.xsl" ?>';
 
         $this->assertStringContainsString($expected, $this->render('index'));
         $this->assertStringContainsString($expected, $this->render('feed', 'tag'));
@@ -359,7 +398,7 @@ final class PortalSitemapPagingTest extends TestCase
 
         $this->assertSame(
             'index.php?bit_connect_sitemap_xsl=1',
-            $GLOBALS['__wp_added_rewrite_rules']['^bit-connect-sitemap\.xsl$'] ?? ''
+            $GLOBALS['__wp_added_rewrite_rules']['^bit-connect-sitemap-style\.xsl$'] ?? ''
         );
         $this->assertContains('bit_connect_sitemap_xsl', PortalSitemap::addFeedQueryVar([]));
     }

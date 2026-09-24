@@ -82,10 +82,15 @@ final class SeoSettingsController
         }
 
         return [
-            'seoPlugin'       => SeoPluginBridge::detect(),
-            'portalIsPublic'  => ($general['portalAccess'] ?? 'everyone') === 'everyone',
-            'crawlerContent'  => SeoContent::isEnabled(),
-            'sitemapUrl'      => PortalSitemap::feedUrl(),
+            'seoPlugin'      => SeoPluginBridge::detect(),
+            'portalIsPublic' => ($general['portalAccess'] ?? 'everyone') === 'everyone',
+            // WordPress's own "Discourage search engines" — the switch that
+            // keeps the whole site, portal included, out of search.
+            'searchEnginesDiscouraged' => (string) get_option('blog_public', '1') === '0',
+            'crawlerContent'           => SeoContent::isEnabled(),
+            // Empty when the sitemap is not being served, so the screen never
+            // offers a URL that 404s.
+            'sitemapUrl'      => PortalSitemap::isPublished() ? PortalSitemap::feedUrl() : '',
             'portalUrl'       => SeoContent::portalUrl(),
             'publishedTopics' => (int) ($counts->publish ?? 0),
             'archives'        => $archives,

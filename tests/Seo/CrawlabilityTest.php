@@ -505,22 +505,32 @@ final class CrawlabilityTest extends TestCase
         );
     }
 
-    public function testDeeperPagesAreCrawledButNotIndexed(): void
+    public function testDeeperPagesAreIndexable(): void
     {
         SeoMeta::forTopics([$this->topic], 3);
         $head = SeoMeta::head();
 
-        // `follow` is the whole point: the page exists so the topics it links to
-        // are reachable, not so the listing itself ranks.
-        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', $head);
+        // Google's pagination guidance: each page indexable in its own right. A
+        // page left noindex is crawled less until its links stop being
+        // followed, which defeats the page's purpose of reaching older topics.
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString('<meta name="description"', $head);
+    }
+
+    public function testAWithdrawnPaginationSettingIsIgnored(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexPagination' => false];
+        SeoMeta::forTopics([$this->topic], 3);
+
+        $this->assertStringNotContainsString('noindex', SeoMeta::head());
     }
 
     public function testDeeperPagesAreSelfCanonicalNotPointedAtPageOne(): void
     {
         SeoMeta::forTopics([$this->topic], 3);
 
-        // Pointing a noindex page's canonical at page 1 is the pairing that can
-        // carry the noindex across to page 1.
+        // Canonical to page 1 would disown the page, and with it the topics
+        // only it links to.
         $this->assertStringContainsString(
             '<link rel="canonical" href="https://example.com/community/page/3" />',
             SeoMeta::head()
@@ -630,9 +640,32 @@ final class CrawlabilityTest extends TestCase
         $this->assertStringNotContainsString('noindex,nofollow', $head);
     }
 
+    public function testAnIndexedProfileCarriesItsOwnCanonicalAndDescription(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexProfiles' => true];
+        SeoMeta::forProfile('Casey', 'https://example.com/community/user/casey');
+        $head = SeoMeta::head();
+
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString(
+            '<link rel="canonical" href="https://example.com/community/user/casey" />',
+            $head
+        );
+        $this->assertStringContainsString('Casey’s profile and discussions', $head);
+    }
+
+    public function testAProfileWithNoAddressStaysNoindexEvenWhenProfilesAreIndexed(): void
+    {
+        // An indexable page with no canonical of its own is the thing to avoid.
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexProfiles' => true];
+        SeoMeta::forProfile('Casey');
+
+        $this->assertStringContainsString('noindex,follow', SeoMeta::head());
+    }
+
     public function testProfileRouteDoesNotClaimThePortalsCanonical(): void
     {
-        SeoMeta::forProfile('Casey');
+        SeoMeta::forProfile('Casey', 'https://example.com/community/user/casey');
 
         // Previously the profile inherited the portal page's canonical, making
         // every member URL a duplicate of the community landing page.

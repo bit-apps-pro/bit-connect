@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Services\ProfileSlugService;
+use BitApps\BitConnect\SSR\Seo\SeoContent;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\BaseView;
@@ -52,31 +53,39 @@ class UserProfilePageController
 
         // Without this the profile inherits the portal page's title and
         // canonical, so every member URL competes with the portal itself for the
-        // same listing. Profiles are thin and assembled client-side, so they are
-        // kept out of the index rather than given meta of their own — `follow`
-        // still lets the member's topics be discovered from here.
-        SeoMeta::forProfile(self::displayName($userId));
+        // same listing. Whether it is indexed is the site's choice; see
+        // SeoMeta::forProfile().
+        $resolved = self::resolveUser($userId);
+        $user = $resolved > 0 ? get_userdata($resolved) : false;
+
+        SeoMeta::forProfile(
+            $user === false ? '' : (string) $user->display_name,
+            $user === false ? '' : self::profileUrl($resolved)
+        );
 
         return $this->ssrHandler->generateView('/user/' . $userId, [], [], []);
     }
 
     /**
-     * Display name behind a profile path segment, which may be an id or a slug.
+     * User id behind a profile path segment, which may be an id or a slug.
      *
      * @param string $userId
      */
-    private static function displayName($userId): string
+    private static function resolveUser($userId): int
     {
-        $resolved = ctype_digit((string) $userId)
+        return ctype_digit((string) $userId)
             ? (int) $userId
-            : ProfileSlugService::resolve($userId);
+            : (int) ProfileSlugService::resolve($userId);
+    }
 
-        if ($resolved <= 0) {
-            return '';
-        }
+    /**
+     * The profile's canonical address: by slug, whichever form was requested,
+     * so an id URL and a slug URL — or an old slug — agree on one page.
+     */
+    private static function profileUrl(int $userId): string
+    {
+        $slug = (string) ProfileSlugService::slugFor($userId);
 
-        $user = get_userdata($resolved);
-
-        return $user === false ? '' : (string) $user->display_name;
+        return SeoContent::portalUrl('user/' . ($slug !== '' ? $slug : (string) $userId));
     }
 }

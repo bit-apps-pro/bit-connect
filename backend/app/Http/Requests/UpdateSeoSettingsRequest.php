@@ -14,11 +14,8 @@ use BitApps\BitConnect\Enum\SeoSettings;
 /**
  * Request input properties.
  *
- * @property array  $archives
  * @property array  $indexArchives
  * @property bool   $indexProfiles
- * @property bool   $indexPagination
- * @property array  $sitemap
  */
 final class UpdateSeoSettingsRequest extends Request
 {
@@ -39,20 +36,9 @@ final class UpdateSeoSettingsRequest extends Request
     public function rules()
     {
         return [
-            'archives'              => ['nullable', 'array'],
-            'archives.*'            => ['nullable', 'boolean'],
-            'indexArchives'         => ['nullable', 'array'],
-            'indexArchives.*'       => ['nullable', 'boolean'],
-            'indexProfiles'         => ['nullable', 'boolean'],
-            'indexPagination'       => ['nullable', 'boolean'],
-            'sitemap'               => ['nullable', 'array'],
-            'sitemap.enabled'       => ['nullable', 'boolean'],
-            'sitemap.inRobotsTxt'   => ['nullable', 'boolean'],
-            'sitemap.includeHome'   => ['nullable', 'boolean'],
-            'sitemap.includeTopics' => ['nullable', 'boolean'],
-            'sitemap.urlsPerPage'   => ['nullable', 'integer', 'min:100', 'max:50000'],
-            'sitemap.archives'      => ['nullable', 'array'],
-            'sitemap.archives.*'    => ['nullable', 'boolean'],
+            'indexArchives'   => ['nullable', 'array'],
+            'indexArchives.*' => ['nullable', 'boolean'],
+            'indexProfiles'   => ['nullable', 'boolean'],
         ];
     }
 
@@ -69,33 +55,10 @@ final class UpdateSeoSettingsRequest extends Request
     {
         $defaults = SeoSettings::defaults();
 
-        $data = [
-            'indexProfiles'   => $this->flag('indexProfiles', $defaults['indexProfiles']),
-            'indexPagination' => $this->flag('indexPagination', $defaults['indexPagination']),
-            'archives'        => $this->group('archives', $defaults['archives']),
-            'indexArchives'   => $this->group('indexArchives', $defaults['indexArchives']),
-            'sitemap'         => $this->group('sitemap', $defaults['sitemap']),
+        return [
+            'indexProfiles' => $this->flag('indexProfiles', $defaults['indexProfiles']),
+            'indexArchives' => $this->group('indexArchives', $defaults['indexArchives']),
         ];
-
-        $sitemap = \is_array($this->sitemap) ? $this->sitemap : [];
-
-        // The only sitemap value that is not a switch, so it is clamped rather
-        // than coerced to a boolean by the group helper above.
-        $data['sitemap']['urlsPerPage'] = isset($sitemap['urlsPerPage'])
-            ? max(100, min(50000, (int) $sitemap['urlsPerPage']))
-            : $defaults['sitemap']['urlsPerPage'];
-
-        // Per-taxonomy sitemap inclusion, one level below the rest.
-        $postedArchives = \is_array($sitemap['archives'] ?? null) ? $sitemap['archives'] : [];
-        $data['sitemap']['archives'] = [];
-
-        foreach ($defaults['sitemap']['archives'] as $segment => $default) {
-            $data['sitemap']['archives'][$segment] = \array_key_exists($segment, $postedArchives)
-                ? self::toBool($postedArchives[$segment])
-                : $default;
-        }
-
-        return $data;
     }
 
     /**
@@ -125,14 +88,6 @@ final class UpdateSeoSettingsRequest extends Request
         $values = [];
 
         foreach ($defaults as $key => $default) {
-            // Nested maps and the numeric page size are handled by the caller;
-            // this helper only flattens switches.
-            if (\is_array($default) || \is_int($default)) {
-                $values[$key] = $default;
-
-                continue;
-            }
-
             $values[$key] = \array_key_exists($key, $input)
                 ? self::toBool($input[$key])
                 : $default;

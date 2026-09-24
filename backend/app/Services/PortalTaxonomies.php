@@ -39,24 +39,16 @@ final class PortalTaxonomies
      */
     public static function map(): array
     {
-        $map = [
+        // Every segment is always served: the sidebar links to stage archives
+        // and topic pages link to their terms, so an archive that 404s strands
+        // the portal's own links. Whether search sees one is isIndexable().
+        return [
             'topic'      => Taxonomies::TOPIC_TYPES->value,
             'department' => Taxonomies::DEPARTMENTS->value,
             'tag'        => Taxonomies::TAGS->value,
             'stage'      => Taxonomies::STAGES->value,
             'status'     => Taxonomies::STATUSES->value,
         ];
-
-        // A segment switched off in the SEO settings loses its route, not just
-        // its index entry — a hub nobody wants crawled is not a page worth
-        // serving either, and leaving the URL live would strand the links that
-        // point at it. Dropping it here also changes the rewrite pattern, which
-        // is what makes the rule rebuild itself.
-        return array_filter(
-            $map,
-            static fn ($segment) => SeoSettings::archiveEnabled($segment),
-            ARRAY_FILTER_USE_KEY
-        );
     }
 
     /**
@@ -72,8 +64,8 @@ final class PortalTaxonomies
      * archive per status is a thin, constantly-churning listing of topics
      * already indexed individually.
      *
-     * Every archive still works for visitors either way — indexing is a separate
-     * switch from whether the route is served.
+     * Every archive still works for visitors either way; one kept out of the
+     * index is marked noindex and left out of the sitemap.
      */
     public static function isIndexable(string $segment): bool
     {
@@ -87,16 +79,16 @@ final class PortalTaxonomies
     /**
      * Whether a segment's archives belong in the sitemap.
      *
-     * Reads the *filtered* indexability rather than the stored setting, so the
-     * two answers cannot disagree: a site that opens stage archives through
+     * Exactly the indexable ones, read *filtered*, so the two answers cannot
+     * disagree: a site that opens stage archives through
      * `bit_connect_archive_indexable` gets them advertised as well as indexed,
      * and one that closes a subject taxonomy through the same filter drops out
      * of the sitemap instead of being listed as a URL the head marks noindex.
+     * An indexable page left out of the sitemap would only be found later.
      */
     public static function isSitemapListed(string $segment): bool
     {
-        return self::isIndexable($segment)
-            && SeoSettings::sitemapArchiveEnabled($segment);
+        return self::isIndexable($segment);
     }
 
     /**

@@ -15,6 +15,7 @@ const EMPTY_DIAGNOSTICS: SeoDiagnostics = {
   portalIsPublic: false,
   portalUrl: '',
   publishedTopics: 0,
+  searchEnginesDiscouraged: false,
   seoPlugin: '',
   sitemapUrl: ''
 }
@@ -39,18 +40,9 @@ export default function useSeoSettings() {
         settings: {
           ...DEFAULT_SEO_SETTINGS,
           ...payload?.settings,
-          archives: { ...DEFAULT_SEO_SETTINGS.archives, ...payload?.settings?.archives },
           indexArchives: {
             ...DEFAULT_SEO_SETTINGS.indexArchives,
             ...payload?.settings?.indexArchives
-          },
-          sitemap: {
-            ...DEFAULT_SEO_SETTINGS.sitemap,
-            ...payload?.settings?.sitemap,
-            archives: {
-              ...DEFAULT_SEO_SETTINGS.sitemap.archives,
-              ...payload?.settings?.sitemap?.archives
-            }
           }
         } as SeoSettings
       }

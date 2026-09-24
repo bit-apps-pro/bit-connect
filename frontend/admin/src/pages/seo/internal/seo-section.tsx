@@ -1,39 +1,18 @@
-import { Switch, Typography } from 'antd'
+import { Typography } from 'antd'
 
 const { Text, Title } = Typography
 
-interface SeoToggle {
-  description: string
-  disabled?: boolean
-  key: string
-  label: string
-  value: boolean
-}
-
 interface SeoSectionProps {
   children?: React.ReactNode
-  disabled?: boolean
-  onChange?: (key: string, value: boolean) => void
   subtitle: string
   title: string
-  toggles?: SeoToggle[]
 }
 
 /**
- * A titled card of SEO controls.
- *
- * Takes a list of switches and/or arbitrary children, because these settings are
- * not uniformly boolean — archive visibility is a choice per taxonomy and the
- * sitemap page size is a number.
+ * A titled card of SEO controls. The controls themselves are SeoFieldRows, so
+ * every setting on the screen reads as one row in the same list shape.
  */
-export default function SeoSection({
-  children,
-  disabled = false,
-  onChange,
-  subtitle,
-  title,
-  toggles = []
-}: SeoSectionProps) {
+export default function SeoSection({ children, subtitle, title }: SeoSectionProps) {
   return (
     <div className="bc-mb-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-6">
       <div className="bc-mb-4">
@@ -42,29 +21,6 @@ export default function SeoSection({
         </Title>
         <Text type="secondary">{subtitle}</Text>
       </div>
-
-      {toggles.length > 0 && (
-        <div className="bc-grid bc-grid-cols-1 bc-gap-4 md:bc-grid-cols-3">
-          {toggles.map(toggle => (
-            <div
-              className="bc-flex bc-flex-1 bc-flex-col bc-justify-between bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4"
-              key={toggle.key}
-            >
-              <div className="bc-mb-4 bc-flex bc-items-center bc-justify-between bc-gap-2">
-                <Text strong>{toggle.label}</Text>
-                <Switch
-                  checked={toggle.value}
-                  disabled={disabled || toggle.disabled}
-                  onChange={checked => onChange?.(toggle.key, checked)}
-                />
-              </div>
-              <Text className="bc-text-sm" type="secondary">
-                {toggle.description}
-              </Text>
-            </div>
-          ))}
-        </div>
-      )}
 
       {children}
     </div>

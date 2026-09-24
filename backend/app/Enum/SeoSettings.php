@@ -32,21 +32,12 @@ enum SeoSettings: string
     public static function defaults(): array
     {
         return [
-            // Term archives, by URL segment. Switching one off removes the route
-            // as well as the index entry — a hub nobody wants crawled is not a
-            // page worth serving either.
-            'archives' => [
-                'topic'      => true,
-                'department' => true,
-                'tag'        => true,
-                'stage'      => true,
-                'status'     => true,
-            ],
-
-            // Which archives are offered to the index. Subject taxonomies are
-            // what people search for, and stage is what the sidebar navigates
-            // by; status is a workflow state nobody looks up and nothing links
-            // to, and its archives churn constantly.
+            // Which term archives, by URL segment, are offered to search: an
+            // indexable archive is also listed in the sitemap, and one that is
+            // not is still served to visitors, marked noindex. Subject
+            // taxonomies are what people search for, and stage is what the
+            // sidebar navigates by; status is a workflow state nobody looks up
+            // and nothing links to, and its archives churn constantly.
             'indexArchives' => [
                 'topic'      => true,
                 'department' => true,
@@ -61,26 +52,9 @@ enum SeoSettings: string
                 'status' => false,
             ],
 
-            // Routes that exist for people but not for the index.
-            'indexProfiles'   => false,
-            'indexPagination' => false,
-
-            // What the sitemap advertises, content type by content type — and
-            // for archives, taxonomy by taxonomy.
-            'sitemap' => [
-                'enabled'       => true,
-                'inRobotsTxt'   => true,
-                'includeHome'   => true,
-                'includeTopics' => true,
-                'urlsPerPage'   => 2000,
-                'archives'      => [
-                    'topic'      => true,
-                    'department' => true,
-                    'tag'        => true,
-                    'stage'      => true,
-                    'status'     => true,
-                ],
-            ],
+            // Member profiles publish names and activity, so indexing them is
+            // the site's call and off until it is made.
+            'indexProfiles' => false,
         ];
     }
 
@@ -103,32 +77,44 @@ enum SeoSettings: string
         // HTML; `ssrTopicLimit` is fixed in TopicsView; the two schema switches
         // are the `bit_connect_seo_json_ld` filter; `metaOwner` is gone because
         // a supported SEO plugin is stood down on portal routes — see
-        // SeoPluginBridge. A value saved back then is dropped rather than left
-        // to be read.
+        // SeoPluginBridge; paginated list pages are always indexable — see
+        // SeoMeta::forTopics(); the sitemap always publishes, lists everything
+        // and announces itself, following WordPress's own "discourage search
+        // engines" instead — see PortalSitemap. A value saved back then is
+        // dropped rather than left to be read.
         unset(
             $settings['serverRendering'],
             $settings['ssrTopicLimit'],
             $settings['schemaDiscussion'],
             $settings['schemaBreadcrumbs'],
-            $settings['metaOwner']
+            $settings['metaOwner'],
+            $settings['indexPagination'],
+            $settings['sitemap']
         );
 
         // Merged one level deep, so an option stored before a segment existed
         // still gets that segment's default rather than a missing key read as
         // "switched off".
-        foreach (['archives', 'indexArchives', 'sitemap'] as $group) {
-            $settings[$group] = array_merge(
-                self::defaults()[$group],
-                \is_array($settings[$group] ?? null) ? $settings[$group] : []
-            );
+        $settings['indexArchives'] = array_merge(
+            self::defaults()['indexArchives'],
+            \is_array($settings['indexArchives'] ?? null) ? $settings['indexArchives'] : []
+        );
+
+        // Archives once had two more switches: whether the route was served at
+        // all, and whether an indexable archive was listed in the sitemap. An
+        // archive that was switched off comes back served and noindex — the
+        // sidebar links to stage archives, so a 404 there broke the portal's own
+        // navigation, and noindex already keeps a page out of search. An
+        // indexable archive kept out of the sitemap is simply listed now.
+        $storedRoutes = \is_array($settings['archives'] ?? null) ? $settings['archives'] : [];
+
+        foreach ($storedRoutes as $segment => $served) {
+            if ($served === false && isset($settings['indexArchives'][$segment])) {
+                $settings['indexArchives'][$segment] = false;
+            }
         }
 
-        // The sitemap's own per-taxonomy map needs the same treatment one level
-        // further down.
-        $settings['sitemap']['archives'] = array_merge(
-            self::defaults()['sitemap']['archives'],
-            \is_array($settings['sitemap']['archives'] ?? null) ? $settings['sitemap']['archives'] : []
-        );
+        unset($settings['archives']);
 
         return $settings;
     }
@@ -138,56 +124,12 @@ enum SeoSettings: string
         return (bool) (self::all()[$key] ?? false);
     }
 
-
     /**
-     * Whether a term archive segment is served at all.
-     */
-    public static function archiveEnabled(string $segment): bool
-    {
-        return (bool) (self::all()['archives'][$segment] ?? false);
-    }
-
-    /**
-     * Whether a term archive may be indexed.
-     *
-     * An archive that is not served cannot be indexed either, so the route
-     * setting wins — otherwise switching a route off and its indexing on would
-     * advertise a URL that 404s.
+     * Whether a term archive is offered to search — indexed, and listed in the
+     * sitemap. Every archive is served to visitors either way.
      */
     public static function archiveIndexable(string $segment): bool
     {
-        return self::archiveEnabled($segment)
-            && (bool) (self::all()['indexArchives'][$segment] ?? false);
-    }
-
-    /**
-     * A sitemap sub-setting.
-     *
-     * @return mixed
-     */
-    public static function sitemap(string $key)
-    {
-        return self::all()['sitemap'][$key] ?? self::defaults()['sitemap'][$key] ?? null;
-    }
-
-    /**
-     * The sitemap's own per-taxonomy toggle, on its own.
-     *
-     * Deliberately *not* the whole answer: a noindex archive must never be
-     * listed, but that guard belongs where the `bit_connect_archive_indexable`
-     * filter can be read — see PortalTaxonomies::isSitemapListed(). Reading
-     * this alone would advertise an archive the head marks noindex.
-     */
-    public static function sitemapArchiveEnabled(string $segment): bool
-    {
-        return (bool) (self::all()['sitemap']['archives'][$segment] ?? false);
-    }
-
-    /**
-     * URLs per sitemap page, clamped to what a sitemap may legally carry.
-     */
-    public static function sitemapUrlsPerPage(): int
-    {
-        return max(100, min(50000, (int) self::sitemap('urlsPerPage')));
+        return (bool) (self::all()['indexArchives'][$segment] ?? false);
     }
 }
