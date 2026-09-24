@@ -206,7 +206,7 @@ export default function Settings() {
       <div className="bc-px-5">
         <SettingsSection
           disabled={isUpdatingSettings}
-          note={<TopicAccessExtras />}
+          note={TopicAccessExtras && <TopicAccessExtras />}
           onChange={(key, value) =>
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }

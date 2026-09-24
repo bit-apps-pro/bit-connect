@@ -1,20 +1,19 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
-
-import TopicAccessExtrasFree from './topic-access-extras.free'
-import TopicAccessExtrasPro from './topic-access-extras.pro'
+import { type ComponentType } from 'react'
 
 /**
- * Whatever sits below the Topic Access switches.
+ * Extra controls below the Topic Access switches, if a plugin adds any.
  *
- * Dispatch only. In this plugin the slot is empty. Another plugin that adds a
- * topic-access setting of its own — one it stores and serves itself — renders
- * its control here through the other sibling.
+ * A declaration, not a component: this plugin has no further topic-access
+ * setting, so there is nothing here to render and this says so by being `null`
+ * rather than by being a component that draws nothing. The settings screen
+ * checks before it renders, so an empty slot costs no markup — not even the
+ * margin that would sit above a control.
  *
- * The slot exists so the settings screen never has to know which of those it
- * is rendering, and so such a switch is not a row in this plugin's settings
- * array writing to this plugin's option — a control here for behaviour that
- * only exists elsewhere is exactly the shape the split removes.
+ * The slot exists because a topic-access control belongs under that grid
+ * rather than in it. A row in the grid writes to this plugin's settings blob
+ * through this plugin's endpoint; anything below it keeps its own option and
+ * its own endpoint, which is the whole difference.
  */
-export default function TopicAccessExtras() {
-  return IS_PRO_ACTIVE ? <TopicAccessExtrasPro /> : <TopicAccessExtrasFree />
-}
+const TopicAccessExtras: ComponentType | null = null
+
+export default TopicAccessExtras

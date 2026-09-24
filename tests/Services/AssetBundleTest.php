@@ -31,7 +31,7 @@ final class AssetBundleTest extends TestCase
     private const OFFERED = [
         'codeName'       => 'alpha',
         'codeNameClient' => 'beta',
-        'uri'            => 'https://example.com/wp-content/plugins/bit-connect-pro/assets',
+        'uri'            => 'https://example.com/wp-content/plugins/example-addon/assets',
     ];
 
     protected function setUp(): void

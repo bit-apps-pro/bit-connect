@@ -11,7 +11,7 @@ import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 import developmentServerOrigin from './scripts/development-server-origin.mjs'
-import proOverlay from './scripts/vite-plugin-pro-overlay.mjs'
+import overlay from './scripts/vite-plugin-overlay.mjs'
 
 const PLUGIN_SLUG = 'bit-connect'
 // The global the PHP side prints the server payload onto: Head.php writes
@@ -21,18 +21,15 @@ const PLUGIN_SLUG = 'bit-connect'
 // `window.undefined` and the admin app dies on its first config read.
 // Derived from the slug so it cannot drift from VAR_PREFIX.
 const DEFAULT_SERVER_VARIABLES = `${PLUGIN_SLUG.replace(/-/g, '_')}_`
-// One source tree, two builds. `VITE_PRO` only moves the output directory and
-// flips the `isPro()` literal — Rollup then folds the `.pro` branch of every
-// dispatch away, so the free bundle never contains pro code.
-const isPro = process.env.VITE_PRO === 'true'
-// Where the add-on's own modules live, when they are being built. The pro build
-// is driven from the private repository, so both the overlay and the output
-// directory sit outside this tree — see scripts/vite-plugin-pro-overlay.mjs.
-// Unset, every line below describes the free build exactly as before.
-const PRO_OVERLAY_DIR = process.env.BIT_PRO_OVERLAY_DIR
+// An optional second source tree whose modules replace this one's where their
+// paths match, used to build a variant of this plugin from these sources
+// without copying them — see scripts/vite-plugin-overlay.mjs. Both variables
+// are unset for a build of this plugin itself, and every line below then
+// describes that build exactly.
+const OVERLAY_DIR = process.env.BIT_OVERLAY_DIR
 const ASSETS_DIR = process.env.BIT_ASSETS_OUT_DIR
   ? path.resolve(process.env.BIT_ASSETS_OUT_DIR)
-  : path.resolve(import.meta.dirname, isPro ? 'pro/assets' : 'assets')
+  : path.resolve(import.meta.dirname, 'assets')
 const codeName = humanId({ capitalize: false, separator: '-' })
 
 // const getVersion = () => {
@@ -96,13 +93,7 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     define: {
-      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` }),
-      // The edition flag, inlined as a literal at its one read site
-      // (common/helpers/pro-access.ts) so every dispatch folds. A plain
-      // constant rather than a `VITE_*` variable: with `envPrefix` matching
-      // nothing, the `import.meta.env` object a library may serialise whole
-      // carries only Vite's built-in keys and says nothing about editions.
-      BIT_CONNECT_PRO_BUILD: JSON.stringify(isPro)
+      ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES || DEFAULT_SERVER_VARIABLES}` })
     },
     envPrefix: 'BIT_CONNECT_VITE_',
     plugins: [
@@ -118,9 +109,9 @@ export default defineConfig(({ command, mode }) => {
         jsxImportSource: '@emotion/react',
         jsxRuntime: 'automatic'
       }),
-      proOverlay({
+      overlay({
         appRoot: path.resolve(import.meta.dirname, 'frontend/admin'),
-        overlayDir: PRO_OVERLAY_DIR,
+        overlayDir: OVERLAY_DIR,
         mirrorRoot: path.resolve(import.meta.dirname, 'frontend')
       }),
       tsconfigPaths({

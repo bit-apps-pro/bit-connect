@@ -65,6 +65,11 @@ export default function SettingsSection({
         ))}
       </div>
 
+      {/*
+        The caller passes `note` only when something actually filled the slot —
+        an unconditional `<Slot />` element would be truthy however little it
+        drew, and this wrapper would then space out nothing.
+      */}
       {note && <div className="bc-mt-4">{note}</div>}
     </div>
   )

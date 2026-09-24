@@ -1,7 +1,6 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
-
-import useVisibilityOptionsFree from './use-visibility-options.free'
-import useVisibilityOptionsPro from './use-visibility-options.pro'
+import { __ } from '@common/helpers/i18nWrap'
+import { createElement as h } from 'react'
+import { LuGlobe } from 'react-icons/lu'
 
 export interface VisibilityOption {
   label: React.ReactNode
@@ -9,22 +8,33 @@ export interface VisibilityOption {
 }
 
 /**
+ * Public, and nothing else.
+ *
+ * A constant, built once: this plugin has no option, endpoint or setting for a
+ * topic visible only to its author, so there is no second choice for this to
+ * depend on — and not "Public, and Private greyed out", which would be a
+ * control with nothing behind it. The form hides the radio group entirely when
+ * only one option comes back, while still registering `publish`, so the request
+ * body is the same either way.
+ */
+const PUBLIC_ONLY: VisibilityOption[] = [
+  {
+    label: h(
+      'div',
+      { className: 'bc-flex bc-items-center bc-gap-2' },
+      h(LuGlobe, { size: 16 }),
+      __('Public Topic')
+    ),
+    value: 'publish'
+  }
+]
+
+/**
  * The visibility choices the topic form offers.
- *
- * An extension point rather than a branch. This plugin publishes topics, so its
- * implementation answers with Public and stops there — not "Public, and Private
- * greyed out", which would be a control with nothing behind it. This plugin has
- * no option, endpoint or setting for a topic visible only to its author; a
- * plugin that adds all three supplies the other sibling.
- *
- * Selected at module scope so the call site is a single unconditional hook call
- * and the rules of hooks still hold.
  *
  * @param currentStatus the status the topic already has, so an implementation
  *                      can keep offering a choice the topic is already using
  */
-const useVisibilityOptions: (currentStatus?: string) => VisibilityOption[] = IS_PRO_ACTIVE
-  ? useVisibilityOptionsPro
-  : useVisibilityOptionsFree
-
-export default useVisibilityOptions
+export default function useVisibilityOptions(_currentStatus?: string): VisibilityOption[] {
+  return PUBLIC_ONLY
+}

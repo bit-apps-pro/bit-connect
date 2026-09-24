@@ -1,19 +1,14 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
-
 import { type ProfileBadge } from '../shared/types'
-import useBadgesAdminFree from './use-badges-admin.free'
-import useBadgesAdminPro from './use-badges-admin.pro'
 
 export interface BadgesAdmin {
-  /** The catalog, in priority order. Empty unless another plugin keeps one. */
+  /** The catalog, in priority order. Empty unless a plugin keeps one. */
   catalog: ProfileBadge[]
   /**
    * Whether this install can author and assign badges at all.
    *
-   * The Manager table asks before drawing the Badges column. Without the
-   * add-on there is no catalog and never will be one in this build, so the
-   * column is not drawn — an always-empty column is not a column, it is a
-   * placeholder for something the plugin cannot do.
+   * The Manager table asks before drawing the Badges column. This plugin keeps
+   * no catalog, so the column is not drawn — an always-empty column is not a
+   * column, it is a placeholder for something the plugin cannot do.
    */
   hasBadgeCatalog: boolean
   isSavingBadges: boolean
@@ -23,15 +18,29 @@ export interface BadgesAdmin {
 }
 
 /**
+ * Nothing to fetch, nothing to save.
+ *
+ * A constant rather than a stubbed query — this plugin has no badge endpoints,
+ * so asking would be a guaranteed 404 on every Manager load.
+ */
+const EMPTY_CATALOG: BadgesAdmin['catalog'] = []
+
+/**
  * Everything the Manager screen needs to know about badges, in one hook.
  *
- * The page used to call `useProfileBadges` and `useUpdateUserBadges` directly,
- * which would have pulled both — and the pro-only endpoints they call — into
- * the free bundle. Selecting the implementation at module scope keeps the free
- * build free of them while leaving the call site a single unconditional hook
- * call, so the rules of hooks still hold: which implementation is chosen cannot
- * change while the app is running.
+ * The page could call the catalog and assignment hooks directly; it asks here
+ * instead so the screen has a single answer to "does this install do badges at
+ * all", and so the call site stays one unconditional hook call whatever that
+ * answer is.
  */
-const useBadgesAdmin: () => BadgesAdmin = IS_PRO_ACTIVE ? useBadgesAdminPro : useBadgesAdminFree
-
-export default useBadgesAdmin
+export default function useBadgesAdmin(): BadgesAdmin {
+  return {
+    catalog: EMPTY_CATALOG,
+    hasBadgeCatalog: false,
+    isSavingBadges: false,
+    maxPerMember: 0,
+    saveUserBadges: async () => {
+      /* No catalog to assign from, and no Badges column that could ask. */
+    }
+  }
+}
