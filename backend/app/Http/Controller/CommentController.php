@@ -29,6 +29,7 @@ use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
 use BitApps\BitConnect\Services\TopicService;
@@ -354,6 +355,12 @@ final class CommentController
         // record — afterwards there is nothing left to count.
         $deleted = ContentRemovalService::describe(ReportService::TARGET_COMMENT, (int) $commentId);
         $deletedAuthor = (int) $comment->user_id;
+        $topic = get_post((int) $comment->comment_post_ID);
+        $notice = [
+            'topic_title' => $topic ? (string) $topic->post_title : '',
+            'excerpt'     => ActivityLogService::excerpt($comment->comment_content),
+            'url'         => PortalLocation::topicUrl((int) $comment->comment_post_ID),
+        ];
 
         if (!ContentRemovalService::remove(ReportService::TARGET_COMMENT, (int) $commentId)) {
             return Response::error('Failed to delete comment', 500);
@@ -366,6 +373,22 @@ final class CommentController
             $deletedAuthor,
             $deleted
         );
+
+        // A moderator removing someone's comment is the same event as a report
+        // upheld with removal, and the author is owed the same notice. Without
+        // it the comment simply vanished. Addressed explicitly because the
+        // comment the default audience would be read from is already gone;
+        // the dispatcher drops the actor, so deleting your own tells nobody.
+        if ($deletedAuthor > 0) {
+            NotificationService::dispatch(
+                NotificationTypes::CONTENT_ACTIONED,
+                NotificationService::TARGET_COMMENT,
+                (int) $commentId,
+                $notice,
+                (int) $comment->comment_post_ID,
+                [$deletedAuthor]
+            );
+        }
 
         return Response::success(['id' => (int) $commentId]);
     }

@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\ContentRemovalService;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ReportService;
 use InvalidArgumentException;
 
@@ -315,7 +316,7 @@ final class ReportController
             'topic_id'    => $targetId,
             'topic_title' => (string) $post->post_title,
             'excerpt'     => ActivityLogService::excerpt($post->post_content),
-            'url'         => (string) get_permalink($post),
+            'url'         => PortalLocation::topicUrl($post),
         ];
     }
 

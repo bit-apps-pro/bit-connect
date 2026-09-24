@@ -25,6 +25,7 @@ use BitApps\BitConnect\Services\NotificationPreferences;
 use BitApps\BitConnect\Services\NotificationRecipients;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TopicSeoService;
@@ -384,6 +385,23 @@ final class TopicController
             $deleted
         );
 
+        // Same notice a report upheld with removal sends. Addressed explicitly:
+        // the topic the default audience would be read from is already gone.
+        // The dispatcher drops the actor, so deleting your own tells nobody.
+        if ($deletedAuthor > 0) {
+            NotificationService::dispatch(
+                NotificationTypes::CONTENT_ACTIONED,
+                NotificationService::TARGET_TOPIC,
+                (int) $id,
+                [
+                    'topic_title' => (string) $deleted['post_title'],
+                    'excerpt'     => (string) $deleted['post_content'],
+                ],
+                (int) $id,
+                [$deletedAuthor]
+            );
+        }
+
         return Response::success(
             [
                 'message'  => 'Topic deleted successfully',
@@ -432,7 +450,7 @@ final class TopicController
             'excerpt'     => ActivityLogService::excerpt(
                 wp_strip_all_tags((string) ($topic['post_content'] ?? ''))
             ),
-            'url' => (string) ($topic['permalink'] ?? ''),
+            'url' => PortalLocation::topicUrl((int) ($topic['ID'] ?? 0)),
         ];
 
         // Named before announced, and the names are then excluded below. Being
@@ -523,7 +541,7 @@ final class TopicController
             [
                 'topic_title' => (string) ($after['post_title'] ?? ''),
                 'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags($now)),
-                'url'         => (string) ($after['permalink'] ?? ''),
+                'url'         => PortalLocation::topicUrl((int) ($after['ID'] ?? 0)),
             ],
             $id,
             $mentioned
@@ -581,7 +599,7 @@ final class TopicController
                     'status' => $this->termName($existingTopic, 'statuses'),
                     'stage'  => $this->termName($existingTopic, 'stages'),
                 ],
-                'url' => (string) ($after['permalink'] ?? ''),
+                'url' => PortalLocation::topicUrl((int) ($after['ID'] ?? 0)),
             ],
             $id
         );

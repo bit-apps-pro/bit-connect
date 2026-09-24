@@ -581,6 +581,26 @@ final class NotificationService
         $type = NotificationTypes::tryFrom((string) $row->type);
         $actor = (int) $row->actor_id > 0 ? get_userdata((int) $row->actor_id) : false;
         $context = \is_string($row->context) ? json_decode($row->context, true) : null;
+        $context = \is_array($context) ? $context : [];
+        $exists = self::targetExists((string) $row->target_type, (int) $row->target_id);
+
+        // Built now rather than trusted from the row: the stored link froze the
+        // portal's address at the moment of the event, and older rows carry the
+        // post type's own permalink, which the portal's router has no route for.
+        // A removed comment still has a thread to open, so the row falls back
+        // to its topic; with the topic gone too there is nowhere to go, and a
+        // link would only lead to a 404.
+        $liveUrl = $exists ? self::targetUrl((string) $row->target_type, (int) $row->target_id) : '';
+
+        if ($liveUrl === '' && (int) $row->topic_id > 0) {
+            $liveUrl = PortalLocation::topicUrl((int) $row->topic_id);
+        }
+
+        if ($liveUrl !== '') {
+            $context['url'] = $liveUrl;
+        } elseif (\in_array((string) $row->target_type, [self::TARGET_COMMENT, self::TARGET_TOPIC], true)) {
+            $context['url'] = '';
+        }
 
         return [
             'id'         => (int) $row->id,
@@ -604,16 +624,33 @@ final class NotificationService
             'target' => [
                 'type'   => (string) $row->target_type,
                 'id'     => (int) $row->target_id,
-                'exists' => self::targetExists((string) $row->target_type, (int) $row->target_id),
+                'exists' => $exists,
             ],
             'topic_id' => (int) $row->topic_id,
-            'context'  => \is_array($context) ? $context : [],
+            'context'  => $context,
             // How many times this collapsed event happened. 1 for everything
             // that is not a vote.
             'count'      => max(1, (int) $row->event_count),
             'read'       => $row->read_at !== null,
             'created_at' => (string) $row->created_at,
         ];
+    }
+
+    /**
+     * The portal address of a topic or comment, or '' for targets that are not
+     * posts — those keep whatever link their event stored.
+     */
+    private static function targetUrl(string $targetType, int $targetId): string
+    {
+        if ($targetType === self::TARGET_COMMENT) {
+            return PortalLocation::commentUrl($targetId);
+        }
+
+        if ($targetType === self::TARGET_TOPIC) {
+            return PortalLocation::topicUrl($targetId);
+        }
+
+        return '';
     }
 
     private static function targetExists(string $targetType, int $targetId): bool

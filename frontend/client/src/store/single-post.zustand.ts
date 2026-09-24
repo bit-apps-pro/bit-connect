@@ -11,7 +11,7 @@ import { toggleVoteApi } from './data/toggle-vote-api'
 import { updateCommentApi } from './data/update-comment-api'
 import { sortHierarchicalComments, transformTopicCommentsToComments } from './helper/post-commons'
 import { syncTopicVote } from './helper/topic-vote-sync'
-import { syncVotesReceived } from './helper/user-stats-sync'
+import { refreshContributions, syncVotesReceived } from './helper/user-stats-sync'
 import { flipVote, type Vote } from './helper/vote-flip'
 import { type SinglePostStore } from './single-post.type'
 
@@ -52,6 +52,7 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
 
     try {
       const newComment = await createCommentApi(content, currentPost.ID, parentId, attachmentIds)
+      refreshContributions()
       newComment.vote = { ...defaultVoteState }
       const existingComments = get().comments
       const updatedComments = [...existingComments, newComment]
@@ -75,6 +76,7 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
 
     try {
       await deleteCommentApi(commentId)
+      refreshContributions()
 
       // Remove the comment and any of its children from the flat comments array
       const commentIdStr = commentId.toString()

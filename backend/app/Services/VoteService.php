@@ -82,7 +82,7 @@ class VoteService
             $postId,
             [
                 'topic_title' => (string) $post->post_title,
-                'url'         => (string) get_permalink($post),
+                'url'         => PortalLocation::topicUrl($post),
             ],
             $postId
         );
