@@ -67,7 +67,7 @@ Route::get('comments-delete/{id}', [CommentController::class, 'delete']);
 Route::get('mentions/search', [MentionController::class, 'search']);
 
 // Reports. Filing is open to any forum participant (CreateReportRequest);
-// the queue and resolution are forum_moderate.
+// the queue and resolution are bit_connect_forum_moderate.
 Route::post('reports', [ReportController::class, 'create']);
 Route::get('reports/reasons', [ReportController::class, 'reasons']);
 Route::get('reports', [ReportController::class, 'queue']);
@@ -83,7 +83,7 @@ Route::post('notifications/read', [NotificationController::class, 'markRead']);
 Route::get('notification-preferences', [NotificationController::class, 'preferences']);
 Route::post('notification-preferences', [NotificationController::class, 'savePreferences']);
 
-// Forum-wide notification settings (forum_manage — enforced in each Request).
+// Forum-wide notification settings (bit_connect_forum_manage — enforced in each Request).
 // Separate from notification-preferences above, which is a member answering for
 // themselves; these decide what the forum is allowed to send at all.
 Route::get('notification-settings', [NotificationSettingsController::class, 'get']);
@@ -96,13 +96,12 @@ Route::post('notification-settings/test-email', [NotificationSettingsController:
 Route::post('follows/toggle', [FollowController::class, 'toggle']);
 Route::get('follows', [FollowController::class, 'mine']);
 
-// Activity log — who did what to content they did not write. forum_moderate,
+// Activity log — who did what to content they did not write. bit_connect_forum_moderate,
 // enforced in GetActivityLogRequest::authorize().
 Route::get('activity-log', [ActivityLogController::class, 'feed']);
 Route::get('activity-log/actions', [ActivityLogController::class, 'actions']);
 
-// Votes. Topics only — upvoting an individual reply ships in the Bit Connect
-// Pro add-on, which registers its own routes for it.
+// Votes. Topics only — this plugin has no route for voting on a reply.
 Route::post('posts/{id}/vote', [VoteController::class, 'togglePostVote']);
 Route::get('posts/{id}/votes', [VoteController::class, 'getPostVotes']);
 
@@ -157,7 +156,7 @@ Route::post('settings/update', [AdminSettingsController::class, 'update']);
 Route::get('general-settings', [GeneralSettingsController::class, 'get']);
 Route::post('general-settings/update', [GeneralSettingsController::class, 'update']);
 
-// SEO Settings Routes (forum_manage cap required)
+// SEO Settings Routes (bit_connect_forum_manage cap required)
 Route::get('seo-settings', [SeoSettingsController::class, 'get']);
 Route::post('seo-settings/update', [SeoSettingsController::class, 'update']);
 
@@ -186,15 +185,15 @@ Route::post('auth/forgot-password', [AuthApiController::class, 'forgotPassword']
 Route::get('auth-settings', [AuthSettingsController::class, 'get']);
 Route::post('auth-settings/update', [AuthSettingsController::class, 'update']);
 
-// Capability Settings Routes (forum_manage cap required)
+// Capability Settings Routes (bit_connect_forum_manage cap required)
 Route::get('capability-settings', [CapabilitySettingsController::class, 'get']);
 Route::post('capability-settings/update', [CapabilitySettingsController::class, 'update']);
 
-// User Management Routes (forum_manage cap required)
+// User Management Routes (bit_connect_forum_manage cap required)
 Route::get('users', [UserManagementController::class, 'getUsers']);
-// Granting a per-user override is the add-on's route, in the add-on's
-// namespace — this plugin has no code that writes a user-level capability.
-// Reset only ever removes, so it needs neither.
+// This plugin has no route that writes a user-level capability; its model is
+// per role. Reset only ever removes, so an administrator can always take back
+// an override however it got there.
 Route::post('users/{id}/capabilities/reset', [UserManagementController::class, 'resetUserCapabilities']);
 
 // There are no profile-badge routes here. The badges a member *wears* ride on

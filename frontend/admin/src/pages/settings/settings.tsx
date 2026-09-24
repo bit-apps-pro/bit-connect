@@ -206,7 +206,7 @@ export default function Settings() {
       <div className="bc-px-5">
         <SettingsSection
           disabled={isUpdatingSettings}
-          note={<TopicAccessExtras />}
+          note={TopicAccessExtras && <TopicAccessExtras />}
           onChange={(key, value) =>
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }
@@ -224,7 +224,7 @@ export default function Settings() {
           title={__('Topic Form Fields')}
         />
         {/* Takes nothing from this form: this plugin stores no moderation
-            setting. The add-on's section reads and saves its own. */}
+            setting. Another plugin's section would read and save its own. */}
         <ModerationSection />
         <SettingsSection
           disabled={isUpdatingSettings}

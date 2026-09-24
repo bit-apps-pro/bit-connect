@@ -27,11 +27,11 @@ final class AdminSettingsController
 
         $defaults = $this->getDefaultSettings();
         // Built from the groups this plugin implements and nothing else. The
-        // stored option may hold more — the add-on keeps its own switches under
-        // topicAccess, and an older build of this plugin wrote a `moderation`
-        // group — but neither is a setting this plugin acts on, so neither is
-        // reported: a flag here for a feature this plugin does not implement
-        // would describe a control that has nothing behind it.
+        // stored option may hold more — another plugin may keep its own keys
+        // under topicAccess, and an older build of this plugin wrote a
+        // `moderation` group — but neither is a setting this plugin acts on,
+        // so neither is reported: a flag here for a feature this plugin does
+        // not implement would describe a control that has nothing behind it.
         $response = [
             'topicAccess' => array_merge(
                 $defaults['topicAccess'],
@@ -83,8 +83,7 @@ final class AdminSettingsController
      * These groups are the whole of this screen as this plugin knows it. There
      * is no moderation group and no switch for upvoting individual replies or
      * for private topics, and none is missing either — none of those is
-     * implemented here, so there is nothing for a setting to control. The
-     * add-on brings each feature together with its own setting.
+     * implemented here, so there is nothing for a setting to control.
      */
     private function getDefaultSettings()
     {

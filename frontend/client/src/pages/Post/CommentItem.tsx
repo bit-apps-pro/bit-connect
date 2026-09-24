@@ -9,7 +9,7 @@ import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
 import { App as AntApp, Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { LuEyeOff, LuPin } from 'react-icons/lu'
 import { Link } from 'react-router'
 
@@ -21,7 +21,6 @@ import { flattenReplies, getVisualDepth, MAX_VISUAL_DEPTH, repliesContain } from
 
 import CommentEditor from './CommentEditor'
 import styles from './CommentThread.module.css'
-import CommentVoteBox from './CommentVoteBox'
 import ContentBox from './ContentBox'
 import useCommentPinItem from './data/use-comment-pin-item'
 import AttachmentList from './ui/attachment-list'
@@ -34,7 +33,8 @@ interface CommentItemProps {
   onDelete?: (commentId: number) => void
   onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
   onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
-  onVote?: (commentId: number) => void
+  /** Draws the upvote control for this reply, when the forum offers one. */
+  renderVote?: (comment: Comment) => ReactNode
   replyParentId?: number
   /** Who opened the topic — the only member who may pin a reply in it. */
   topicAuthorId: number
@@ -49,7 +49,7 @@ export default function CommentItem({
   onDelete,
   onEdit,
   onReply,
-  onVote,
+  renderVote,
   replyParentId,
   topicAuthorId,
   topicSlug,
@@ -90,12 +90,6 @@ export default function CommentItem({
     setShowReplyEditor(false)
   }
 
-  const handleVote = () => {
-    if (onVote) {
-      onVote(comment.id)
-    }
-  }
-
   const handleEdit = (content: string, attachments?: WPAttachmentData[]) => {
     if (onEdit) {
       onEdit(comment.id, content, attachments)
@@ -132,12 +126,12 @@ export default function CommentItem({
   const avatarSize = avatarSizes[visualDepth] ?? 22
 
   // Same rule the server applies in CommentController. The two halves are not
-  // symmetrical and that is the design: forum_delete_any removes anyone's
+  // symmetrical and that is the design: bit_connect_forum_delete_any removes anyone's
   // reply, while editing never leaves the author. A moderator who thinks a
   // reply has to go removes it; nothing rewrites it in the author's name.
   const isOwner = user?.id && comment.userId && user.id === comment.userId
-  const canEdit = Boolean(isOwner && can('forum_edit_own_comment'))
-  const canDelete = can('forum_delete_any') || Boolean(isOwner && can('forum_delete_own_comment'))
+  const canEdit = Boolean(isOwner && can('bit_connect_forum_edit_own_comment'))
+  const canDelete = can('bit_connect_forum_delete_any') || Boolean(isOwner && can('bit_connect_forum_delete_own_comment'))
 
   // A reply opens with the author already named. Under a nested thread "Reply"
   // is ambiguous on its own: the answer lands beside three others, and past the
@@ -340,7 +334,7 @@ export default function CommentItem({
                       Same chip as the topic header's, because it is the same
                       fact about a smaller thing; a warning-yellow Tag here and a
                       grey chip up there made one state look like two. */}
-                  {comment.hidden && (isOwner || can('forum_moderate')) && (
+                  {comment.hidden && (isOwner || can('bit_connect_forum_moderate')) && (
                     <span
                       className="bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-2 bc-py-0.5 bc-text-[11px] bc-font-medium bc-text-ink"
                       title={__('Out of public view while a moderator reviews a report about it')}
@@ -371,24 +365,25 @@ export default function CommentItem({
 
               {/* Actions */}
               <div className={styles.commentActions}>
-                {onVote && (
-                  <CommentVoteBox isVote={comment.hasVoted} onVote={handleVote} votes={comment.votes} />
+                {renderVote?.(comment)}
+                {/* No handler means the thread takes no replies (a locked topic). */}
+                {onReply && (
+                  <Button
+                    className={`${styles.actionButton} ${styles.actionMeta}`}
+                    icon={<MessageOutlined style={{ fontSize: '12px' }} />}
+                    onClick={() => {
+                      if (!isLoggedIn) {
+                        openLoginWarning()
+                        return
+                      }
+                      setShowReplyEditor(!showReplyEditor)
+                    }}
+                    size="small"
+                    type="text"
+                  >
+                    {__('Reply')}
+                  </Button>
                 )}
-                <Button
-                  className={`${styles.actionButton} ${styles.actionMeta}`}
-                  icon={<MessageOutlined style={{ fontSize: '12px' }} />}
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      openLoginWarning()
-                      return
-                    }
-                    setShowReplyEditor(!showReplyEditor)
-                  }}
-                  size="small"
-                  type="text"
-                >
-                  {__('Reply')}
-                </Button>
                 {/* Out in the row rather than in the menu beside it: a link to
                     one reply is the thing people leave a thread to send, and
                     it is offered to everyone — the menu can be empty for a
@@ -495,7 +490,7 @@ export default function CommentItem({
                       onDelete={onDelete}
                       onEdit={onEdit}
                       onReply={onReply}
-                      onVote={onVote}
+                      renderVote={renderVote}
                       replyParentId={childrenAtMaxDepth ? comment.id : undefined}
                       topicAuthorId={topicAuthorId}
                       topicSlug={topicSlug}

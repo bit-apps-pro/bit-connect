@@ -43,6 +43,13 @@ class WpdbDouble
      */
     public $failWrites = false;
 
+    /**
+     * The per-site table prefix, which the capabilities meta key is built from.
+     */
+    public function get_blog_prefix(): string
+    {
+        return $this->prefix;
+    }
 
     /**
      * Interpolates the placeholders the plugin uses, so a test can read the
@@ -50,17 +57,18 @@ class WpdbDouble
      * to a database.
      *
      * @param mixed ...$args
+     * @param mixed $query
      */
     public function prepare($query, ...$args)
     {
-        if (\count($args) === 1 && \is_array($args[0])) {
+        if (count($args) === 1 && is_array($args[0])) {
             $args = $args[0];
         }
 
         foreach ($args as $value) {
             $query = preg_replace(
                 '/%[dfs]/',
-                \is_int($value) || \is_float($value) ? (string) $value : "'" . $value . "'",
+                is_int($value) || is_float($value) ? (string) $value : "'" . $value . "'",
                 (string) $query,
                 1
             );
@@ -72,6 +80,8 @@ class WpdbDouble
     /**
      * Runs the one hand-written statement the plugin issues: the collapse
      * bump. Anything else is recorded and reported as no rows affected.
+     *
+     * @param mixed $query
      *
      * @return false|int
      */
@@ -105,6 +115,8 @@ class WpdbDouble
     }
 
     /**
+     * @param mixed $query
+     *
      * @return null|string
      */
     public function get_var($query)
@@ -119,6 +131,7 @@ class WpdbDouble
      * @param array<string, mixed> $where
      * @param null|array<int, string> $format
      * @param null|array<int, string> $whereFormat
+     * @param mixed $table
      *
      * @return false|int rows affected
      */
@@ -151,6 +164,7 @@ class WpdbDouble
     /**
      * @param array<string, mixed> $where
      * @param null|array<int, string> $whereFormat
+     * @param mixed $table
      *
      * @return false|int rows affected
      */
@@ -184,6 +198,8 @@ class WpdbDouble
     /**
      * Which seeded store a table name addresses. Follows is the default so the
      * existing follow tests keep reading the store they always did.
+     *
+     * @param mixed $table
      */
     private function storeFor($table): string
     {

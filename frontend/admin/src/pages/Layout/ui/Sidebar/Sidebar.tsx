@@ -16,9 +16,9 @@ const { Sider } = Layout
  * only 403 on arrival.
  *
  * Mirrors Menu.php, which gates the WordPress menu the same way: everything
- * here is forum_manage except the two moderation screens. Without the split, a
- * moderator holding only forum_moderate would see a settings menu they cannot
- * open, and an administrator without forum_moderate would see a queue that
+ * here is bit_connect_forum_manage except the two moderation screens. Without the split, a
+ * moderator holding only bit_connect_forum_moderate would see a settings menu they cannot
+ * open, and an administrator without bit_connect_forum_moderate would see a queue that
  * refuses them.
  */
 const navItems: { label: string; path: string; requires: 'manage' | 'moderate' }[] = [
@@ -36,7 +36,7 @@ const navItems: { label: string; path: string; requires: 'manage' | 'moderate' }
   { label: __('Notifications'), path: '../notifications', requires: 'manage' },
   { label: __('SEO'), path: '../seo', requires: 'manage' },
   { label: __('Settings'), path: '../settings', requires: 'manage' },
-  // Last, and forum_manage: it is the one screen here that is about the plugin
+  // Last, and bit_connect_forum_manage: it is the one screen here that is about the plugin
   // rather than about the forum.
   { label: __('Support'), path: '../support', requires: 'manage' }
 ]

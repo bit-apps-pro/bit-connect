@@ -1,17 +1,20 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
+import { type ReactNode } from 'react'
 
 import { type UserBadgesPopoverProps } from '../shared/types'
-import UserBadgesPopoverFree from './user-badges-popover.free'
-import UserBadgesPopoverPro from './user-badges-popover.pro'
 
 /**
- * The Badges cell in a user row.
+ * The Badges cell in a user row: there is no cell.
  *
- * Dispatch only — see the two siblings. `IS_PRO_ACTIVE` folds to a literal
- * `false` in the free build (the bundle flag is the left half of the `&&`), so
- * Rollup drops the pro cell and everything it imports from the free bundle
- * entirely.
+ * The column itself is not drawn — `useBadgesAdmin` reports no catalog and the
+ * Manager table leaves the track out entirely — so nothing renders this.
+ *
+ * No empty column is drawn in its place either. A column that can never hold
+ * anything is not a column; it is an advert with a table's chrome on.
+ *
+ * It still takes the cell's props so the call site stays typed against what a
+ * Badges cell needs, rather than against the fact that this one draws nothing.
  */
-export default function UserBadgesPopover(props: UserBadgesPopoverProps) {
-  return IS_PRO_ACTIVE ? <UserBadgesPopoverPro {...props} /> : <UserBadgesPopoverFree />
+export default function UserBadgesPopover(_props: UserBadgesPopoverProps): ReactNode {
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

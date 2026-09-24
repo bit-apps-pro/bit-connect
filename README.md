@@ -123,13 +123,17 @@ through the whole setup, including wp-cli.
 
 Some features are provided by **Bit Connect Pro**, a separate add-on plugin that
 is not hosted on WordPress.org and whose source is not in this repository.
-Everything in the free plugin works without it.
+Everything in this plugin works without it, and nothing here is held back for
+it: there is no licence check, no feature flag and no disabled control anywhere
+in this tree. Where the add-on adds something, the module here is simply the
+whole of what this plugin does — see `useVisibilityOptions`, which offers Public
+because this plugin publishes topics and has no other visibility to offer.
 
-You will see a few `*.pro.tsx` placeholder modules in the admin source. They
-exist so the import graph resolves: each free screen dispatches on
-`IS_PRO_ACTIVE`, which is a compile-time `false` in this build, so the bundler
-removes the placeholder and its branch entirely. Nothing in `assets/` comes from
-them — they carry no implementation to begin with.
+The add-on is built from these sources plus its own private tree, by resolving
+some module paths to that tree instead of to this one
+(`scripts/vite-plugin-overlay.mjs`). That build is driven entirely from the
+private repository; nothing in this one refers to it, and a clone of this
+repository builds this plugin and nothing else.
 
 ## Contributing
 

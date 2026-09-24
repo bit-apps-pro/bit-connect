@@ -82,7 +82,7 @@ class UserStatsService
             return;
         }
 
-        $cacheKey = Config::VAR_PREFIX . 'user_stats_' . $userId;
+        $cacheKey = 'bit_connect_user_stats_' . $userId;
         $cached = get_transient($cacheKey);
 
         if (\is_array($cached)) {
@@ -109,7 +109,7 @@ class UserStatsService
      */
     public static function forget($userId): void
     {
-        delete_transient(Config::VAR_PREFIX . 'user_stats_' . (int) $userId);
+        delete_transient('bit_connect_user_stats_' . (int) $userId);
     }
 
     /**
@@ -279,10 +279,9 @@ class UserStatsService
         );
 
         // Votes on their topics, which is every vote this forum knows how to
-        // cast. Upvoting a reply belongs to the add-on, so the replies half of
-        // this total is the add-on's to add — see ExtensionPoints. With
-        // nothing listening the figure is a true count of what this forum
-        // offers rather than a partial one.
+        // cast. Anything else a member can receive is another plugin's to add
+        // — see ExtensionPoints. With nothing listening the figure is a true
+        // count of what this forum offers rather than a partial one.
         return ExtensionPoints::votesReceived($onTopics, $userId);
     }
 }

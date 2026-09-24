@@ -70,18 +70,18 @@ export default function PostHeader({
   // role and take them away from an administrator, so asking for the cap is the
   // only reading that matches what TopicController will accept.
   //
-  // Running the queue and moving a status is forum_moderate; removing a topic
-  // is forum_delete_any. There is no third power here: rewording somebody
+  // Running the queue and moving a status is bit_connect_forum_moderate; removing a topic
+  // is bit_connect_forum_delete_any. There is no third power here: rewording somebody
   // else's topic is not something this forum grants to anyone.
-  const canModerate = can('forum_moderate')
-  const canDeleteAny = can('forum_delete_any')
+  const canModerate = can('bit_connect_forum_moderate')
+  const canDeleteAny = can('bit_connect_forum_delete_any')
   const isOwner = user?.id && post.post_author && user.id === Number(post.post_author)
   // Mirrors TopicController::update() — the author, at any status. The status
   // no longer narrows this: it used to close the author's window once a
   // moderator moved the topic on, which only made sense while a moderator could
   // still correct it afterwards.
-  const canEditPost = Boolean(isOwner && can('forum_edit_own_post'))
-  const canDeletePost = canDeleteAny || Boolean(isOwner && can('forum_delete_own_post'))
+  const canEditPost = Boolean(isOwner && can('bit_connect_forum_edit_own_post'))
+  const canDeletePost = canDeleteAny || Boolean(isOwner && can('bit_connect_forum_delete_own_post'))
 
   useEffect(() => {
     if (allStatuses.length === 0) {
@@ -113,7 +113,7 @@ export default function PostHeader({
           <span
             aria-hidden
             className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
-            style={{ backgroundColor: status.meta?.color || '#d9d9d9' }}
+            style={{ backgroundColor: status.meta?.bit_connect_color || '#d9d9d9' }}
           />
           {status.name}
         </span>

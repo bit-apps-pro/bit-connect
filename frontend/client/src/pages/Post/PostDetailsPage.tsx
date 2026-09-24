@@ -7,7 +7,7 @@ import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
 import { normalizeAttachments, type TopicAttachmentInfo } from '@features/topic-modal/shared/type'
 import { isSameSlug } from '@utils/slug'
-import { Button, Flex, Space, Tag, Typography } from 'antd'
+import { Alert, Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
@@ -89,7 +89,7 @@ export default function PostDetailsPage() {
 
   const handlePostVote = async () => {
     if (!post?.ID) return
-    requireCapability('forum_vote_post', async () => {
+    requireCapability('bit_connect_forum_vote_post', async () => {
       try {
         await toggleVote(post.ID)
       } catch (error_) {
@@ -101,7 +101,7 @@ export default function PostDetailsPage() {
   }
 
   const handlePostComment = async (content: string, attachments?: WPAttachmentData[]) => {
-    requireCapability('forum_create_comment', async () => {
+    requireCapability('bit_connect_forum_create_comment', async () => {
       try {
         await createComment(
           content,
@@ -177,15 +177,14 @@ export default function PostDetailsPage() {
 
   const totalCommentCount = countComments(transformedComments)
   const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
-  // Empty unless the add-on supplies it, in which case it brings
-  // the handler that casts the vote. See use-comment-vote.ts.
-  const { onVote: handleCommentVote } = useCommentVote()
+  // Empty unless something supplies a control to draw. See use-comment-vote.ts.
+  const { renderVote } = useCommentVote()
 
   // A member the role settings deny cannot vote; a disabled control says so up
   // front rather than a 400 after the click. A guest keeps a live control, and
   // the click asks them to sign in. Replies have no such check here: upvoting
   // one is the add-on's feature, and its handler brings its own gate.
-  const memberMayVotePost = !isLoggedIn || can('forum_vote_post')
+  const memberMayVotePost = !isLoggedIn || can('bit_connect_forum_vote_post')
 
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
@@ -305,10 +304,21 @@ export default function PostDetailsPage() {
               <CommentSortSelect onChange={setSortOption} value={sortOption} />
             </Flex>
 
-            {canComment && (
-              <LoginGate message={__('Log in to post a comment.')}>
-                <CommentEditor onSubmit={handlePostComment} />
-              </LoginGate>
+            {/* A locked topic says so where the editor would be, instead of
+              offering a box the server will refuse. */}
+            {post.is_locked ? (
+              <Alert
+                className="bc-mb-4"
+                message={__('This topic is locked. New comments are closed.')}
+                showIcon
+                type="info"
+              />
+            ) : (
+              canComment && (
+                <LoginGate message={__('Log in to post a comment.')}>
+                  <CommentEditor onSubmit={handlePostComment} />
+                </LoginGate>
+              )
             )}
 
             <CommentList
@@ -319,8 +329,8 @@ export default function PostDetailsPage() {
               onDelete={handleDeleteComment}
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
-              onReply={handleReply}
-              onVote={handleCommentVote}
+              onReply={post.is_locked ? undefined : handleReply}
+              renderVote={renderVote}
               sortOption={sortOption}
               topicAuthorId={Number(post.post_author) || 0}
               topicSlug={post.post_name}

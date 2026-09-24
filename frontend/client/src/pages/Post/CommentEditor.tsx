@@ -387,7 +387,7 @@ export default function CommentEditor({
 
   // The server refuses the comment anyway; an editor shown to a member the role
   // settings deny only sets up a 400 after they have written their reply.
-  if (isLoggedIn && !can('forum_create_comment')) {
+  if (isLoggedIn && !can('bit_connect_forum_create_comment')) {
     return (
       <div className={styles.commentEditorWrapper}>
         <Alert message={__('Your account does not have permission to comment.')} showIcon type="info" />

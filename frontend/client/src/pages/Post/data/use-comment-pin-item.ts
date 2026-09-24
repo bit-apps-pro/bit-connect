@@ -1,10 +1,6 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
 import { type MenuProps } from 'antd'
 
 import { type Comment } from '@/types/post'
-
-import useCommentPinItemFree from './use-comment-pin-item.free'
-import useCommentPinItemPro from './use-comment-pin-item.pro'
 
 export interface CommentPinContext {
   comment: Comment
@@ -22,18 +18,12 @@ export interface CommentPinContext {
 export type CommentPinItem = NonNullable<MenuProps['items']>[number] | undefined
 
 /**
- * The "Pin"/"Unpin" entry for a reply's ⋯ menu, when the forum has pinning.
+ * The reply's ⋯ menu gains no pin entry.
  *
- * An extension point rather than a branch: this plugin has no pin action to
- * gate, so the free implementation does not hide an entry — there is no entry.
- * The add-on supplies one, along with the request that writes it.
- *
- * Selected at module scope, so the call site stays a single unconditional hook
- * call and the rules of hooks hold: which implementation is chosen is fixed for
- * the life of the bundle.
+ * This plugin holds no route that could write a pin, so an entry offering to
+ * would be an offer it cannot keep. The menu is built by pushing whatever this
+ * returns, so `undefined` leaves it exactly as it was.
  */
-const useCommentPinItem: (context: CommentPinContext) => CommentPinItem = IS_PRO_ACTIVE
-  ? useCommentPinItemPro
-  : useCommentPinItemFree
+const useCommentPinItem: (context: CommentPinContext) => CommentPinItem = () => undefined
 
 export default useCommentPinItem

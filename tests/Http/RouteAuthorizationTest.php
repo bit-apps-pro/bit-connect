@@ -41,10 +41,6 @@ final class RouteAuthorizationTest extends TestCase
         // returns the login/registration URLs and whether registration is even
         // open. It exposes no member data for a logged-out caller.
         'GET auth/data' => 'Portal auth bootstrap — must answer logged-out visitors.',
-
-        // Ending your own session. Reads the current user and nothing else;
-        // there is no id to pass, so there is no one else\'s session to end.
-        'POST ajax_logout' => 'Logout — acts only on the caller\'s own session.',
     ];
 
     /**

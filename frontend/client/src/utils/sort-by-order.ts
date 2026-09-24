@@ -1,6 +1,6 @@
 interface OrderableStage {
   id: number
-  meta?: { order?: number }
+  meta?: { bit_connect_order?: number }
 }
 
 /**
@@ -16,8 +16,8 @@ interface OrderableStage {
  */
 export default function sortStages<T extends OrderableStage>(stages: T[]): T[] {
   return [...stages].sort((first, second) => {
-    const firstPosition = first.meta?.order ?? Number.MAX_SAFE_INTEGER
-    const secondPosition = second.meta?.order ?? Number.MAX_SAFE_INTEGER
+    const firstPosition = first.meta?.bit_connect_order ?? Number.MAX_SAFE_INTEGER
+    const secondPosition = second.meta?.bit_connect_order ?? Number.MAX_SAFE_INTEGER
 
     if (firstPosition === secondPosition) return first.id - second.id
 

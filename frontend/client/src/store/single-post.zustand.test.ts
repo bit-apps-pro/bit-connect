@@ -100,7 +100,7 @@ describe('useSinglePostStore vote buttons', () => {
   /**
    * The store no longer casts a reply's vote, it only shows one.
    *
-   * Upvoting a reply moved to the Bit Connect Pro add-on, which owns the
+   * This plugin does not implement upvoting a reply; whatever does owns the
    * request and the optimistic step and writes the result here. What is left
    * is a setter, so what is worth pinning is that it reaches both copies of
    * the thread: the raw comments and the derived tree the button reads from.

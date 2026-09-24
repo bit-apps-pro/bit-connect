@@ -8,12 +8,13 @@ import { type Vote } from './helper/vote-flip'
 /**
  * How a thread is ordered.
  *
- * `mostVoted` is the add-on's: ordering replies by upvotes needs upvotes on
- * replies, which this plugin does not implement. It stays in the union so the
- * overlay's sort control and this store agree on one type, and this plugin's
- * own sorter treats anything it does not recognise as newest-first.
+ * `all` and `newest` are the two orderings this plugin performs. The union
+ * stays open because the sort control's choices are an extension point
+ * (use-comment-sort-options): another plugin may offer an ordering of its own
+ * and perform it through comment-order. This plugin's sorter treats anything
+ * it does not recognise as newest-first.
  */
-export type SortOption = 'all' | 'mostVoted' | 'newest'
+export type SortOption = 'all' | 'newest' | (string & {})
 
 export interface SinglePostStore {
   comments: TopicComment[]

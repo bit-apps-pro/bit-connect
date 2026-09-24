@@ -76,9 +76,9 @@ namespace BitApps\BitConnect\Tests\Hooks {
             require __DIR__ . '/../../backend/hooks/ajax.php';
         }
 
-        public function testRegistersExactlyTwoRoutes(): void
+        public function testRegistersExactlyOneRoute(): void
         {
-            $this->assertCount(2, Route::$registered);
+            $this->assertCount(1, Route::$registered);
         }
 
         public function testRegistersLoginRoute(): void
@@ -89,19 +89,23 @@ namespace BitApps\BitConnect\Tests\Hooks {
             );
         }
 
-        public function testRegistersLogoutRoute(): void
+        /**
+         * Logging out is a REST route (`auth/logout`) under core's cookie and
+         * nonce check; the AJAX file carries no logout of its own.
+         */
+        public function testRegistersNoLogoutRoute(): void
         {
-            $this->assertContains(
-                ['method' => 'post', 'path' => 'ajax_logout', 'action' => [LoginController::class, 'logout']],
-                Route::$registered
-            );
+            $paths = array_column(Route::$registered, 'path');
+
+            $this->assertNotContains('ajax_logout', $paths);
         }
 
         /**
-         * The login routes stay open on purpose: a guest signing in has no
-         * session to check. Everything else added here must not be.
+         * The login route stays open on purpose: a guest signing in has no
+         * session to check, and AjaxLoginRequest verifies its nonce.
+         * Everything else added here must not be.
          */
-        public function testOnlyTheLoginRoutesAreUnguarded(): void
+        public function testOnlyTheLoginRouteIsUnguarded(): void
         {
             $unguarded = [];
 
@@ -115,7 +119,7 @@ namespace BitApps\BitConnect\Tests\Hooks {
 
             sort($unguarded);
 
-            $this->assertSame(['ajax_login', 'ajax_logout'], $unguarded);
+            $this->assertSame(['ajax_login'], $unguarded);
         }
     }
 }

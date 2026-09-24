@@ -15,8 +15,8 @@ use BitApps\BitConnect\Enum\Capabilities;
  * A derived capability for "may open the Bit Connect admin menu at all".
  *
  * WordPress takes a single capability string per menu entry — it has no way to
- * express "forum_manage or forum_moderate". Every screen under the menu used to
- * ask for forum_manage, which meant a moderator could not reach the menu, so a
+ * express "bit_connect_forum_manage or bit_connect_forum_moderate". Every screen under the menu used to
+ * ask for bit_connect_forum_manage, which meant a moderator could not reach the menu, so a
  * moderator-facing screen under it would have been unreachable however it was
  * gated itself.
  *

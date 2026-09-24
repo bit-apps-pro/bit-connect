@@ -6,7 +6,7 @@ import sortStages from './sort-by-order'
 // back alphabetically and the admin's arrangement is applied here instead. This
 // mirrors TermOrderService::sort() on the backend; the two have to agree, or
 // the portal and the admin screen show the same stages in different orders.
-const stage = (id: number, order?: number) => ({ id, meta: order === undefined ? {} : { order } })
+const stage = (id: number, order?: number) => ({ id, meta: order === undefined ? {} : { bit_connect_order: order } })
 
 describe('sortStages', () => {
   it('puts the stages in the order the admin arranged', () => {
@@ -34,7 +34,7 @@ describe('sortStages', () => {
   })
 
   it('handles a stage whose meta is missing entirely', () => {
-    expect(sortStages([{ id: 9 }, { id: 4, meta: { order: 0 } }]).map(s => s.id)).toEqual([4, 9])
+    expect(sortStages([{ id: 9 }, { id: 4, meta: { bit_connect_order: 0 } }]).map(s => s.id)).toEqual([4, 9])
   })
 
   // The caller renders straight off the query cache, and mutating that array in

@@ -226,7 +226,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             header('Content-Type: application/xslt+xml; charset=UTF-8', true);
             status_header(200);
 
-            echo self::renderStylesheet(); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
+            self::printStylesheet();
 
             exit;
         }
@@ -248,26 +248,31 @@ final class PortalSitemap extends WP_Sitemaps_Provider
         // index whatever the portal's size means the URL in robots.txt and the
         // one submitted to Search Console never change shape.
         if ($subtype === '') {
-            $body = self::renderIndex();
-        } else {
-            $requested = max(1, (int) get_query_var(self::FEED_PAGE_QUERY_VAR));
+            header('Content-Type: application/xml; charset=UTF-8', true);
+            status_header(200);
 
-            // A type that lists nothing, or a page past its end, is not an
-            // empty sitemap — it is a URL that does not exist. Saying so keeps
-            // a stale index entry from looking valid.
-            if ($requested > self::pageCount($subtype)) {
-                status_header(404);
+            self::printIndex();
 
-                exit;
-            }
-
-            $body = self::renderFeed(self::urls($subtype, $requested));
+            exit;
         }
+
+        $requested = max(1, (int) get_query_var(self::FEED_PAGE_QUERY_VAR));
+
+        // A type that lists nothing, or a page past its end, is not an
+        // empty sitemap — it is a URL that does not exist. Saying so keeps
+        // a stale index entry from looking valid.
+        if ($requested > self::pageCount($subtype)) {
+            status_header(404);
+
+            exit;
+        }
+
+        $urls = self::urls($subtype, $requested);
 
         header('Content-Type: application/xml; charset=UTF-8', true);
         status_header(200);
 
-        echo $body; // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
+        self::printFeed($urls);
 
         exit;
     }
@@ -802,30 +807,29 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     }
 
     /**
-     * A urlset document for the given entries.
+     * Print a urlset document for the given entries, escaping each value at
+     * the element that carries it.
      *
      * @param array<int, array<string, string>> $urls
      */
-    private static function renderFeed(array $urls): string
+    private static function printFeed(array $urls): void
     {
-        $xml = self::xmlProlog()
-            . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        self::printProlog();
+        printf("<urlset xmlns=\"%s\">\n", 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         foreach ($urls as $entry) {
             if (empty($entry['loc'])) {
                 continue;
             }
 
-            $xml .= '<url><loc>' . esc_url($entry['loc']) . '</loc>';
-
             if (!empty($entry['lastmod'])) {
-                $xml .= '<lastmod>' . esc_html($entry['lastmod']) . '</lastmod>';
+                printf("<url><loc>%s</loc><lastmod>%s</lastmod></url>\n", esc_url($entry['loc']), esc_html($entry['lastmod']));
+            } else {
+                printf("<url><loc>%s</loc></url>\n", esc_url($entry['loc']));
             }
-
-            $xml .= '</url>' . "\n";
         }
 
-        return $xml . '</urlset>';
+        printf('</urlset>');
     }
 
     /**
@@ -835,23 +839,26 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      * the entry in an SEO plugin's index stay valid however large the community
      * gets and whichever types it happens to use.
      */
-    private static function renderIndex(): string
+    private static function printIndex(): void
     {
-        $lastmod = esc_html(self::latestModified());
+        $lastmod = self::latestModified();
 
-        $xml = self::xmlProlog()
-            . '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        self::printProlog();
+        printf("<sitemapindex xmlns=\"%s\">\n", 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         foreach (self::subtypes() as $subtype) {
             $pages = self::pageCount($subtype);
 
             for ($page = 1; $page <= $pages; ++$page) {
-                $xml .= '<sitemap><loc>' . esc_url(self::feedPageUrl($subtype, $page)) . '</loc>'
-                    . '<lastmod>' . $lastmod . '</lastmod></sitemap>' . "\n";
+                printf(
+                    "<sitemap><loc>%s</loc><lastmod>%s</lastmod></sitemap>\n",
+                    esc_url(self::feedPageUrl($subtype, $page)),
+                    esc_html($lastmod)
+                );
             }
         }
 
-        return $xml . '</sitemapindex>';
+        printf('</sitemapindex>');
     }
 
     /**
@@ -861,10 +868,12 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      * one of these URLs shows a table rather than "This XML file does not appear
      * to have any style information associated with it."
      */
-    private static function xmlProlog(): string
+    private static function printProlog(): void
     {
-        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
-            . '<?xml-stylesheet type="text/xsl" href="' . esc_url(self::stylesheetUrl()) . '" ?>' . "\n";
+        printf(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<?xml-stylesheet type=\"text/xsl\" href=\"%s\" ?>\n",
+            esc_url(self::stylesheetUrl())
+        );
     }
 
     private static function stylesheetUrl(): string
@@ -879,21 +888,11 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      * the index and the per-type sitemaps share a look without either needing
      * to know which it is.
      */
-    private static function renderStylesheet(): string
+    private static function printStylesheet(): void
     {
-        $title = esc_html__('Bit Connect sitemap', 'bit-connect');
-        $intro = esc_html__(
-            'This sitemap lists the community portal for search engines. It is generated by Bit Connect.',
-            'bit-connect'
-        );
-        $sitemapsHeading = esc_html__('Sitemaps in this index', 'bit-connect');
-        $urlsHeading = esc_html__('URLs in this sitemap', 'bit-connect');
-        $urlColumn = esc_html__('URL', 'bit-connect');
-        $modifiedColumn = esc_html__('Last modified', 'bit-connect');
-
         // Indentation is deliberately flat: an XSLT that indents its own HTML
         // output adds whitespace inside the anchors.
-        return <<<XSL
+        $template = <<<'XSL'
             <?xml version="1.0" encoding="UTF-8"?>
             <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -904,7 +903,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             <xsl:template match="/">
             <html>
             <head>
-            <title>{$title}</title>
+            <title>%1$s</title>
             <meta content="noindex,follow" name="robots"/>
             <style>
             :root { color-scheme: light dark; --bg: #fff; --fg: #1e1e1e; --muted: #646970; --line: #dcdcde; --row: #f6f7f7; --link: #2271b1; }
@@ -916,7 +915,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             h1 { font-size: 22px; margin: 0 0 8px; }
             p { color: var(--muted); margin: 0 0 24px; }
             h2 { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
-            table { border: 1px solid var(--line); border-collapse: collapse; width: 100%; }
+            table { border: 1px solid var(--line); border-collapse: collapse; width: 100%%; }
             th, td { padding: 10px 12px; text-align: left; }
             th { border-bottom: 1px solid var(--line); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
             tr:nth-child(even) td { background: var(--row); }
@@ -927,8 +926,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             </head>
             <body>
             <main>
-            <h1>{$title}</h1>
-            <p>{$intro}</p>
+            <h1>%1$s</h1>
+            <p>%2$s</p>
             <xsl:apply-templates/>
             </main>
             </body>
@@ -936,9 +935,9 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             </xsl:template>
 
             <xsl:template match="s:sitemapindex">
-            <h2>{$sitemapsHeading} <span class="count">(<xsl:value-of select="count(s:sitemap)"/>)</span></h2>
+            <h2>%3$s <span class="count">(<xsl:value-of select="count(s:sitemap)"/>)</span></h2>
             <table>
-            <tr><th>{$urlColumn}</th><th>{$modifiedColumn}</th></tr>
+            <tr><th>%5$s</th><th>%6$s</th></tr>
             <xsl:for-each select="s:sitemap">
             <tr>
             <td><a href="{s:loc}"><xsl:value-of select="s:loc"/></a></td>
@@ -949,9 +948,9 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             </xsl:template>
 
             <xsl:template match="s:urlset">
-            <h2>{$urlsHeading} <span class="count">(<xsl:value-of select="count(s:url)"/>)</span></h2>
+            <h2>%4$s <span class="count">(<xsl:value-of select="count(s:url)"/>)</span></h2>
             <table>
-            <tr><th>{$urlColumn}</th><th>{$modifiedColumn}</th></tr>
+            <tr><th>%5$s</th><th>%6$s</th></tr>
             <xsl:for-each select="s:url">
             <tr>
             <td><a href="{s:loc}"><xsl:value-of select="s:loc"/></a></td>
@@ -963,6 +962,16 @@ final class PortalSitemap extends WP_Sitemaps_Provider
 
             </xsl:stylesheet>
             XSL;
+
+        printf(
+            $template, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a nowdoc literal; every value is escaped below.
+            esc_html__('Bit Connect sitemap', 'bit-connect'),
+            esc_html__('This sitemap lists the community portal for search engines. It is generated by Bit Connect.', 'bit-connect'),
+            esc_html__('Sitemaps in this index', 'bit-connect'),
+            esc_html__('URLs in this sitemap', 'bit-connect'),
+            esc_html__('URL', 'bit-connect'),
+            esc_html__('Last modified', 'bit-connect')
+        );
     }
 
     /**

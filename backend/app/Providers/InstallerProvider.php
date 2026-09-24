@@ -241,14 +241,14 @@ final class InstallerProvider
     /**
      * Whether an option belongs to this plugin and is ours to remove.
      *
-     * The pro add-on namespaces its options under `bit_connect_pro_`, which
-     * begins with this plugin's own `bit_connect_` — so a plain prefix sweep
-     * would take another plugin's data with it. The add-on has its own
-     * uninstaller registered against its own plugin file and cleans up after
-     * itself; this one must leave it alone.
+     * Another plugin that extends this one may namespace its options under a
+     * longer prefix that begins with this plugin's own `bit_connect_` — so a
+     * plain prefix sweep would take that plugin's data with it. Such a plugin
+     * has its own uninstaller registered against its own plugin file and
+     * cleans up after itself; this one must leave it alone.
      *
      * That matters in practice: `Requires Plugins` makes an admin deactivate
-     * the add-on before removing this plugin, so the add-on is still installed
+     * the dependent plugin before removing this one, so it is still installed
      * on disk and would come back without its settings on reactivation.
      */
     public static function ownsOption(string $optionName): bool

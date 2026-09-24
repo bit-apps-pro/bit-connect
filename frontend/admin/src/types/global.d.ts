@@ -17,9 +17,9 @@ declare const SERVER_VARIABLES: {
   ajaxURL: string
   apiURL: string
   assetsURL: string
-  /** Whether this user holds forum_manage — most screens here answer to it. */
+  /** Whether this user holds bit_connect_forum_manage — most screens here answer to it. */
   canManage?: boolean
-  /** Whether this user holds forum_moderate — the Activity screen answers to it. */
+  /** Whether this user holds bit_connect_forum_moderate — the Activity screen answers to it. */
   canModerate?: boolean
   dateFormat: string
   loggedInUserName: string

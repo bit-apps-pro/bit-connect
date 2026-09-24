@@ -31,7 +31,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
   const { can, checkAuth, isLoggedIn, logout, user } = useAuthStore()
   // The server refuses the topic anyway; a button that only ever answers
   // "not authorized" is worse than no button.
-  const canCreatePost = can('forum_create_post')
+  const canCreatePost = can('bit_connect_forum_create_post')
   const { fetchSettings } = useAdminSettingsStore()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
@@ -263,7 +263,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                   />
                 }
                 onClick={() => {
-                  if (canAct('forum_create_post')) setCreateModalOpen(true)
+                  if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
                 }}
                 shape="round"
                 size="middle"

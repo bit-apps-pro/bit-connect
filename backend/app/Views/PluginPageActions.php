@@ -24,7 +24,7 @@ class PluginPageActions
                 'title' => __('Settings', 'bit-connect'),
                 'url'   => Config::get('ADMIN_URL') . 'admin.php?page=' . Config::SLUG . '#/settings',
             ],
-            // Support, the changelog and what the add-on adds.
+            // Support and the changelog.
             'support' => [
                 'title' => __('Support', 'bit-connect'),
                 'url'   => Config::get('ADMIN_URL') . 'admin.php?page=' . Config::SLUG . '#/support',
@@ -44,7 +44,7 @@ class PluginPageActions
         $linksToAdd = $this->getActionLinks();
 
         foreach ($linksToAdd as $link) {
-            $links[] = '<a href="' . $link['url'] . '">' . $link['title'] . '</a>';
+            $links[] = \sprintf('<a href="%s">%s</a>', esc_url($link['url']), esc_html($link['title']));
         }
 
         return $links;

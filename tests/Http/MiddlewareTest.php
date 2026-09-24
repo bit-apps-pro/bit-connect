@@ -71,7 +71,7 @@ final class MiddlewareTest extends TestCase
 
     /**
      * WordPress's own administrator capability is not the forum's. An admin who
-     * has had forum_manage taken away in Manager has had it taken away.
+     * has had bit_connect_forum_manage taken away in Manager has had it taken away.
      */
     public function testCoresAdministratorCapabilityIsNotTheForumsOwn(): void
     {

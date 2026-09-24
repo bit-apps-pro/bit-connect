@@ -1,16 +1,31 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
+import { __ } from '@common/helpers/i18nWrap'
+import { Typography } from 'antd'
 
-import ModerationSectionFree from './moderation-section.free'
-import ModerationSectionPro from './moderation-section.pro'
+const { Text, Title } = Typography
 
 /**
- * Dispatch only — see the two siblings. `IS_PRO_ACTIVE` folds to a literal in
- * the free build, so Rollup keeps exactly one of them.
+ * What happens to a reported post, stated.
  *
- * No props: this plugin's settings form holds nothing for either sibling to
- * read or write. The free one states what happens to a reported post; the
- * add-on's keeps its own number, behind its own endpoint.
+ * No number field and no heading shaped like a switch, because there is
+ * nothing to set: reported content stays where it is until a moderator has
+ * looked at it. ReportService asks the public `bit_connect_should_auto_hide`
+ * filter and, with nobody answering, the answer is no.
  */
 export default function ModerationSection() {
-  return IS_PRO_ACTIVE ? <ModerationSectionPro /> : <ModerationSectionFree />
+  return (
+    <div className="bc-bg-surface bc-p-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-mb-6">
+      <div className="bc-mb-4">
+        <Title className="bc-mb-1" level={4}>
+          {__('Moderation')}
+        </Title>
+        <Text type="secondary">{__('What happens to reported content')}</Text>
+      </div>
+
+      <Text className="bc-text-sm" type="secondary">
+        {__(
+          'Reported content stays visible until a moderator reviews the report and decides what to do with it.'
+        )}
+      </Text>
+    </div>
+  )
 }

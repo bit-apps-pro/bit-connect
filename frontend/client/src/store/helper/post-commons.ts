@@ -3,6 +3,7 @@ import { type Comment } from '@/types/post'
 import { type TopicComment } from '@/types/wordpress-post'
 
 import { type SortOption } from '../single-post.type'
+import orderComments from './comment-order'
 
 function buildCommentTree(comments: Comment[], parentId = 0): Comment[] {
   const result: Comment[] = []
@@ -94,20 +95,18 @@ const hoistPinned = (comments: Comment[]): Comment[] => {
 }
 
 /**
- * Sort hierarchical comments (only top-level, preserving replies)
+ * Sort hierarchical comments (only top-level, preserving replies).
+ *
+ * Two orderings are performed here. Any other value is handed to the
+ * comment-order extension point; when nothing there claims it either, the
+ * thread falls back to newest-first rather than to an unspecified order.
+ * Whichever ordering wins, a pinned reply is then lifted to the front.
  */
 export const sortHierarchicalComments = (comments: Comment[], sortOption: SortOption): Comment[] => {
   const sorted = [...comments]
 
   if (sortOption === 'newest') {
     sorted.sort((a, b) => compareDatesDesc(a.createdAt || '', b.createdAt || ''))
-  } else if (sortOption === 'mostVoted') {
-    sorted.sort((a, b) => {
-      const votesA = a.votes ?? 0
-      const votesB = b.votes ?? 0
-      if (votesB !== votesA) return votesB - votesA
-      return compareDatesDesc(a.createdAt || '', b.createdAt || '')
-    })
   } else if (sortOption === 'all') {
     // For 'all', sort by oldest first (ascending date order)
     sorted.sort((a, b) => {
@@ -120,6 +119,11 @@ export const sortHierarchicalComments = (comments: Comment[], sortOption: SortOp
 
       return dateA - dateB
     })
+  } else {
+    const ordered = orderComments(sorted, sortOption)
+    if (ordered) return hoistPinned(ordered)
+
+    sorted.sort((a, b) => compareDatesDesc(a.createdAt || '', b.createdAt || ''))
   }
 
   return hoistPinned(sorted)

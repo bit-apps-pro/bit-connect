@@ -1,22 +1,16 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
-
-import useHasPrivateTopicsFree from './use-private-topics-available.free'
-import useHasPrivateTopicsPro from './use-private-topics-available.pro'
-
 /**
  * Whether this forum has private topics at all.
  *
  * Read by surfaces that only need to know the feature exists — the topic filter
  * offers a Private option, say — rather than by anything that writes a status.
- * This plugin answers no, because it has no code that makes a topic private;
- * the Bit Connect Pro add-on's implementation answers yes.
+ * Not a setting read, because there is no setting: this plugin holds no code
+ * that makes a topic private, so the answer cannot vary. Surfaces that offer a
+ * Private affordance drop it entirely rather than show it disabled.
  *
  * Callers still handle "no, but this visitor is already looking at private
  * topics": a bookmark pointing at that filter has to keep rendering, and an
  * existing private topic is readable on any install whatever this says.
  */
-const useHasPrivateTopics: () => boolean = IS_PRO_ACTIVE
-  ? useHasPrivateTopicsPro
-  : useHasPrivateTopicsFree
-
-export default useHasPrivateTopics
+export default function useHasPrivateTopics(): boolean {
+  return false
+}

@@ -174,7 +174,7 @@ final class CommentController
         }
 
         $parentId = $request->parent_id ? (int) $request->parent_id : 0;
-        $attachments = $request->attachments ?? [];
+        $attachments = array_map('intval', (array) ($request->attachments ?? []));
 
         if ($parentId > 0) {
             $parentComment = get_comment($parentId);
@@ -221,7 +221,7 @@ final class CommentController
         }
 
         if (!empty($attachments)) {
-            update_comment_meta($commentId, '_comment_attachments', $attachments);
+            update_comment_meta($commentId, '_bit_connect_comment_attachments', $attachments);
         }
 
         $comment = get_comment($commentId);
@@ -301,7 +301,7 @@ final class CommentController
         }
 
         if ($newAttachmentIds !== null) {
-            $oldAttachmentIds = get_comment_meta($commentId, '_comment_attachments', true);
+            $oldAttachmentIds = get_comment_meta($commentId, '_bit_connect_comment_attachments', true);
             if (!\is_array($oldAttachmentIds)) {
                 $oldAttachmentIds = [];
             }
@@ -312,9 +312,9 @@ final class CommentController
             }
 
             if (!empty($newAttachmentIds)) {
-                update_comment_meta($commentId, '_comment_attachments', $newAttachmentIds);
+                update_comment_meta($commentId, '_bit_connect_comment_attachments', $newAttachmentIds);
             } else {
-                delete_comment_meta($commentId, '_comment_attachments');
+                delete_comment_meta($commentId, '_bit_connect_comment_attachments');
             }
         }
 
@@ -506,8 +506,8 @@ final class CommentController
      * Sort top-level comments by the requested key.
      *
      * By date, either way round. There is no vote ordering here because there
-     * are no reply votes here to order by; the add-on that implements them
-     * answers the extension point below and brings its ordering with it.
+     * are no reply votes here to order by; a plugin that adds a field to a
+     * comment can answer the extension point below with an ordering over it.
      *
      * A pinned reply is then lifted to the front, whatever the sort said. That
      * is the point of pinning it: the topic's author has marked one reply as
@@ -669,9 +669,9 @@ final class CommentController
                 '48' => get_avatar_url($comment, ['size' => 48]),
                 '96' => get_avatar_url($comment, ['size' => 96]),
             ],
-            // No `votes` or `hasVoted`. Upvoting a reply ships in the add-on,
-            // which attaches its own pair through commentFields(); a forum
-            // without it sends a reply that simply has no upvote control.
+            // No `votes` or `hasVoted`: this plugin does not implement upvotes
+            // on replies, so a reply simply has no upvote control. Another
+            // plugin may attach fields of its own through commentFields().
             'attachments' => $attachments,
             // The author's standing, or null for an ordinary member.
             'author_badge' => $authorBadge,
@@ -694,8 +694,8 @@ final class CommentController
             // Superseded by author_badge; kept until the portal stops reading it,
             // because post-commons.ts defaults a missing value to false and would
             // silently un-badge every staff comment. Note this now answers true
-            // for a forum_moderate-only member, where the old
-            // hasModeratorRole() check (manage_options || forum_manage) said no.
+            // for a bit_connect_forum_moderate-only member, where the old
+            // hasModeratorRole() check (manage_options || bit_connect_forum_manage) said no.
             'isAdmin' => $authorBadge !== null,
         ], (int) $comment->comment_ID);
     }

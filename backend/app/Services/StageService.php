@@ -28,7 +28,7 @@ final class StageService
      * new topics with no stage. It is identified by this flag instead, so the
      * slug is free to change.
      */
-    public const DEFAULT_META_KEY = 'is_default';
+    public const DEFAULT_META_KEY = 'bit_connect_is_default';
 
     /**
      * Stage terms in the admin-defined order.

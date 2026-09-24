@@ -20,6 +20,7 @@ use BitApps\BitConnect\Providers\HookProvider;
 use BitApps\BitConnect\Providers\InstallerProvider;
 use BitApps\BitConnect\Providers\PreInitHookProvider;
 use BitApps\BitConnect\Services\CapabilityService;
+use BitApps\BitConnect\Services\TermMetaKeys;
 use BitApps\BitConnect\Views\HtmlTagModifier;
 use BitApps\BitConnect\Views\Layout;
 use BitApps\BitConnect\Views\PluginPageActions;
@@ -109,7 +110,6 @@ final class Plugin
         // Not admin-only: the public portal loads the same module bundle, and
         // its script tag needs type="module" there as much as in wp-admin.
         new HtmlTagModifier();
-        // echo get_rest_url();die;
         new HookProvider();
     }
 
@@ -134,6 +134,16 @@ final class Plugin
         // the revoke has taken. They are independent and each runs once.
         CapabilityService::migrateModerateSplit();
         CapabilityService::revokeEditAny();
+        // After the revoke: the withdrawn slug is gone before the rename
+        // sweeps the rest, so it is never carried over under a new name.
+        CapabilityService::migratePrefixedSlugs();
+
+        // The term meta this plugin writes moved under prefixed keys; same
+        // guard shape, same reason. Deferred to `init`, after PostTypeProvider
+        // has registered the taxonomies: get_terms() on an unregistered
+        // taxonomy answers with an error rather than the terms, and the sweep
+        // would record itself as done having moved nothing.
+        Hooks::addAction('init', [TermMetaKeys::class, 'migrate'], 20);
 
         self::forgetDiagnosticReporting();
     }

@@ -31,10 +31,10 @@ declare const SERVER_VARIABLES: {
    * Whether this forum offers upvoting on replies.
    *
    * A slot, not a setting. This plugin never sends it and nothing in this
-   * tree reads it — upvoting a reply ships in Bit Connect Pro, which fills
-   * this in and whose overlay is the only code that looks at it. Declared
-   * here because the payload has one shape, and the add-on's modules are
-   * type-checked against it.
+   * tree reads it: a plugin that implements upvotes on replies fills it in
+   * through the `bit_connect_localized_script` filter, and its own modules
+   * are the only code that looks at it. Declared here because the payload has
+   * one shape, and those modules are type-checked against it.
    */
   commentUpvote?: string
   communityTitle?: string

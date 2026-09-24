@@ -68,7 +68,7 @@ export default function TopicCard({
   const { can, isLoggedIn } = useAuthStore()
   // Same rule as the topic page: a member without the capability gets a
   // disabled control, a guest a live one that asks them to sign in.
-  const memberMayVote = !isLoggedIn || can('forum_vote_post')
+  const memberMayVote = !isLoggedIn || can('bit_connect_forum_vote_post')
   const { chipTagProps } = useChipProps()
 
   const handlePostVote = async () => {

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  * Pins down who may open the Bit Connect admin menu.
  *
  * WordPress takes one capability string per menu entry and has no way to say
- * "forum_manage or forum_moderate", so this one is computed. Two failures
+ * "bit_connect_forum_manage or bit_connect_forum_moderate", so this one is computed. Two failures
  * matter and neither is loud: a moderator locked out of a menu built for them,
  * or the derived capability being storable — which would make it a back door to
  * the menu for someone holding neither real capability.
@@ -36,7 +36,7 @@ final class AdminAccessServiceTest extends TestCase
 
     /**
      * The case the derived capability exists for: every screen under the menu
-     * used to ask for forum_manage, which left a moderator-facing screen
+     * used to ask for bit_connect_forum_manage, which left a moderator-facing screen
      * unreachable however it was gated itself.
      */
     public function testAModeratorMayOpenTheMenu(): void

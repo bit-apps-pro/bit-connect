@@ -44,7 +44,7 @@ Members can create topics, join threaded discussions, upvote ideas, follow conve
 
 = Easy Community Management =
 
-Run your community from one place. Manage topics, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress easily.
+Run your community from one place. Manage topics, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress.
 
 = User-Friendly Community Dashboard =
 
@@ -52,7 +52,7 @@ See what is happening across your community from a simple dashboard. Track total
 
 = Member Profiles =
 
-Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their topics, comments and activity across the community forum in one place clearly.
+Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their topics, comments and activity across the community forum in one place.
 
 = Organized Discussions and Engagement =
 
@@ -76,7 +76,7 @@ Make your community easier for search engines to understand. Bit Connect handles
 
 = Flexible Community Access and Authentication =
 
-Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed easily.
+Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed.
 
 = Customizable Community Portal =
 
@@ -90,11 +90,11 @@ It can work as a traditional forum, but it can also serve as a product community
 
 = Source Code =
 
-The JavaScript and CSS this plugin ships under `assets/` and `assets/client/` are compiled, minified bundles generated from human-readable source with Vite. That source is not included in the plugin zip; it is published in full, together with build instructions, in the plugin's public repository:
+The files in `assets/` are minified builds. The full source code is on GitHub:
 
 **https://github.com/bit-apps-pro/bit-connect**
 
-The repository holds everything the plugin is built from: the React + TypeScript admin panel (`frontend/admin/`), the React + TypeScript portal (`frontend/client/`), the Vite configs (`vite.config.mts`, `vite.config.client.mts`), the PHP plugin (`backend/`) and the third-party libraries it bundles, listed in `package.json` and `composer.json`. To rebuild the shipped assets yourself:
+To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 
 `git clone https://github.com/bit-apps-pro/bit-connect.git`
 `cd bit-connect`
@@ -102,7 +102,9 @@ The repository holds everything the plugin is built from: the React + TypeScript
 `pnpm install`
 `pnpm build:free`
 
-That writes `assets/` and `assets/client/`, after which the directory is the plugin. `pnpm prod:free-zip` produces the same installable zip that is published here. Requirements: PHP 8.2+, Node 20+, pnpm 9+, Composer 2. The repository README documents the build in more detail.
+= Bundled Font =
+
+The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), included in the plugin and served from your own site. It is licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Outfit.txt`. Source: https://github.com/Outfitio/Outfit-Fonts
 
 = Other Products by Bit Apps =
 
@@ -141,7 +143,7 @@ Installation is free, quick, and easy. Simply search for **Bit Connect** in your
 
 = Manual Alternatives =
 
-Alternatively, you can download the plugin zip file from [wp.org](https://wordpress.org), upload it via the **Plugins → Add New → Upload Plugin** option, and follow the on-screen instructions.
+Alternatively, you can download the plugin zip file from [its WordPress.org page](https://wordpress.org/plugins/bit-connect/), upload it via the **Plugins → Add New → Upload Plugin** option, and follow the on-screen instructions.
 
 == Frequently Asked Questions ==
 
@@ -176,10 +178,11 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 == Changelog ==
 
 = 1.0.1 =
-* Reply upvoting and private topics are no longer part of this plugin. Both are features of Bit Connect Pro, a separate plugin.
-* Settings screens now describe add-on features in plain text, with no disabled controls.
-* Reported content is no longer hidden automatically, and the report threshold setting has gone with it. This plugin queues reports for a moderator to decide; hiding on a count is a feature of Bit Connect Pro, a separate plugin.
+* Removed reply upvoting and author-only private topics.
+* Removed automatic hiding of reported content and its report threshold setting. Reports are queued for a moderator to decide.
+* Settings screens no longer show disabled controls.
 * The Outfit typeface now ships with the plugin instead of loading from Google Fonts, so the portal contacts no third party.
+* Members register with the site's default role, through WordPress's own registration checks.
 
 = 1.0.0 =
 * First stable release.

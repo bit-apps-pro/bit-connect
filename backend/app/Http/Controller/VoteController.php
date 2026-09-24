@@ -17,10 +17,9 @@ use BitApps\BitConnect\Services\VoteService;
 /**
  * Upvoting a topic.
  *
- * Topics only. Upvoting an individual reply is not a thing this plugin does
- * withhold — it is a thing this plugin does not implement: there is no route,
- * no service method and no request class for it here. That feature ships in
- * the Bit Connect Pro add-on, which registers its own endpoints.
+ * Topics only. Upvoting an individual reply is not something this plugin
+ * implements: there is no route, no service method and no request class for
+ * it here.
  */
 final class VoteController
 {

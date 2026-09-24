@@ -1,17 +1,21 @@
-import { IS_PRO_ACTIVE } from '@common/helpers/pro-access'
+import { type ReactNode } from 'react'
 
 import { type ProfileBadgesModalProps } from '../shared/types'
-import ProfileBadgesModalFree from './profile-badges-modal.free'
-import ProfileBadgesModalPro from './profile-badges-modal.pro'
 
 /**
- * The badge catalog editor.
+ * The badge catalog editor: this plugin has no catalog, so there is no editor.
  *
- * Dispatch only. In the free build `IS_PRO_ACTIVE` folds to `false` and Rollup
- * drops the real editor — along with its four data hooks and the endpoints they
- * call — and the free sibling renders nothing, because nothing in that build
- * opens it.
+ * Nothing opens it — the Manager header draws the Profile Badges button only
+ * where `useBadgesAdmin` reports a catalog, and here it never does.
+ *
+ * No explanatory modal is drawn in its place either. A screen that describes a
+ * feature this plugin does not have, reached from a button shaped like the
+ * feature, is a placeholder for it.
+ *
+ * It still takes the editor's props so the call site stays typed against what
+ * a catalog editor needs, rather than against the fact that this one is empty.
  */
-export default function ProfileBadgesModal(props: ProfileBadgesModalProps) {
-  return IS_PRO_ACTIVE ? <ProfileBadgesModalPro {...props} /> : <ProfileBadgesModalFree />
+export default function ProfileBadgesModal(_props: ProfileBadgesModalProps): ReactNode {
+  // eslint-disable-next-line unicorn/no-null
+  return null
 }

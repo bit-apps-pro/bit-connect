@@ -21,7 +21,7 @@ use BitApps\BitConnect\Services\PermissionService;
 final class GetActivityLogRequest extends Request
 {
     /**
-     * Gated on forum_moderate rather than forum_manage.
+     * Gated on bit_connect_forum_moderate rather than bit_connect_forum_manage.
      *
      * The log is a moderation tool, so it answers to the moderation capability
      * rather than the admin one — a moderator reviewing what was done to a

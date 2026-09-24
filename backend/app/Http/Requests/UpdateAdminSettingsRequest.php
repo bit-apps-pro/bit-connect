@@ -62,10 +62,9 @@ final class UpdateAdminSettingsRequest extends Request
             // This plugin reads only the two keys it implements off the
             // request, and writes them over whatever is already stored rather
             // than replacing the group. Anything else under topicAccess
-            // belongs to a plugin that is not this one — the add-on keeps its
-            // own switches here — and rebuilding the array from the request
-            // would erase a setting this screen never showed every time an
-            // administrator pressed Save.
+            // belongs to whichever plugin put it there, and rebuilding the
+            // array from the request would erase a setting this screen never
+            // showed every time an administrator pressed Save.
             'topicAccess' => array_merge(
                 self::storedTopicAccess(),
                 [
@@ -81,8 +80,7 @@ final class UpdateAdminSettingsRequest extends Request
                 'requireDepartment' => (bool) ($this->topicFormFields['requireDepartment'] ?? true),
             ],
             // No moderation group. This plugin never acts on a report by
-            // itself, so it has no threshold to store; the add-on that does
-            // keeps that number in its own option, behind its own endpoint.
+            // itself, so it has no threshold to store.
         ];
     }
 

@@ -60,7 +60,7 @@ final class PermissionService
 
     /**
      * User can delete a post if they own it (and have delete_own cap) OR hold
-     * forum_delete_any.
+     * bit_connect_forum_delete_any.
      */
     public static function canDeletePost(int $postId): bool
     {
@@ -98,7 +98,7 @@ final class PermissionService
 
     /**
      * User can delete a comment if they own it (and have delete_own cap) OR hold
-     * forum_delete_any.
+     * bit_connect_forum_delete_any.
      */
     public static function canDeleteComment(int $commentId): bool
     {
@@ -122,7 +122,6 @@ final class PermissionService
      *
      * There is no canVoteComment() beside this, and no setting behind it,
      * because upvoting an individual reply is not something this plugin does.
-     * It ships in the Bit Connect Pro add-on, which asks its own questions.
      */
     public static function canVotePost(): bool
     {
@@ -174,7 +173,7 @@ final class PermissionService
      * Handed to the portal on bootstrap and by auth/me so its UI gates on the
      * same answers this class enforces. Without it the portal has to guess from
      * role names, which is wrong in both directions: caps are granted per role
-     * in Manager, so a moderator can hold forum_moderate under any role slug,
+     * in Manager, so a moderator can hold bit_connect_forum_moderate under any role slug,
      * and an administrator can have it taken away.
      *
      * Guests get every capability as false rather than an empty map, so the

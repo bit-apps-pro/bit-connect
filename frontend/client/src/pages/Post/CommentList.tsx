@@ -1,8 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import getScrollParent from '@utils/get-scroll-parent'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
+import { type SortOption } from '@/store/single-post.type'
 import { type Comment } from '@/types/post'
 
 import CommentItem from './CommentItem'
@@ -18,8 +19,9 @@ interface CommentListProps {
   onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
   onLoadMore?: () => void
   onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
-  onVote?: (commentId: number) => void
-  sortOption: 'all' | 'mostVoted' | 'newest'
+  /** Draws the upvote control for a reply, when the forum offers one. See use-comment-vote. */
+  renderVote?: (comment: Comment) => ReactNode
+  sortOption: SortOption
   /** Who opened the topic — the only member who may pin a reply in it. */
   topicAuthorId: number
   topicSlug: string
@@ -35,7 +37,7 @@ export default function CommentList({
   onEdit,
   onLoadMore,
   onReply,
-  onVote,
+  renderVote,
   sortOption,
   topicAuthorId,
   topicSlug,
@@ -88,7 +90,7 @@ export default function CommentList({
               onDelete={onDelete}
               onEdit={onEdit}
               onReply={onReply}
-              onVote={onVote}
+              renderVote={renderVote}
               topicAuthorId={topicAuthorId}
               topicSlug={topicSlug}
               topicTitle={topicTitle}

@@ -561,7 +561,7 @@ return [
 
     'Notifications are sent as' => __('Notifications are sent as', 'bit-connect'),
 
-    'Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.' => __('Taken from your site title and address. A custom sender is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
+    'Taken from your site title and address.' => __('Taken from your site title and address.', 'bit-connect'),
 
     'Send test email' => __('Send test email', 'bit-connect'),
 
@@ -579,7 +579,7 @@ return [
 
     'Email wording' => __('Email wording', 'bit-connect'),
 
-    'Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.' => __('Notification emails use the wording below. Editing these lines is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
+    'Notification emails use the wording below.' => __('Notification emails use the wording below.', 'bit-connect'),
 
     'Notification settings could not be loaded.' => __('Notification settings could not be loaded.', 'bit-connect'),
 
@@ -600,6 +600,8 @@ return [
     'Member may change' => __('Member may change', 'bit-connect'),
 
     'This is always delivered in the app.' => __('This is always delivered in the app.', 'bit-connect'),
+
+    'Always' => __('Always', 'bit-connect'),
 
     'Only moderators receive this, so there is nothing for a member to change.' => __('Only moderators receive this, so there is nothing for a member to change.', 'bit-connect'),
 
@@ -724,6 +726,8 @@ return [
     'Edit Product' => __('Edit Product', 'bit-connect'),
 
     'Product Name' => __('Product Name', 'bit-connect'),
+
+    'Edit product' => __('Edit product', 'bit-connect'),
 
     'Are you sure to delete?' => __('Are you sure to delete?', 'bit-connect'),
 
@@ -997,11 +1001,9 @@ return [
 
     'Moderation' => __('Moderation', 'bit-connect'),
 
-    'Control what happens to reported content before a moderator has looked at it' => __('Control what happens to reported content before a moderator has looked at it', 'bit-connect'),
+    'What happens to reported content' => __('What happens to reported content', 'bit-connect'),
 
-    'Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.' => __('Reported content stays visible until a moderator decides. Hiding a topic or reply automatically once enough different members have reported it is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
-
-    'Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin.' => __('Letting an author keep a topic private, so only they and the forum team can see it, is a feature of Bit Connect Pro, a separate plugin.', 'bit-connect'),
+    'Reported content stays visible until a moderator reviews the report and decides what to do with it.' => __('Reported content stays visible until a moderator reviews the report and decides what to do with it.', 'bit-connect'),
 
     'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
 
@@ -1133,7 +1135,11 @@ return [
 
     'No color' => __('No color', 'bit-connect'),
 
+    'Edit status' => __('Edit status', 'bit-connect'),
+
     'Delete Status' => __('Delete Status', 'bit-connect'),
+
+    'Delete status' => __('Delete status', 'bit-connect'),
 
     'Recommended Plugins' => __('Recommended Plugins', 'bit-connect'),
 
@@ -1149,9 +1155,9 @@ return [
 
     'Installed version' => __('Installed version', 'bit-connect'),
 
-    'Looking for more? Bit Connect Pro is a separate add-on.' => __('Looking for more? Bit Connect Pro is a separate add-on.', 'bit-connect'),
+    'Looking for more? Bit Connect Pro is a separate plugin.' => __('Looking for more? Bit Connect Pro is a separate plugin.', 'bit-connect'),
 
-    'Get Bit Connect Pro' => __('Get Bit Connect Pro', 'bit-connect'),
+    'Learn about Bit Connect Pro' => __('Learn about Bit Connect Pro', 'bit-connect'),
 
     'About' => __('About', 'bit-connect'),
 
@@ -1213,7 +1219,15 @@ return [
 
     'Create Topic Type' => __('Create Topic Type', 'bit-connect'),
 
+    'Edit topic type' => __('Edit topic type', 'bit-connect'),
+
     'Delete Topic Type' => __('Delete Topic Type', 'bit-connect'),
+
+    'Delete topic type' => __('Delete topic type', 'bit-connect'),
+
+    'Ask a site administrator if you think you should be able to.' => __('Ask a site administrator if you think you should be able to.', 'bit-connect'),
+
+    'Your account does not have permission to do this.' => __('Your account does not have permission to do this.', 'bit-connect'),
 
     'Word document' => __('Word document', 'bit-connect'),
 
@@ -1278,6 +1292,12 @@ return [
     'Email frequency' => __('Email frequency', 'bit-connect'),
 
     'How often email should arrive. This does not change what you are notified about — only when it is sent.' => __('How often email should arrive. This does not change what you are notified about — only when it is sent.', 'bit-connect'),
+
+    'New topics' => __('New topics', 'bit-connect'),
+
+    'Tell me about every new topic' => __('Tell me about every new topic', 'bit-connect'),
+
+    'Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.' => __('Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.', 'bit-connect'),
 
     'What you are notified about' => __('What you are notified about', 'bit-connect'),
 
@@ -1685,8 +1705,6 @@ return [
 
     '🎉 You\'re all caught up — no more comments' => __('🎉 You\'re all caught up — no more comments', 'bit-connect'),
 
-    'Remove your upvote' => __('Remove your upvote', 'bit-connect'),
-
     'View image full size' => __('View image full size', 'bit-connect'),
 
     'All comments' => __('All comments', 'bit-connect'),
@@ -1712,6 +1730,8 @@ return [
     'Comment deleted successfully' => __('Comment deleted successfully', 'bit-connect'),
 
     'Failed to delete comment' => __('Failed to delete comment', 'bit-connect'),
+
+    'This topic is locked. New comments are closed.' => __('This topic is locked. New comments are closed.', 'bit-connect'),
 
     'Log in to post a comment.' => __('Log in to post a comment.', 'bit-connect'),
 
@@ -1756,6 +1776,8 @@ return [
     'Topic details' => __('Topic details', 'bit-connect'),
 
     'Related topics' => __('Related topics', 'bit-connect'),
+
+    'Remove your upvote' => __('Remove your upvote', 'bit-connect'),
 
     'Failed to load posts' => __('Failed to load posts', 'bit-connect'),
 

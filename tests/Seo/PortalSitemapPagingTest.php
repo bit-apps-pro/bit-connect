@@ -410,20 +410,26 @@ final class PortalSitemapPagingTest extends TestCase
      */
     private function render(string $shape, string $subtype = ''): string
     {
-        $method = new \ReflectionMethod(PortalSitemap::class, $shape === 'index' ? 'renderIndex' : 'renderFeed');
+        $method = new \ReflectionMethod(PortalSitemap::class, $shape === 'index' ? 'printIndex' : 'printFeed');
         $method->setAccessible(true);
 
-        return $shape === 'index'
+        ob_start();
+        $shape === 'index'
             ? $method->invoke(null)
             : $method->invoke(null, PortalSitemap::urls($subtype, 1));
+
+        return (string) ob_get_clean();
     }
 
     private function stylesheet(): string
     {
-        $method = new \ReflectionMethod(PortalSitemap::class, 'renderStylesheet');
+        $method = new \ReflectionMethod(PortalSitemap::class, 'printStylesheet');
         $method->setAccessible(true);
 
-        return $method->invoke(null);
+        ob_start();
+        $method->invoke(null);
+
+        return (string) ob_get_clean();
     }
 
     private function transform(string $xml): string

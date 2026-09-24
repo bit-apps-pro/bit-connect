@@ -47,9 +47,9 @@ class MemberProfileService
      */
     private const LINK_PROTOCOLS = ['http', 'https'];
 
-    private const META_BIO = Config::VAR_PREFIX . 'bio';
+    private const META_BIO = 'bit_connect_bio';
 
-    private const META_LINKS = Config::VAR_PREFIX . 'social_links';
+    private const META_LINKS = 'bit_connect_social_links';
 
     /**
      * A member's bio, or '' when they have not written one.

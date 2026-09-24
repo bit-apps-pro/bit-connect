@@ -46,7 +46,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $title = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $title = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $page = max(1, $page);
         $url = SeoContent::pageUrl($page);
 
@@ -139,7 +139,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $url = PortalTaxonomies::urlForTerm($term);
 
         // Stored escaped ("API &amp; Integrations"). The tags below escape on
@@ -183,7 +183,7 @@ final class SeoMeta
     public static function forProfile(string $displayName = ''): void
     {
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         $title = $displayName === ''
             // translators: %s: community name.
@@ -219,7 +219,7 @@ final class SeoMeta
     public static function forNotifications(): void
     {
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         self::$meta = [
             'title' => \sprintf(
@@ -227,6 +227,27 @@ final class SeoMeta
                 __('Notifications — %s', 'bit-connect'),
                 $community
             ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
+     * Describe a sign-in, sign-up or password screen.
+     *
+     * These are forms, not content: they are kept out of search results.
+     */
+    public static function forAuthPage(string $pageTitle): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title'       => $pageTitle . ' — ' . $community,
             'description' => '',
             'canonical'   => '',
             'image'       => '',
@@ -305,32 +326,41 @@ final class SeoMeta
             Hooks::removeAction('wp_head', 'rel_canonical');
         }
 
-        // Every value is escaped as it is assembled in head().
-        echo self::head(); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative, WordPress.Security.EscapeOutput.OutputNotEscaped
+        self::printHead();
     }
 
     /**
      * Head markup for the matched route, or an empty string when none matched.
      *
-     * Split from render() so the output can be asserted without capturing echo.
+     * Captures printHead() so the output can be asserted without echoing.
      */
     public static function head(): string
     {
+        ob_start();
+        self::printHead();
+
+        return (string) ob_get_clean();
+    }
+
+    /**
+     * Print the head markup, escaping every value at the tag that carries it.
+     */
+    private static function printHead(): void
+    {
         if (self::$meta === null) {
-            return '';
+            return;
         }
 
         // The first-paint styles and the crawler/human view toggle that used to
         // be printed here as raw <style>/<script> are enqueued instead — see
         // PrePaint, enqueued from BaseView on exactly the requests that render
         // this markup. They still land in the head ahead of <body>.
-        $html = '';
 
         // Robots directives are never delegated: a route we mark noindex must
         // stay out of the index whether or not an SEO plugin is installed, and
         // SeoPluginBridge suppresses the plugin's competing tag when it runs.
         if (!empty(self::$meta['robots'])) {
-            $html .= '<meta name="robots" content="' . esc_attr(self::$meta['robots']) . '" />' . "\n";
+            printf("<meta name=\"robots\" content=\"%s\" />\n", esc_attr(self::$meta['robots']));
         }
 
         // JSON-LD is additive — no SEO plugin emits a competing
@@ -345,15 +375,14 @@ final class SeoMeta
             // bodies land inside a <script> block, so a post titled
             // `</script><img src=x onerror=…>` would otherwise close the tag and
             // execute. Hex-encoding < and > makes a break-out impossible.
-            $json = wp_json_encode(
-                $document,
-                JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            wp_print_inline_script_tag(
+                (string) wp_json_encode($document, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                ['type' => 'application/ld+json']
             );
-            $html .= '<script type="application/ld+json">' . $json . '</script>' . "\n";
         }
 
         if (!self::shouldEmitSocialTags()) {
-            return $html;
+            return;
         }
 
         $tags = [
@@ -375,21 +404,16 @@ final class SeoMeta
                 continue;
             }
 
-            $content = $key === 'og:url' || str_ends_with($key, 'image')
-                ? esc_url($value)
-                : esc_attr($value);
-
-            $name = esc_attr($attribute);
-            $property = esc_attr($key);
-            $html .= '<meta ' . $name . '="' . $property . '" content="' . $content . '" />' . "\n";
+            if ($key === 'og:url' || str_ends_with($key, 'image')) {
+                printf("<meta %s=\"%s\" content=\"%s\" />\n", esc_attr($attribute), esc_attr($key), esc_url($value));
+            } else {
+                printf("<meta %s=\"%s\" content=\"%s\" />\n", esc_attr($attribute), esc_attr($key), esc_attr($value));
+            }
         }
 
         if (!empty(self::$meta['canonical'])) {
-            $canonical = esc_url(self::$meta['canonical']);
-            $html .= '<link rel="canonical" href="' . $canonical . '" />' . "\n";
+            printf("<link rel=\"canonical\" href=\"%s\" />\n", esc_url(self::$meta['canonical']));
         }
-
-        return $html;
     }
 
     /**
@@ -484,7 +508,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         return [
             '@context'        => 'https://schema.org',

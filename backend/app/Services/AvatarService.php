@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use WP_Comment;
 use WP_Post;
@@ -35,7 +34,7 @@ class AvatarService
     /**
      * User meta key holding the attachment id of the custom picture.
      */
-    private const META_KEY = Config::VAR_PREFIX . 'avatar_id';
+    private const META_KEY = 'bit_connect_avatar_id';
 
     /**
      * Register the WordPress filters. Called once from the hook provider.

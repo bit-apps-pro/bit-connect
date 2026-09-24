@@ -22,7 +22,7 @@ use WP_Post;
  * the activity log has something to say.
  *
  * No capability check lives here. Who may delete is a question about the caller
- * — the author of their own words, or a moderator holding forum_delete_any —
+ * — the author of their own words, or a moderator holding bit_connect_forum_delete_any —
  * and answering it here would let a call site skip asking.
  */
 final class ContentRemovalService
