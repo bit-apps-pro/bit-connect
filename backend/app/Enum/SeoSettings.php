@@ -25,15 +25,6 @@ enum SeoSettings: string
     case OPTION_NAME = 'seo_settings';
 
     /**
-     * Bit Connect prints the head tags, or the active SEO plugin does.
-     */
-    public const OWNER_AUTO = 'auto';
-
-    public const OWNER_PLUGIN = 'bit-connect';
-
-    public const OWNER_SEO_PLUGIN = 'seo-plugin';
-
-    /**
      * The shipped behaviour, before an administrator changes anything.
      *
      * @return array<string, mixed>
@@ -41,18 +32,6 @@ enum SeoSettings: string
     public static function defaults(): array
     {
         return [
-            // Plain HTML for clients that never run the React bundle.
-            'serverRendering' => true,
-            'ssrTopicLimit'   => 30,
-
-            // Who owns title, canonical and the social tags. 'auto' hands them
-            // to a detected SEO plugin and prints them here otherwise.
-            'metaOwner' => self::OWNER_AUTO,
-
-            // Structured data. Additive, so on unless deliberately silenced.
-            'schemaDiscussion'  => true,
-            'schemaBreadcrumbs' => true,
-
             // Term archives, by URL segment. Switching one off removes the route
             // as well as the index entry — a hub nobody wants crawled is not a
             // page worth serving either.
@@ -119,6 +98,21 @@ enum SeoSettings: string
         $stored = Config::getOption(self::OPTION_NAME->value, []);
         $settings = array_merge(self::defaults(), \is_array($stored) ? $stored : []);
 
+        // Once on the SEO screen, since withdrawn. `serverRendering` switched
+        // off every route's title, canonical and structured data along with the
+        // HTML; `ssrTopicLimit` is fixed in TopicsView; the two schema switches
+        // are the `bit_connect_seo_json_ld` filter; `metaOwner` is gone because
+        // a supported SEO plugin is stood down on portal routes — see
+        // SeoPluginBridge. A value saved back then is dropped rather than left
+        // to be read.
+        unset(
+            $settings['serverRendering'],
+            $settings['ssrTopicLimit'],
+            $settings['schemaDiscussion'],
+            $settings['schemaBreadcrumbs'],
+            $settings['metaOwner']
+        );
+
         // Merged one level deep, so an option stored before a segment existed
         // still gets that segment's default rather than a missing key read as
         // "switched off".
@@ -144,33 +138,6 @@ enum SeoSettings: string
         return (bool) (self::all()[$key] ?? false);
     }
 
-    public static function metaOwner(): string
-    {
-        $owner = self::all()['metaOwner'] ?? self::OWNER_AUTO;
-
-        return \in_array($owner, [self::OWNER_AUTO, self::OWNER_PLUGIN, self::OWNER_SEO_PLUGIN], true)
-            ? $owner
-            : self::OWNER_AUTO;
-    }
-
-    /**
-     * How many topics the server-rendered list carries.
-     *
-     * This list was once fetched unbounded, so a community with thousands of
-     * topics serialised every one of them into every portal page load — for a
-     * list the React app discards and refetches anyway. The value bounds both
-     * the first paint and the crawler's view of a list page; the sitemap, not
-     * this markup, is what makes the remaining topics discoverable.
-     *
-     * Clamped rather than trusted, because it bounds the size of every portal
-     * page response.
-     */
-    public static function ssrTopicLimit(): int
-    {
-        $limit = (int) (self::all()['ssrTopicLimit'] ?? 30);
-
-        return max(1, min(200, $limit));
-    }
 
     /**
      * Whether a term archive segment is served at all.

@@ -260,8 +260,8 @@ final class SeoMeta
     /**
      * Resolved head data for the matched route, or null when none matched.
      *
-     * Read by SeoPluginBridge, which feeds the same values into whichever SEO
-     * plugin owns the head on this site.
+     * Read by SeoPluginBridge, which stands the site's SEO plugin down on a
+     * described route and feeds it the route's title.
      *
      * @return null|array<string, mixed>
      */
@@ -356,16 +356,16 @@ final class SeoMeta
         // PrePaint, enqueued from BaseView on exactly the requests that render
         // this markup. They still land in the head ahead of <body>.
 
-        // Robots directives are never delegated: a route we mark noindex must
-        // stay out of the index whether or not an SEO plugin is installed, and
-        // SeoPluginBridge suppresses the plugin's competing tag when it runs.
+        // A route we mark noindex must stay out of the index whether or not an
+        // SEO plugin is installed. A supported plugin's own robots tag, which
+        // describes the portal page, is stood down by SeoPluginBridge.
         if (!empty(self::$meta['robots'])) {
             printf("<meta name=\"robots\" content=\"%s\" />\n", esc_attr(self::$meta['robots']));
         }
 
-        // JSON-LD is additive — no SEO plugin emits a competing
-        // DiscussionForumPosting or portal BreadcrumbList for these routes, so
-        // it is always safe.
+        // Yoast and All in One SEO would otherwise print a WebPage and
+        // BreadcrumbList describing the portal page beside these, and Rank Math
+        // an Article; SeoPluginBridge stands their graphs down on this route.
         foreach ((array) (self::$meta['jsonLd'] ?? []) as $document) {
             if (empty($document)) {
                 continue;
@@ -419,24 +419,24 @@ final class SeoMeta
     /**
      * Whether to emit our own social tags and canonical.
      *
-     * Two sets of `og:title` is worse than one, so only one component may own
-     * these. When a supported SEO plugin is active, SeoPluginBridge pushes this
-     * same route data through that plugin's own filters and it prints them —
-     * so emitting here as well would duplicate every tag. With no such plugin,
-     * nothing else describes the route and we print them ourselves.
+     * Always, by default: no SEO plugin can describe a portal route, and a
+     * supported one is stood down on it by SeoPluginBridge. A site that keeps
+     * its plugin's output with `bit_connect_seo_plugin_stand_down` can silence
+     * these instead, so the head does not carry two of each.
      */
     private static function shouldEmitSocialTags(): bool
     {
-        return (bool) Hooks::applyFilter('bit_connect_seo_social_tags', !SeoPluginBridge::isBridged());
+        return (bool) Hooks::applyFilter('bit_connect_seo_social_tags', true);
     }
 
     /**
-     * The structured-data documents this route may emit, after the settings.
+     * The structured-data documents this route emits.
      *
-     * Both kinds are additive and safe by default, so they are on unless an
-     * administrator has a reason to silence them — most often another plugin
-     * already describing the same page and two competing graphs being worse
-     * than one.
+     * Not an administrator setting: no other plugin can describe a portal route,
+     * so there is never a competing graph to make way for. A site whose own
+     * code has a reason to drop or rewrite a document has
+     * `bit_connect_seo_json_ld`, which receives the list — each entry a
+     * schema.org document, told apart by its `@type`.
      *
      * @param array<string, mixed> $primary    the page's own description
      * @param array<string, mixed> $breadcrumb its place in the portal
@@ -445,17 +445,10 @@ final class SeoMeta
      */
     private static function schemaDocuments(array $primary, array $breadcrumb): array
     {
-        $documents = [];
+        $documents = array_values(array_filter([$primary, $breadcrumb]));
+        $filtered = Hooks::applyFilter('bit_connect_seo_json_ld', $documents);
 
-        if (!empty($primary) && SeoSettings::bool('schemaDiscussion')) {
-            $documents[] = $primary;
-        }
-
-        if (!empty($breadcrumb) && SeoSettings::bool('schemaBreadcrumbs')) {
-            $documents[] = $breadcrumb;
-        }
-
-        return $documents;
+        return \is_array($filtered) ? array_values(array_filter($filtered, 'is_array')) : $documents;
     }
 
     /**

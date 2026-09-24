@@ -3,7 +3,6 @@
 namespace BitApps\BitConnect\Views;
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Http\Controller\PostController;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\TopicService;
@@ -20,6 +19,18 @@ if (!defined('ABSPATH')) {
  */
 class TopicsView extends SSRView
 {
+    /**
+     * How many topics the server-rendered list carries.
+     *
+     * This list was once fetched unbounded, so a community with thousands of
+     * topics serialised every one of them into every portal page load — for a
+     * list the React app discards and refetches anyway. It bounds both the
+     * first paint and the crawler's view of a list page; the sitemap, not this
+     * markup, is what makes the remaining topics discoverable. A site with a
+     * reason to differ has `bit_connect_ssr_topic_limit`.
+     */
+    private const SSR_TOPIC_LIMIT = 30;
+
     public BaseView $baseView;
 
     /**
@@ -55,7 +66,7 @@ class TopicsView extends SSRView
      */
     public function prepareData($page = 1)
     {
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', SeoSettings::ssrTopicLimit());
+        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
         $page = max(1, (int) $page);
 
         $topicsData = $this->topicService->getAllTopics(
@@ -127,7 +138,7 @@ class TopicsView extends SSRView
     {
         $this->baseView->registerAssets();
 
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', SeoSettings::ssrTopicLimit());
+        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
 
         $topicsData = $this->topicService->getAllTopics(
             [

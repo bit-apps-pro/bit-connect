@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Button, InputNumber, Radio, Tabs, Typography } from 'antd'
+import { Alert, Button, Tabs, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import useSeoSettings from './data/use-seo-settings'
@@ -9,12 +9,7 @@ import SeoFieldRows from './internal/seo-field-rows'
 import SeoSection from './internal/seo-section'
 import SeoStatus from './internal/seo-status'
 import SitemapUrlNotice from './internal/sitemap-url-notice'
-import {
-  type ArchiveSegment,
-  DEFAULT_SEO_SETTINGS,
-  type MetaOwner,
-  type SeoSettings
-} from './shared/types'
+import { type ArchiveSegment, DEFAULT_SEO_SETTINGS, type SeoSettings } from './shared/types'
 
 const { Title } = Typography
 
@@ -96,121 +91,6 @@ export default function Seo() {
       children: <SeoStatus diagnostics={diagnostics} />,
       key: 'overview',
       label: __('Overview')
-    },
-    {
-      children: (
-        <SeoSection
-          disabled={disabled}
-          onChange={setToggle}
-          subtitle={__(
-            'The portal is a JavaScript app. Search engines and AI crawlers do not run it, so the server sends them plain HTML of the same content.'
-          )}
-          title={__('Content for crawlers')}
-          toggles={[
-            {
-              description: __(
-                'Render topics, replies and archives as plain HTML. Switching this off makes the portal invisible to anything that does not run JavaScript.'
-              ),
-              key: 'serverRendering',
-              label: __('Server-rendered content'),
-              value: form.serverRendering
-            }
-          ]}
-        >
-          <div className="bc-mt-4 bc-rounded-md bc-border bc-border-solid bc-border-line bc-p-4">
-            <Typography.Text strong>{__('Topics per rendered page')}</Typography.Text>
-            <p className="bc-mb-3 bc-mt-1 bc-text-sm bc-text-ink-muted">
-              {__(
-                'How many topics appear in the server-rendered list. Higher values make each page heavier for every visitor; older topics stay reachable through the sitemap and the older/newer links.'
-              )}
-            </p>
-            <InputNumber
-              disabled={disabled || !form.serverRendering}
-              max={200}
-              min={1}
-              onChange={value => setField('ssrTopicLimit', Number(value ?? 30))}
-              value={form.ssrTopicLimit}
-            />
-          </div>
-        </SeoSection>
-      ),
-      key: 'crawling',
-      label: __('Crawling')
-    },
-    {
-      children: (
-        <>
-          <SeoSection
-            disabled={disabled}
-            subtitle={__(
-              'Who prints the page title, canonical URL and social preview tags for portal routes.'
-            )}
-            title={__('Meta tags')}
-          >
-            <Radio.Group
-              disabled={disabled}
-              onChange={event => setField('metaOwner', event.target.value as MetaOwner)}
-              value={form.metaOwner}
-            >
-              <div className="bc-flex bc-flex-col bc-gap-3">
-                <Radio value="auto">
-                  <span className="bc-font-medium">{__('Automatic (recommended)')}</span>
-                  <div className="bc-text-sm bc-text-ink-muted">
-                    {__(
-                      'If an SEO plugin is active it prints the tags, using the portal data Bit Connect feeds it. Otherwise Bit Connect prints them.'
-                    )}
-                  </div>
-                </Radio>
-                <Radio value="bit-connect">
-                  <span className="bc-font-medium">{__('Always Bit Connect')}</span>
-                  <div className="bc-text-sm bc-text-ink-muted">
-                    {__(
-                      'Bit Connect prints the tags even when an SEO plugin is active. Use this if your SEO plugin is producing wrong tags on portal pages.'
-                    )}
-                  </div>
-                </Radio>
-                <Radio value="seo-plugin">
-                  <span className="bc-font-medium">{__('Always my SEO plugin')}</span>
-                  <div className="bc-text-sm bc-text-ink-muted">
-                    {__(
-                      'Bit Connect prints no tags of its own. If no supported SEO plugin is active, portal routes get no title or canonical at all.'
-                    )}
-                  </div>
-                </Radio>
-              </div>
-            </Radio.Group>
-          </SeoSection>
-
-          <SeoSection
-            disabled={disabled}
-            onChange={setToggle}
-            subtitle={__(
-              'Machine-readable descriptions that let search engines show richer results for discussions.'
-            )}
-            title={__('Structured data')}
-            toggles={[
-              {
-                description: __(
-                  'Describe topics as forum discussions with their author, dates and replies, and lists as collections.'
-                ),
-                key: 'schemaDiscussion',
-                label: __('Discussion and collection schema'),
-                value: form.schemaDiscussion
-              },
-              {
-                description: __(
-                  'Show the community as the parent of each topic and archive in search results.'
-                ),
-                key: 'schemaBreadcrumbs',
-                label: __('Breadcrumb schema'),
-                value: form.schemaBreadcrumbs
-              }
-            ]}
-          />
-        </>
-      ),
-      key: 'meta',
-      label: __('Meta & schema')
     },
     {
       children: (

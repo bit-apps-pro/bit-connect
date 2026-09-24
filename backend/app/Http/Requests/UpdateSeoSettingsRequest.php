@@ -14,11 +14,6 @@ use BitApps\BitConnect\Enum\SeoSettings;
 /**
  * Request input properties.
  *
- * @property bool   $serverRendering
- * @property int    $ssrTopicLimit
- * @property string $metaOwner
- * @property bool   $schemaDiscussion
- * @property bool   $schemaBreadcrumbs
  * @property array  $archives
  * @property array  $indexArchives
  * @property bool   $indexProfiles
@@ -44,11 +39,6 @@ final class UpdateSeoSettingsRequest extends Request
     public function rules()
     {
         return [
-            'serverRendering'       => ['nullable', 'boolean'],
-            'ssrTopicLimit'         => ['nullable', 'integer', 'min:1', 'max:200'],
-            'metaOwner'             => ['nullable', 'string'],
-            'schemaDiscussion'      => ['nullable', 'boolean'],
-            'schemaBreadcrumbs'     => ['nullable', 'boolean'],
             'archives'              => ['nullable', 'array'],
             'archives.*'            => ['nullable', 'boolean'],
             'indexArchives'         => ['nullable', 'array'],
@@ -80,16 +70,11 @@ final class UpdateSeoSettingsRequest extends Request
         $defaults = SeoSettings::defaults();
 
         $data = [
-            'serverRendering'   => $this->flag('serverRendering', $defaults['serverRendering']),
-            'ssrTopicLimit'     => $this->limit($defaults['ssrTopicLimit']),
-            'metaOwner'         => $this->owner($defaults['metaOwner']),
-            'schemaDiscussion'  => $this->flag('schemaDiscussion', $defaults['schemaDiscussion']),
-            'schemaBreadcrumbs' => $this->flag('schemaBreadcrumbs', $defaults['schemaBreadcrumbs']),
-            'indexProfiles'     => $this->flag('indexProfiles', $defaults['indexProfiles']),
-            'indexPagination'   => $this->flag('indexPagination', $defaults['indexPagination']),
-            'archives'          => $this->group('archives', $defaults['archives']),
-            'indexArchives'     => $this->group('indexArchives', $defaults['indexArchives']),
-            'sitemap'           => $this->group('sitemap', $defaults['sitemap']),
+            'indexProfiles'   => $this->flag('indexProfiles', $defaults['indexProfiles']),
+            'indexPagination' => $this->flag('indexPagination', $defaults['indexPagination']),
+            'archives'        => $this->group('archives', $defaults['archives']),
+            'indexArchives'   => $this->group('indexArchives', $defaults['indexArchives']),
+            'sitemap'         => $this->group('sitemap', $defaults['sitemap']),
         ];
 
         $sitemap = \is_array($this->sitemap) ? $this->sitemap : [];
@@ -161,23 +146,5 @@ final class UpdateSeoSettingsRequest extends Request
         $value = $this->{$key};
 
         return $value === null ? $default : self::toBool($value);
-    }
-
-    private function limit(int $default): int
-    {
-        if ($this->ssrTopicLimit === null || $this->ssrTopicLimit === '') {
-            return $default;
-        }
-
-        // Clamped here as well as on read: this bounds the size of every portal
-        // page response, so an out-of-range value should never reach the option.
-        return max(1, min(200, (int) $this->ssrTopicLimit));
-    }
-
-    private function owner(string $default): string
-    {
-        $allowed = [SeoSettings::OWNER_AUTO, SeoSettings::OWNER_PLUGIN, SeoSettings::OWNER_SEO_PLUGIN];
-
-        return \in_array($this->metaOwner, $allowed, true) ? $this->metaOwner : $default;
     }
 }

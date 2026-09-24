@@ -23,8 +23,8 @@ interface SeoSectionProps {
  * A titled card of SEO controls.
  *
  * Takes a list of switches and/or arbitrary children, because these settings are
- * not uniformly boolean — meta ownership is a choice of three and the server
- * list size is a number.
+ * not uniformly boolean — archive visibility is a choice per taxonomy and the
+ * sitemap page size is a number.
  */
 export default function SeoSection({
   children,

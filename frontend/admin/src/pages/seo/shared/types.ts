@@ -1,6 +1,3 @@
-/** Which component prints title, canonical and the social tags. */
-export type MetaOwner = 'auto' | 'bit-connect' | 'seo-plugin'
-
 /** URL segment of each term archive. Mirrors PortalTaxonomies::map(). */
 export type ArchiveSegment = 'department' | 'stage' | 'status' | 'tag' | 'topic'
 
@@ -24,12 +21,7 @@ export interface SeoSettings {
   indexArchives: ArchiveToggles
   indexPagination: boolean
   indexProfiles: boolean
-  metaOwner: MetaOwner
-  schemaBreadcrumbs: boolean
-  schemaDiscussion: boolean
-  serverRendering: boolean
   sitemap: SitemapSettings
-  ssrTopicLimit: number
 }
 
 /**
@@ -39,7 +31,6 @@ export interface SeoSettings {
 export interface SeoDiagnostics {
   archives: Record<string, { indexable: boolean; terms: number }>
   crawlerContent: boolean
-  isBridged: boolean
   portalIsPublic: boolean
   portalUrl: string
   publishedTopics: number
@@ -61,10 +52,6 @@ export const DEFAULT_SEO_SETTINGS: SeoSettings = {
   indexArchives: { department: true, stage: true, status: false, tag: true, topic: true },
   indexPagination: false,
   indexProfiles: false,
-  metaOwner: 'auto',
-  schemaBreadcrumbs: true,
-  schemaDiscussion: true,
-  serverRendering: true,
   sitemap: {
     archives: { department: true, stage: true, status: true, tag: true, topic: true },
     enabled: true,
@@ -72,8 +59,7 @@ export const DEFAULT_SEO_SETTINGS: SeoSettings = {
     includeTopics: true,
     inRobotsTxt: true,
     urlsPerPage: 2000
-  },
-  ssrTopicLimit: 30
+  }
 }
 
 export const SEO_PLUGIN_LABELS: Record<string, string> = {

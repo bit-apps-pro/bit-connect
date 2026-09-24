@@ -12,7 +12,6 @@ import {
 const EMPTY_DIAGNOSTICS: SeoDiagnostics = {
   archives: {},
   crawlerContent: false,
-  isBridged: false,
   portalIsPublic: false,
   portalUrl: '',
   publishedTopics: 0,

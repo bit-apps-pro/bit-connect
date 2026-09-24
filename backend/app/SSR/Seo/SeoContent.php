@@ -5,7 +5,6 @@ namespace BitApps\BitConnect\SSR\Seo;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
-use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use WP_Term;
@@ -36,11 +35,16 @@ final class SeoContent
      */
     public static function isEnabled(): bool
     {
-        // A members-only portal always wins: the setting can switch rendering
-        // off, never on for content the portal itself refuses to show.
-        $enabled = self::isPortalPublic() && SeoSettings::bool('serverRendering');
+        // Not an administrator setting: switching it off only ever made the
+        // portal invisible to link previews and AI crawlers, and it takes the
+        // route's head tags with it. The filter remains for a site whose own
+        // code has a reason to — it can switch rendering off, never on for a
+        // members-only portal.
+        if (!self::isPortalPublic()) {
+            return false;
+        }
 
-        return (bool) Hooks::applyFilter('bit_connect_seo_content_enabled', $enabled);
+        return (bool) Hooks::applyFilter('bit_connect_seo_content_enabled', true);
     }
 
     /**

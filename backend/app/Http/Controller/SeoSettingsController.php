@@ -83,7 +83,6 @@ final class SeoSettingsController
 
         return [
             'seoPlugin'       => SeoPluginBridge::detect(),
-            'isBridged'       => SeoPluginBridge::isBridged(),
             'portalIsPublic'  => ($general['portalAccess'] ?? 'everyone') === 'everyone',
             'crawlerContent'  => SeoContent::isEnabled(),
             'sitemapUrl'      => PortalSitemap::feedUrl(),

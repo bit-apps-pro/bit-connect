@@ -805,6 +805,16 @@ if (!function_exists('remove_action')) {
     }
 }
 
+if (!function_exists('remove_all_actions')) {
+    function remove_all_actions($tag, $priority = false): bool
+    {
+        $GLOBALS['__wp_removed_all_actions'][] = $tag;
+        unset($GLOBALS['__wp_actions'][$tag]);
+
+        return true;
+    }
+}
+
 if (!function_exists('user_trailingslashit')) {
     /**
      * Models a permalink structure with no trailing slash, which is what the

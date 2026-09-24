@@ -61,11 +61,8 @@ final class SeoSettingsTest extends TestCase
 
     public function testAnInstallThatNeverSavedSettingsGetsTheOldBehaviour(): void
     {
-        $this->assertTrue(SeoSettings::bool('serverRendering'));
+        $this->assertTrue(SeoContent::isEnabled());
         $this->assertTrue((bool) SeoSettings::sitemap('enabled'));
-        $this->assertTrue(SeoSettings::bool('schemaDiscussion'));
-        $this->assertSame(30, SeoSettings::ssrTopicLimit());
-        $this->assertSame(SeoSettings::OWNER_AUTO, SeoSettings::metaOwner());
 
         // Routes that were never indexed stay that way.
         $this->assertFalse(SeoSettings::bool('indexProfiles'));
@@ -75,9 +72,9 @@ final class SeoSettingsTest extends TestCase
 
     public function testASettingSavedBeforeANewOneExistedStillGetsTheNewDefault(): void
     {
-        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['serverRendering' => false];
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexProfiles' => true];
 
-        $this->assertFalse(SeoSettings::bool('serverRendering'));
+        $this->assertTrue(SeoSettings::bool('indexProfiles'));
         // Never stored, so it must not read as "switched off".
         $this->assertTrue((bool) SeoSettings::sitemap('enabled'));
         $this->assertTrue(SeoSettings::archiveEnabled('tag'));
@@ -87,32 +84,35 @@ final class SeoSettingsTest extends TestCase
     // Each setting changes something real.
     // -----------------------------------------------------------------------
 
-    public function testServerRenderingOffStopsCrawlerContent(): void
+    public function testAWithdrawnServerRenderingValueNoLongerSwitchesCrawlerContentOff(): void
     {
+        // Saved by the SEO screen while it still offered the switch.
         $this->store(['serverRendering' => false]);
+
+        $this->assertTrue(SeoContent::isEnabled());
+        $this->assertArrayNotHasKey('serverRendering', SeoSettings::all());
+    }
+
+    public function testTheContentFilterCanStillSwitchCrawlerContentOff(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_seo_content_enabled'] = false;
 
         $this->assertFalse(SeoContent::isEnabled());
         $this->assertSame('', SeoContent::forTopics([$this->makeTopic()]));
-    }
-
-    public function testSitemapSurvivesServerRenderingBeingOff(): void
-    {
-        $this->store(['serverRendering' => false]);
 
         // Googlebot renders JavaScript and reaches these URLs without the HTML
-        // fallback, so the two are deliberately independent.
-        $this->assertFalse(SeoContent::isEnabled());
+        // fallback, so the sitemap is deliberately independent of it.
         $this->assertTrue(SeoContent::isPortalPublic());
     }
 
-    public function testAMembersOnlyPortalOverridesTheRenderingSetting(): void
+    public function testAMembersOnlyPortalCannotBeFilteredBackOn(): void
     {
         $GLOBALS['__wp_options'][Config::withPrefix('general_settings')] = [
             'portalAccess' => 'logged_in',
         ];
-        $this->store(['serverRendering' => true]);
+        $GLOBALS['__wp_filters']['bit_connect_seo_content_enabled'] = true;
 
-        // The setting can switch rendering off, never on for content the portal
+        // The filter can switch rendering off, never on for content the portal
         // itself refuses to show.
         $this->assertFalse(SeoContent::isEnabled());
         $this->assertFalse(SeoContent::isPortalPublic());
@@ -162,9 +162,23 @@ final class SeoSettingsTest extends TestCase
         $this->assertStringNotContainsString('noindex', SeoMeta::head());
     }
 
-    public function testSchemaTogglesSilenceOneDocumentWithoutTheOther(): void
+    public function testAWithdrawnSchemaToggleNoLongerSilencesADocument(): void
     {
-        $this->store(['schemaBreadcrumbs' => false]);
+        // Saved by the SEO screen while it still offered the switches.
+        $this->store(['schemaDiscussion' => false, 'schemaBreadcrumbs' => false]);
+        SeoMeta::forTopic($this->makeTopic());
+        $head = SeoMeta::head();
+
+        $this->assertStringContainsString('DiscussionForumPosting', $head);
+        $this->assertStringContainsString('BreadcrumbList', $head);
+    }
+
+    public function testTheJsonLdFilterCanDropOneDocumentWithoutTheOther(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_seo_json_ld'] = static fn ($documents) => array_filter(
+            $documents,
+            static fn ($document) => ($document['@type'] ?? '') !== 'BreadcrumbList'
+        );
         SeoMeta::forTopic($this->makeTopic());
         $head = SeoMeta::head();
 
@@ -172,71 +186,54 @@ final class SeoSettingsTest extends TestCase
         $this->assertStringNotContainsString('BreadcrumbList', $head);
     }
 
-    public function testMetaOwnerSeoPluginStandsDownEvenWithNoPluginInstalled(): void
+    public function testAWithdrawnMetaOwnerNoLongerHandsTheHeadAway(): void
     {
-        $this->store(['metaOwner' => SeoSettings::OWNER_SEO_PLUGIN]);
-        SeoMeta::forTopic($this->makeTopic());
-
-        // Asking for the SEO plugin to own the head when none is installed means
-        // no route tags at all. It is a real choice with a real consequence, and
-        // the settings screen says so.
-        $this->assertStringNotContainsString('rel="canonical"', SeoMeta::head());
-    }
-
-    public function testMetaOwnerBitConnectPrintsTagsRegardless(): void
-    {
-        $this->store(['metaOwner' => SeoSettings::OWNER_PLUGIN]);
+        // Saved by the SEO screen while it still offered the choice. Handing the
+        // head over left portal routes with no title or canonical of their own.
+        $this->store(['metaOwner' => 'seo-plugin']);
         SeoMeta::forTopic($this->makeTopic());
 
         $this->assertStringContainsString('rel="canonical"', SeoMeta::head());
+        $this->assertArrayNotHasKey('metaOwner', SeoSettings::all());
     }
 
     // -----------------------------------------------------------------------
     // Nothing hostile reaches the option.
     // -----------------------------------------------------------------------
 
-    public function testTopicLimitIsClampedOnRead(): void
+    public function testAWithdrawnTopicLimitIsNotReadBack(): void
     {
+        // Saved by the SEO screen while it still offered the field.
         $this->store(['ssrTopicLimit' => 100000]);
-        $this->assertSame(200, SeoSettings::ssrTopicLimit());
 
-        $this->store(['ssrTopicLimit' => 0]);
-        $this->assertSame(1, SeoSettings::ssrTopicLimit());
-    }
-
-    public function testAnUnknownMetaOwnerFallsBackToAutomatic(): void
-    {
-        $this->store(['metaOwner' => 'something-else']);
-
-        $this->assertSame(SeoSettings::OWNER_AUTO, SeoSettings::metaOwner());
+        $this->assertArrayNotHasKey('ssrTopicLimit', SeoSettings::all());
     }
 
     public function testAPartialPayloadDoesNotSwitchOffWhatItOmits(): void
     {
-        $request = $this->makeUpdateRequest(['serverRendering' => false]);
+        $request = $this->makeUpdateRequest(['indexProfiles' => true]);
         $data = $request->toSettingsData();
 
-        $this->assertFalse($data['serverRendering']);
+        $this->assertTrue($data['indexProfiles']);
         // Everything unmentioned keeps its default rather than becoming false.
         $this->assertTrue($data['sitemap']['enabled']);
-        $this->assertTrue($data['schemaDiscussion']);
+        $this->assertFalse($data['indexPagination']);
         $this->assertTrue($data['archives']['tag']);
         $this->assertTrue($data['indexArchives']['topic']);
         $this->assertFalse($data['indexArchives']['status']);
         $this->assertSame(2000, $data['sitemap']['urlsPerPage']);
-        $this->assertSame(30, $data['ssrTopicLimit']);
     }
 
     public function testStringBooleansFromAFormPostAreUnderstood(): void
     {
         $request = $this->makeUpdateRequest([
-            'serverRendering' => 'false',
-            'indexProfiles'   => 'true',
-            'archives'        => ['tag' => '0'],
+            'sitemap'       => ['inRobotsTxt' => 'false'],
+            'indexProfiles' => 'true',
+            'archives'      => ['tag' => '0'],
         ]);
         $data = $request->toSettingsData();
 
-        $this->assertFalse($data['serverRendering']);
+        $this->assertFalse($data['sitemap']['inRobotsTxt']);
         $this->assertTrue($data['indexProfiles']);
         $this->assertFalse($data['archives']['tag']);
     }
@@ -335,11 +332,11 @@ final class SeoSettingsTest extends TestCase
         $this->assertTrue(PortalTaxonomies::isIndexable('tag'));
     }
 
-    public function testTopicLimitIsClampedOnWriteToo(): void
+    public function testAWithdrawnTopicLimitIsNotSaved(): void
     {
         $data = $this->makeUpdateRequest(['ssrTopicLimit' => 99999])->toSettingsData();
 
-        $this->assertSame(200, $data['ssrTopicLimit']);
+        $this->assertArrayNotHasKey('ssrTopicLimit', $data);
     }
 
     /**
