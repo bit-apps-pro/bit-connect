@@ -45,7 +45,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $title = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $title = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $page = max(1, $page);
         $url = SeoContent::pageUrl($page);
 
@@ -132,7 +132,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $url = PortalTaxonomies::urlForTerm($term);
 
         // Stored escaped ("API &amp; Integrations"). The tags below escape on
@@ -176,7 +176,7 @@ final class SeoMeta
     public static function forProfile(string $displayName = ''): void
     {
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         $title = $displayName === ''
             // translators: %s: community name.
@@ -212,7 +212,7 @@ final class SeoMeta
     public static function forNotifications(): void
     {
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         self::$meta = [
             'title' => \sprintf(
@@ -220,6 +220,27 @@ final class SeoMeta
                 __('Notifications — %s', 'bit-connect'),
                 $community
             ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
+     * Describe a sign-in, sign-up or password screen.
+     *
+     * These are forms, not content: they are kept out of search results.
+     */
+    public static function forAuthPage(string $pageTitle): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title'       => $pageTitle . ' — ' . $community,
             'description' => '',
             'canonical'   => '',
             'image'       => '',
@@ -347,9 +368,9 @@ final class SeoMeta
             // bodies land inside a <script> block, so a post titled
             // `</script><img src=x onerror=…>` would otherwise close the tag and
             // execute. Hex-encoding < and > makes a break-out impossible.
-            printf(
-                "<script type=\"application/ld+json\">%s</script>\n",
-                wp_json_encode($document, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+            wp_print_inline_script_tag(
+                (string) wp_json_encode($document, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                ['type' => 'application/ld+json']
             );
         }
 
@@ -480,7 +501,7 @@ final class SeoMeta
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $community = $generalSettings['communityTitle'] ?? get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         return [
             '@context'        => 'https://schema.org',

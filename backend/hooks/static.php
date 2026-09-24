@@ -1,6 +1,7 @@
 <?php
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Route;
+use BitApps\BitConnect\Http\Controller\AuthPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
@@ -28,6 +29,14 @@ Route::get('/page/{pageNumber}', [new TopicsController(), 'index']);
 // otherwise take it and look for a topic by that name. Static beats dynamic
 // here only because this is declared first; the router matches in order.
 Route::get('/notifications', [new NotificationsPageController(), 'show']);
+
+// Auth screens - match the frontend routes '/login', '/register',
+// '/verify-email' and '/forgot-password'. Declared before '/{slug}' for the same
+// reason as '/notifications': otherwise they are looked up as topics and 404.
+Route::get('/login', [new AuthPageController(), 'login']);
+Route::get('/register', [new AuthPageController(), 'register']);
+Route::get('/verify-email', [new AuthPageController(), 'verifyEmail']);
+Route::get('/forgot-password', [new AuthPageController(), 'forgotPassword']);
 
 // Member profile - matches frontend route '/user/:userId'. Declared before the
 // single-segment topic route below; it is two segments, so it cannot be served

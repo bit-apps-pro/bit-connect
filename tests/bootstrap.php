@@ -568,6 +568,18 @@ if (!function_exists('wp_json_encode')) {
     }
 }
 
+if (!function_exists('wp_print_inline_script_tag')) {
+    function wp_print_inline_script_tag($data, $attributes = [])
+    {
+        $attrs = '';
+        foreach ($attributes as $name => $value) {
+            $attrs .= \sprintf(' %s="%s"', $name, esc_attr($value));
+        }
+
+        echo \sprintf("<script%s>%s</script>\n", $attrs, $data);
+    }
+}
+
 // Enqueue API. Registration is recorded only far enough for the Views to be
 // exercised; what the tests read back is the inline data each handle carries,
 // which is what wp_head() would print. Keyed like core: styles and scripts are

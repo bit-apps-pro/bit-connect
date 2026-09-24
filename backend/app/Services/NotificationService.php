@@ -319,7 +319,7 @@ final class NotificationService
         $candidates = $recipients ?? self::resolveRecipients($type, $targetType, $targetId, $topicId);
 
         /**
-         * Lets Pro and third parties add or remove recipients without forking
+         * Lets other plugins add or remove recipients without forking
          * this method. Filtered before the actor and exclusions are applied, so
          * a listener cannot accidentally reintroduce the author of the action.
          *
