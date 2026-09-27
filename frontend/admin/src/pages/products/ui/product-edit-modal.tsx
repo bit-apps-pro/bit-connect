@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router'
 import useProduct from '../data/use-product'
 import { type ErrorResponse } from '../data/use-store-product'
 import useUpdateProduct from '../data/use-update-product'
+import { toProductBody, toProductFormValues } from '../shared/product-body'
 import { useIsProductEditModalOpen, useProductStoreActions } from '../state/use-product-store'
 import ProductForm from './product-form'
 
@@ -46,7 +47,7 @@ export default function ProductEditModal() {
       )
 
       if (!hasValues) {
-        form.setFieldsValue(product)
+        form.setFieldsValue(toProductFormValues(product))
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +60,7 @@ export default function ProductEditModal() {
   const handleOk = async () => {
     const values = await form.validateFields()
     const id = Number(searchParams.get('id'))
-    updateProduct({ id, ...values })
+    updateProduct({ id, ...toProductBody(values) })
     setSearchParams({})
     form.resetFields()
     setIsProductEditModalOpen(false)

@@ -318,27 +318,29 @@ class PostTypeProvider
             );
         }
 
-        register_term_meta(
-            Taxonomies::TOPIC_TYPES->value,
-            'bit_connect_icon_url',
-            [
-                'type'              => 'string',
-                'single'            => true,
-                'sanitize_callback' => 'sanitize_text_field',
-                'show_in_rest'      => true,
-            ]
-        );
+        foreach ([Taxonomies::TOPIC_TYPES->value, Taxonomies::DEPARTMENTS->value] as $iconTaxonomy) {
+            register_term_meta(
+                $iconTaxonomy,
+                'bit_connect_icon_url',
+                [
+                    'type'              => 'string',
+                    'single'            => true,
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'show_in_rest'      => true,
+                ]
+            );
 
-        register_term_meta(
-            Taxonomies::TOPIC_TYPES->value,
-            'bit_connect_icon_id',
-            [
-                'type'              => 'integer',
-                'single'            => true,
-                'sanitize_callback' => 'absint',
-                'show_in_rest'      => true,
-            ]
-        );
+            register_term_meta(
+                $iconTaxonomy,
+                'bit_connect_icon_id',
+                [
+                    'type'              => 'integer',
+                    'single'            => true,
+                    'sanitize_callback' => 'absint',
+                    'show_in_rest'      => true,
+                ]
+            );
+        }
 
         $this->addIconDarkTermMetaFields();
     }
@@ -398,6 +400,7 @@ class PostTypeProvider
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
             Taxonomies::TOPIC_TYPES->value,
+            Taxonomies::DEPARTMENTS->value,
         ];
 
         foreach ($iconTaxonomies as $taxonomy) {

@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import TermIconCell from '@utilities/term-icon-cell'
 import {
   dragColumn,
   DragHandle,
@@ -37,6 +38,12 @@ export default function ProductsTable() {
       dataIndex: 'name',
       key: 'name',
       title: __('Product Name')
+    },
+    {
+      dataIndex: 'icon',
+      key: 'icon',
+      render: (_: unknown, record: Product) => <TermIconCell alt={record.name} meta={record.meta} />,
+      title: __('Icon')
     },
     {
       dataIndex: 'description',

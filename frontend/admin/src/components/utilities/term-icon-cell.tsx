@@ -14,7 +14,7 @@ interface TermIconCellProps {
 }
 
 /**
- * The icon column shared by the stages, statuses and topic-types tables.
+ * The icon column shared by the stages, statuses, topic-types and products tables.
  *
  * Follows the admin's own theme rather than always showing the light artwork,
  * so an admin who uploads a dark-mode icon can confirm it looks right by

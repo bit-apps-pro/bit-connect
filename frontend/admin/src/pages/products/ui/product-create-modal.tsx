@@ -3,6 +3,7 @@ import { Alert, Form, Modal } from 'antd'
 
 import { type ErrorResponse } from '../data/use-store-product'
 import useStoreProduct from '../data/use-store-product'
+import { toProductBody } from '../shared/product-body'
 import { useIsProductCreateModalOpen, useProductStoreActions } from '../state/use-product-store'
 import ProductForm from './product-form'
 
@@ -22,7 +23,7 @@ export default function ProductCreateModal() {
 
   const handleOk = async () => {
     const values = await form.validateFields()
-    storeProduct(values)
+    storeProduct(toProductBody(values))
     form.resetFields()
     setIsProductCreateModalOpen(false)
   }

@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import IconPickerField, { iconDarkHint, iconSizeHint } from '@utilities/icon-picker-field'
 import SlugField, { useSlugSync } from '@utilities/slug-field'
 import { type FormInstance, Input } from 'antd'
 import { Form } from 'antd'
@@ -21,6 +22,20 @@ export default function ProductForm({ form, isEditMode, open }: ProductFormProps
       <Form.Item label={__('Description')} name="description">
         <Input.TextArea placeholder={__('Description')} />
       </Form.Item>
+      <IconPickerField
+        baseName="icon"
+        extra={iconSizeHint()}
+        form={form}
+        label={__('Icon (light mode)')}
+        previewAlt={__('Product icon')}
+      />
+      <IconPickerField
+        baseName="icon_dark"
+        extra={iconDarkHint()}
+        form={form}
+        label={__('Icon (dark mode)')}
+        previewAlt={__('Product icon for dark mode')}
+      />
     </Form>
   )
 }
