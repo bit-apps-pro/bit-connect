@@ -7,27 +7,31 @@ import TopicTypeEditModal from './ui/topic-type-edit-modal'
 import TopicTypesCreateModal from './ui/topic-types-create-modal'
 import TopicTypesTable from './ui/topic-types-table'
 
+const { Text, Title } = Typography
+
 export default function TopicTypes() {
   const { setIsTopicTypeCreateModalOpen } = useTopicTypeStoreActions()
   return (
-    <div>
-      <div>
-        <div className="bc-py-6 bc-px-5 bc-flex bc-justify-between bc-items-center">
-          <div>
-            <Typography.Title level={2}>{__('Topic Types')}</Typography.Title>
-            <Typography.Text>{__('Manage your topic types here')}</Typography.Text>
-          </div>
-          <Button
-            icon={<LuPlus />}
-            onClick={() => setIsTopicTypeCreateModalOpen(true)}
-            size="large"
-            type="primary"
-          >
-            {__('Add Topic Type')}
-          </Button>
+    <div className="bc-px-6 bc-pb-6">
+      <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
+        <div className="bc-min-w-0">
+          <Title className="bc-mb-0.5" level={3}>
+            {__('Topic Types')}
+          </Title>
+          <Text className="bc-text-xs" type="secondary">
+            {__('The kinds of topic members can post, each with its own label and colour. Drag to reorder.')}
+          </Text>
         </div>
+        <Button icon={<LuPlus />} onClick={() => setIsTopicTypeCreateModalOpen(true)} type="primary">
+          {__('Add Topic Type')}
+        </Button>
       </div>
-      <TopicTypesTable />
+
+      {/* The layout's ground is sunken, so the table sits on its own raised
+          card, like the General screen's sections. */}
+      <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+        <TopicTypesTable />
+      </div>
       <TopicTypesCreateModal />
       <TopicTypeEditModal />
     </div>

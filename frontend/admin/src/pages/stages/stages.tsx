@@ -152,30 +152,36 @@ export default function Stages() {
   ]
 
   return (
-    <div>
-      <div className=" bc-py-6 bc-px-5 bc-flex bc-items-center bc-justify-between">
-        <div>
-          <Title className="bc-mb-2" level={2}>
-            {__('Stage')}
+    <div className="bc-px-6 bc-pb-6">
+      <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
+        <div className="bc-min-w-0">
+          <Title className="bc-mb-0.5" level={3}>
+            {__('Stages')}
           </Title>
-          <Text type="secondary">{__('Manage stages for your project')}</Text>
+          <Text className="bc-text-xs" type="secondary">
+            {__('The steps a topic moves through, from first question to release. Drag to reorder.')}
+          </Text>
         </div>
-        <Button icon={<LuPlus />} onClick={handleCreate} size="large" type="primary">
+        <Button icon={<LuPlus />} onClick={handleCreate} type="primary">
           {__('Create Stage')}
         </Button>
       </div>
 
-      <SortableTable items={rows.map(stage => stage.id)} onDragEnd={handleDragEnd} sensors={sensors}>
-        <Table
-          columns={columns}
-          components={{ body: { row: SortableRow } }}
-          dataSource={rows}
-          loading={isStagesPending}
-          pagination={false}
-          rowClassName="bg-transparent"
-          rowKey="id"
-        />
-      </SortableTable>
+      {/* The layout's ground is sunken, so the table sits on its own raised
+          card, like the General screen's sections. */}
+      <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+        <SortableTable items={rows.map(stage => stage.id)} onDragEnd={handleDragEnd} sensors={sensors}>
+          <Table
+            columns={columns}
+            components={{ body: { row: SortableRow } }}
+            dataSource={rows}
+            loading={isStagesPending}
+            pagination={false}
+            rowClassName="bg-transparent"
+            rowKey="id"
+          />
+        </SortableTable>
+      </div>
 
       <StageModal
         errorMessage={getErrorMessage(error || updateError, isError || isUpdateError)}
