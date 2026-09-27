@@ -3,7 +3,6 @@
 namespace BitApps\BitConnect\Tests\Http;
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
-use BitApps\BitConnect\Http\Controller\LoginController;
 use BitApps\BitConnect\Http\Controller\TopicController;
 use BitApps\BitConnect\Http\Requests\CreateTopicRequest;
 use BitApps\BitConnect\Http\RestPermission;
@@ -68,7 +67,7 @@ final class RestPermissionTest extends TestCase
 
     public function testAnActionWithoutARequestIsPublicByDeclaration(): void
     {
-        $this->assertNull(RestPermission::requestClassOf([LoginController::class, 'data']));
+        $this->assertNull(RestPermission::requestClassOf([DecidedController::class, 'open']));
         $this->assertTrue((new RestPermission([DecidedController::class, 'open']))->check(new WP_REST_Request()));
     }
 
