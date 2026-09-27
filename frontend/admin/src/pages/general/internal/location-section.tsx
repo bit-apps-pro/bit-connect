@@ -1,6 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __, sprintf } from '@common/helpers/i18nWrap'
-import { Alert, Input, Modal, Switch, Tag, Typography } from 'antd'
+import { Alert, Button, Input, Modal, Space, Switch, Tag, Typography } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useContext } from 'react'
 
@@ -107,36 +107,21 @@ export default function LocationSection({
 
   return (
     <SectionCard
-      extra={
-        portalPage.exists ? (
-          <Tag color={portalPage.root ? 'blue' : 'default'}>
-            {portalPage.root ? __('Homepage') : __('Own page')}
-          </Tag>
-        ) : (
-          <Tag color="warning">{__('Not set up')}</Tag>
-        )
+      subtitle={__('The address visitors land on, and the WordPress page that carries the portal.')}
+      tag={
+        // A small badge qualifying the title, not a control.
+        <Tag
+          className="bc-m-0 bc-px-1.5 bc-text-[10px] bc-leading-4"
+          color={portalPage.exists ? (portalPage.root ? 'blue' : 'default') : 'warning'}
+        >
+          {portalPage.exists
+            ? portalPage.root
+              ? __('Site root')
+              : __('Own page')
+            : __('Not set up')}
+        </Tag>
       }
-      subtitle={
-        portalPage.exists ? (
-          <>
-            {__('Your community is at')}{' '}
-            <a href={portalPage.url} rel="noreferrer" target="_blank">
-              {portalPage.url}
-            </a>
-            {portalPage.editUrl && (
-              <>
-                {' · '}
-                <a href={portalPage.editUrl} rel="noreferrer" target="_blank">
-                  {__('Edit this page')}
-                </a>
-              </>
-            )}
-          </>
-        ) : (
-          __('The web address where people find your community.')
-        )
-      }
-      title={__('Community address')}
+      title={__('Portal address')}
     >
       {/* These appear and disappear in response to a control further down the
           card, so they open the space they need instead of shoving the rows
@@ -180,7 +165,7 @@ export default function LocationSection({
             <Alert
               className="bc-mb-3 bc-mt-2 bc-py-2 bc-text-sm"
               message={__(
-                'Your homepage is not the community page — pick it in Settings → Reading, or turn off "Show as homepage".'
+                'Your homepage is not the community page — pick it in Settings → Reading, or turn off "Serve at the site root".'
               )}
               showIcon
               type="error"
@@ -189,10 +174,32 @@ export default function LocationSection({
         )}
       </AnimatePresence>
 
+      {portalPage.exists && (
+        <SettingRow
+          description={__('Where your community can be reached right now.')}
+          full
+          label={__('Live address')}
+        >
+          <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-3">
+            <Space.Compact className="bc-w-80 bc-max-w-full">
+              <Input readOnly value={portalPage.url} />
+              <Button onClick={() => onCopy(portalPage.url)} type="primary">
+                {__('Copy')}
+              </Button>
+            </Space.Compact>
+            {portalPage.editUrl && (
+              <a className="bc-text-sm" href={portalPage.editUrl} rel="noreferrer" target="_blank">
+                {__('Edit this page')}
+              </a>
+            )}
+          </div>
+        </SettingRow>
+      )}
+
       <SettingRow
         description={
           portalPage.root
-            ? __('Not used while the community is your homepage.')
+            ? __('Your community is your homepage, so it has no slug of its own.')
             : __(
                 'The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that contains the shortcode. Changing it changes every topic link.'
               )
@@ -220,21 +227,21 @@ export default function LocationSection({
 
       <SettingRow
         description={__(
-          'Show the community at yoursite.com instead of yoursite.com/slug. It replaces your current homepage — best for a site that is only the community.'
+          'Serve the portal from the site root instead of a slug — it becomes your homepage. Only for a WordPress install dedicated to the forum.'
         )}
-        label={__('Show as homepage')}
+        inline
+        label={__('Serve at the site root')}
       >
-        <div className="bc-flex bc-items-center bc-gap-3 md:bc-justify-end">
-          <Switch
-            checked={portalPage.root}
-            disabled={disabled || isUpdatingPortalRoot}
-            loading={isUpdatingPortalRoot}
-            onChange={handleToggleRoot}
-          />
-          <Text className="bc-text-sm" type="secondary">
-            {portalPage.exists ? __('Saves right away') : __('Needs the page first')}
-          </Text>
-        </div>
+        <Switch
+          aria-label={__('Serve at the site root')}
+          checked={portalPage.root}
+          disabled={disabled || isUpdatingPortalRoot}
+          loading={isUpdatingPortalRoot}
+          onChange={handleToggleRoot}
+        />
+        <Text className="bc-text-xs" type="secondary">
+          {portalPage.exists ? __('Applies immediately') : __('Needs the page first')}
+        </Text>
       </SettingRow>
 
       <SettingRow
@@ -243,12 +250,12 @@ export default function LocationSection({
         )}
         label={__('Shortcode')}
       >
-        <Input.Search
-          enterButton={__('Copy')}
-          onSearch={() => onCopy('[bit-connect]')}
-          readOnly
-          value="[bit-connect]"
-        />
+        <Space.Compact className="bc-w-full">
+          <Input readOnly value="[bit-connect]" />
+          <Button onClick={() => onCopy('[bit-connect]')} type="primary">
+            {__('Copy')}
+          </Button>
+        </Space.Compact>
       </SettingRow>
     </SectionCard>
   )

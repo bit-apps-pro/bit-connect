@@ -22,6 +22,6 @@ export const navItemStyle = ({ isActive, token }: NavItemStyle) => ({
   borderRadius: token.borderRadius,
   color: isActive ? '#3266EA' : token.colorText,
   fontWeight: isActive ? 500 : 400,
-  padding: 10,
+  padding: '0 10px',
   width: '100%'
 })

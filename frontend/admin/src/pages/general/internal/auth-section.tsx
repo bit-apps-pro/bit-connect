@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Input, Radio, Switch, Typography } from 'antd'
+import { Input, Switch, Typography } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import {
@@ -35,37 +35,38 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
   return (
     <>
       <SectionCard
-        subtitle={__('Where visitors go when they need an account.')}
+        subtitle={__('Choose where people sign in and create an account.')}
         title={__('Sign-in method')}
       >
         <SettingRow full label={__('Login and registration form')}>
-          <Radio.Group
-            className="bc-w-full"
-            disabled={disabled}
-            onChange={e => onPatch({ mode: e.target.value as AuthMode })}
-            value={form.mode}
+          <div
+            aria-label={__('Login and registration form')}
+            className="bc-flex bc-flex-wrap bc-gap-3"
+            role="radiogroup"
           >
-            <div className="bc-grid bc-gap-3 md:bc-grid-cols-2">
-              <ChoiceCard
-                description={__(
-                  'People sign in and register on the portal itself. You choose its banner, heading and wording below.'
-                )}
-                groupId="auth-mode"
-                label={__('Built-in form')}
-                selected={form.mode === 'plugin_default'}
-                value="plugin_default"
-              />
-              <ChoiceCard
-                description={__(
-                  'People are sent to pages you already have — a membership plugin, or your theme.'
-                )}
-                groupId="auth-mode"
-                label={__('My own login page')}
-                selected={form.mode === 'custom_url'}
-                value="custom_url"
-              />
-            </div>
-          </Radio.Group>
+            <ChoiceCard
+              checked={form.mode === 'plugin_default'}
+              description={__(
+                'People sign in and register on the portal itself. You choose its banner, heading and wording below.'
+              )}
+              disabled={disabled}
+              label={__('Built-in form')}
+              name="auth-mode"
+              onSelect={value => onPatch({ mode: value as AuthMode })}
+              value="plugin_default"
+            />
+            <ChoiceCard
+              checked={form.mode === 'custom_url'}
+              description={__(
+                'People are sent to pages you already have — a membership plugin, or your theme.'
+              )}
+              disabled={disabled}
+              label={__('My own login page')}
+              name="auth-mode"
+              onSelect={value => onPatch({ mode: value as AuthMode })}
+              value="custom_url"
+            />
+          </div>
         </SettingRow>
       </SectionCard>
 
@@ -76,7 +77,7 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
         {form.mode === 'plugin_default' ? (
           <motion.div animate="in" exit="out" initial="out" key="plugin_default" variants={swapVariants}>
             <SectionCard
-              subtitle={__('What the built-in login and registration page shows.')}
+              subtitle={__('Customize the built-in sign-in and registration page.')}
               title={__('Login page')}
             >
               <SettingRow
@@ -147,7 +148,7 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
                 WordPress's own registration form gives, so the forum's form
                 can never hand out more than WordPress does. */}
             <SectionCard
-              subtitle={__('What happens when someone registers through the built-in form.')}
+              subtitle={__('Rules for people who sign up through the built-in form.')}
               title={__('New accounts')}
             >
               <SettingRow
@@ -156,20 +157,18 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
                 )}
                 label={__('Require email verification')}
               >
-                <div className="md:bc-text-right">
-                  <Switch
-                    checked={form.requireEmailVerification}
-                    disabled={disabled}
-                    onChange={checked => onPatch({ requireEmailVerification: checked })}
-                  />
-                </div>
+                <Switch
+                  checked={form.requireEmailVerification}
+                  disabled={disabled}
+                  onChange={checked => onPatch({ requireEmailVerification: checked })}
+                />
               </SettingRow>
             </SectionCard>
           </motion.div>
         ) : (
           <motion.div animate="in" exit="out" initial="out" key="custom_url" variants={swapVariants}>
             <SectionCard
-              subtitle={__('Where the portal sends people instead of showing its own form.')}
+              subtitle={__('Send people to your own sign-in pages instead of the built-in form.')}
               title={__('Your login pages')}
             >
               <SettingRow description={__('The page people sign in on.')} label={__('Login page URL')}>

@@ -1,5 +1,4 @@
 import { LoadingOutlined } from '@ant-design/icons'
-import { cn } from '@common/helpers/globalHelpers'
 import { Global, ThemeProvider } from '@emotion/react'
 import { Layout as AntLayout, Space, theme } from 'antd'
 import { useAtomValue } from 'jotai'
@@ -35,7 +34,7 @@ export default function Layout() {
       <Global styles={globalCssInJs(antConfig, isDarkTheme)} />
       <OfflineBanner />
       <AntLayout
-        className={cn([cls.layoutWrp, 'bc-p-5'])}
+        className={cls.layoutWrp}
         color-scheme={isDarkTheme ? 'dark' : 'light'}
         hasSider
         style={{
@@ -47,15 +46,12 @@ export default function Layout() {
         }}
       >
         <Sidebar />
-        <Content
-          className="scroller thin bc-ml-5 bc-rounded-md bc-border bc-border-solid"
-          style={{
-            backgroundColor: antConfig.token.colorBgContainer,
-            borderColor: antConfig.token.colorBorderSecondary,
-            borderRadius: antConfig.token.borderRadius,
-            overflow: 'auto'
-          }}
-        >
+        {/* The content shares the frame's sunken ground, so each screen's own
+            cards are the only raised surfaces on it. The scrollbar's lane is
+            kept even when nothing scrolls: otherwise a tab or panel that
+            crosses the window height makes it appear, and the whole screen
+            jumps sideways by its width. */}
+        <Content className="scroller thin" style={{ overflow: 'auto', scrollbarGutter: 'stable' }}>
           <Suspense fallback={fallbackOf()} key={key}>
             <Outlet />
           </Suspense>

@@ -33,16 +33,16 @@ enum GeneralSettings: string
     }
 
     /**
-     * The promo card at the foot of the portal sidebar: whether it shows, where
-     * it points, and every word on it.
+     * The Bit Apps credit card at the foot of the portal sidebar: whether it
+     * shows, and what it says.
      *
      * `enabled` defaults to off, the opposite of portalFilters() above: this one
      * puts a link to another site on pages the owner published, so it only
      * appears where an admin deliberately switched it on.
      *
-     * Every line defaults to empty, and the portal renders no copy of its own to
-     * fill the gap — an empty line is a row the card does not have, and a card
-     * with nothing written in it does not render.
+     * The switch is the only stored part. The copy is the plugin's own, fixed
+     * and translatable, so switching the card on is the whole decision — any
+     * wording an older version stored is ignored.
      *
      * @param mixed $settings the stored general_settings option
      *
@@ -52,28 +52,19 @@ enum GeneralSettings: string
     {
         $stored = \is_array($settings) ? $settings : [];
         $promo = \is_array($stored['promo'] ?? null) ? $stored['promo'] : [];
-        $phrases = \is_array($promo['phrases'] ?? null) ? $promo['phrases'] : [];
-        $strings = array_map(static fn ($phrase) => \is_string($phrase) ? $phrase : '', $phrases);
-        $filled = array_filter($strings, static fn (string $phrase) => $phrase !== '');
 
         return [
             'enabled'  => filter_var($promo['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN),
-            'url'      => self::promoText($promo, 'url'),
-            'eyebrow'  => self::promoText($promo, 'eyebrow'),
-            'headline' => self::promoText($promo, 'headline'),
-            'prefix'   => self::promoText($promo, 'prefix'),
-            'phrases'  => array_values($filled),
-            'cta'      => self::promoText($promo, 'cta'),
+            'url'      => 'https://bitapps.pro',
+            'eyebrow'  => __('A Bit Apps product', 'bit-connect'),
+            'headline' => __('Built with Bit Connect', 'bit-connect'),
+            'prefix'   => __('We also build', 'bit-connect'),
+            'phrases'  => [
+                __('smart WordPress forms', 'bit-connect'),
+                __('no-code automations', 'bit-connect'),
+                __('communities like this', 'bit-connect'),
+            ],
+            'cta' => __('Explore our plugins', 'bit-connect'),
         ];
-    }
-
-    /**
-     * One stored line of promo copy, or '' for anything that is not a string.
-     *
-     * @param array<string, mixed> $promo
-     */
-    private static function promoText(array $promo, string $key): string
-    {
-        return \is_string($promo[$key] ?? null) ? $promo[$key] : '';
     }
 }

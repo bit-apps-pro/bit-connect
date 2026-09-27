@@ -8,12 +8,13 @@ use BitApps\BitConnect\Http\Requests\UpdateGeneralSettingsRequest;
 use PHPUnit\Framework\TestCase;
 
 /**
- * The portal sidebar's promo card.
+ * The portal sidebar's Bit Apps credit card.
  *
  * The default matters more than the feature: the card is an outbound link on
  * pages the site owner published, so it may only appear where an admin asked
  * for it — and no partial payload, or install that predates the setting, may
- * turn it on by accident.
+ * turn it on by accident. The switch is all an admin controls; the copy is the
+ * plugin's own.
  *
  * @internal
  *
@@ -28,15 +29,7 @@ final class GeneralSettingsPromoTest extends TestCase
 
     public function testStaysOffForAnInstallThatNeverSawTheSetting(): void
     {
-        $promo = GeneralSettings::promo(['communityTitle' => 'Acme Community']);
-
-        $this->assertFalse($promo['enabled']);
-        $this->assertSame('', $promo['url']);
-        $this->assertSame('', $promo['eyebrow']);
-        $this->assertSame('', $promo['headline']);
-        $this->assertSame('', $promo['prefix']);
-        $this->assertSame([], $promo['phrases']);
-        $this->assertSame('', $promo['cta']);
+        $this->assertFalse(GeneralSettings::promo(['communityTitle' => 'Acme Community'])['enabled']);
     }
 
     public function testStaysOffWhenTheOptionIsNotEvenAnArray(): void
@@ -46,27 +39,42 @@ final class GeneralSettingsPromoTest extends TestCase
         $this->assertFalse(GeneralSettings::promo('yes')['enabled']);
     }
 
-    public function testStoresEveryLineOfTheCard(): void
+    public function testServesThePluginsOwnCopy(): void
     {
-        $data = $this->update([
-            'promo' => [
-                'enabled'  => true,
-                'url'      => 'https://bitapps.pro',
-                'eyebrow'  => 'A Bit Apps product',
-                'headline' => 'Built with Bit Connect',
-                'prefix'   => 'We also build',
-                'phrases'  => ['smart forms', 'no-code automations'],
-                'cta'      => 'Explore our plugins',
-            ],
+        $promo = GeneralSettings::promo(['promo' => ['enabled' => true]]);
+
+        $this->assertTrue($promo['enabled']);
+        $this->assertSame('https://bitapps.pro', $promo['url']);
+        $this->assertSame('A Bit Apps product', $promo['eyebrow']);
+        $this->assertSame('Built with Bit Connect', $promo['headline']);
+        $this->assertSame('We also build', $promo['prefix']);
+        $this->assertSame(
+            ['smart WordPress forms', 'no-code automations', 'communities like this'],
+            $promo['phrases']
+        );
+        $this->assertSame('Explore our plugins', $promo['cta']);
+    }
+
+    /**
+     * An older version let admins write the card; that wording is not served.
+     */
+    public function testIgnoresWordingAnOlderVersionStored(): void
+    {
+        $promo = GeneralSettings::promo([
+            'promo' => ['enabled' => true, 'headline' => 'Built by Acme', 'url' => 'https://acme.test'],
         ]);
 
-        $this->assertTrue($data['promo']['enabled']);
-        $this->assertSame('https://bitapps.pro', $data['promo']['url']);
-        $this->assertSame('A Bit Apps product', $data['promo']['eyebrow']);
-        $this->assertSame('Built with Bit Connect', $data['promo']['headline']);
-        $this->assertSame('We also build', $data['promo']['prefix']);
-        $this->assertSame(['smart forms', 'no-code automations'], $data['promo']['phrases']);
-        $this->assertSame('Explore our plugins', $data['promo']['cta']);
+        $this->assertSame('Built with Bit Connect', $promo['headline']);
+        $this->assertSame('https://bitapps.pro', $promo['url']);
+    }
+
+    public function testStoresOnlyTheSwitch(): void
+    {
+        $data = $this->update([
+            'promo' => ['enabled' => true, 'headline' => 'Built by Acme', 'url' => 'javascript:alert(1)'],
+        ]);
+
+        $this->assertSame(['enabled' => true], $data['promo']);
     }
 
     /**
@@ -83,115 +91,18 @@ final class GeneralSettingsPromoTest extends TestCase
     /**
      * The onboarding form posts only the branding fields.
      */
-    public function testAPayloadWithoutTheCardLeavesTheStoredOneAlone(): void
+    public function testAPayloadWithoutTheCardLeavesTheSwitchAlone(): void
     {
-        $this->store([
-            'enabled'  => true,
-            'headline' => 'Built by Acme',
-            'url'      => 'https://acme.test',
-            'phrases'  => ['our other plugins'],
-        ]);
+        $this->store(['enabled' => true]);
 
-        $data = $this->update(['communityTitle' => 'Acme Community']);
-
-        $this->assertTrue($data['promo']['enabled']);
-        $this->assertSame('Built by Acme', $data['promo']['headline']);
-        $this->assertSame('https://acme.test', $data['promo']['url']);
-        $this->assertSame(['our other plugins'], $data['promo']['phrases']);
+        $this->assertTrue($this->update(['communityTitle' => 'Acme Community'])['promo']['enabled']);
     }
 
-    /**
-     * Same reasoning one level down: an admin build that posts the switch but
-     * not the copy is editing the switch, not blanking the wording.
-     */
-    public function testAPartialCardKeepsTheKeysItOmits(): void
+    public function testACardWithoutTheSwitchLeavesItAlone(): void
     {
-        $this->store([
-            'enabled'  => false,
-            'headline' => 'Built by Acme',
-            'url'      => 'https://acme.test',
-            'phrases'  => ['our other plugins'],
-        ]);
+        $this->store(['enabled' => true]);
 
-        $data = $this->update(['promo' => ['enabled' => true]]);
-
-        $this->assertTrue($data['promo']['enabled']);
-        $this->assertSame('Built by Acme', $data['promo']['headline']);
-        $this->assertSame('https://acme.test', $data['promo']['url']);
-        $this->assertSame(['our other plugins'], $data['promo']['phrases']);
-    }
-
-    /**
-     * Nothing fills the gap: an emptied line is a row the card no longer has.
-     */
-    public function testAnEmptiedLineStaysEmpty(): void
-    {
-        $this->store([
-            'enabled'  => true,
-            'headline' => 'Built by Acme',
-            'eyebrow'  => 'An Acme product',
-            'url'      => 'https://acme.test',
-        ]);
-
-        $data = $this->update([
-            'promo' => ['headline' => '', 'eyebrow' => '', 'url' => '', 'phrases' => [], 'cta' => ''],
-        ]);
-
-        $this->assertSame('', $data['promo']['headline']);
-        $this->assertSame('', $data['promo']['eyebrow']);
-        $this->assertSame('', $data['promo']['url']);
-        $this->assertSame('', $data['promo']['cta']);
-        $this->assertSame([], $data['promo']['phrases']);
-        $this->assertTrue($data['promo']['enabled'], 'blanking the copy is not switching the card off');
-    }
-
-    public function testRefusesALinkTheBrowserShouldNotFollow(): void
-    {
-        $data = $this->update(['promo' => ['url' => 'javascript:alert(1)']]);
-
-        $this->assertSame('', $data['promo']['url']);
-    }
-
-    public function testStripsMarkupFromEveryLine(): void
-    {
-        $data = $this->update([
-            'promo' => [
-                'eyebrow'  => '<em>An Acme product</em>',
-                'headline' => '<script>alert(1)</script>Built by Acme',
-                'prefix'   => '<b>We also build</b>',
-                'phrases'  => ['<b>bold ideas</b>'],
-                'cta'      => '<i>See our work</i>',
-            ],
-        ]);
-
-        $this->assertSame('An Acme product', $data['promo']['eyebrow']);
-        $this->assertSame('alert(1)Built by Acme', $data['promo']['headline']);
-        $this->assertSame('We also build', $data['promo']['prefix']);
-        $this->assertSame(['bold ideas'], $data['promo']['phrases']);
-        $this->assertSame('See our work', $data['promo']['cta']);
-    }
-
-    public function testDropsBlankPhrasesAndKeepsTheAdminsOrder(): void
-    {
-        $data = $this->update([
-            'promo' => ['phrases' => ['first', '   ', '', 'second', 'third']],
-        ]);
-
-        $this->assertSame(['first', 'second', 'third'], $data['promo']['phrases']);
-    }
-
-    public function testCapsTheListAndTheLineLength(): void
-    {
-        $data = $this->update([
-            'promo' => [
-                'headline' => str_repeat('a', 200),
-                'phrases'  => array_map(static fn (int $i) => 'phrase ' . $i, range(1, 25)),
-            ],
-        ]);
-
-        $this->assertSame(80, mb_strlen($data['promo']['headline']));
-        $this->assertCount(10, $data['promo']['phrases']);
-        $this->assertSame('phrase 1', $data['promo']['phrases'][0]);
+        $this->assertTrue($this->update(['promo' => []])['promo']['enabled']);
     }
 
     /**
