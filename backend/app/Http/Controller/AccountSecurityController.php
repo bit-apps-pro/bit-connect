@@ -24,7 +24,7 @@ use WP_User;
  *
  * POST /users/{id}/password           — change password (owner only)
  * POST /users/{id}/email              — start an email change (owner only)
- * POST /auth/verify-email-change      — finish one (token authorises)
+ * POST /auth/verify-email-change      — finish one (owner only, with the token)
  *
  * Members could already do both through wp-login.php and wp-admin; keeping them
  * in the portal is what stops "change your password" meaning "leave the site".
