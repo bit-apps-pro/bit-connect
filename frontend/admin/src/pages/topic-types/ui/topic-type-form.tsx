@@ -1,6 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
 import ChipPreview from '@utilities/chip-preview'
-import IconPickerField, { iconDarkHint, iconSizeHint } from '@utilities/icon-picker-field'
 import SlugField, { useSlugSync } from '@utilities/slug-field'
 import { ColorPicker, type FormInstance, Input, Typography } from 'antd'
 import { Form } from 'antd'
@@ -49,20 +48,6 @@ export default function TopicTypeForm({ form, isEditMode, open }: TopicTypeProps
         <ColorPicker format="hex" showText />
       </Form.Item>
       <ChipPreview color={color} label={name} />
-      <IconPickerField
-        baseName="icon"
-        extra={iconSizeHint()}
-        form={form}
-        label={__('Icon (light mode)')}
-        previewAlt={__('Topic type icon')}
-      />
-      <IconPickerField
-        baseName="icon_dark"
-        extra={iconDarkHint()}
-        form={form}
-        label={__('Icon (dark mode)')}
-        previewAlt={__('Topic type icon for dark mode')}
-      />
     </Form>
   )
 }

@@ -318,7 +318,7 @@ class PostTypeProvider
             );
         }
 
-        foreach ([Taxonomies::TOPIC_TYPES->value, Taxonomies::DEPARTMENTS->value] as $iconTaxonomy) {
+        foreach ([Taxonomies::DEPARTMENTS->value] as $iconTaxonomy) {
             register_term_meta(
                 $iconTaxonomy,
                 'bit_connect_icon_url',
@@ -399,7 +399,6 @@ class PostTypeProvider
         $iconTaxonomies = [
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
-            Taxonomies::TOPIC_TYPES->value,
             Taxonomies::DEPARTMENTS->value,
         ];
 

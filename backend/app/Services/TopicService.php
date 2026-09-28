@@ -731,14 +731,14 @@ class TopicService
 
     /**
      * Get terms associated with a topic, including meta (color, icon).
-     * - topic_types: color, icon
+     * - topic_types: color
      * - statuses: color
      * - stages: icon.
      */
     private function getTopicTerms(int $postId): array
     {
         $singleTermTaxonomies = [
-            Taxonomies::TOPIC_TYPES->value => ['key' => 'topic_types', 'meta' => ['color', 'icon']],
+            Taxonomies::TOPIC_TYPES->value => ['key' => 'topic_types', 'meta' => ['color']],
             Taxonomies::DEPARTMENTS->value => ['key' => 'departments', 'meta' => []],
             Taxonomies::STAGES->value      => ['key' => 'stages', 'meta' => ['icon']],
             Taxonomies::STATUSES->value    => ['key' => 'statuses', 'meta' => ['color']],
