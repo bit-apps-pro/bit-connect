@@ -22,10 +22,10 @@ const { Paragraph, Text } = Typography
 const CHIP =
   'bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-px-2.5 bc-py-1 bc-text-xs bc-font-semibold bc-leading-none'
 
-/** A small all-caps heading over each block inside a card. */
+/** A small caption over each block inside a card, as on the settings screens. */
 function BlockLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bc-mb-2 bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-subtle">
+    <div className="bc-mb-2 bc-text-xs bc-font-medium bc-text-ink-muted">
       {children}
     </div>
   )
@@ -104,7 +104,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
       {/* How many people agreed, read before any of the words are. */}
       <span aria-hidden className={`bc-absolute bc-inset-y-0 bc-left-0 bc-w-1 ${severity.rail}`} />
 
-      <div className="bc-p-5 bc-pl-6">
+      <div className="bc-px-6 bc-py-5 bc-pl-7">
         <div className="bc-mb-3 bc-flex bc-flex-wrap bc-items-center bc-gap-2">
           <span
             className={`${CHIP} ${
@@ -191,7 +191,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
             reporters' notes below are unfilled, so there a rule is all there
             is and it earns its place. */}
         {entry.exists && (
-          <blockquote className="bc-mx-0 bc-mb-0 bc-mt-4 bc-rounded-md bc-border-none bc-bg-surface-sunken bc-px-4 bc-py-3">
+          <blockquote className="bc-mx-0 bc-mb-0 bc-mt-4 bc-rounded-lg bc-border-none bc-bg-surface-sunken bc-px-4 bc-py-3">
             <Paragraph
               className="bc-mb-0 bc-text-sm bc-text-ink-muted"
               ellipsis={{ expandable: true, rows: 3, symbol: __('Show all') }}
@@ -246,7 +246,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
       </div>
 
       {isPending && (
-        <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-border-x-0 bc-border-b-0 bc-border-t bc-border-solid bc-border-line bc-bg-surface-sunken bc-px-5 bc-py-3 bc-pl-6">
+        <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-border-x-0 bc-border-b-0 bc-border-t bc-border-solid bc-border-line bc-bg-surface-sunken bc-px-6 bc-py-3.5 bc-pl-7">
           <Input
             className="bc-min-w-[200px] bc-max-w-md bc-flex-1"
             disabled={isBusy}

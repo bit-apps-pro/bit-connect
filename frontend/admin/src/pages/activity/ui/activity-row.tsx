@@ -82,7 +82,7 @@ export default function ActivityRow({ index, isLast, row }: ActivityRowProps) {
         <Icon aria-hidden />
       </span>
 
-      <div className="bc-min-w-0 bc-flex-1 bc-rounded-md bc-px-3 bc-py-2 bc-transition-colors hover:bc-bg-surface-hover">
+      <div className="bc-min-w-0 bc-flex-1 bc-rounded-lg bc-px-3 bc-py-2 bc-transition-colors hover:bc-bg-surface-hover">
         <div className="bc-flex bc-flex-wrap bc-items-baseline bc-gap-x-2 bc-gap-y-1">
           <span className="bc-text-sm bc-font-semibold bc-text-ink">
             {row.actor.is_system && !row.actor.name && (

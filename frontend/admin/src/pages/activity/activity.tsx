@@ -39,7 +39,11 @@ function byDay(rows: ActivityRow[]) {
 
 function LoadingRows() {
   return (
-    <div className="bc-flex bc-flex-col bc-gap-4 bc-pt-2">
+    <div
+      aria-busy
+      className="bc-flex bc-flex-col bc-gap-4 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-5"
+    >
+      <Skeleton.Button active size="small" />
       {[0, 1, 2, 3].map(index => (
         <div className="bc-flex bc-gap-3" key={index}>
           <Skeleton.Avatar active size={32} />
@@ -52,7 +56,7 @@ function LoadingRows() {
 
 function EmptyLog({ isFiltered }: { isFiltered: boolean }) {
   return (
-    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-dashed bc-border-line-strong bc-bg-surface-sunken bc-px-6 bc-py-16 bc-text-center">
+    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-16 bc-text-center">
       <LuHistory aria-hidden className="bc-text-3xl bc-text-ink-subtle" />
       <Text strong>
         {isFiltered ? __('Nothing matches those filters.') : __('Nothing recorded yet.')}
@@ -128,7 +132,7 @@ export default function Activity() {
         )}
       </div>
 
-      <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface-sunken bc-p-3">
+      <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-center bc-gap-3 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-5 bc-py-4">
         <Select
           allowClear
           className="bc-min-w-[260px]"
@@ -195,21 +199,25 @@ export default function Activity() {
 
       {!isFirstLoad && (
         <div
-          className={`bc-transition-opacity ${
+          className={`bc-flex bc-flex-col bc-gap-5 bc-transition-opacity ${
             isActivityLogFetching ? 'bc-pointer-events-none bc-opacity-50' : ''
           }`}
         >
           {groups.map(group => (
-            <section key={group.label}>
+            <section
+              className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-pb-2 bc-pt-5"
+              key={group.label}
+            >
               {/* The heading is what makes a run of timestamps legible: without
                   it every row prints its own date and the reader does the
                   grouping by eye, on a screen whose whole job is chronology. */}
-              <h4 className="bc-mb-3 bc-mt-1 bc-flex bc-items-center bc-gap-3 bc-text-xs bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-subtle">
-                {group.label}
-                <span aria-hidden className="bc-h-px bc-flex-1 bc-bg-line" />
+              <h4 className="bc-m-0 bc-mb-4">
+                <span className="bc-inline-block bc-rounded-md bc-bg-surface-sunken bc-px-2.5 bc-py-1 bc-text-sm bc-font-medium bc-text-ink">
+                  {group.label}
+                </span>
               </h4>
 
-              <ol className="bc-m-0 bc-mb-4 bc-list-none bc-p-0">
+              <ol className="bc-m-0 bc-list-none bc-p-0">
                 {group.rows.map((row, index) => (
                   <ActivityRowItem
                     index={index}

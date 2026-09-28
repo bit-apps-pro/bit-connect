@@ -31,12 +31,12 @@ function Quote({ label, tone = 'plain', value }: QuoteProps) {
   return (
     <div className="bc-mt-2">
       {label && (
-        <div className="bc-mb-1 bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-subtle">
+        <div className="bc-mb-1 bc-text-xs bc-font-medium bc-text-ink-muted">
           {label}
         </div>
       )}
       <blockquote
-        className={`bc-m-0 bc-border-y-0 bc-border-r-0 bc-border-l-2 bc-border-solid bc-bg-surface-sunken bc-py-2 bc-pl-3 bc-pr-3 ${RAILS[tone]}`}
+        className={`bc-m-0 bc-rounded-e-lg bc-border-y-0 bc-border-r-0 bc-border-l-2 bc-border-solid bc-bg-surface-sunken bc-py-2 bc-pl-3 bc-pr-3 ${RAILS[tone]}`}
       >
         <Paragraph
           className="bc-mb-0 bc-text-sm bc-text-ink-muted"

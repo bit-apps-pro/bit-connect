@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Pagination, Skeleton, Tabs, Typography } from 'antd'
+import { Alert, ConfigProvider, Pagination, Segmented, Skeleton, theme, Typography } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { LuInbox, LuShieldCheck } from 'react-icons/lu'
@@ -12,15 +12,15 @@ import ReportCard from './ui/report-card'
 const { Text, Title } = Typography
 
 /**
- * The panels are left off deliberately: every tab shows the same list, only
- * filtered, so it is rendered once below the bar rather than four times inside
- * it — one AnimatePresence tree instead of one per visited tab.
+ * A switch between four views of one list, not four panels: every option shows
+ * the same list, only filtered, so it is rendered once below the bar — one
+ * AnimatePresence tree instead of one per visited view.
  */
 const STATUS_TABS = [
-  { key: 'pending', label: __('Awaiting review') },
-  { key: 'resolved_kept', label: __('Kept') },
-  { key: 'resolved_removed', label: __('Removed') },
-  { key: 'dismissed', label: __('Dismissed') }
+  { label: __('Awaiting review'), value: 'pending' },
+  { label: __('Kept'), value: 'resolved_kept' },
+  { label: __('Removed'), value: 'resolved_removed' },
+  { label: __('Dismissed'), value: 'dismissed' }
 ]
 
 /**
@@ -49,7 +49,7 @@ function LoadingCards() {
     <div className="bc-flex bc-flex-col bc-gap-4">
       {[0, 1, 2].map(index => (
         <div
-          className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-5"
+          className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-5"
           key={index}
         >
           <Skeleton active paragraph={{ rows: 3 }} title={{ width: '40%' }} />
@@ -66,7 +66,7 @@ function EmptyQueue({ status }: { status: string }) {
   const Icon = isPending ? LuShieldCheck : LuInbox
 
   return (
-    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-dashed bc-border-line-strong bc-bg-surface-sunken bc-px-6 bc-py-16 bc-text-center">
+    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-16 bc-text-center">
       <Icon
         aria-hidden
         className={`bc-text-3xl ${isPending ? 'bc-text-positive' : 'bc-text-ink-subtle'}`}
@@ -86,6 +86,7 @@ export default function Reports() {
   const { isReportsError, isReportsFetching, isReportsStale, reports } = useReports(filters)
   const cardMotion = useCardMotion()
   const swapMotion = useSwapMotion()
+  const { token } = theme.useToken()
 
   const status = filters.status ?? 'pending'
   const isPending = status === 'pending'
@@ -131,11 +132,29 @@ export default function Reports() {
         )}
       </div>
 
-      <Tabs
-        activeKey={status}
-        items={STATUS_TABS}
-        onChange={key => setFilters(previous => ({ ...previous, page: 1, status: key }))}
-      />
+      {/* The same filled pill as the General page's tab bar, so a switch
+          between views looks the same wherever it appears. */}
+      <ConfigProvider
+        theme={{
+          components: {
+            Segmented: {
+              itemHoverBg: token.colorFillTertiary,
+              itemSelectedBg: token.colorPrimary,
+              itemSelectedColor: token.colorTextLightSolid,
+              trackBg: 'var(--bc-surface)',
+              trackPadding: 6
+            }
+          },
+          token: { borderRadius: 12, borderRadiusSM: 8, controlHeight: 44, controlPaddingHorizontal: 18 }
+        }}
+      >
+        <Segmented
+          className="bc-mb-5 bc-max-w-full bc-overflow-x-auto bc-border bc-border-solid bc-border-line [&_.ant-segmented-group]:bc-gap-1 [&_.ant-segmented-item-selected]:bc-font-semibold"
+          onChange={value => setFilters(previous => ({ ...previous, page: 1, status: value }))}
+          options={STATUS_TABS}
+          value={status}
+        />
+      </ConfigProvider>
 
       {isReportsError && (
         <Alert
