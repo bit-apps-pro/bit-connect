@@ -31,9 +31,16 @@ interface ArchiveRowsProps {
 export default function ArchiveRows({ diagnostics, disabled, form, onChange }: ArchiveRowsProps) {
   const fields: SeoField[] = (Object.keys(SEGMENT_LABELS) as ArchiveSegment[]).map(segment => ({
     control: 'switch',
-    description: `/${segment}/${__('{name}')} · ${
-      diagnostics.archives[segment]?.terms ?? 0
-    } ${__('terms')}`,
+    description: (
+      <span className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
+        <code className="bc-rounded bc-bg-surface-sunken bc-px-1.5 bc-py-0.5 bc-text-xs bc-text-ink-muted">
+          /{segment}/{__('{name}')}
+        </code>
+        <span>
+          {diagnostics.archives[segment]?.terms ?? 0} {__('terms')}
+        </span>
+      </span>
+    ),
     key: segment,
     label: SEGMENT_LABELS[segment],
     onChange: value => onChange(segment, value),

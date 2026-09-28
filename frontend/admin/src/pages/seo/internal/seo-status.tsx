@@ -1,23 +1,27 @@
 import { __, sprintf } from '@common/helpers/i18nWrap'
-import { Alert, Descriptions, Tag, Typography } from 'antd'
+import { Alert } from 'antd'
 
-import { SEO_PLUGIN_LABELS, type SeoDiagnostics } from '../shared/types'
+import { type SeoDiagnostics } from '../shared/types'
+import SeoSection from './seo-section'
 
-const { Title } = Typography
+/** One fact: a caption on the left, the value beside it. */
+function StatusRow({ children, label }: { children: React.ReactNode; label: string }) {
+  return (
+    <div className="bc-grid bc-gap-1 bc-border-0 bc-border-t bc-border-solid bc-border-t-line bc-py-3.5 sm:bc-grid-cols-[11rem_1fr] sm:bc-gap-4">
+      <div className="bc-text-xs bc-font-medium bc-text-ink-muted sm:bc-pt-0.5">{label}</div>
+      <div className="bc-min-w-0 bc-break-words bc-text-sm bc-text-ink">{children}</div>
+    </div>
+  )
+}
 
 /**
  * What is actually live, as opposed to what has been asked for.
  *
  * Every value here is read from the running site, not from the form — an
- * administrator otherwise has no way to tell whether their SEO plugin is
- * winning, whether crawlers can see the portal at all, or how much of the
- * community is indexable.
+ * administrator otherwise has no way to tell whether crawlers can see the
+ * portal at all, or how much of the community is indexable.
  */
 export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics }) {
-  const pluginLabel = diagnostics.seoPlugin
-    ? (SEO_PLUGIN_LABELS[diagnostics.seoPlugin] ?? diagnostics.seoPlugin)
-    : __('None detected')
-
   // Every portal page that goes to search, counted the way the sitemap lists
   // them: the landing page, each topic, and each archive shown in search.
   const archivePageCount = Object.values(diagnostics.archives)
@@ -25,10 +29,10 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
     .reduce((total, archive) => total + archive.terms, 0)
 
   return (
-    <div className="bc-mb-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-6">
-      <Title className="bc-mb-4" level={4}>
-        {__('Status')}
-      </Title>
+    <SeoSection
+      subtitle={__('What is live on the site right now, read from the site itself.')}
+      title={__('Status')}
+    >
 
       {!diagnostics.portalIsPublic && (
         <Alert
@@ -66,29 +70,20 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
         />
       )}
 
-      <Descriptions bordered column={1} size="small">
-        <Descriptions.Item label={__('SEO plugin detected')}>
-          <span className="bc-font-medium">{pluginLabel}</span>
-          {diagnostics.seoPlugin && (
-            <Tag className="bc-ml-2" color="blue">
-              {__('It handles the rest of the site; Bit Connect describes portal pages')}
-            </Tag>
-          )}
-        </Descriptions.Item>
-
-        <Descriptions.Item label={__('Portal URL')}>
+      <div>
+        <StatusRow label={__('Portal URL')}>
           <a href={diagnostics.portalUrl} rel="noreferrer" target="_blank">
             {diagnostics.portalUrl || '—'}
           </a>
-        </Descriptions.Item>
+        </StatusRow>
 
-        <Descriptions.Item label={__('Sitemap')}>
+        <StatusRow label={__('Sitemap')}>
           {diagnostics.sitemapUrl ? (
             <>
               <a href={diagnostics.sitemapUrl} rel="noreferrer" target="_blank">
                 {diagnostics.sitemapUrl}
               </a>
-              <p className="bc-mb-0 bc-mt-1 bc-text-sm bc-text-ink-muted">
+              <p className="bc-mb-0 bc-mt-1 bc-text-xs bc-text-ink-subtle">
                 {__(
                   'Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.'
                 )}
@@ -97,10 +92,10 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
           ) : (
             '—'
           )}
-        </Descriptions.Item>
+        </StatusRow>
 
         {diagnostics.sitemapUrl && (
-          <Descriptions.Item label={__('In the sitemap')}>
+          <StatusRow label={__('In the sitemap')}>
             <span className="bc-font-medium">
               {sprintf(
                 // translators: 1: number of topics, 2: number of archive pages.
@@ -109,9 +104,9 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
                 archivePageCount
               )}
             </span>
-          </Descriptions.Item>
+          </StatusRow>
         )}
-      </Descriptions>
-    </div>
+      </div>
+    </SeoSection>
   )
 }

@@ -42,10 +42,3 @@ export const DEFAULT_SEO_SETTINGS: SeoSettings = {
   indexArchives: { department: true, stage: true, status: false, tag: true, topic: true },
   indexProfiles: false
 }
-
-export const SEO_PLUGIN_LABELS: Record<string, string> = {
-  aioseo: 'All in One SEO',
-  rankmath: 'Rank Math',
-  seopress: 'SEOPress',
-  yoast: 'Yoast SEO'
-}

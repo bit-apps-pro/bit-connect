@@ -29,7 +29,9 @@ export default function useSeoSettings() {
     queryFn: ({ signal }) =>
       request<never, SeoSettingsResponse>('seo-settings', { method: 'GET', signal }),
     queryKey: ['seo-settings'],
-    retry: false,
+    // Retried quietly behind the skeleton: a dev-server reload or a slow
+    // request should not put an error on screen that a second try would clear.
+    retry: 2,
     select: response => {
       const payload = response?.data ?? (response as unknown as SeoSettingsResponse)
 
@@ -51,6 +53,8 @@ export default function useSeoSettings() {
 
   return {
     diagnostics: data?.diagnostics ?? EMPTY_DIAGNOSTICS,
+    /** Whether real settings have arrived, rather than the empty defaults. */
+    hasSeoSettings: data !== undefined,
     isSeoSettingsError: isError,
     isSeoSettingsFetching: isFetching,
     isSeoSettingsPending: isPending,
