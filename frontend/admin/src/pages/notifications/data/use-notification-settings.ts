@@ -17,18 +17,20 @@ const KEY = 'notification-settings'
  * does. Same reason the placeholder help travels with it.
  */
 export function useNotificationSettings() {
-  const { data, isError, isPending } = useQuery<
+  const { data, isError, isPending, refetch } = useQuery<
     ResponseType<NotificationSettingsPayload>,
     Error,
     NotificationSettingsPayload
   >({
     queryFn: ({ signal }) => request<never, NotificationSettingsPayload>(KEY, { method: 'GET', signal }),
     queryKey: [KEY],
-    retry: false,
+    // Retried quietly behind the skeleton: a dev-server reload or a slow
+    // request should not put an error on screen that a second try would clear.
+    retry: 2,
     select: response => response?.data
   })
 
-  return { isSettingsError: isError, isSettingsPending: isPending, payload: data }
+  return { isSettingsError: isError, isSettingsPending: isPending, payload: data, refetchSettings: refetch }
 }
 
 export function useUpdateNotificationSettings() {

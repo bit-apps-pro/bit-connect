@@ -1,19 +1,21 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Button, InputNumber, Skeleton, Switch, Tooltip, Typography } from 'antd'
-import { useEffect, useState } from 'react'
+import { Alert, Button, InputNumber, Switch, Typography } from 'antd'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   useNotificationSettings,
   useSendTestEmail,
   useUpdateNotificationSettings
 } from './data/use-notification-settings'
-import DigestScheduleSection from './internal/digest-schedule-section'
 import EmailDeliverySection from './internal/email-delivery-section'
 import EmailWordingSection from './internal/email-wording-section'
+import PageSkeleton from './internal/page-skeleton'
 import SectionCard from './internal/section-card'
+import TypeMatrix from './internal/type-matrix'
+import { PageSaveContext, type SaveParticipant } from './shared/page-save'
 import { type NotificationSettingsData } from './shared/types'
 
-const { Title } = Typography
+const { Text, Title } = Typography
 
 /**
  * Forum-wide notification settings.
@@ -24,25 +26,54 @@ const { Title } = Typography
  * because each row there is independent and affects only them.
  */
 export default function NotificationSettingsPage() {
-  const { isSettingsError, isSettingsPending, payload } = useNotificationSettings()
+  const { isSettingsError, isSettingsPending, payload, refetchSettings } = useNotificationSettings()
   const { isUpdatingSettings, updateSettings } = useUpdateNotificationSettings()
   const { isSendingTest, sendTestEmail } = useSendTestEmail()
 
   const [form, setForm] = useState<NotificationSettingsData>()
+  const [participants, setParticipants] = useState<Record<string, SaveParticipant>>({})
+  const [isSaving, setIsSaving] = useState(false)
+
+  const reportParticipant = useCallback((key: string, participant?: SaveParticipant) => {
+    setParticipants(prev => {
+      const rest = Object.fromEntries(Object.entries(prev).filter(([name]) => name !== key))
+      return participant ? { ...rest, [key]: participant } : rest
+    })
+  }, [])
 
   useEffect(() => {
     if (payload?.settings) setForm({ ...payload.settings, types: { ...payload.settings.types } })
   }, [payload])
 
-  if (isSettingsPending) return <Skeleton active className="bc-p-5" paragraph={{ rows: 10 }} title />
+  const isFormDirty = useMemo(
+    () => !!form && !!payload && JSON.stringify(form) !== JSON.stringify(payload.settings),
+    [form, payload]
+  )
+  const dirtyParticipants = Object.values(participants).filter(participant => participant.isDirty)
+  const isDirty = isFormDirty || dirtyParticipants.length > 0
 
-  if (isSettingsError || !payload || !form) {
+  // An error only once every retry has failed and there is nothing to show.
+  if (isSettingsError && !payload) {
     return (
-      <div className="bc-p-5">
-        <Alert message={__('Notification settings could not be loaded.')} type="error" />
+      <div className="bc-p-6">
+        <Alert
+          action={
+            <Button onClick={() => refetchSettings()} size="small">
+              {__('Retry')}
+            </Button>
+          }
+          message={__('Notification settings could not be loaded.')}
+          showIcon
+          type="error"
+        />
       </div>
     )
   }
+
+  // Still loading, or loaded and not yet copied into the form — the render
+  // between the two is not a failure.
+  if (isSettingsPending || !payload || !form) return <PageSkeleton />
+
 
   const set = <K extends keyof NotificationSettingsData>(key: K, value: NotificationSettingsData[K]) =>
     setForm(prev => (prev ? { ...prev, [key]: value } : prev))
@@ -54,40 +85,64 @@ export default function NotificationSettingsPage() {
 
   const { enabled } = form
 
+  // Every part at once, each reporting its own failure: one card's rejected
+  // value should not stop the rest of the page from saving.
+  const save = async () => {
+    setIsSaving(true)
+    await Promise.allSettled([
+      ...(isFormDirty ? [updateSettings(form)] : []),
+      ...dirtyParticipants.map(participant => participant.save())
+    ])
+    setIsSaving(false)
+  }
+
   return (
-    <div>
-      <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-px-5 bc-py-6">
-        <Title className="bc-mb-0" level={2}>
+    <PageSaveContext.Provider value={reportParticipant}>
+    <div className="bc-p-6">
+      <div className="bc-mb-5">
+        <Title className="bc-mb-1" level={3}>
           {__('Notifications')}
         </Title>
-        <Button
-          disabled={isUpdatingSettings}
-          loading={isUpdatingSettings}
-          onClick={() => {
-            updateSettings(form).catch(() => {
-              // Reported by the hook; nothing useful to add here.
-            })
-          }}
-          type="primary"
-        >
-          {__('Save')}
-        </Button>
+        <Text type="secondary">
+          {__('What the forum tells members, in the app and by email, and how that email reads.')}
+        </Text>
       </div>
 
-      <div className="bc-flex bc-flex-col bc-gap-4 bc-px-5 bc-pb-8">
-        <SectionCard
-          subtitle={__(
-            'The master switch. Off, the forum writes no notifications and sends no email at all.'
-          )}
-          title={__('Notifications')}
-        >
-          <div className="bc-flex bc-items-center bc-gap-3">
-            <Switch checked={enabled} onChange={next => set('enabled', next)} />
-            <span className="bc-text-sm bc-text-ink-muted">
-              {enabled ? __('Notifications are on') : __('Notifications are off for everyone')}
-            </span>
+      <div className="bc-flex bc-flex-col bc-gap-5">
+        {/* Save sits beside the master switch rather than at the foot of the
+            page: it governs every card below, and has to be in reach from the
+            top of a long form. */}
+        <div className="bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
+          <SectionCard
+            className="bc-w-full bc-max-w-xl"
+            extra={
+              <Switch
+                aria-label={__('Notifications')}
+                checked={enabled}
+                onChange={next => set('enabled', next)}
+              />
+            }
+            subtitle={
+              enabled
+                ? __('The master switch. Off, the forum writes no notifications and sends no email at all.')
+                : __('Off for everyone. The forum writes no notifications and sends no email at all.')
+            }
+            title={__('Notifications')}
+          />
+
+          <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
+            {isDirty && <Text type="secondary">{__('Unsaved changes')}</Text>}
+            <Button
+              disabled={isSaving || isUpdatingSettings || !isDirty}
+              loading={isSaving || isUpdatingSettings}
+              onClick={save}
+              size="large"
+              type="primary"
+            >
+              {__('Save')}
+            </Button>
           </div>
-        </SectionCard>
+        </div>
 
         <SectionCard
           subtitle={__(
@@ -95,92 +150,13 @@ export default function NotificationSettingsPage() {
           )}
           title={__('What the forum sends')}
         >
-          <div className="bc-overflow-x-auto">
-            <table className="bc-w-full bc-min-w-[34rem] bc-border-collapse bc-text-sm">
-              <thead>
-                <tr className="bc-text-left bc-text-xs bc-text-ink-subtle">
-                  <th className="bc-py-2 bc-font-medium">{__('Notification')}</th>
-                  <th className="bc-w-24 bc-py-2 bc-text-center bc-font-medium">{__('In app')}</th>
-                  <th className="bc-w-24 bc-py-2 bc-text-center bc-font-medium">{__('Email')}</th>
-                  <th className="bc-w-36 bc-py-2 bc-text-center bc-font-medium">
-                    {__('Member may change')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {payload.catalog.map(info => {
-                  const row = form.types[info.type]
-
-                  if (!row) return
-
-                  return (
-                    <tr
-                      className="bc-border-0 bc-border-t bc-border-solid bc-border-t-line"
-                      key={info.type}
-                    >
-                      <td className="bc-py-3 bc-pe-4">
-                        <div className="bc-font-medium bc-text-ink">{info.label}</div>
-                        <div className="bc-text-xs bc-text-ink-subtle">{info.description}</div>
-                      </td>
-                      <td className="bc-py-3 bc-text-center">
-                        {/* Where the forum sends it regardless, say so in words:
-                            an admin switch that changes nothing is worse than
-                            no switch at all. */}
-                        {info.mandatoryInApp ? (
-                          <Tooltip title={__('This is always delivered in the app.')}>
-                            <span className="bc-text-xs bc-text-ink-subtle">{__('Always')}</span>
-                          </Tooltip>
-                        ) : (
-                          <Switch
-                            checked={row.inapp}
-                            disabled={!enabled}
-                            onChange={next => setType(info.type, { inapp: next })}
-                            size="small"
-                          />
-                        )}
-                      </td>
-                      <td className="bc-py-3 bc-text-center">
-                        <Switch
-                          checked={row.email}
-                          disabled={!enabled}
-                          onChange={next => setType(info.type, { email: next })}
-                          size="small"
-                        />
-                      </td>
-                      <td className="bc-py-3 bc-text-center">
-                        <Tooltip
-                          title={
-                            info.moderatorOnly
-                              ? __(
-                                  'Only moderators receive this, so there is nothing for a member to change.'
-                                )
-                              : undefined
-                          }
-                        >
-                          <Switch
-                            checked={row.userMayOverride}
-                            disabled={!enabled || info.moderatorOnly}
-                            onChange={next => setType(info.type, { userMayOverride: next })}
-                            size="small"
-                          />
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <TypeMatrix
+            catalog={payload.catalog}
+            enabled={enabled}
+            onChange={setType}
+            types={form.types}
+          />
         </SectionCard>
-
-        <DigestScheduleSection
-          enabled={enabled}
-          form={form}
-          isSendingTest={isSendingTest}
-          payload={payload}
-          sendTestEmail={sendTestEmail}
-          set={set}
-        />
 
         <EmailDeliverySection
           enabled={enabled}
@@ -197,23 +173,23 @@ export default function NotificationSettingsPage() {
           subtitle={__(
             'How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet.'
           )}
-          title={__('Housekeeping')}
+          title={__('Keep read notifications for')}
         >
-          <label className="bc-block bc-max-w-xs">
-            <span className="bc-mb-1 bc-block bc-text-sm bc-font-medium bc-text-ink">
-              {__('Keep read notifications for')}
-            </span>
+          <label className="bc-flex bc-items-center bc-gap-3">
             <InputNumber
-              addonAfter={__('days')}
-              className="bc-w-full"
+              aria-label={__('Keep read notifications for')}
+              className="bc-w-24"
               max={3650}
               min={7}
               onChange={value => set('retentionDays', Number(value ?? 90))}
+              size="large"
               value={form.retentionDays}
             />
+            <span className="bc-text-sm bc-text-ink">{__('days')}</span>
           </label>
         </SectionCard>
       </div>
     </div>
+    </PageSaveContext.Provider>
   )
 }

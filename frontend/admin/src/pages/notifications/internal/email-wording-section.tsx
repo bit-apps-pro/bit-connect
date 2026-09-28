@@ -1,10 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Typography } from 'antd'
 
 import { type EmailWordingSectionProps } from '../shared/types'
+import FieldLabel from './field-label'
 import SectionCard from './section-card'
-
-const { Text } = Typography
+import StaticValue from './static-value'
 
 /**
  * Email wording: the built-in lines, shown as text.
@@ -12,7 +11,7 @@ const { Text } = Typography
  * The four lines the forum actually sends are read from `form`, which the
  * server has already resolved to this plugin's built-in wording — so this
  * shows the real wording rather than a sample of it. They are rendered as
- * quoted text and not as inputs: this plugin has no setting for them.
+ * text and not as inputs: this plugin has no setting for them.
  */
 export default function EmailWordingSection({ form }: EmailWordingSectionProps) {
   const lines = [
@@ -24,23 +23,17 @@ export default function EmailWordingSection({ form }: EmailWordingSectionProps) 
 
   return (
     <SectionCard
-      subtitle={__('The wording around the list of what happened.')}
+      subtitle={__('The wording notification emails use around the list of what happened.')}
       title={__('Email wording')}
     >
-      <Text className="bc-mb-4 bc-block bc-text-sm" type="secondary">
-        {__('Notification emails use the wording below.')}
-      </Text>
-
-      <dl className="bc-m-0 bc-flex bc-flex-col bc-gap-3">
+      <div className="bc-flex bc-flex-col bc-gap-4">
         {lines.map(line => (
           <div key={line.key}>
-            <dt className="bc-mb-0.5 bc-text-xs bc-text-ink-subtle">{line.label}</dt>
-            <dd className="bc-m-0 bc-border-0 bc-border-s-2 bc-border-solid bc-border-s-line bc-ps-3 bc-text-sm bc-text-ink">
-              {line.value}
-            </dd>
+            <FieldLabel>{line.label}</FieldLabel>
+            <StaticValue>{line.value}</StaticValue>
           </div>
         ))}
-      </dl>
+      </div>
     </SectionCard>
   )
 }
