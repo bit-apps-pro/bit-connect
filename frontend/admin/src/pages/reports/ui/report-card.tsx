@@ -8,8 +8,7 @@ import {
   LuFileText,
   LuMessageSquare,
   LuTrash2,
-  LuUsers,
-  LuX
+  LuUsers
 } from 'react-icons/lu'
 
 import { fullDate, plain, timeAgo } from '@/utils/format'
@@ -33,7 +32,6 @@ function BlockLabel({ children }: { children: React.ReactNode }) {
 
 /** What became of an item, for the chip that stands where the buttons were. */
 const OUTCOME_LABELS: Record<string, string> = {
-  dismissed: __('dismissed'),
   resolved_kept: __('kept'),
   resolved_removed: __('removed')
 }
@@ -255,22 +253,23 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
             value={note}
           />
 
-          {/* Keep and Dismiss both put hidden content back; Remove deletes it.
-              The wording says which is which rather than making a moderator
-              remember. */}
+          {/* Two answers to one question — is this content fine? Keeping puts
+              anything the report hid back in public; removing deletes it. */}
           <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
-            <Button
-              disabled={isBusy}
-              icon={<LuCheck aria-hidden />}
-              loading={deciding === 'resolved_kept'}
-              onClick={() => decide('resolved_kept')}
-            >
-              {__('Keep content')}
-            </Button>
+            <Tooltip title={__('The reports are closed and the content stays public.')}>
+              <Button
+                disabled={isBusy}
+                icon={<LuCheck aria-hidden />}
+                loading={deciding === 'resolved_kept'}
+                onClick={() => decide('resolved_kept')}
+              >
+                {__('Looks fine — keep it')}
+              </Button>
+            </Tooltip>
 
             {/* The only irreversible button on the screen, and the one a tired
-                moderator is most likely to hit by muscle memory next to two that
-                are not. A comment takes its replies with it, which is the part
+                moderator is most likely to hit by muscle memory next to one that
+                is not. A comment takes its replies with it, which is the part
                 nobody expects, so the confirm says so. */}
             <Popconfirm
               cancelText={__('Cancel')}
@@ -294,15 +293,6 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
               </Button>
             </Popconfirm>
 
-            <Button
-              disabled={isBusy}
-              icon={<LuX aria-hidden />}
-              loading={deciding === 'dismissed'}
-              onClick={() => decide('dismissed')}
-              type="text"
-            >
-              {__('Dismiss')}
-            </Button>
           </div>
         </div>
       )}

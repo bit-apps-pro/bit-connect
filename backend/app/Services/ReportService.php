@@ -240,8 +240,15 @@ final class ReportService
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $status = (string) ($filters['status'] ?? ReportStatus::PENDING->value);
 
+        // Kept and dismissed leave the content exactly as it was, so the screen
+        // offers one of them and shows both together — reports dismissed before
+        // that still belong beside the ones kept since.
+        $statuses = $status === ReportStatus::RESOLVED_KEPT->value
+            ? [ReportStatus::RESOLVED_KEPT->value, ReportStatus::DISMISSED->value]
+            : [$status];
+
         $rows = self::asList(
-            Report::where('status', $status)
+            Report::whereIn('status', $statuses)
                 ->orderBy('created_at')
                 ->desc()
                 ->take((string) self::QUEUE_ROW_CAP)

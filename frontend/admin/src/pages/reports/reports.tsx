@@ -12,15 +12,18 @@ import ReportCard from './ui/report-card'
 const { Text, Title } = Typography
 
 /**
- * A switch between four views of one list, not four panels: every option shows
+ * A switch between three views of one list, not three panels: every option shows
  * the same list, only filtered, so it is rendered once below the bar — one
  * AnimatePresence tree instead of one per visited view.
+ *
+ * Two endings, not three. Dismissing did exactly what keeping did, and a choice
+ * between two buttons that change nothing differently is a question a moderator
+ * cannot answer. Reports dismissed before that show under Kept.
  */
 const STATUS_TABS = [
-  { label: __('Awaiting review'), value: 'pending' },
+  { label: __('Needs review'), value: 'pending' },
   { label: __('Kept'), value: 'resolved_kept' },
-  { label: __('Removed'), value: 'resolved_removed' },
-  { label: __('Dismissed'), value: 'dismissed' }
+  { label: __('Removed'), value: 'resolved_removed' }
 ]
 
 /**
@@ -31,15 +34,25 @@ const STATUS_TABS = [
  * is one thing to look at.
  */
 const TAB_TOTALS: Record<string, string> = {
-  dismissed: __('items dismissed'),
-  pending: __('items awaiting review'),
+  pending: __('items need review'),
   resolved_kept: __('items kept'),
   resolved_removed: __('items removed')
 }
 
+/**
+ * One line under the tabs saying what the open one holds and what, if anything,
+ * a moderator does there — so the tab names never have to explain themselves.
+ */
+const TAB_HELP: Record<string, string> = {
+  pending: __(
+    'Reported topics and replies waiting for a decision. Keep one if it is fine — anything the reports hid comes back — or remove it for good.'
+  ),
+  resolved_kept: __('Reviewed and left up. The reporters were told; the author was not.'),
+  resolved_removed: __('Reviewed and deleted for good. The reporters and the author were both told.')
+}
+
 const EMPTY_TEXT: Record<string, string> = {
-  dismissed: __('No report has been dismissed yet.'),
-  pending: __('Nothing is waiting for review.'),
+  pending: __('Nothing needs review.'),
   resolved_kept: __('No reported content has been kept yet.'),
   resolved_removed: __('No reported content has been removed yet.')
 }
@@ -74,7 +87,7 @@ function EmptyQueue({ status }: { status: string }) {
       <Text strong>{EMPTY_TEXT[status] ?? __('Nothing here yet.')}</Text>
       {isPending && (
         <Text className="bc-text-sm" type="secondary">
-          {__('Reports members file from the forum land here for a decision.')}
+          {__('When members report a topic or reply, it shows up here. Keep it if it is fine, or remove it.')}
         </Text>
       )}
     </div>
@@ -146,12 +159,16 @@ export default function Reports() {
         }}
       >
         <Segmented
-          className="bc-mb-5 bc-max-w-full bc-overflow-x-auto bc-border bc-border-solid bc-border-line [&_.ant-segmented-group]:bc-gap-1 [&_.ant-segmented-item-selected]:bc-font-semibold"
+          className="bc-mb-3 bc-max-w-full bc-overflow-x-auto bc-border bc-border-solid bc-border-line [&_.ant-segmented-group]:bc-gap-1 [&_.ant-segmented-item-selected]:bc-font-semibold"
           onChange={value => setFilters(previous => ({ ...previous, page: 1, status: value }))}
           options={STATUS_TABS}
           value={status}
         />
       </ConfigProvider>
+
+      <Text className="bc-mb-5 bc-block bc-text-sm" type="secondary">
+        {TAB_HELP[status]}
+      </Text>
 
       {isReportsError && (
         <Alert
