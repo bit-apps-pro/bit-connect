@@ -142,6 +142,8 @@ final class NotificationPreferences
                 'inappLocked'     => $mandatory || !$admin['userMayOverride'],
                 'emailLocked'     => !$admin['userMayOverride'],
                 'alwaysDelivered' => $mandatory,
+                // Lets the screen group these apart, as the admin matrix does.
+                'moderatorOnly' => NotificationTypes::isModeratorOnly($type),
             ];
         }
 

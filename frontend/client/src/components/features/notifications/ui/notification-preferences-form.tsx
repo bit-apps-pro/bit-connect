@@ -1,9 +1,8 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Radio, Skeleton, Switch, Tooltip, Typography } from 'antd'
-import { useContext } from 'react'
-import { LuInbox, LuLock, LuMail } from 'react-icons/lu'
+import SettingsCard from '@utilities/settings-card'
+import { Alert, Checkbox, Radio, Skeleton, Switch, Tooltip } from 'antd'
+import { Fragment, useContext } from 'react'
 
 import {
   type NotificationPreferenceRow,
@@ -11,14 +10,15 @@ import {
   useNotificationPreferences,
   useSaveNotificationPreferences
 } from '../data/use-notification-preferences'
-import appearanceFor from '../shared/appearance'
-
-const { Title } = Typography
 
 /**
  * "What do you want to hear about, and how?"
  *
- * Saves on every switch rather than behind a Save button. There is no valid
+ * Laid out like the admin's Notifications screen — a card per setting, and the
+ * types as a grouped matrix of In app / Email checkboxes — so a member reading
+ * their own settings sees the same shape the forum's defaults were set in.
+ *
+ * Saves on every change rather than behind a Save button. There is no valid
  * combination to guard — each row is independent, nothing here can be
  * half-finished, and a settings screen that silently discards changes because
  * somebody navigated away without pressing Save is a worse failure than an
@@ -31,12 +31,8 @@ const { Title } = Typography
  */
 
 /**
- * One word each, and rendered `block` so the four share the width.
- *
- * "Immediately" and "Weekly digest" spelled out came to 361px, which is wider
- * than a 364px phone — the last option was clipped off the edge with nothing to
- * scroll. The paragraph above already says these are how often email arrives,
- * so the longer labels were repeating it rather than adding to it.
+ * One word each: the card's subtitle already says these are how often email
+ * arrives, and the spelled-out labels were wider than a phone.
  */
 const FREQUENCIES = [
   { label: __('Instant'), value: 'instant' },
@@ -45,23 +41,43 @@ const FREQUENCIES = [
   { label: __('Never'), value: 'never' }
 ]
 
-interface ChannelSwitchProps {
-  checked: boolean
-  disabled: boolean
-  /** Why it cannot be changed — the forum requires it, or an admin locked it. */
-  lockReason?: string
-  onChange: (next: boolean) => void
-}
+/**
+ * Types addressed to one member about something of theirs. Mirrors the admin
+ * matrix's grouping; anything not listed, including a type another plugin
+ * adds, falls into the community group.
+ */
+const CONVERSATIONAL = new Set([
+  'comment_reply',
+  'mention',
+  'report_resolved',
+  'topic_new',
+  'topic_reply',
+  'vote_received'
+])
 
-function ChannelSwitch({ checked, disabled, lockReason, onChange }: ChannelSwitchProps) {
-  const control = (
-    <span className="bc-inline-flex bc-items-center bc-gap-1.5">
-      <Switch checked={checked} disabled={disabled} onChange={onChange} size="small" />
-      {disabled && <LuLock className="bc-text-ink-subtle" size={12} />}
-    </span>
+const ADMIN_LOCKED = () => __('Your administrator has set this for everyone.')
+
+function ChannelCell({
+  checked,
+  label,
+  locked,
+  onChange
+}: {
+  checked: boolean
+  label: string
+  locked: boolean
+  onChange: (next: boolean) => void
+}) {
+  const box = (
+    <Checkbox
+      aria-label={label}
+      checked={checked}
+      disabled={locked}
+      onChange={event => onChange(event.target.checked)}
+    />
   )
 
-  return disabled && lockReason ? <Tooltip title={lockReason}>{control}</Tooltip> : control
+  return locked ? <Tooltip title={ADMIN_LOCKED()}>{box}</Tooltip> : box
 }
 
 export default function NotificationPreferencesForm() {
@@ -70,12 +86,29 @@ export default function NotificationPreferencesForm() {
   const { savePreferences } = useSaveNotificationPreferences()
   const { isTogglingForumFollow, toggleForumFollow } = useFollowForum()
 
-  const commit = (payload: Parameters<typeof savePreferences>[0]) => {
-    savePreferences(payload).catch(() => {
-      notificationApi?.error({
-        message: __('That could not be saved. Please check your connection and try again.')
-      })
+  const reportFailure = () => {
+    notificationApi?.error({
+      message: __('That could not be saved. Please check your connection and try again.')
     })
+  }
+
+  // One key for every save on this screen: ticking five boxes in a row updates
+  // a single "saved" message instead of stacking five of them.
+  // A refusal can also arrive as a 200 whose body says so; that is a failure
+  // too, not something to call saved.
+  const reportSaved = (response?: { status?: string }) => {
+    if (response?.status === 'error') {
+      reportFailure()
+      return
+    }
+    notificationApi?.success({
+      key: 'notification-preferences-saved',
+      message: __('Notification settings saved')
+    })
+  }
+
+  const commit = (payload: Parameters<typeof savePreferences>[0]) => {
+    savePreferences(payload).then(reportSaved, reportFailure)
   }
 
   const toggle = (row: NotificationPreferenceRow, channel: 'email' | 'inapp', next: boolean) => {
@@ -83,161 +116,158 @@ export default function NotificationPreferencesForm() {
   }
 
   if (isPreferencesLoading) {
-    return <Skeleton active paragraph={{ rows: 6 }} title />
+    return (
+      <SettingsCard title={__('Notifications')}>
+        <Skeleton active paragraph={{ rows: 6 }} title={false} />
+      </SettingsCard>
+    )
   }
 
   if (isPreferencesError || !preferences) {
     return <Alert message={__('Your notification settings could not be loaded.')} type="error" />
   }
 
-  return (
-    <div className="bc-flex bc-flex-col bc-gap-6">
-      <section>
-        <Title className="bc-mb-1" level={5}>
-          {__('Email frequency')}
-        </Title>
-        <p className="bc-mb-3 bc-text-sm bc-text-ink-subtle">
-          {__(
-            'How often email should arrive. This does not change what you are notified about — only when it is sent.'
-          )}
-        </p>
-        {/* Radio buttons rather than antd's Segmented. Segmented paints its
-            selection with an animated thumb and restores the selected class on
-            motion-end; in this app that event never fires, so after the first
-            click the control shows nothing selected while its radio is
-            correctly checked. Radio.Group in button mode looks the same and
-            keeps its state in the input, where it cannot be lost. */}
-        <Radio.Group
-          buttonStyle="solid"
-          onChange={event => commit({ frequency: String(event.target.value) })}
-          options={FREQUENCIES}
-          optionType="button"
-          value={preferences.frequency}
-        />
-      </section>
+  const groups = [
+    {
+      items: preferences.types.filter(row => !row.moderatorOnly && CONVERSATIONAL.has(row.type)),
+      key: 'conversational',
+      label: __('High-priority & conversational')
+    },
+    {
+      items: preferences.types.filter(row => !row.moderatorOnly && !CONVERSATIONAL.has(row.type)),
+      key: 'community',
+      label: __('Community & system')
+    },
+    {
+      items: preferences.types.filter(row => row.moderatorOnly),
+      key: 'moderators',
+      label: __('Moderators only')
+    }
+  ].filter(group => group.items.length > 0)
 
-      <section>
-        <Title className="bc-mb-1" level={5}>
-          {__('New topics')}
-        </Title>
-        <div className="bc-flex bc-items-start bc-justify-between bc-gap-4 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-px-4 bc-py-3">
-          <span className="bc-min-w-0">
-            <span className="bc-block bc-text-sm bc-font-medium bc-text-ink">
-              {__('Tell me about every new topic')}
-            </span>
-            <span className="bc-block bc-text-xs bc-text-ink-subtle">
-              {__(
-                'Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.'
-              )}
-            </span>
-          </span>
+  return (
+    <div className="bc-flex bc-flex-col bc-gap-4">
+      <SettingsCard
+        extra={
+          // Radio buttons rather than antd's Segmented: Segmented restores its
+          // selected class on a motion-end event this app never receives, so
+          // after the first click it shows nothing selected.
+          <Radio.Group
+            aria-label={__('Email frequency')}
+            buttonStyle="solid"
+            onChange={event => commit({ frequency: String(event.target.value) })}
+            options={FREQUENCIES}
+            optionType="button"
+            value={preferences.frequency}
+          />
+        }
+        subtitle={__(
+          'How often email should arrive. This does not change what you are notified about — only when it is sent.'
+        )}
+        title={__('Email frequency')}
+      />
+
+      <SettingsCard
+        extra={
           <Switch
+            aria-label={__('Tell me about every new topic')}
             checked={preferences.followsForum}
             loading={isTogglingForumFollow}
             onChange={next => {
-              toggleForumFollow(next).catch(() => {
-                notificationApi?.error({
-                  message: __('That could not be saved. Please check your connection and try again.')
-                })
-              })
+              toggleForumFollow(next).then(reportSaved, reportFailure)
             }}
-            size="small"
           />
-        </div>
-      </section>
+        }
+        subtitle={__(
+          'Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.'
+        )}
+        title={__('Tell me about every new topic')}
+      />
 
-      <section>
-        <Title className="bc-mb-1" level={5}>
-          {__('What you are notified about')}
-        </Title>
-        <p className="bc-mb-3 bc-text-sm bc-text-ink-subtle">{__('Changes save as you make them.')}</p>
+      <SettingsCard
+        subtitle={__('Changes save as you make them. Hover a notification to see when it is sent.')}
+        title={__('What you are notified about')}
+      >
+        <div className="bc-overflow-x-auto">
+          {/* Two checkbox columns fit a phone once they narrow, so the table
+              shrinks with the card instead of hiding Email off the edge. */}
+          <table className="bc-w-full bc-border-collapse bc-text-sm">
+            <colgroup>
+              <col />
+              <col className="bc-w-16 sm:bc-w-24 lg:bc-w-36" />
+              <col className="bc-w-16 sm:bc-w-24 lg:bc-w-36" />
+            </colgroup>
+            <tbody>
+              {groups.map((group, index) => (
+                <Fragment key={group.key}>
+                  <tr>
+                    <td className={`bc-pb-3 ${index > 0 ? 'bc-pt-6' : ''}`}>
+                      <span className="bc-inline-block bc-rounded-md bc-bg-surface-sunken bc-px-2.5 bc-py-1 bc-text-sm bc-font-medium bc-text-ink">
+                        {group.label}
+                      </span>
+                    </td>
+                    {/* The column names ride the first group's row, as in a
+                        sheet header, rather than taking a row of their own. */}
+                    {index === 0 ? (
+                      <>
+                        <th className="bc-pb-3 bc-text-center bc-font-medium bc-text-ink" scope="col">
+                          {__('In app')}
+                        </th>
+                        <th className="bc-pb-3 bc-text-center bc-font-medium bc-text-ink" scope="col">
+                          {__('Email')}
+                        </th>
+                      </>
+                    ) : (
+                      <td colSpan={2} />
+                    )}
+                  </tr>
 
-        <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line">
-          {/* Column headers, so the two switches are not left to be guessed at.
-              Hidden below sm, where each row stacks and the icons label
-              themselves. */}
-          <div className="bc-hidden bc-items-center bc-gap-4 bc-border-0 bc-border-b bc-border-solid bc-border-line bc-bg-surface-sunken bc-px-4 bc-py-2 sm:bc-flex">
-            <span className="bc-flex-1 bc-text-xs bc-font-medium bc-text-ink-subtle">
-              {__('Notification')}
-            </span>
-            <span className="bc-flex bc-w-16 bc-items-center bc-justify-center bc-gap-1 bc-text-xs bc-font-medium bc-text-ink-subtle">
-              <LuInbox size={13} /> {__('App')}
-            </span>
-            <span className="bc-flex bc-w-16 bc-items-center bc-justify-center bc-gap-1 bc-text-xs bc-font-medium bc-text-ink-subtle">
-              <LuMail size={13} /> {__('Email')}
-            </span>
-          </div>
-
-          {preferences.types.map((row, index) => {
-            const { bg, fg, Icon } = appearanceFor(row.type)
-
-            return (
-              // Stacked on a phone, three columns from sm. Side by side at
-              // 364px the two 64px switch columns left the label about 140px to
-              // live in, which wrapped "Someone comments on your topic" onto
-              // four lines and its description onto seven. Below the text the
-              // switches get their own labels, since the column headers they
-              // rely on are hidden at that width.
-              <div
-                className={cn([
-                  'bc-flex bc-flex-col bc-gap-3 bc-px-4 bc-py-3',
-                  'sm:bc-flex-row sm:bc-items-center sm:bc-gap-4',
-                  index > 0 && 'bc-border-0 bc-border-t bc-border-solid bc-border-t-line'
-                ])}
-                key={row.type}
-              >
-                <span className="bc-flex bc-min-w-0 bc-flex-1 bc-items-start bc-gap-3">
-                  <span
-                    className={cn([
-                      'bc-flex bc-h-8 bc-w-8 bc-shrink-0 bc-items-center bc-justify-center',
-                      'bc-rounded-full',
-                      bg,
-                      fg
-                    ])}
-                  >
-                    <Icon size={15} />
-                  </span>
-                  <span className="bc-min-w-0">
-                    <span className="bc-block bc-text-sm bc-font-medium bc-text-ink">{row.label}</span>
-                    <span className="bc-block bc-text-xs bc-text-ink-subtle">{row.description}</span>
-                  </span>
-                </span>
-
-                {/* Indented to the text's left edge on mobile so the controls
-                    read as belonging to the row above them. */}
-                <span className="bc-flex bc-items-center bc-gap-6 bc-ps-11 sm:bc-gap-0 sm:bc-ps-0">
-                  <span className="bc-flex bc-items-center bc-gap-2 sm:bc-w-16 sm:bc-justify-center">
-                    <span className="bc-text-xs bc-text-ink-subtle sm:bc-hidden">{__('App')}</span>
-                    <ChannelSwitch
-                      checked={row.inapp}
-                      disabled={row.inappLocked}
-                      lockReason={
-                        row.alwaysDelivered
-                          ? __('This forum always tells you about this.')
-                          : __('Your administrator has set this for everyone.')
-                      }
-                      onChange={next => toggle(row, 'inapp', next)}
-                    />
-                  </span>
-
-                  <span className="bc-flex bc-items-center bc-gap-2 sm:bc-w-16 sm:bc-justify-center">
-                    <span className="bc-text-xs bc-text-ink-subtle sm:bc-hidden">{__('Email')}</span>
-                    <ChannelSwitch
-                      checked={row.email}
-                      disabled={row.emailLocked}
-                      lockReason={__('Your administrator has set this for everyone.')}
-                      onChange={next => toggle(row, 'email', next)}
-                    />
-                  </span>
-                </span>
-              </div>
-            )
-          })}
+                  {group.items.map(row => (
+                    <tr
+                      className="bc-border-0 bc-border-t bc-border-solid bc-border-t-line"
+                      key={row.type}
+                    >
+                      <th className="bc-py-4 bc-pe-4 bc-text-left bc-font-normal" scope="row">
+                        <Tooltip placement="topLeft" title={row.description}>
+                          <span className="bc-text-sm bc-text-ink">{row.label}</span>
+                        </Tooltip>
+                      </th>
+                      <td className="bc-py-4 bc-text-center">
+                        {/* Where the forum sends it regardless, say so in
+                            words: a checkbox that cannot be cleared reads as
+                            broken, not as a rule. */}
+                        {row.alwaysDelivered ? (
+                          <Tooltip title={__('This forum always tells you about this.')}>
+                            <span className="bc-text-xs bc-text-ink-subtle">{__('Always')}</span>
+                          </Tooltip>
+                        ) : (
+                          <ChannelCell
+                            checked={row.inapp}
+                            label={`${row.label}: ${__('In app')}`}
+                            locked={row.inappLocked}
+                            onChange={next => toggle(row, 'inapp', next)}
+                          />
+                        )}
+                      </td>
+                      <td className="bc-py-4 bc-text-center">
+                        <ChannelCell
+                          checked={row.email}
+                          label={`${row.label}: ${__('Email')}`}
+                          locked={row.emailLocked}
+                          onChange={next => toggle(row, 'email', next)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {preferences.frequency === 'never' && (
           <Alert
-            className="bc-mt-3"
+            className="bc-mt-4"
             message={__(
               'Email is switched off entirely, so the Email column has no effect until you choose a frequency above.'
             )}
@@ -245,7 +275,7 @@ export default function NotificationPreferencesForm() {
             type="info"
           />
         )}
-      </section>
+      </SettingsCard>
     </div>
   )
 }

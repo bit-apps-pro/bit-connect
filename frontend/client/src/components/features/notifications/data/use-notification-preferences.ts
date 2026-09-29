@@ -16,6 +16,8 @@ export interface NotificationPreferenceRow {
   inapp: boolean
   inappLocked: boolean
   label: string
+  /** Only moderators receive it. Optional: older cached payloads lack it. */
+  moderatorOnly?: boolean
   type: string
 }
 

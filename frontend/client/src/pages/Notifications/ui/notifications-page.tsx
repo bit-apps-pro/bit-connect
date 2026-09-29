@@ -137,9 +137,8 @@ export default function NotificationsPage() {
       </div>
 
       {isSettings ? (
-        <div className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5">
-          <NotificationPreferencesForm />
-        </div>
+        // No card around it: the form is a stack of its own settings cards.
+        <NotificationPreferencesForm />
       ) : (
         /* Separate cards with a gap, matching the topic list every other page
            of the portal is built from — same radius, same border, same rhythm.
