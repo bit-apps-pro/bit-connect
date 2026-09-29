@@ -9,6 +9,14 @@ const globalCssInJs = ({ token }: Theme, isDark: boolean) =>
       outline: `2px solid ${token.colorPrimary} !important`,
       transition: 'box-shadow 0s, outline .2s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important'
     },
+    // antd wraps a button's icon in a block span one text line tall, built for
+    // its own `.anticon`, which is inline-flex. A bare react-icons `<svg>` there
+    // is inline instead, so it sits on the text baseline at the top of that line
+    // box — an 18px plus rode 1.5px above "Create New Topic". A flex wrapper
+    // drops the baseline and lets the button's own centring place the glyph.
+    '.ant-btn > .ant-btn-icon:has(> svg)': {
+      display: 'inline-flex'
+    },
     '.ant-input-borderless': {
       border: `1px solid transparent !important`
     },

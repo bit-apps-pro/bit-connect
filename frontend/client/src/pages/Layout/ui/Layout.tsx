@@ -35,9 +35,18 @@ export default function Layout() {
   useTaxonomies()
   const antConfig = useToken()
 
-  const { pathname } = useLocation()
+  const { key: locationKey, pathname } = useLocation()
   const suspenseKey = pathname.split('/')[1]
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // A tap in the phone drawer is a choice made, so it closes on arrival —
+  // leaving it open hid the list the reader just picked. Keyed on the location
+  // entry rather than the path: picking a stage inside a department changes
+  // only `?stage=`.
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [locationKey])
+
   const shouldReduceMotion = useReducedMotion()
 
   // Whether anything has scrolled under the header, which is the only moment

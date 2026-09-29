@@ -233,43 +233,28 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               // room. Sized to them it joins their rhythm instead of breaking
               // it.
               //
-              // `round` at every width, so the same rule draws a disc on a
-              // phone and a lozenge once the label arrives. This is the only
-              // filled object in the bar, and squared off it read as a sticker
-              // pasted between the bell and the avatar: a hard 8px-cornered
-              // block of solid blue, the one shape on the row that answered
-              // nothing else on it. Round, it answers both of its neighbours —
-              // the avatar's circle on one side, and on desktop the pill the
-              // theme control already wears on the other.
+              // Drawn as the list's own Create button (pages/topics/topics.tsx)
+              // at the bar's 36px height: the same 10px corners, 18px plus and
+              // 8px gap, so the one action reads as one button whichever page
+              // offers it. The icon-only form on a phone stays a disc, the
+              // shape every other icon button in that bar wears.
               //
-              // The glyph carries the disc rather than the fill: 18px on a
-              // phone, the bell's size, stepping back to 16 beside the label
-              // where the word does the work. The heavier stroke is the menu
-              // button's trick — Lucide draws 2px at every size, so a glyph
-              // thins out as it grows.
+              // The glyph's heavier stroke is the menu button's trick — Lucide
+              // draws 2px at every size, so a glyph thins out as it grows.
               //
               // The name is spelled out for assistive tech at every width: below
               // `sm` both labels are `display: none`, and a button whose only
               // content is an icon has no accessible name at all.
               //
-              // Margins over antd's: the plus is centred in the disc (no
-              // trailing margin against nothing), and the gap to the label is
-              // ours rather than antd's `icon + span`, which would otherwise
-              // land on whichever of the two labels happens to be hidden.
+              // The gap is antd's own flex `gap`, which a hidden label takes no
+              // part in, so the plus stays centred in the disc on a phone.
               <Button
                 aria-label={__('Create New Topic')}
                 className={cn([
-                  'bc-w-9 bc-px-0 sm:bc-w-auto sm:bc-px-4 md:bc-px-5',
-                  listHasCreate && 'lg:bc-hidden',
-                  '[&_.ant-btn-icon+span]:bc-ms-0 [&_.ant-btn-icon]:bc-me-0 sm:[&_.ant-btn-icon]:bc-me-1.5'
+                  'bc-w-9 bc-px-0 sm:bc-w-auto sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5',
+                  listHasCreate && 'lg:bc-hidden'
                 ])}
-                icon={
-                  <LuPlus
-                    className="bc-h-[18px] bc-w-[18px] sm:bc-h-4 sm:bc-w-4"
-                    strokeLinecap="round"
-                    strokeWidth={2.5}
-                  />
-                }
+                icon={<LuPlus size={18} strokeLinecap="round" strokeWidth={2.5} />}
                 onClick={() => {
                   if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
                 }}

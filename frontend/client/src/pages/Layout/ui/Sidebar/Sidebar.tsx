@@ -1,22 +1,24 @@
 import config from '@config/config'
 import Promo from '@features/promo'
+import useListingSelection from '@pages/Layout/data/use-listing-selection'
 import { useStagesStore } from '@pages/Layout/data/use-stages'
 import logo from '@resource/img/logo.svg'
 import { pickThemedIcon } from '@shared/theme/themed-icon'
 import Loop from '@utilities/Loop'
-import { routePath } from '@utils/route-path'
+import { isListingPath } from '@utils/listing-path'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
 import { type ReactNode, useEffect, useId, useState } from 'react'
 import { LuChevronDown, LuX } from 'react-icons/lu'
-import { useLocation, useSearchParams } from 'react-router'
+import { useLocation } from 'react-router'
 
 import { navItemsStore } from '@/store/ssr/nav-items'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
-import { __ } from '../../../../common/helpers/i18nWrap'
+import { __, sprintf } from '../../../../common/helpers/i18nWrap'
+import { listingLink } from './listing-link'
 import SidebarNavItem from './SidebarNavItem'
 
 const { Sider } = Layout
@@ -67,6 +69,7 @@ function NavSection({ children, title }: { children: ReactNode; title: string })
 }
 
 interface NavItem {
+  department?: string
   icon?: string
   isActive?: boolean
   label: string
@@ -136,21 +139,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   // The sidebar is where both halves of the listing are chosen — a stage and a
   // department — so each list's links keep what the other has chosen. See
   // listing-link.ts for the URLs that produces.
-  //
-  // The open department is the one whose archive this is (`/department/bit-crm`,
-  // under the segment the server names), or `?product=` on the links shared
-  // before the sidebar took over from the toolbar's picker. The named stage is
-  // one the reader picked: `?stage=` or a stage archive. The root's default
-  // stage is not named, so opening a department from `/` lands on its bare
-  // archive — the URL search indexes — rather than on a `?stage=` view of it.
   const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
-  const [archiveSegment, archiveSlug] = pathname.split('/').filter(Boolean)
-  const openProduct =
-    archiveSegment === config.DEPARTMENT_NAMING.slug
-      ? archiveSlug
-      : (searchParams.get('product') ?? '')
-  const namedStage = searchParams.get('stage') || (archiveSegment === 'stage' ? archiveSlug : '')
+  const { department: openProduct, stage: namedStage } = useListingSelection()
 
   // Already in the admin-defined order when the store loads them.
   const navItems = stages.map(stage => ({

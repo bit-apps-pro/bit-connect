@@ -6,7 +6,6 @@ import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
 import { type TaxonomiesResponse } from '@features/topic-modal/data/use-taxonomies'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
-import ProductFilter from '@utilities/product-filter'
 import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
 import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
@@ -23,6 +22,8 @@ import config from '@/config/config'
 import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
+
+import ListingContext from './listing-context'
 
 /** The taxonomy each archive filter key names — see pages/topics/archive.tsx. */
 const ARCHIVE_TAXONOMY: Record<string, keyof TaxonomiesResponse> = {
@@ -85,7 +86,10 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // reset/"filters are active" state; the matching URL params are still applied
   // to the query below, so links people have already shared keep working.
   const { product: showProductFilter, sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
-  const showAnyFilter = showSortFilter || showProductFilter || showTagFilter
+  // The department switch drives the sidebar's list rather than a control here,
+  // so it opens no filter row or sheet of its own; it still owns the chip below
+  // for `?product=` links shared before the sidebar took the choice over.
+  const showAnyFilter = showSortFilter || showTagFilter
   // The type chips ride the sort filter's switch, which is where the type
   // choice lived before it had a row of its own. A type archive (`/topic/bug`)
   // has already chosen, and a chip there could not override the path anyway.
@@ -359,6 +363,16 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
           )}
         </div>
 
+        {/* phone: which stage and department the list is showing, since the
+            sidebar that says so is folded into the drawer there. */}
+        <ListingContext
+          archiveName={
+            archiveKey && archiveKey !== 'stages' && archiveKey !== 'departments'
+              ? (archiveName ?? archiveSlug)
+              : ''
+          }
+        />
+
         {/* mobile: active (non-default) filters as removable chips. The row
             collapses/expands as chips come and go; each chip pops in and out. */}
         <AnimatePresence initial={false}>
@@ -425,7 +439,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
               {showAnyFilter && (
                 <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
                   {showSortFilter && <SortFilter />}
-                  {showProductFilter && <ProductFilter />}
                   {showTagFilter && <TagFilter />}
                 </div>
               )}
@@ -460,12 +473,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
               <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Sort by')}</span>
               <SortFilter />
-            </div>
-          )}
-          {showProductFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{config.DEPARTMENT_NAMING.singular}</span>
-              <ProductFilter />
             </div>
           )}
           {showTagFilter && (

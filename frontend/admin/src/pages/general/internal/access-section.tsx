@@ -31,7 +31,13 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
           label: __('Sort')
         },
         {
-          description: sprintf(__('Narrow the list down to one %s.'), config.DEPARTMENT_NAMING.singular),
+          // The one filter not above the list: it is the sidebar's second list,
+          // and a chip beside the stage's on phones.
+          description: sprintf(
+            // translators: %s: what the portal calls a department.
+            __('Narrow the list down to one %s, picked from the sidebar.'),
+            config.DEPARTMENT_NAMING.singular
+          ),
           key: 'product',
           label: config.DEPARTMENT_NAMING.singular
         },
@@ -88,7 +94,7 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
 
       <SectionCard
         subtitle={__(
-          'Pick which filters visitors see above the topic list. Hiding one won’t break links people have already shared.'
+          'Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.'
         )}
         title={__('Topic list filters')}
       >
