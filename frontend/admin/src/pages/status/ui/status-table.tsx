@@ -1,6 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
 import EditIcon from '@icons/EditIcon'
 import TermIconCell from '@utilities/term-icon-cell'
+import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
   DragHandle,
@@ -36,6 +37,7 @@ export default function StatusTable() {
   const columns: TableColumnsType<Status> = [
     { ...dragColumn, render: () => <DragHandle /> },
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       render: (_: unknown, record: Status) => (

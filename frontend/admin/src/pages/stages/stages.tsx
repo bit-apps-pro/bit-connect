@@ -1,5 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import TermIconCell from '@utilities/term-icon-cell'
+import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
   DragHandle,
@@ -102,6 +103,7 @@ export default function Stages() {
   const columns = [
     { ...dragColumn, render: () => <DragHandle /> },
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       title: __('Stage Name')
@@ -166,7 +168,7 @@ export default function Stages() {
 
       {/* The layout's ground is sunken, so the table sits on its own raised
           card, like the General screen's sections. */}
-      <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+      <div className="bc-overflow-x-auto bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
         <SortableTable items={rows.map(stage => stage.id)} onDragEnd={handleDragEnd} sensors={sensors}>
           <Table
             columns={columns}

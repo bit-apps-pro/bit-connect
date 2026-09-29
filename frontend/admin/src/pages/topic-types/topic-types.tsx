@@ -26,7 +26,7 @@ export default function TopicTypes() {
 
       {/* The layout's ground is sunken, so the table sits on its own raised
           card, like the General screen's sections. */}
-      <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+      <div className="bc-overflow-x-auto bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
         <TopicTypesTable />
       </div>
       <TopicTypesCreateModal />

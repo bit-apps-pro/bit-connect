@@ -9,7 +9,7 @@ import useChipProps from '@/utils/use-chip-props'
 import AuthorCard from './AuthorCard'
 import { PANEL, PANEL_TITLE } from './panel-styles'
 import RelatedTopics from './RelatedTopics'
-import TagChips, { CHIP, listingLinkOf } from './tag-chips'
+import TagChips, { CHIP, CHIP_LINK, listingLinkOf } from './tag-chips'
 
 /**
  * Desktop-only rail beside a topic.
@@ -49,7 +49,8 @@ export default function PostSidebar({ topic }: { topic: Topic }) {
             <div className="bc-flex bc-flex-wrap bc-gap-2">
               {topicType && (
                 <Tag
-                  className="bc-m-0 bc-rounded-full bc-px-2.5 bc-py-0.5 bc-text-[12px]"
+                  className="bc-m-0 bc-max-w-full bc-truncate bc-rounded-full bc-px-2.5 bc-py-0.5 bc-text-[12px]"
+                  title={topicType.name}
                   {...chipTagProps(topicType.meta?.color)}
                 >
                   {topicType.name}
@@ -58,8 +59,10 @@ export default function PostSidebar({ topic }: { topic: Topic }) {
               {department && (
                 // Links into the listing filtered by this department — the
                 // topics endpoint already understands these query params.
-                <Link to={listingLink('product', department.slug)}>
-                  <Tag className={CHIP}>{department.name}</Tag>
+                <Link className={CHIP_LINK} to={listingLink('product', department.slug)}>
+                  <Tag className={CHIP} title={department.name}>
+                    {department.name}
+                  </Tag>
                 </Link>
               )}
             </div>

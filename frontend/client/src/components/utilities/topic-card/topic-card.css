@@ -37,6 +37,10 @@
      equivalent with support outside Chromium; line-clamp is still prefixed. */
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+
+  /* A word longer than the card (a pasted URL, an unbroken name) breaks
+     rather than running under the clip with no ellipsis. */
+  overflow-wrap: anywhere;
 }
 
 .topic-card__meta {

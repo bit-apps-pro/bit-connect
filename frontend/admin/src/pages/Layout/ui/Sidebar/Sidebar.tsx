@@ -1,7 +1,7 @@
 import ThemeToggle from '@components/utilities/theme-toggle'
 import config from '@config/config'
 import logo from '@resource/img/logo.svg'
-import { Layout } from 'antd'
+import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
 import { type IconType } from 'react-icons'
 import {
@@ -69,6 +69,12 @@ export default function Sidebar() {
   const visibleNavItems = navItems.filter(item =>
     item.requires === 'moderate' ? config.CAN_MODERATE : config.CAN_MANAGE
   )
+  // An icon rail below md. At 220px the full column took more than half a
+  // phone's width, and every screen beside it broke its headings mid-word.
+  // Switched in JS rather than with `md:` classes, which lose to the base
+  // utilities in this app's layered stylesheet. `false`, not falsy: the first
+  // render has no breakpoints yet and keeps the full column.
+  const compact = Grid.useBreakpoint().md === false
 
   return (
     <Sider
@@ -80,22 +86,24 @@ export default function Sidebar() {
         // nav scrolls inside it rather than spilling past it.
         // Flush with the frame, divided from the content by one rule rather
         // than floated as a second card.
-        'bc-px-3 bc-flex bc-h-full bc-flex-col bc-overflow-hidden bc-border-0 bc-border-r bc-border-solid bc-border-line bc-bg-surface',
+        compact ? 'bc-px-2' : 'bc-px-3',
+        'bc-flex bc-h-full bc-flex-col bc-overflow-hidden bc-border-0 bc-border-r bc-border-solid bc-border-line bc-bg-surface',
         '[&>.ant-layout-sider-children]:bc-contents'
       ])}
       collapsed={false}
       collapsedWidth={0}
       id="sidebar"
       theme={isDarkTheme ? 'dark' : 'light'}
-      width={220}
+      width={compact ? 56 : 220}
     >
       <Link
+        aria-label={__('Bit Connect')}
         className="bc-mx-1 bc-mb-3 bc-mt-4 bc-flex bc-items-center bc-gap-2 bc-text-ink hover:bc-text-ink"
         title={__('Bit Connect')}
         to="../support"
       >
         <img alt="" className="bc-size-7 bc-shrink-0" src={logo} />
-        <span className="bc-text-lg bc-font-semibold">{__('Bit Connect')}</span>
+        {!compact && <span className="bc-text-lg bc-font-semibold">{__('Bit Connect')}</span>}
       </Link>
 
       {/* The list grows to fill the column instead of claiming a set slice of
@@ -103,23 +111,27 @@ export default function Sidebar() {
           viewport the list yields height and scrolls rather than pushing them
           out of the card. Same shape as the client sidebar. */}
       <nav className="bc-mt-1 bc-flex bc-min-h-0 bc-w-full bc-flex-1 bc-flex-col bc-justify-between">
-        <div className="scroller thin bc-min-h-0 bc-flex-1 bc-space-y-0.5 bc-overflow-y-auto">
+        <div className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-space-y-0.5 bc-overflow-y-auto">
           {visibleNavItems.map(link => (
-            <SidebarNavItem key={link.label} props={link} />
+            <SidebarNavItem iconOnly={compact} key={link.label} props={link} />
           ))}
         </div>
 
-        <div className="bc-shrink-0 bc-pb-2 bc-pt-2">
-          <ThemeToggle block />
+        {/* On the rail, the theme control is its own menu button and the
+            credit — a line of text with nowhere to fit — is left out. */}
+        <div className="bc-flex bc-shrink-0 bc-flex-col bc-items-center bc-pb-2 bc-pt-2">
+          <ThemeToggle block={!compact} />
 
-          <a
-            className="bc-my-1 bc-block bc-text-center bc-text-xs bc-text-ink-subtle hover:bc-text-blue-500 hover:bc-underline"
-            href="https://bitapps.pro"
-            rel="noreferrer noopener nofollow"
-            target="_blank"
-          >
-            {__('Product by Bit Apps')}
-          </a>
+          {!compact && (
+            <a
+              className="bc-my-1 bc-block bc-text-center bc-text-xs bc-text-ink-subtle hover:bc-text-blue-500 hover:bc-underline"
+              href="https://bitapps.pro"
+              rel="noreferrer noopener nofollow"
+              target="_blank"
+            >
+              {__('Product by Bit Apps')}
+            </a>
+          )}
         </div>
       </nav>
     </Sider>

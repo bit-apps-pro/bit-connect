@@ -109,15 +109,22 @@ export default function TopicCard({
               {postTitle}
             </Typography.Title>
 
+            {/* Capped: the title keeps most of the row whatever the site
+                owner named the term, and the chip truncates instead. */}
             {topicTypes && (
-              <Tag className="bc-m-0 bc-shrink-0 md:bc-hidden" {...chipTagProps(topicTypes.meta.color)}>
+              <Tag
+                className="bc-m-0 bc-max-w-[40%] bc-shrink-0 bc-truncate md:bc-hidden"
+                title={topicTypes.name}
+                {...chipTagProps(topicTypes.meta.color)}
+              >
                 {topicTypes.name}
               </Tag>
             )}
 
             {statuses && (
               <Tag
-                className="bc-m-0 bc-hidden bc-shrink-0 md:bc-inline-block"
+                className="bc-m-0 bc-hidden bc-max-w-[40%] bc-shrink-0 bc-truncate md:bc-inline-block"
+                title={statuses.name}
                 {...chipTagProps(statuses.meta.color)}
               >
                 {statuses.name}
@@ -185,7 +192,8 @@ export default function TopicCard({
           {/* From md only: below that the type is the chip beside the title. */}
           {topicTypes && (
             <Tag
-              className="bc-m-0 bc-hidden bc-shrink-0 md:bc-inline-block"
+              className="bc-m-0 bc-hidden bc-max-w-full bc-shrink-0 bc-truncate md:bc-inline-block"
+              title={topicTypes.name}
               {...chipTagProps(topicTypes.meta.color)}
             >
               {topicTypes.name}
@@ -196,7 +204,11 @@ export default function TopicCard({
               coloured: it names where the topic belongs, not what state it is
               in, and one more hue on the row would compete with the status. */}
           {departments && (
-            <Tag className="bc-m-0 bc-hidden bc-shrink-0 md:bc-inline-block" {...chipTagProps()}>
+            <Tag
+              className="bc-m-0 bc-hidden bc-max-w-full bc-shrink-0 bc-truncate md:bc-inline-block"
+              title={departments.name}
+              {...chipTagProps()}
+            >
               {departments.name}
             </Tag>
           )}
@@ -207,9 +219,9 @@ export default function TopicCard({
               the meta line has room for them. The topic page always shows the
               full set. */}
           {tags.length > 0 && (
-            <div className="bc-hidden bc-min-w-0 bc-flex-wrap bc-gap-x-2 bc-gap-y-1 md:bc-flex">
+            <div className="bc-hidden bc-min-w-0 bc-max-w-full bc-flex-wrap bc-gap-x-2 bc-gap-y-1 md:bc-flex">
               {tags.map(tag => (
-                <Typography.Text key={tag.term_id} type="secondary">
+                <Typography.Text className="bc-max-w-full bc-truncate" key={tag.term_id} type="secondary">
                   #{tag.name.replaceAll(' ', '_')}
                 </Typography.Text>
               ))}

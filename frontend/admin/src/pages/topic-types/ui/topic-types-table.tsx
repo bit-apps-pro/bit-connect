@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
   DragHandle,
@@ -39,6 +40,7 @@ export default function TopicTypesTable() {
   const columns: TableColumnsType<TopicType> = [
     { ...dragColumn, render: () => <DragHandle /> },
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       title: __('Topic Type Name')

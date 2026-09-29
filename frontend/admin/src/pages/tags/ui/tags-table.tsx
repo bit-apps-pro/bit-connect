@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { termNameColumn } from '@utilities/term-name-column'
 import { Button, Popconfirm, Space, Table, type TableColumnsType, Typography } from 'antd'
 import { LuPencilLine, LuTrash2 } from 'react-icons/lu'
 import { useSearchParams } from 'react-router'
@@ -25,6 +26,7 @@ export default function TagsTable() {
 
   const columns: TableColumnsType<Tag> = [
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       title: __('Tag Name')

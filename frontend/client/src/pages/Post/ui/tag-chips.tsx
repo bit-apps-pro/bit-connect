@@ -4,9 +4,16 @@ import { tagLabel } from '@utilities/tag-filter'
 import { Tag } from 'antd'
 import { Link } from 'react-router'
 
-/** Neutral pill for the clickable taxonomy links. */
+/**
+ * Neutral pill for the clickable taxonomy links. Truncated at its row's width:
+ * term names are whatever the site owner typed, and one long name otherwise
+ * ran out of the panel and off the page.
+ */
 export const CHIP =
-  'bc-m-0 bc-cursor-pointer bc-rounded-full bc-border-0 bc-bg-surface-sunken bc-px-2.5 bc-py-0.5 bc-text-[12px] bc-text-ink-muted bc-transition-colors hover:bc-bg-surface-raised hover:bc-text-ink'
+  'bc-m-0 bc-max-w-full bc-cursor-pointer bc-truncate bc-rounded-full bc-border-0 bc-bg-surface-sunken bc-px-2.5 bc-py-0.5 bc-align-top bc-text-[12px] bc-text-ink-muted bc-transition-colors hover:bc-bg-surface-raised hover:bc-text-ink'
+
+/** The link around a CHIP, capped so the chip inside has a width to truncate at. */
+export const CHIP_LINK = 'bc-max-w-full bc-no-underline'
 
 /**
  * Link into the listing filtered by one term of `topic`.
@@ -44,8 +51,10 @@ export default function TagChips({ className, topic }: { className?: string; top
   return (
     <div className={cn(['bc-flex bc-flex-wrap bc-gap-1.5', className])}>
       {tags.map(tag => (
-        <Link className="bc-no-underline" key={tag.term_id} to={listingLink('tags', tag.slug)}>
-          <Tag className={CHIP}>{tagLabel(tag.name)}</Tag>
+        <Link className={CHIP_LINK} key={tag.term_id} to={listingLink('tags', tag.slug)}>
+          <Tag className={CHIP} title={tagLabel(tag.name)}>
+            {tagLabel(tag.name)}
+          </Tag>
         </Link>
       ))}
     </div>

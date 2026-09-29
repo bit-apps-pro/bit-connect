@@ -1,6 +1,7 @@
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import config from '@config/config'
 import TermIconCell from '@utilities/term-icon-cell'
+import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
   DragHandle,
@@ -37,6 +38,7 @@ export default function ProductsTable() {
   const columns: TableColumnsType<Product> = [
     { ...dragColumn, render: () => <DragHandle /> },
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       title: __('Name')

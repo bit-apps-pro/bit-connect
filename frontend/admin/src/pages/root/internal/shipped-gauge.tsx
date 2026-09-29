@@ -79,7 +79,9 @@ export default function ShippedGauge({ shipped, stageName, total }: ShippedGauge
           <div className="bc-text-5xl bc-font-semibold bc-leading-none bc-text-ink">{percent}%</div>
         </div>
       </div>
-      <figcaption className="bc-mt-2 bc-text-xs bc-text-ink-subtle">
+      {/* Full width so a long stage name wraps inside the card rather than
+          sizing the caption past it. */}
+      <figcaption className="bc-mt-2 bc-w-full bc-break-words bc-text-center bc-text-xs bc-text-ink-subtle">
         {sprintf(__('%1$d of %2$d topics in %3$s'), shipped, total, stageName)}
       </figcaption>
     </figure>

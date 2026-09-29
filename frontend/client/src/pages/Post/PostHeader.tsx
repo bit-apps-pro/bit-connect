@@ -9,7 +9,7 @@ import EditIcon from '@icons/EditIcon'
 import { pickThemedIcon, type ThemedIconMeta } from '@shared/theme/themed-icon'
 import EditedNote from '@utilities/edited-note'
 import UserLink from '@utilities/user-link'
-import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
+import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Tag, Typography } from 'antd'
 import { useAtomValue } from 'jotai'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { LuClock, LuEllipsisVertical, LuEyeOff, LuFlag, LuLock, LuLockOpen, LuTrash } from 'react-icons/lu'
@@ -118,7 +118,7 @@ export default function PostHeader({
             className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
             style={{ backgroundColor: status.meta?.bit_connect_color || '#d9d9d9' }}
           />
-          {status.name}
+          <span className="bc-min-w-0 bc-truncate">{status.name}</span>
         </span>
       ),
       value: status.id
@@ -133,7 +133,7 @@ export default function PostHeader({
               className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
               style={{ backgroundColor: statuses.meta?.color || '#d9d9d9' }}
             />
-            {statuses.name}
+            <span className="bc-min-w-0 bc-truncate">{statuses.name}</span>
           </span>
         ),
         value: statuses.term_id
@@ -151,7 +151,7 @@ export default function PostHeader({
         label: (
           <span className="bc-flex bc-items-center bc-gap-2">
             {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
-            {stage.name}
+            <span className="bc-min-w-0 bc-truncate">{stage.name}</span>
           </span>
         ),
         value: stage.id
@@ -165,7 +165,7 @@ export default function PostHeader({
         label: (
           <span className="bc-flex bc-items-center bc-gap-2">
             {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
-            {postStage.name}
+            <span className="bc-min-w-0 bc-truncate">{postStage.name}</span>
           </span>
         ),
         value: postStage.term_id
@@ -354,7 +354,7 @@ export default function PostHeader({
 
   // Read-only status chip, shown to everyone who cannot change the status.
   const statusTag = statuses && (
-    <Tag className="bc-m-0" {...chipTagProps(statuses.meta.color)}>
+    <Tag className="bc-m-0 bc-max-w-full bc-truncate" title={statuses.name} {...chipTagProps(statuses.meta.color)}>
       {statuses.name}
     </Tag>
   )
@@ -364,11 +364,14 @@ export default function PostHeader({
   // title they were two controls competing with the heading for the same line,
   // and the heading lost: a title of any length wrapped early to leave them
   // room. Under it they have the full width and cost the title nothing.
+  // A plain wrapping row rather than antd's Space, whose items have no width
+  // cap: a long stage or status name grew its select past the screen edge.
   const statusControls = (
-    <Space size="small" wrap>
+    <div className="bc-flex bc-max-w-full bc-flex-wrap bc-items-center bc-gap-2">
       {canModerate && (
         <Select
           aria-label={__('Topic stage')}
+          className="bc-max-w-full"
           disabled={isUpdatingStage}
           loading={isStageLoading}
           onChange={handleStageChange}
@@ -382,6 +385,7 @@ export default function PostHeader({
       {canModerate ? (
         <Select
           aria-label={__('Topic status')}
+          className="bc-max-w-full"
           disabled={isUpdatingStatus}
           loading={isLoading}
           onChange={handleStatusChange}
@@ -394,7 +398,7 @@ export default function PostHeader({
       ) : (
         statusTag
       )}
-    </Space>
+    </div>
   )
 
   return (

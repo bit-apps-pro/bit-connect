@@ -7,7 +7,14 @@ export default function StageChip({ hue, name }: { hue?: string; name: string })
   const { chipTagProps } = useChipProps()
 
   return (
-    <Tag bordered className="bc-m-0 bc-whitespace-nowrap bc-text-xs bc-font-medium" {...chipTagProps(hue)}>
+    // Truncated past 12rem: a stage name is whatever the site owner typed, and
+    // a nowrap chip with no cap widened its table column off the card.
+    <Tag
+      bordered
+      className="bc-m-0 bc-max-w-48 bc-truncate bc-align-middle bc-text-xs bc-font-medium"
+      title={name}
+      {...chipTagProps(hue)}
+    >
       {name}
     </Tag>
   )

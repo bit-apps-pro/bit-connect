@@ -31,8 +31,10 @@ export default function Products() {
       {NamingExtras && <NamingExtras />}
 
       {/* The layout's ground is sunken, so the table sits on its own raised
-          card, like the General screen's sections. */}
-      <div className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+          card, like the General screen's sections. Scrolls sideways rather
+          than clipping: on a phone the table is wider than the card, and
+          hidden overflow cut its last columns off with no way to reach them. */}
+      <div className="bc-overflow-x-auto bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
         <ProductsTable />
       </div>
       <ProductCreateModal />
