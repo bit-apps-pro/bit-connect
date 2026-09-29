@@ -7,7 +7,7 @@ import ProductCreateModal from './ui/product-create-modal'
 import ProductEditModal from './ui/product-edit-modal'
 import ProductsTable from './ui/products-table'
 
-const { Text, Title } = Typography
+const { Title } = Typography
 
 export default function Products() {
   const { setIsProductCreateModalOpen } = useProductStoreActions()
@@ -15,12 +15,9 @@ export default function Products() {
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
-          <Title className="bc-mb-0.5" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Products')}
           </Title>
-          <Text className="bc-text-xs" type="secondary">
-            {__('The products your community talks about, so each topic can be filed under one. Drag to reorder.')}
-          </Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsProductCreateModalOpen(true)} type="primary">
           {__('Add Product')}

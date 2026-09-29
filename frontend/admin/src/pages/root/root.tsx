@@ -14,7 +14,7 @@ import StatCards from './internal/stat-cards'
 import { PERIOD_OPTIONS, stageHues } from './shared/format'
 import { type DashboardPeriod } from './shared/types'
 
-const { Text, Title } = Typography
+const { Title } = Typography
 
 export default function Root() {
   const [period, setPeriod] = useState<DashboardPeriod>('30d')
@@ -32,10 +32,9 @@ export default function Root() {
     <div className="bc-p-6">
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-start bc-justify-between bc-gap-4">
         <div>
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Dashboard')}
           </Title>
-          <Text type="secondary">{__('What is happening in your community, and what needs you today.')}</Text>
         </div>
 
         <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-3">

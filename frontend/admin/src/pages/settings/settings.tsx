@@ -206,14 +206,9 @@ export default function Settings() {
     <div className="bc-p-6">
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-start bc-justify-between bc-gap-4">
         <div className="bc-min-w-0">
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Settings')}
           </Title>
-          <Text type="secondary">
-            {__(
-              'What members can do on a topic, what the topic form asks for, and what happens to reported content and to your data.'
-            )}
-          </Text>
         </div>
         <Button
           disabled={isUpdatingSettings}

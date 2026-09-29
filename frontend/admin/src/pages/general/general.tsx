@@ -238,12 +238,9 @@ export default function General() {
     <MotionConfig reducedMotion="user">
       <div className="bc-px-6 bc-pb-6">
         <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
-          <Title className="bc-mb-0.5" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('General')}
           </Title>
-          <Text className="bc-text-xs" type="secondary">
-            {__("Set up your community's name, address, who can see it, and how members sign in.")}
-          </Text>
         </div>
 
         {/* Save sits on the tab row rather than after the panels: an edit made

@@ -100,12 +100,9 @@ export default function NotificationSettingsPage() {
     <PageSaveContext.Provider value={reportParticipant}>
     <div className="bc-p-6">
       <div className="bc-mb-5">
-        <Title className="bc-mb-1" level={3}>
+        <Title className="bc-mb-0" level={3}>
           {__('Notifications')}
         </Title>
-        <Text type="secondary">
-          {__('What the forum tells members, in the app and by email, and how that email reads.')}
-        </Text>
       </div>
 
       <div className="bc-flex bc-flex-col bc-gap-5">

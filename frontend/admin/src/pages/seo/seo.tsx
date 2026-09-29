@@ -54,14 +54,9 @@ export default function Seo() {
           button that governs them. */}
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
         <div className="bc-min-w-0 bc-flex-1 bc-basis-80">
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('SEO')}
           </Title>
-          <Typography.Text type="secondary">
-            {__(
-              'How the portal presents itself to search engines, AI crawlers and link previews. Bit Connect handles this itself — an SEO plugin cannot see portal routes.'
-            )}
-          </Typography.Text>
         </div>
 
         <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">

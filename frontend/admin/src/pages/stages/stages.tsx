@@ -155,12 +155,9 @@ export default function Stages() {
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
-          <Title className="bc-mb-0.5" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Stages')}
           </Title>
-          <Text className="bc-text-xs" type="secondary">
-            {__('The steps a topic moves through, from first question to release. Drag to reorder.')}
-          </Text>
         </div>
         <Button icon={<LuPlus />} onClick={handleCreate} type="primary">
           {__('Create Stage')}

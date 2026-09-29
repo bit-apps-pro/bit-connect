@@ -63,21 +63,9 @@ export default function Manager() {
   return (
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
-        <Title className="bc-mb-0.5" level={3}>
+        <Title className="bc-mb-0" level={3}>
           {__('Manage Users')}
         </Title>
-        {/* Two sentences, because this screen does two different jobs
-            depending on what is installed — and the standing one has to
-            describe what an admin can actually do here. */}
-        <Text className="bc-text-xs" type="secondary">
-          {hasBadgeCatalog
-            ? __(
-                'View all WordPress users, adjust individual forum capabilities and hand out profile badges. Use Role Capabilities to set defaults per role.'
-              )
-            : __(
-                'View all WordPress users and see the forum capabilities each one holds. Use Role Capabilities to set them per role.'
-              )}
-        </Text>
       </div>
 
       <div className="bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3">

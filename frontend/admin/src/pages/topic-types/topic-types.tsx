@@ -7,7 +7,7 @@ import TopicTypeEditModal from './ui/topic-type-edit-modal'
 import TopicTypesCreateModal from './ui/topic-types-create-modal'
 import TopicTypesTable from './ui/topic-types-table'
 
-const { Text, Title } = Typography
+const { Title } = Typography
 
 export default function TopicTypes() {
   const { setIsTopicTypeCreateModalOpen } = useTopicTypeStoreActions()
@@ -15,12 +15,9 @@ export default function TopicTypes() {
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
-          <Title className="bc-mb-0.5" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Topic Types')}
           </Title>
-          <Text className="bc-text-xs" type="secondary">
-            {__('The kinds of topic members can post, each with its own label and colour. Drag to reorder.')}
-          </Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsTopicTypeCreateModalOpen(true)} type="primary">
           {__('Add Topic Type')}

@@ -7,7 +7,7 @@ import TagCreateModal from './ui/tag-create-modal'
 import TagEditModal from './ui/tag-edit-modal'
 import TagsTable from './ui/tags-table'
 
-const { Text, Title } = Typography
+const { Title } = Typography
 
 export default function Tags() {
   const { setIsCreateModalOpen } = useTagStoreActions()
@@ -15,12 +15,9 @@ export default function Tags() {
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
-          <Title className="bc-mb-0.5" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Tags')}
           </Title>
-          <Text className="bc-text-xs" type="secondary">
-            {__('Short labels members add to topics, so related ones are easy to find together.')}
-          </Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsCreateModalOpen(true)} type="primary">
           {__('Create Tag')}

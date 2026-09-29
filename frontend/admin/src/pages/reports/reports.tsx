@@ -102,12 +102,9 @@ export default function Reports() {
     <div className="bc-p-6">
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-start bc-justify-between bc-gap-4">
         <div>
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Reports')}
           </Title>
-          <Text type="secondary">
-            {__('Grouped by what was reported — several people reporting one item is one decision.')}
-          </Text>
         </div>
 
         {total > 0 && (

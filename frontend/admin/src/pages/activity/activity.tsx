@@ -100,18 +100,9 @@ export default function Activity() {
             a full sentence, and left to push it would drop the count onto its
             own line at every width this panel is actually read at. */}
         <div className="bc-min-w-0">
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Activity')}
           </Title>
-          {/* Says what moderation can do here, because that changed: taking
-              content down is the whole of it now, and a screen that still
-              described edits as a thing that gets recorded would read as though
-              somebody could still make one. */}
-          <Text type="secondary">
-            {__(
-              'Everything done to content another member wrote — taken down, hidden, locked or cleared. Nobody can rewrite someone else’s words, so no edit is recorded here.'
-            )}
-          </Text>
         </div>
 
         {total > 0 && (
