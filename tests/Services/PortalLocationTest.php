@@ -3,8 +3,10 @@
 namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Services\PortalLocation;
 use PHPUnit\Framework\TestCase;
+use WP_Comment;
 use WP_Post;
 
 /**
@@ -38,6 +40,7 @@ final class PortalLocationTest extends TestCase
     {
         $GLOBALS['__wp_options'] = [];
         $GLOBALS['__wp_posts'] = [];
+        $GLOBALS['__wp_comments'] = [];
         $GLOBALS['__wp_urls_to_postid'] = [];
 
         PortalLocation::resetCache();
@@ -253,6 +256,48 @@ final class PortalLocationTest extends TestCase
         $this->assertTrue(PortalLocation::isServingAtRoot());
     }
 
+    // -----------------------------------------------------------------------
+    // Comment links
+    // -----------------------------------------------------------------------
+
+    /**
+     * A path of its own, not the topic URL with `#comment-{id}`: a fragment
+     * never reaches the server and is dropped by some of the places a link
+     * gets pasted.
+     */
+    public function testACommentLinksToItsOwnPathBeneathTheTopic(): void
+    {
+        $this->seedComment(55, $this->makeTopic(7, 'billing-question'));
+
+        $this->assertSame(
+            'https://example.com/community/billing-question/comment/55',
+            PortalLocation::commentUrl(55)
+        );
+    }
+
+    public function testRootModeBuildsTheCommentPathAtTheInstallRoot(): void
+    {
+        $this->configure(slug: 'community', root: true, frontPage: self::PORTAL_PAGE_ID);
+        $this->seedComment(55, $this->makeTopic(7, 'billing-question'));
+
+        $this->assertSame('https://example.com/billing-question/comment/55', PortalLocation::commentUrl(55));
+    }
+
+    public function testACommentThatDoesNotExistHasNoLink(): void
+    {
+        $this->assertSame('', PortalLocation::commentUrl(55));
+    }
+
+    /** Someone else's post type is none of the portal's business. */
+    public function testACommentOnAnotherPostTypeHasNoPortalLink(): void
+    {
+        $post = $this->makePage(9, 'about-us');
+        $GLOBALS['__wp_posts'][9] = $post;
+        $this->seedComment(55, $post);
+
+        $this->assertSame('', PortalLocation::commentUrl(55));
+    }
+
     /**
      * Seed the options PortalLocation reads, and clear its memo.
      */
@@ -277,5 +322,22 @@ final class PortalLocationTest extends TestCase
         $page->post_status = $status;
 
         return $page;
+    }
+
+    private function makeTopic(int $id, string $slug): WP_Post
+    {
+        $topic = $this->makePage($id, $slug);
+        $topic->post_type = PostTypes::BIT_CONNECT->value;
+        $GLOBALS['__wp_posts'][$id] = $topic;
+
+        return $topic;
+    }
+
+    private function seedComment(int $id, WP_Post $post): void
+    {
+        $comment = new WP_Comment();
+        $comment->comment_ID = (string) $id;
+        $comment->comment_post_ID = (string) $post->ID;
+        $GLOBALS['__wp_comments'][$id] = $comment;
     }
 }

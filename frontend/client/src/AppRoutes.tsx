@@ -71,6 +71,15 @@ export const routeList: {
     index: false,
     path: '/:postName'
   },
+  // A link to one reply: the topic page, scrolled to it. Three segments, so it
+  // competes with neither route above. The id is not constrained to digits here —
+  // React Router has no syntax for it — so the page treats a malformed one the
+  // same as a reply that no longer exists.
+  {
+    element: <PostDetailsPage />,
+    index: false,
+    path: '/:postName/comment/:commentId'
+  },
 
   {
     element: <Error404 />,

@@ -87,6 +87,8 @@ class PreInitHookProvider
      * Same shape and same reason as the profile rewrite above: the portal's own
      * `^{slug}/([^/]+)/?$` rule is single-segment and cannot match a two-segment
      * archive URL, so without this every term archive 404s before the app boots.
+     * The same goes for the list's deeper pages and for `/{topic}/comment/{id}`,
+     * the link to one reply.
      *
      * The segment alternation is deliberately narrow rather than `([^/]+)` —
      * that would claim every two-segment URL under the portal, including ones a
@@ -111,6 +113,8 @@ class PreInitHookProvider
             '^' . $slug . '/(' . PortalTaxonomies::segmentPattern() . ')/([^/]+)/?$',
             // Deeper pages of the list.
             '^' . $slug . '/page/([0-9]+)/?$',
+            // A link to one reply in a topic.
+            '^' . $slug . '/([^/]+)/comment/([0-9]+)/?$',
         ];
 
         $missing = false;

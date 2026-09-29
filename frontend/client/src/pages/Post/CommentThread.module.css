@@ -77,20 +77,21 @@
 }
 
 /* ===== The comment a link was pointing at =====
-   A reader who followed `#comment-N` lands mid-thread, where every row looks
-   like every other one. This says which row answered the link.
+   A reader who followed a link to a reply lands mid-thread, where every row
+   looks like every other one. This says which row answered the link.
 
-   The mark is a rail down the leading edge plus a tinted bubble, matching the
-   unread rail in the notification list — the same idea (this is the one you
-   came for) said the same way.
+   The whole row is marked — avatar, name, text and actions — as one tinted
+   panel with a thin ring, rather than the bubble alone: the author and the
+   Reply button belong to the comment the link named as much as its text does.
+   The bubble turns to the plain surface inside it, so the text keeps the
+   contrast it has everywhere else instead of sitting on a double tint.
 
-   It settles from a wider glow into the flat tint over the first couple of
-   seconds, which is roughly how long the smooth scroll takes to arrive, and the
-   hook drops it a few seconds after that. Timed rather than permanent: once the
-   reader is looking at the row the mark has done its job, and a comment left
-   tinted for the rest of the visit reads as a state the comment is in rather
-   than as an answer to the link. The bubble's own background transition carries
-   it out. */
+   Permanent for as long as the address names the comment, the way a permalink
+   to a reply reads on Reddit; leaving the link is what clears it (see
+   useCommentFocus). One ripple on arrival marks the moment the scroll lands.
+
+   Drawn on ::before so the panel can reach a little past the row's own box
+   without shifting its layout, and kept under the row's contents. */
 .focused {
   position: relative;
 }
@@ -98,16 +99,23 @@
 .focused::before {
   content: '';
   position: absolute;
-  inset-block: 2px;
-  inset-inline-start: -8px;
-  width: 3px;
-  border-radius: 2px;
-  background-color: var(--bc-info);
+  inset: -4px -8px;
+  border-radius: 16px;
+  background-color: var(--bc-info-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bc-info) 35%, transparent);
+  pointer-events: none;
+  animation: comment-focus-arrive 1.4s ease-out;
+}
+
+/* Above the panel. The thread line hanging off the avatar is the row's own
+   ::after, not a child, so it keeps its place. */
+.focused > * {
+  position: relative;
+  z-index: 1;
 }
 
 .focused .commentBubble {
-  background-color: var(--bc-info-soft);
-  animation: comment-focus-settle 1.8s ease-out;
+  background-color: var(--bc-surface);
 }
 
 /* Hover must still register on the focused row, or the bubble looks frozen. */
@@ -115,22 +123,26 @@
   background-color: var(--bc-surface-hover);
 }
 
-@keyframes comment-focus-settle {
+@keyframes comment-focus-arrive {
   0%,
-  35% {
-    /* Held for a third of a second before it starts fading, so the mark is
-       still at full strength when a smooth scroll arrives at the row. */
-    box-shadow: 0 0 0 3px var(--bc-info-soft);
+  25% {
+    /* Held briefly before it spreads, so the ripple is still there when a
+       smooth scroll arrives at the row. */
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--bc-info) 35%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--bc-info) 45%, transparent);
   }
 
   100% {
-    box-shadow: 0 0 0 0 transparent;
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--bc-info) 35%, transparent),
+      0 0 0 8px transparent;
   }
 }
 
-/* The wash and the rail carry it on their own; only the settling is dropped. */
+/* The panel carries it on its own; only the ripple is dropped. */
 @media (prefers-reduced-motion: reduce) {
-  .focused .commentBubble {
+  .focused::before {
     animation: none;
   }
 }

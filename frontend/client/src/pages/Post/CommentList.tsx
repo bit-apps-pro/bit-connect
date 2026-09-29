@@ -11,7 +11,7 @@ import styles from './CommentThread.module.css'
 
 interface CommentListProps {
   comments: Comment[]
-  /** The comment a `#comment-N` link asked for, if the page was opened with one. */
+  /** The comment a link asked for, if the page was opened with one. */
   focusedCommentId?: number
   hasMore?: boolean
   isLoadingMore?: boolean

@@ -7,6 +7,7 @@ import { type WPAttachmentData } from '@features/file-uploader/state/use-file-st
 import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
 import { normalizeAttachments, type TopicAttachmentInfo } from '@features/topic-modal/shared/type'
+import { routePath } from '@utils/route-path'
 import { isSameSlug } from '@utils/slug'
 import { Alert, Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
@@ -27,6 +28,7 @@ import PostHeader from './PostHeader'
 import useCommentFocus from './shared/use-comment-focus'
 import AttachmentList from './ui/attachment-list'
 import CommentSortSelect from './ui/comment-sort-select'
+import MissingCommentNotice from './ui/missing-comment-notice'
 import PostDetailsSkeleton from './ui/post-details-skeleton'
 import PostSidebar from './ui/PostSidebar'
 import RelatedTopics from './ui/RelatedTopics'
@@ -170,11 +172,11 @@ export default function PostDetailsPage() {
 
   // The topic this page is actually showing, which is not the same question as
   // "is a topic loaded" — the store is a singleton and can still be holding the
-  // previous one (see the guard below). A `#comment-N` link must not start
+  // previous one (see the guard below). A link to one comment must not start
   // fetching threads against that. Computed here rather than after the guard
   // because the hook below it cannot be called conditionally.
   const isTopicReady = Boolean(post && isSameSlug(post.post_name, postName ?? ''))
-  const focusedCommentId = useCommentFocus(isTopicReady)
+  const { focusedCommentId, isMissing: isLinkedCommentMissing } = useCommentFocus(isTopicReady)
 
   // Only once this topic is the one loaded, so the previous topic's title
   // never lands on this URL.
@@ -251,7 +253,12 @@ export default function PostDetailsPage() {
         {/* `overflow-clip`, not `hidden`: both trim wide content to the rounded
             panel, but `hidden` makes this a scrollport, and the comment
             editor's sticky toolbar would resolve against it — a box that never
-            scrolls — instead of the page's scroller. */}
+            scrolls — instead of the page's scroller.
+
+            The 8px clip margin lets the panel behind a linked-to reply reach
+            past the row it marks (see `.focused` in CommentThread.module.css).
+            On a phone the frame has no padding, so without it the panel's
+            sides were cut flat against the edge of the content. */}
         {/* The frame — border, radius and padding — starts at sm. On a phone
             this panel fills the screen, so its border drew a second box just
             inside the content area's own, and the two paddings together took
@@ -263,7 +270,7 @@ export default function PostDetailsPage() {
           align="start"
           className="bc-min-w-0 bc-flex-1 bc-max-w-full bc-overflow-clip sm:bc-rounded-md sm:bc-border sm:bc-border-solid sm:bc-border-line sm:bc-px-3 sm:bc-py-4 lg:bc-px-4 lg:bc-py-6"
           gap="middle"
-          style={{ minWidth: 0 }}
+          style={{ minWidth: 0, overflowClipMargin: '8px' }}
         >
           {/* One dialog for the page: the topic header and every comment row
               open it through the store with their own target. */}
@@ -324,6 +331,14 @@ export default function PostDetailsPage() {
                   <CommentEditor onSubmit={handlePostComment} />
                 </LoginGate>
               )
+            )}
+
+            {/* A link to a reply that is gone: a gap at the head of the thread,
+                scrolled to the way the reply would have been. The topic stays —
+                the discussion the reply was part of is usually what the reader
+                wanted. */}
+            {isLinkedCommentMissing && (
+              <MissingCommentNotice onViewAll={() => navigate(routePath(`/${post.post_name}`))} />
             )}
 
             <CommentList

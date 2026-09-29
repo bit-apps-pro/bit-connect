@@ -50,6 +50,13 @@ Route::get('/user/{userId}', [new UserProfilePageController(), 'show']);
 // segment or term is turned into a 404 by the controller rather than here.
 Route::get('/{segment}/{termSlug}', [new TopicArchiveController(), 'show']);
 
+// A link to one reply - matches frontend route '/:postName/comment/:commentId'.
+// The topic page itself, with the portal scrolling to the reply once it loads;
+// the server has nothing to do with the reply, so a deleted one still answers
+// with its topic rather than a 404. Three segments, so neither route beside it
+// can take it.
+Route::get('/{slug}/comment/{commentId}', [new TopicDetailsController(), 'show']);
+
 // Topic details route - matches frontend route '/topics/details/:id'
 Route::get('/{slug}', [new TopicDetailsController(), 'show']);
 

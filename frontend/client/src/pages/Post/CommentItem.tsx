@@ -28,7 +28,7 @@ import AttachmentList from './ui/attachment-list'
 interface CommentItemProps {
   comment: Comment
   depth?: number
-  /** The comment a `#comment-N` link asked for, if the page was opened with one. */
+  /** The comment a link asked for, if the page was opened with one. */
   focusedCommentId?: number
   onDelete?: (commentId: number) => void
   onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
@@ -200,9 +200,9 @@ export default function CommentItem({
   }
 
   return (
-    // The id is what `#comment-N` lands on. `comment-{id}` is WordPress's own
-    // fragment, so links the server wrote long before the portal answered to
-    // them — notification targets, report links — resolve here too.
+    // The id is what a link to this reply scrolls to, whether it arrived as
+    // `/{topic}/comment/{id}` or as WordPress's own `#comment-{id}` fragment,
+    // which links the server wrote before the path existed still carry.
     <div className={styles.thread} data-depth={visualDepth} id={commentAnchorId(comment.id)}>
       {/* Comment row: avatar + content */}
       <div

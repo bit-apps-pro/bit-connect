@@ -25,11 +25,19 @@ class TopicDetailsController
     /**
      * Handle the topic details route and render the topic details page.
      *
-     * @param string $slug Topic slug
+     * Also answers `/{slug}/comment/{commentId}`, a link to one reply. The page
+     * is the topic's own either way: the portal scrolls to the reply once the
+     * thread loads, and says so there when it is gone. Nothing about the reply
+     * is decided here, so a deleted one still gets its topic rather than a 404,
+     * and the canonical URL stays the topic's.
+     *
+     * @param string      $slug      Topic slug
+     * @param null|string $commentId the reply a comment link names; the portal
+     *                               resolves it, so it is unused here
      *
      * @return string
      */
-    public function show(Request $request, $slug)
+    public function show(Request $request, $slug, $commentId = null)
     {
         // Prepare data for the topic details view
         $topicsView = new TopicsView();

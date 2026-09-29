@@ -292,9 +292,11 @@ final class PortalLocation
     /**
      * Absolute portal URL of a single comment, or '' when it is not on a topic.
      *
-     * The `#comment-{id}` fragment is WordPress's own convention, which the
-     * portal's comment list now answers to — so a link built before this
-     * existed still resolves.
+     * A path of its own, `/{topic}/comment/{id}`, rather than the topic URL with
+     * WordPress's `#comment-{id}` fragment. A fragment never reaches the server
+     * and is dropped by some of the places a link gets pasted, so the reply it
+     * named was lost on the way; a path survives both. The portal still answers
+     * to the fragment, so links written before this changed keep resolving.
      *
      * @param int|WP_Comment $comment
      */
@@ -306,9 +308,13 @@ final class PortalLocation
             return '';
         }
 
-        $topicUrl = self::topicUrl((int) $target->comment_post_ID);
+        $topic = get_post((int) $target->comment_post_ID);
 
-        return $topicUrl === '' ? '' : $topicUrl . '#comment-' . (int) $target->comment_ID;
+        if (!$topic instanceof WP_Post || $topic->post_type !== PostTypes::BIT_CONNECT->value || $topic->post_name === '') {
+            return '';
+        }
+
+        return self::url($topic->post_name . '/comment/' . (int) $target->comment_ID);
     }
 
     /**

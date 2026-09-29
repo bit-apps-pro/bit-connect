@@ -139,33 +139,47 @@ export const PRIMARY_SHARE_CHANNELS: ShareChannel[] = SHARE_CHANNELS.filter(chan
 )
 
 /**
- * Absolute URL for a topic, and for a single comment inside it.
+ * WordPress's own fragment for a comment, `#comment-{id}`.
  *
- * `#comment-{id}` is WordPress's own fragment for a comment, which is what
- * `get_comment_link()` has always produced — so notification and report links
- * written before the portal answered to it resolve to the same place as one
- * copied from the Share dialog today.
+ * No longer what the portal hands out — see commentPath() — but still what it
+ * answers to: `get_comment_link()` produced it for years, so notification and
+ * report links written before the path existed resolve to the same place.
  */
 export const commentFragment = (commentId: number): string => `#comment-${commentId}`
 
-/** DOM id the comment carries, so the fragment above has something to land on. */
+/** DOM id the comment carries, which is what the page scrolls to. */
 export const commentAnchorId = (commentId: number): string => `comment-${commentId}`
 
 /**
- * The comment a fragment names, or undefined when it names something else.
+ * A comment id read from a URL, or undefined when it is not one.
  *
- * Rejected rather than coerced when the tail is not a plain positive integer:
- * the fragment comes from whatever link was clicked, and `#comment-abc` must
- * become "no target" instead of a lookup for NaN.
+ * Rejected rather than coerced when it is not a plain positive integer: the
+ * value comes from whatever link was clicked, and `comment/abc` must become
+ * "no such comment" instead of a lookup for NaN.
  */
-export function commentIdFromFragment(hash: string): number | undefined {
-  const match = /^#?comment-(\d+)$/.exec(hash)
-  if (!match) return undefined
+export function parseCommentId(value?: string): number | undefined {
+  if (!value || !/^\d+$/.test(value)) return undefined
 
-  const id = Number(match[1])
+  const id = Number(value)
 
   return Number.isSafeInteger(id) && id > 0 ? id : undefined
 }
+
+/** The comment a fragment names, or undefined when it names something else. */
+export function commentIdFromFragment(hash: string): number | undefined {
+  return parseCommentId(/^#?comment-(.*)$/.exec(hash)?.[1])
+}
+
+/**
+ * The in-app route of one comment, `/{topic}/comment/{id}`.
+ *
+ * A path rather than a fragment: a fragment never reaches the server and is
+ * dropped by some of the places a link gets pasted, so the reply it named was
+ * lost on the way. The server builds the same shape in
+ * PortalLocation::commentUrl().
+ */
+export const commentPath = (topicSlug: string, commentId: number): string =>
+  routePath(`/${topicSlug}/comment/${commentId}`)
 
 /**
  * Absolute URL of a topic, or of one comment inside it.
@@ -180,9 +194,7 @@ export function commentIdFromFragment(hash: string): number | undefined {
 export function buildShareUrl(topicSlug: string, commentId?: number): string {
   // In the site's permalink form, so a shared link is the canonical URL
   // itself rather than one that 301s to it.
-  const base = portalUrl(routePath(`/${topicSlug}`))
-
-  return commentId ? `${base}${commentFragment(commentId)}` : base
+  return portalUrl(commentId ? commentPath(topicSlug, commentId) : routePath(`/${topicSlug}`))
 }
 
 /**

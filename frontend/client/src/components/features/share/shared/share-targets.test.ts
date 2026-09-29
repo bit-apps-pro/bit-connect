@@ -6,6 +6,7 @@ import {
   commentAnchorId,
   commentFragment,
   commentIdFromFragment,
+  parseCommentId,
   PRIMARY_SHARE_CHANNELS,
   SHARE_CHANNELS
 } from './share-targets'
@@ -147,6 +148,24 @@ describe('the comment fragment', () => {
   })
 })
 
+// The `:commentId` of a `/{topic}/comment/{id}` link. React Router cannot
+// constrain a param to digits, so whatever was typed arrives here.
+describe('the comment path segment', () => {
+  it('reads a plain id', () => {
+    expect(parseCommentId('42')).toBe(42)
+  })
+
+  it('rejects anything that is not a positive integer', () => {
+    expect(parseCommentId()).toBeUndefined()
+    expect(parseCommentId('')).toBeUndefined()
+    expect(parseCommentId('abc')).toBeUndefined()
+    expect(parseCommentId('0')).toBeUndefined()
+    expect(parseCommentId('-3')).toBeUndefined()
+    expect(parseCommentId('1.5')).toBeUndefined()
+    expect(parseCommentId('99999999999999999999')).toBeUndefined()
+  })
+})
+
 // Built through the portal's own URL builder rather than from window.location,
 // so it carries the portal page basename — the part React Router hides from
 // `pathname` and the part a shared link cannot do without.
@@ -155,9 +174,11 @@ describe('buildShareUrl', () => {
     expect(buildShareUrl('billing-question')).toBe('https://example.com/community/billing-question')
   })
 
-  it('points at one reply inside the topic when given a comment', () => {
+  // A path rather than `#comment-42`: a fragment never reaches the server and
+  // is dropped by some of the places a link gets pasted.
+  it('points at one reply inside the topic with a path of its own', () => {
     expect(buildShareUrl('billing-question', 42)).toBe(
-      'https://example.com/community/billing-question#comment-42'
+      'https://example.com/community/billing-question/comment/42'
     )
   })
 

@@ -198,12 +198,18 @@ final class RootRouter
             }
         }
 
-        $topic = strpos($path, '/') === false
-            ? get_page_by_path($path, OBJECT, PostTypes::BIT_CONNECT->value)
+        // A link to one reply, e.g. `/how-do-i/comment/42`, is its topic's page.
+        // Resolved on the topic alone: the reply may since have been deleted,
+        // and the portal says so above the thread rather than 404ing a visitor
+        // who can still read the discussion it was part of.
+        $topicSlug = preg_match('~^([^/]+)/comment/[0-9]+$~', $path, $matches) ? $matches[1] : $path;
+
+        $topic = strpos($topicSlug, '/') === false
+            ? get_page_by_path($topicSlug, OBJECT, PostTypes::BIT_CONNECT->value)
             : null;
 
         if ($topic instanceof WP_Post && $this->isReadable($topic)) {
-            $this->claim($portal, static fn () => (new TopicDetailsController())->show(new Request(), $path));
+            $this->claim($portal, static fn () => (new TopicDetailsController())->show(new Request(), $topicSlug));
 
             return;
         }
