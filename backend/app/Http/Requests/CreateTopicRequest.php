@@ -50,8 +50,6 @@ final class CreateTopicRequest extends Request
             'departments' => ['nullable', 'integer', 'min:1'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['nullable', 'integer', 'min:1'],
-            // Search appearance — see UpdateTopicRequest.
-            'seo' => ['nullable', 'array'],
         ];
     }
 

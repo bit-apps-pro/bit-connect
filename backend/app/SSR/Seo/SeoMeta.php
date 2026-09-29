@@ -7,7 +7,6 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Services\PortalTaxonomies;
-use BitApps\BitConnect\Services\TopicSeoService;
 use WP_Term;
 
 if (!defined('ABSPATH')) {
@@ -105,17 +104,11 @@ final class SeoMeta
 
         $url = SeoContent::portalUrl($topic['post_name'] ?? '');
 
-        // What the author (or a manager) asked the result to say, field by
-        // field, over what is derived from the topic. The structured data below
-        // keeps the real title and text: a DiscussionForumPosting describes the
-        // page's content, and a search title tuned for a snippet is not that.
-        $seo = TopicSeoService::sanitize(\is_array($topic['seo'] ?? null) ? $topic['seo'] : []);
-
         self::$meta = [
-            'title'       => $seo['title'] !== '' ? $seo['title'] : ($topic['post_title'] ?? ''),
-            'description' => $seo['description'] !== '' ? $seo['description'] : SeoContent::excerpt($topic, 30),
+            'title'       => $topic['post_title'] ?? '',
+            'description' => SeoContent::excerpt($topic, 30),
             'canonical'   => $url,
-            'image'       => $seo['image'] !== '' ? $seo['image'] : self::topicImage($topic),
+            'image'       => self::topicImage($topic),
             'type'        => 'article',
             'robots'      => '',
             'jsonLd'      => self::schemaDocuments(

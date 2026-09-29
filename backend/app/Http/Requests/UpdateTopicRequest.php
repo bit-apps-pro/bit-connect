@@ -74,9 +74,6 @@ final class UpdateTopicRequest extends Request
             'tags.*'      => ['nullable', 'integer'],
             'is_pinned'   => ['nullable', 'boolean'],
             'is_locked'   => ['nullable', 'boolean'],
-            // Search appearance: title, description and image. Sanitised field
-            // by field in TopicSeoService, which also owns the length caps.
-            'seo' => ['nullable', 'array'],
         ];
     }
 
