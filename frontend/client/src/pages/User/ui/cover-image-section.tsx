@@ -1,5 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __, sprintf } from '@common/helpers/i18nWrap'
+import SettingsCard from '@utilities/settings-card'
 import { Button, Progress } from 'antd'
 import { useContext, useRef } from 'react'
 import { LuTrash2, LuUpload } from 'react-icons/lu'
@@ -43,21 +44,14 @@ export default function CoverImageSection({ profile }: { profile: undefined | Us
   const maxMb = Math.round(COVER_MAX_BYTES / (1024 * 1024))
 
   return (
-    <section
-      aria-label={__('Cover image')}
-      className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
+    <SettingsCard
+      subtitle={sprintf(
+        __('The strip behind your picture. Wide images work best — up to %s MB.'),
+        String(maxMb)
+      )}
+      title={__('Cover image')}
     >
-      <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-        {__('Cover image')}
-      </h2>
-      <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-        {sprintf(
-          __('The strip behind your picture. Wide images work best — up to %s MB.'),
-          String(maxMb)
-        )}
-      </p>
-
-      <div className="bc-relative bc-mb-4 bc-h-14 bc-overflow-hidden bc-rounded">
+      <div className="bc-relative bc-mb-4 bc-h-[68px] bc-overflow-hidden bc-rounded-md">
         {profile?.cover ? (
           <img
             alt=""
@@ -67,7 +61,7 @@ export default function CoverImageSection({ profile }: { profile: undefined | Us
             src={profile.cover}
           />
         ) : (
-          <div className="bc-h-full bc-w-full bc-bg-gradient-to-r bc-from-primary bc-to-[#7B9BF5]" />
+          <div className="bc-h-full bc-w-full bc-bg-gradient-to-r bc-from-primary bc-to-[#7B3AED]" />
         )}
 
         {isUploading && (
@@ -117,6 +111,6 @@ export default function CoverImageSection({ profile }: { profile: undefined | Us
         ref={inputRef}
         type="file"
       />
-    </section>
+    </SettingsCard>
   )
 }

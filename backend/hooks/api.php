@@ -121,6 +121,7 @@ Route::get('users/{id}/topics', [UserProfileController::class, 'topics']);
 Route::get('users/{id}/comments', [UserProfileController::class, 'comments']);
 Route::get('users/{id}/votes', [UserProfileController::class, 'votes']);
 Route::get('users/{id}/overview', [UserProfileController::class, 'overview']);
+Route::get('users/{id}/insights', [UserProfileController::class, 'insights']);
 Route::get('users/{id}/pinned', [UserProfileController::class, 'pinned']);
 Route::get('users/{id}/permissions', [UserProfileController::class, 'permissions']);
 

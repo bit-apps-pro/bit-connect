@@ -31,7 +31,7 @@ export default function AvatarEditor({
   const { accept, isRemoving, isUploading, progress, remove, upload } = useAvatarUpload(userId)
 
   const picture = (
-    <Avatar alt={name} className="bc-bg-surface bc-ring-4 bc-ring-surface" size={80} src={avatar}>
+    <Avatar alt={name} className="bc-bg-surface bc-ring-4 bc-ring-surface" size={96} src={avatar}>
       {name?.charAt(0)?.toUpperCase()}
     </Avatar>
   )
@@ -105,7 +105,7 @@ export default function AvatarEditor({
         <button
           aria-label={__('Change profile picture')}
           className={[
-            'bc-absolute bc--bottom-0.5 bc--right-0.5 bc-flex bc-h-8 bc-w-8 bc-items-center bc-justify-center',
+            'bc-absolute bc-bottom-0 bc-right-0 bc-flex bc-h-8 bc-w-8 bc-items-center bc-justify-center',
             'bc-cursor-pointer bc-rounded-full bc-border-2 bc-border-solid bc-border-surface bc-bg-primary',
             'bc-text-white bc-shadow-sm bc-transition-transform hover:bc-scale-105 active:bc-scale-95',
             busy ? 'bc-opacity-60' : ''

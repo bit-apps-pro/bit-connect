@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import SettingsCard from '@utilities/settings-card'
 import { Button, Form, Input } from 'antd'
 import { useEffect, useRef } from 'react'
 import { LuAtSign, LuGithub, LuGlobe, LuLinkedin, LuSave, LuTwitter } from 'react-icons/lu'
@@ -92,17 +93,7 @@ export default function ProfileDetailsForm({ profile }: { profile: undefined | U
   }
 
   return (
-    <section
-      aria-label={__('Profile details')}
-      className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
-    >
-      <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-        {__('Profile details')}
-      </h2>
-      <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-        {__('How you appear across the community.')}
-      </p>
-
+    <SettingsCard subtitle={__('How you appear across the community.')} title={__('Profile details')}>
       <Form<ProfileDetailsFormValues>
         className="[&_.ant-form-item-label>label]:bc-font-semibold"
         form={form}
@@ -171,6 +162,6 @@ export default function ProfileDetailsForm({ profile }: { profile: undefined | U
           </Button>
         </Form.Item>
       </Form>
-    </section>
+    </SettingsCard>
   )
 }
