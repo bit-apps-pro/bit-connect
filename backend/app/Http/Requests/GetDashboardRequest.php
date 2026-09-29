@@ -9,7 +9,13 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Http\Rules\InRule;
 
+/**
+ * Provides validation for reading the admin dashboard.
+ *
+ * @property null|string $period
+ */
 final class GetDashboardRequest extends Request
 {
     public function authorize()
@@ -28,6 +34,10 @@ final class GetDashboardRequest extends Request
 
     public function rules()
     {
-        return [];
+        return [
+            // The window every "+N" on the dashboard counts over, and the span
+            // the activity chart draws. Omitted, the dashboard reads 30 days.
+            'period' => ['nullable', 'string', new InRule(['7d', '30d', '12m'])],
+        ];
     }
 }

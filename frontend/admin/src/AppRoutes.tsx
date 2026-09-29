@@ -23,7 +23,7 @@ function OnboardingGuard() {
   return isOnboardingStatusPending ? <></> : <Layout />
 }
 
-const Root = lazy(() => import('./pages/root/Root'))
+const Root = lazy(() => import('./pages/root/root'))
 const Stages = lazy(() => import('./pages/stages/stages'))
 const Status = lazy(() => import('./pages/status/status'))
 const TopicTypes = lazy(() => import('./pages/topic-types/topic-types'))
