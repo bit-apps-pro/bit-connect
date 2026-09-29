@@ -280,6 +280,14 @@ a:focus:not(:focus-visible) {
     scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
     scrollbar-width: var(--scrollbar-width);
   }
+
+  /* The hover-only thumb below is `::-webkit-scrollbar` styling, which any
+     browser that supports `scrollbar-color` ignores — Chrome included — so the
+     thumb was always painted. `.reveal` hides it here until the pointer or
+     keyboard focus is inside. The lane stays reserved, so nothing shifts. */
+  .scroller.reveal:not(:hover, :focus-within) {
+    scrollbar-color: transparent transparent;
+  }
 }
 
 @supports selector(::-webkit-scrollbar) {

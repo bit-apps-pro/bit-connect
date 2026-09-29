@@ -208,7 +208,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               viewports. Harmless when the credit is off — the nav just gets the
               whole column. */}
           <NavList
-            className="scroller thin bc-min-h-0 bc-flex-1 bc-overflow-y-auto"
+            className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto"
             navItems={navItems}
             productItems={productItems}
             reserveIconSlot={reserveIconSlot}
