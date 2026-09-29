@@ -106,7 +106,7 @@ function firstUsableUrl(candidates: string[], fallback: string): URL {
   return (
     firstConfiguredUrl(candidates) ??
     toAbsoluteUrl(fallback) ??
-    new URL(`${trimTrailingSlash(config.SITE_URL)}/wp-login.php`)
+    new URL(`${trimTrailingSlash(config.SITE_URL)}/`)
   )
 }
 

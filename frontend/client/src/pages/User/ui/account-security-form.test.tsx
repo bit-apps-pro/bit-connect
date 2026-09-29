@@ -15,8 +15,12 @@ vi.mock('../data/use-request-email-change', () => ({
 vi.mock('../data/use-send-password-reset', () => ({
   default: () => ({ isSendingPasswordReset: false, sendPasswordReset })
 }))
+const cancelEmailChange = vi.fn()
+vi.mock('../data/use-cancel-email-change', () => ({
+  default: () => ({ cancelEmailChange, isCancellingEmailChange: false })
+}))
 
-const authUser: { email: string; has_password?: boolean; id: number } = {
+const authUser: { email: string; has_password?: boolean; id: number; pending_email?: string } = {
   email: 'aiden@example.com',
   id: 7
 }
@@ -96,6 +100,37 @@ describe('AccountSecurityForm', () => {
       render(<AccountSecurityForm userId={7} />)
 
       expect(screen.queryByRole('button', { name: /forgot password/i })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('the email address', () => {
+    afterEach(() => {
+      authUser.pending_email = undefined
+    })
+
+    it('says the new address needs confirming, and shows no notice when nothing is pending', () => {
+      render(<AccountSecurityForm userId={7} />)
+
+      expect(
+        screen.getByText('The new address will not become active until confirmed.')
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+
+    it('names a pending address and cancels it on request', async () => {
+      authUser.pending_email = 'new@example.com'
+      cancelEmailChange.mockReset()
+      render(<AccountSecurityForm userId={7} />)
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        'There is a pending change of your email to new@example.com'
+      )
+      // The field keeps the address in use until the new one is confirmed.
+      expect(screen.getByLabelText('Email address')).toHaveValue('aiden@example.com')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      await waitFor(() => expect(cancelEmailChange).toHaveBeenCalled())
     })
   })
 

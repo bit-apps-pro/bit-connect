@@ -1,9 +1,10 @@
 import { __ } from '@common/helpers/i18nWrap'
 import usePageTitle from '@common/hooks/usePageTitle'
+import { externalLoginUrl } from '@utils/auth-urls'
 import { routePath } from '@utils/route-path'
 import { Button, Result, Spin } from 'antd'
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router'
 
 import { useAuthStore } from '@/store/auth.zustand'
 import { verifyEmailApi, verifyEmailChangeApi } from '@/store/data/auth-api'
@@ -19,7 +20,8 @@ const verifiedTokens = new Set<string>()
 export default function VerifyEmailPage() {
   usePageTitle(__('Verify email'))
   const [searchParams] = useSearchParams()
-  const { checkAuth, setUser } = useAuthStore()
+  const { pathname, search } = useLocation()
+  const { checkAuth, isLoggedIn, setUser } = useAuthStore()
 
   // Two flows land here. `token` confirms a new registration and signs the
   // member in; `email_token` confirms an address change on an account that
@@ -28,6 +30,13 @@ export default function VerifyEmailPage() {
   const token = emailChangeToken || (searchParams.get('token') ?? '')
   const isEmailChange = Boolean(emailChangeToken)
   const userId = Number(searchParams.get('uid') ?? 0) || undefined
+
+  // An address change is applied only for the signed-in owner, as core's own
+  // profile flow does — the token proves the new inbox, the session proves the
+  // account. The link is usually opened from that inbox, often somewhere signed
+  // out, so a visitor without a session goes through login and comes back here
+  // with the same query string.
+  const needsLogin = isEmailChange && Boolean(token && userId) && !isLoggedIn
 
   const [state, setState] = useState<VerifyState>('loading')
   const [errorMsg, setErrorMsg] = useState('')
@@ -39,6 +48,8 @@ export default function VerifyEmailPage() {
       return
     }
 
+    if (needsLogin) return
+
     if (verifiedTokens.has(token)) return
     verifiedTokens.add(token)
 
@@ -49,11 +60,9 @@ export default function VerifyEmailPage() {
       .then(async response => {
         if (response.data && 'id' in response.data) {
           if (isEmailChange) {
-            // Never setUser() here. A confirmation link is meant to be opened
-            // from the new inbox, which is often a browser with no session —
-            // seeding the store from the response would show that visitor as
-            // logged in with no auth cookie, and every request after would 401.
-            // Asking the server is right either way.
+            // Re-read the session rather than seeding the store from the
+            // response: the member was already signed in, and the server is
+            // the one place the refreshed account is known to be accurate.
             await checkAuth()
           } else {
             setUser(response.data)
@@ -76,7 +85,20 @@ export default function VerifyEmailPage() {
         setState('error')
         setErrorMsg(msg)
       })
-  }, [token, userId, setUser, checkAuth, isEmailChange])
+  }, [token, userId, setUser, checkAuth, isEmailChange, needsLogin])
+
+  if (needsLogin) {
+    const returnTo = `${pathname}${search}`
+    const loginUrl = externalLoginUrl(returnTo)
+    if (loginUrl) {
+      // A server render has no `window` to navigate; emit nothing and let the
+      // client perform the redirect once it mounts.
+      if (typeof window === 'undefined') return
+      window.location.href = loginUrl
+      return
+    }
+    return <Navigate replace to={`/login?redirect_to=${encodeURIComponent(returnTo)}`} />
+  }
 
   return (
     <AuthCard leftTitle={isEmailChange ? __('Email Change') : __('Email Verification')}>

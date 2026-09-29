@@ -66,13 +66,11 @@ interface ConfigType {
   WP_REST_URL: string
 }
 
-// SSR/prerender safe: `window` is undefined in Node, and this object is built
-// at module-eval time. Guard the origin so importing this module never throws.
-const windowOrigin = typeof window === 'undefined' ? '' : window.location.origin
-
+// Endpoint URLs come only from the server (admin_url(), get_rest_url()): a
+// site can move wp-admin or the REST prefix, so no path is guessed here.
 const config = {
-  AJAX_URL: getServerVariable('ajaxURL', `${windowOrigin}/wp-admin/admin-ajax.php`),
-  API_URL: getServerVariable('apiURL', `${windowOrigin}/wp-json/bit-connect/v1`),
+  AJAX_URL: getServerVariable('ajaxURL'),
+  API_URL: getServerVariable('apiURL'),
   // Read straight off SERVER_VARIABLES rather than through getServerVariable:
   // that helper warns on any falsy value, and `false` here is a normal answer,
   // not a missing one.
@@ -96,7 +94,7 @@ const config = {
   SITE_BASE_URL: getServerVariable('siteBaseURL', ''),
   SITE_URL: getServerVariable('siteURL', ''),
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
-  WP_REST_URL: getServerVariable('wpRestURL', `${windowOrigin}/wp-json/wp/v2`)
+  WP_REST_URL: getServerVariable('wpRestURL')
 } as const satisfies ConfigType
 
 export default config

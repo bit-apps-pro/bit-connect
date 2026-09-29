@@ -12,7 +12,6 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
 use BitApps\BitConnect\Http\RestPermission;
-use BitApps\BitConnect\Plugin;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
@@ -31,8 +30,6 @@ class HookProvider
     public function __construct()
     {
         $this->_pluginBackend = Config::get('BASEDIR') . DIRECTORY_SEPARATOR;
-
-        $this->loadAppAjaxHooks();
 
         $this->loadAppShortcodes();
 
@@ -178,23 +175,6 @@ class HookProvider
 
             // Each route's permission_callback asks its Request's authorize().
             RestPermission::register();
-        }
-    }
-
-    /**
-     * Helps to register App hooks.
-     */
-    protected function loadAppAjaxHooks()
-    {
-        if (
-            RequestType::is(RequestType::AJAX)
-            && is_readable($this->_pluginBackend . 'hooks' . DIRECTORY_SEPARATOR . 'ajax.php')
-        ) {
-            $router = new Router(RequestType::AJAX, Config::VAR_PREFIX, '');
-            $router->setMiddlewares(Plugin::instance()->middlewares());
-
-            include $this->_pluginBackend . 'hooks' . DIRECTORY_SEPARATOR . 'ajax.php';
-            $router->register();
         }
     }
 

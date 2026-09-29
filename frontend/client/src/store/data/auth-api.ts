@@ -182,9 +182,10 @@ export async function verifyEmailApi(token: string): Promise<ResponseType<User>>
 /**
  * Confirm a pending email address change.
  *
- * Unlike verifyEmailApi this does not sign anyone in — the member is already
- * signed in on the device that asked for the change, and the link may well be
- * opened somewhere else. No auth state changes, so no nonce comes back.
+ * Unlike verifyEmailApi this does not sign anyone in — the server applies the
+ * change only for the signed-in owner, so the caller is already authenticated
+ * (VerifyEmailPage routes a signed-out visitor through login first). No auth
+ * state changes, so no nonce comes back.
  */
 export async function verifyEmailChangeApi(token: string, userId: number): Promise<ResponseType<User>> {
   return post<{ token: string; user_id: number }, User>('auth/verify-email-change', {

@@ -20,7 +20,12 @@ use WP_User;
  *
  * This mirrors what WordPress core does on the profile screen (the `_new_email`
  * flow), including not asking for the password: the confirmation link going to
- * the new inbox is what proves the request.
+ * the new inbox is what proves the request. Also like core, the link is only
+ * honoured for the signed-in owner (RestVerifyEmailChangeRequest::authorize()),
+ * so a link that reaches the wrong inbox by a typo cannot move the account.
+ * Both steps therefore run as the member; the plugin never creates or signs
+ * in a user here — it edits one field on an existing account through
+ * wp_update_user(), which also mails the previous address core's own notice.
  *
  * Kept apart from registration's own verification on purpose. That flow parks
  * the pending account in a transient keyed by its token and never touches user
@@ -186,7 +191,7 @@ class EmailChangeService
         $subject = __('Confirm your new email address', 'bit-connect');
         $message = \sprintf(
             // translators: %s: confirmation URL
-            __("Hello,\n\nPlease confirm this address so we can use it for your account:\n\n%s\n\nThis link expires in 24 hours.\n\nIf you did not ask to change your email address, you can safely ignore this email — nothing has changed.", 'bit-connect'), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
+            __("Hello,\n\nPlease confirm this address so we can use it for your account:\n\n%s\n\nYou may be asked to sign in first. This link expires in 24 hours.\n\nIf you did not ask to change your email address, you can safely ignore this email — nothing has changed.", 'bit-connect'), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
             $confirmUrl
         );
 

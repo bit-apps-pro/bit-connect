@@ -2,7 +2,7 @@
 Contributors: bitpressadmin
 Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
-Tested up to: 7.1.2
+Tested up to: 7.1
 Requires PHP: 8.2
 Stable tag: 1.0.1
 License: GPL-2.0-or-later
@@ -92,7 +92,7 @@ It can work as a traditional forum, but it can also serve as a product community
 
 The files in `assets/` are minified builds. The full source code is on GitHub:
 
-**https://github.com/bit-apps-pro/bit-connect**
+https://github.com/bit-apps-pro/bit-connect
 
 To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 

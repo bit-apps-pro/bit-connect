@@ -1,4 +1,4 @@
-import { __, sprintf } from '@common/helpers/i18nWrap'
+import { __ } from '@common/helpers/i18nWrap'
 import SettingsCard from '@utilities/settings-card'
 import { Alert, Button, Form, Input } from 'antd'
 import { useEffect, useRef } from 'react'
@@ -6,6 +6,7 @@ import { LuLock, LuMail } from 'react-icons/lu'
 
 import { useAuthStore } from '@/store/auth.zustand'
 
+import useCancelEmailChange from '../data/use-cancel-email-change'
 import useChangePassword, { type ChangePasswordPayload } from '../data/use-change-password'
 import useRequestEmailChange, { type RequestEmailChangePayload } from '../data/use-request-email-change'
 import useSendPasswordReset from '../data/use-send-password-reset'
@@ -40,6 +41,7 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
   const [passwordForm] = Form.useForm<PasswordFormValues>()
 
   const { isRequestingEmailChange, requestEmailChange } = useRequestEmailChange(emailForm, userId)
+  const { cancelEmailChange, isCancellingEmailChange } = useCancelEmailChange(userId)
   const { changePassword, isChangingPassword } = useChangePassword(passwordForm, userId)
   const { isSendingPasswordReset, sendPasswordReset } = useSendPasswordReset(userId)
 
@@ -61,6 +63,9 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
     const payload: RequestEmailChangePayload = { email: values.email }
     try {
       await requestEmailChange(payload)
+      // The field keeps showing the address in use, as WordPress's does: the
+      // new one is not active yet, and the pending notice names it.
+      emailForm.setFieldsValue({ email: user?.email ?? '' })
     } catch {
       // Already reported by the hook.
     }
@@ -83,16 +88,6 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
       subtitle={__('Only you can see these. They are never shown on your profile.')}
       title={__('Account and security')}
     >
-      {user?.pending_email && (
-        <Alert
-          className="bc-mb-4"
-          description={__('Open the link we sent to finish the change.')}
-          message={sprintf(__('Waiting for you to confirm %s'), user.pending_email)}
-          showIcon
-          type="info"
-        />
-      )}
-
       <Form<EmailFormValues>
         className="[&_.ant-form-item-label>label]:bc-font-semibold"
         form={emailForm}
@@ -101,7 +96,38 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
         requiredMark={false}
       >
         <Form.Item
-          extra={__('We will email the new address to make sure you can read it.')}
+          // Worded after WordPress's own profile screen, so a member who has
+          // changed an address there recognises the flow here.
+          extra={
+            <>
+              <span className="bc-block">
+                {__('If you change this, an email will be sent at your new address to confirm it.')}{' '}
+                <strong>{__('The new address will not become active until confirmed.')}</strong>
+              </span>
+              {user?.pending_email && (
+                <span
+                  className="bc-mt-2 bc-block bc-rounded-r bc-border-0 bc-border-l-4 bc-border-solid bc-border-positive bc-bg-positive-soft bc-px-3 bc-py-2 bc-text-ink"
+                  role="status"
+                >
+                  {__('There is a pending change of your email to')}{' '}
+                  <code className="bc-rounded bc-bg-surface-sunken bc-px-1 bc-py-0.5">
+                    {user.pending_email}
+                  </code>
+                  .{' '}
+                  <button
+                    className="bc-cursor-pointer bc-border-0 bc-bg-transparent bc-p-0 bc-font-medium bc-text-primary bc-underline hover:bc-text-primary/80 disabled:bc-cursor-default disabled:bc-text-ink-subtle"
+                    disabled={isCancellingEmailChange}
+                    onClick={() => {
+                      void cancelEmailChange()
+                    }}
+                    type="button"
+                  >
+                    {isCancellingEmailChange ? __('Cancelling…') : __('Cancel')}
+                  </button>
+                </span>
+              )}
+            </>
+          }
           label={__('Email address')}
           name="email"
           rules={[

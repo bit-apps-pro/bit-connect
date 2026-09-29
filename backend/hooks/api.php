@@ -20,7 +20,6 @@ use BitApps\BitConnect\Http\Controller\CoverController;
 use BitApps\BitConnect\Http\Controller\DashboardController;
 use BitApps\BitConnect\Http\Controller\FollowController;
 use BitApps\BitConnect\Http\Controller\GeneralSettingsController;
-use BitApps\BitConnect\Http\Controller\LoginController;
 use BitApps\BitConnect\Http\Controller\MemberProfileController;
 use BitApps\BitConnect\Http\Controller\MentionController;
 use BitApps\BitConnect\Http\Controller\NotificationController;
@@ -137,6 +136,7 @@ Route::post('users/{id}/cover/remove', [CoverController::class, 'remove']);
 Route::post('users/{id}/password', [AccountSecurityController::class, 'changePassword']);
 Route::post('users/{id}/password/reset-link', [AccountSecurityController::class, 'sendPasswordReset']);
 Route::post('users/{id}/email', [AccountSecurityController::class, 'requestEmailChange']);
+Route::post('users/{id}/email/cancel', [AccountSecurityController::class, 'cancelEmailChange']);
 
 // Attachments
 Route::post('attachments', [AttachmentController::class, 'upload']);
@@ -171,9 +171,6 @@ Route::post('portal-page/root', [PortalSlugController::class, 'updateRootMode'])
 // Authentication Routes
 Route::get('auth/me', [AuthController::class, 'me']);
 Route::post('auth/logout', [AuthController::class, 'logout']);
-
-// Auth data bootstrap endpoint (public — no login required)
-Route::get('auth/data', [LoginController::class, 'data']);
 
 // Forum login / signup (public REST endpoints — CSRF via X-WP-Nonce header)
 Route::post('auth/login', [AuthApiController::class, 'login']);

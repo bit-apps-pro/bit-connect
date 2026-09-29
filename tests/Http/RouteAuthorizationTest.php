@@ -36,12 +36,7 @@ final class RouteAuthorizationTest extends TestCase
      * Keyed by "METHOD path" exactly as declared in the route file. A route
      * belongs here only when an anonymous visitor is *supposed* to reach it.
      */
-    private const PUBLIC_ROUTES = [
-        // The portal bootstraps from this before anyone has logged in: it
-        // returns the login/registration URLs and whether registration is even
-        // open. It exposes no member data for a logged-out caller.
-        'GET auth/data' => 'Portal auth bootstrap — must answer logged-out visitors.',
-    ];
+    private const PUBLIC_ROUTES = [];
 
     /**
      * @return array<string, array{0: string}>
@@ -49,8 +44,7 @@ final class RouteAuthorizationTest extends TestCase
     public static function routeFileProvider(): array
     {
         return [
-            'api'  => ['backend/hooks/api.php'],
-            'ajax' => ['backend/hooks/ajax.php'],
+            'api' => ['backend/hooks/api.php'],
         ];
     }
 
@@ -109,11 +103,11 @@ final class RouteAuthorizationTest extends TestCase
         $root = \dirname(__DIR__, 2);
         $declared = [];
 
-        foreach (['backend/hooks/api.php', 'backend/hooks/ajax.php'] as $file) {
-            foreach (self::parseRoutes($root . '/' . $file) as $route) {
-                $declared[] = $route['method'] . ' ' . $route['path'];
-            }
+        foreach (self::parseRoutes($root . '/backend/hooks/api.php') as $route) {
+            $declared[] = $route['method'] . ' ' . $route['path'];
         }
+
+        $this->assertNotEmpty($declared, 'No routes parsed — the parser has drifted from the route syntax.');
 
         foreach (array_keys(self::PUBLIC_ROUTES) as $allowed) {
             $this->assertContains(

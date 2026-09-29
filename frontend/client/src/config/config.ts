@@ -134,7 +134,9 @@ const promo = getServerVariable('promo', {}) ?? {}
 const departmentNaming = SERVER_VARIABLES?.departmentNaming ?? {}
 
 const config = {
-  API_URL: getServerVariable('apiURL', `${siteURL}/wp-json/bit-connect/v1`),
+  // Endpoint URLs come only from the server (wp_login_url(), get_rest_url()):
+  // a site can move the login page or the REST prefix, so no path is guessed.
+  API_URL: getServerVariable('apiURL'),
   AUTH_MODE:
     (getServerVariable('authMode', 'plugin_default') as 'custom_url' | 'plugin_default') ??
     'plugin_default',
@@ -215,13 +217,13 @@ const config = {
   // "missing" — so a member with nothing unread would otherwise warn on every
   // page load and fall through to whatever default was passed.
   UNREAD_NOTIFICATIONS: Number(SERVER_VARIABLES?.unreadNotifications ?? 0) || 0,
-  WP_LOGIN_URL: getServerVariable('wpLoginURL', `${siteURL}/wp-login.php`),
+  WP_LOGIN_URL: getServerVariable('wpLoginURL'),
   WP_MEDIA_SETTINGS: getServerVariable('wpMediaSettings', {
     bigImageThresholdPx: 2560,
     maxUploadBytes: 5 * 1024 * 1024
   }) ?? { bigImageThresholdPx: 2560, maxUploadBytes: 5 * 1024 * 1024 },
-  WP_REGISTER_URL: getServerVariable('wpRegisterURL', `${siteURL}/wp-login.php?action=register`),
-  WP_REST_URL: getServerVariable('wpRestURL', `${siteURL}/wp-json/wp/v2`)
+  WP_REGISTER_URL: getServerVariable('wpRegisterURL'),
+  WP_REST_URL: getServerVariable('wpRestURL')
 } as const satisfies ConfigType
 
 export default config
