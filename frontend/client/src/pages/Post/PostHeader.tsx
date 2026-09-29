@@ -11,13 +11,14 @@ import EditedNote from '@utilities/edited-note'
 import UserLink from '@utilities/user-link'
 import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
 import { useAtomValue } from 'jotai'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
-import { LuClock, LuEllipsisVertical, LuEyeOff, LuFlag, LuTrash } from 'react-icons/lu'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { LuClock, LuEllipsisVertical, LuEyeOff, LuFlag, LuLock, LuLockOpen, LuTrash } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 
 import { $isDarkTheme } from '@/common/globalStates/$appConfig'
 import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import { useAuthStore } from '@/store/auth.zustand'
+import { updatePostLockApi } from '@/store/data/update-post-lock-api'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { useStagesStore } from '@/store/stages.zustand'
 import { useStatusesStore } from '@/store/statuses.zustand'
@@ -82,6 +83,8 @@ export default function PostHeader({
   // still correct it afterwards.
   const canEditPost = Boolean(isOwner && can('bit_connect_forum_edit_own_post'))
   const canDeletePost = canDeleteAny || Boolean(isOwner && can('bit_connect_forum_delete_own_post'))
+  const canLock = can('bit_connect_forum_lock_post')
+  const [isLocking, setIsLocking] = useState(false)
 
   useEffect(() => {
     if (allStatuses.length === 0) {
@@ -220,6 +223,32 @@ export default function PostHeader({
     })
   }, [app.modal, deletePost, isDeleting, navigate, post.ID])
 
+  const handleToggleLock = useCallback(async () => {
+    if (isLocking) return
+
+    const nextLocked = !post.is_locked
+    setIsLocking(true)
+
+    try {
+      const updatedTopic = await updatePostLockApi(post.ID, nextLocked)
+      // Only the flag is taken from the reply: the update response is the bare
+      // topic and leaves out what the page read alongside it, such as follow
+      // state.
+      setPost({ ...post, is_locked: updatedTopic?.is_locked ?? nextLocked })
+      notificationApi?.success({
+        message: nextLocked
+          ? __('Topic locked. New comments are closed.')
+          : __('Topic unlocked. Members can comment again.')
+      })
+    } catch (error_) {
+      notificationApi?.error({
+        message: (error_ as { message?: string })?.message ?? __('Failed to update the topic')
+      })
+    } finally {
+      setIsLocking(false)
+    }
+  }, [isLocking, notificationApi, post, setPost])
+
   const handleEdit = useCallback(() => {
     openEditModal(post.ID)
   }, [openEditModal, post.ID])
@@ -267,6 +296,15 @@ export default function PostHeader({
       })
     }
 
+    if (canLock) {
+      items.push({
+        icon: post.is_locked ? <LuLockOpen /> : <LuLock />,
+        key: 'lock',
+        label: post.is_locked ? __('Unlock topic') : __('Lock topic'),
+        onClick: handleToggleLock
+      })
+    }
+
     if (canDeletePost) {
       items.push({
         danger: true,
@@ -289,7 +327,17 @@ export default function PostHeader({
     }
 
     return items
-  }, [canDeletePost, canEditPost, handleDelete, handleEdit, handleReport, isOwner])
+  }, [
+    canDeletePost,
+    canEditPost,
+    canLock,
+    handleDelete,
+    handleEdit,
+    handleReport,
+    handleToggleLock,
+    isOwner,
+    post.is_locked
+  ])
 
   // A rule between the two groups: "stop mailing me about this" and "delete
   // this" are not neighbours, and the gap is what stops a hand aiming for the
