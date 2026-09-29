@@ -48,10 +48,13 @@ export default function TopicForm({
   const [isPermalinkOpen, setIsPermalinkOpen] = useState(false)
   // The search title's placeholder names what a blank one falls back to.
 
-  // Either taxonomy can be switched off by an admin, and the row's layout
-  // depends on how many survive.
-  const showTopicType = Boolean(topicFormFields?.requireTopicType)
-  const showDepartment = Boolean(topicFormFields?.requireDepartment)
+  // An admin sets each taxonomy hidden, optional or required (Settings → Topic
+  // form), and the row's layout depends on how many are shown. The server
+  // enforces "required" as well — see CreateTopicRequest.
+  const topicTypeMode = topicFormFields?.topicType ?? 'required'
+  const departmentMode = topicFormFields?.department ?? 'required'
+  const showTopicType = topicTypeMode !== 'hidden'
+  const showDepartment = departmentMode !== 'hidden'
 
   // Both modals mount this form only while they are open, so the flag starts
   // false on every open without needing to watch the modal itself.
@@ -230,9 +233,13 @@ export default function TopicForm({
               className="bc-mb-0"
               label={__('Topic Type')}
               name="topic-types"
-              rules={[{ message: __('Please select a topic type'), required: true }]}
+              rules={[{ message: __('Please select a topic type'), required: topicTypeMode === 'required' }]}
             >
-              <Select options={topicTypeOptions} placeholder={__('Select a Topic Type')} />
+              <Select
+                allowClear={topicTypeMode === 'optional'}
+                options={topicTypeOptions}
+                placeholder={__('Select a Topic Type')}
+              />
             </Form.Item>
           )}
 
@@ -245,11 +252,12 @@ export default function TopicForm({
                 {
                   // translators: %s: what the portal calls a department.
                   message: sprintf(__('%s is required'), config.DEPARTMENT_NAMING.singular),
-                  required: true
+                  required: departmentMode === 'required'
                 }
               ]}
             >
               <Select
+                allowClear={departmentMode === 'optional'}
                 options={departmentOptions}
                 // translators: %s: what the portal calls a department.
                 placeholder={sprintf(__('Select %s'), config.DEPARTMENT_NAMING.singular)}

@@ -26,7 +26,7 @@ describe('the settings screen’s values', () => {
       stored({
         cleanup: { deleteDataOnUninstall: true },
         topicAccess: { comment: false, upvote: false },
-        topicFormFields: { requireDepartment: false, requireTopicType: false }
+        topicFormFields: { department: 'hidden', topicType: 'optional' }
       }) as never
     )
     const { wrapper } = createQueryWrapper()
@@ -38,7 +38,7 @@ describe('the settings screen’s values', () => {
     expect(result.current.settings).toEqual({
       cleanup: { deleteDataOnUninstall: true },
       topicAccess: { comment: false, upvote: false },
-      topicFormFields: { requireDepartment: false, requireTopicType: false }
+      topicFormFields: { department: 'hidden', topicType: 'optional' }
     })
   })
 
@@ -52,7 +52,7 @@ describe('the settings screen’s values', () => {
 
     expect(result.current.settings.topicAccess.comment).toBe(false)
     expect(result.current.settings.topicAccess.upvote).toBe(true)
-    expect(result.current.settings.topicFormFields.requireDepartment).toBe(true)
+    expect(result.current.settings.topicFormFields.department).toBe('required')
   })
 
   // An older build of the server wrote a `moderation` group. It is not a
@@ -105,7 +105,7 @@ describe('the settings screen’s values', () => {
     const { result } = renderHook(() => useSettings(), { wrapper })
 
     expect(result.current.settings.topicAccess).toEqual({ comment: true, upvote: true })
-    expect(result.current.settings.topicFormFields.requireTopicType).toBe(true)
+    expect(result.current.settings.topicFormFields.topicType).toBe('required')
   })
 
   it('falls back to the defaults for a body it cannot read', async () => {

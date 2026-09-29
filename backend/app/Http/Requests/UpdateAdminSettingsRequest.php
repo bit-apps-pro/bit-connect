@@ -10,7 +10,10 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\AdminSettings;
+use BitApps\BitConnect\Enum\TopicFieldMode;
+use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\TopicFormFields;
 
 /**
  * Request input properties.
@@ -41,6 +44,9 @@ final class UpdateAdminSettingsRequest extends Request
             'topicAccess'     => ['required', 'array'],
             'cleanup'         => ['required', 'array'],
             'topicFormFields' => ['required', 'array'],
+            // One mode per field — see TopicFieldMode.
+            'topicFormFields.topicType'  => ['required', 'string', new InRule(TopicFieldMode::values())],
+            'topicFormFields.department' => ['required', 'string', new InRule(TopicFieldMode::values())],
         ];
     }
 
@@ -75,10 +81,10 @@ final class UpdateAdminSettingsRequest extends Request
             'cleanup' => [
                 'deleteDataOnUninstall' => (bool) ($this->cleanup['deleteDataOnUninstall'] ?? false),
             ],
-            'topicFormFields' => [
-                'requireTopicType'  => (bool) ($this->topicFormFields['requireTopicType'] ?? true),
-                'requireDepartment' => (bool) ($this->topicFormFields['requireDepartment'] ?? true),
-            ],
+            // Validated against TopicFieldMode above; normalize() rebuilds the
+            // group from those two keys alone, dropping the booleans an earlier
+            // build stored in their place.
+            'topicFormFields' => TopicFormFields::normalize($this->topicFormFields),
             // No moderation group. This plugin never acts on a report by
             // itself, so it has no threshold to store.
         ];

@@ -8,7 +8,9 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\TopicFormFields;
 
 /**
  * Provides validation for creating a topic.
@@ -46,8 +48,11 @@ final class CreateTopicRequest extends Request
             // ContentVisibilityService rather than this request.
             'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
-            'topic-types' => ['nullable', 'integer', 'min:1'],
-            'departments' => ['nullable', 'integer', 'min:1'],
+            // Required when the admin made it so (Settings → Topic form), and
+            // enforced here rather than only in the portal's form, which is
+            // just one of the ways a topic gets created.
+            'topic-types' => [self::presence('topicType'), 'integer', 'min:1'],
+            'departments' => [self::presence('department'), 'integer', 'min:1'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['nullable', 'integer', 'min:1'],
         ];
@@ -66,8 +71,24 @@ final class CreateTopicRequest extends Request
             'attachments.*.max' => 'Each attachment file cannot exceed 10MB.',
             'topic-type'        => 'Each topic type must be a valid ID.',
             'departments'       => 'Each department must be a valid ID.',
-            'tags.*.integer'    => 'Each tag must be a valid ID.',
-            'tags.*.min'        => 'Each tag ID must be at least 1.',
+
+            'topic-types.required' => 'Choose a topic type.',
+            'departments.required' => \sprintf('Choose a %s.', DepartmentNaming::get()['singular']),
+
+            'tags.*.integer' => 'Each tag must be a valid ID.',
+            'tags.*.min'     => 'Each tag ID must be at least 1.',
         ];
+    }
+
+    /**
+     * `required` or `nullable` for one of the form's optional fields, by the
+     * mode the admin set for it. A hidden field is never asked, so it is as
+     * free to leave out as an optional one.
+     *
+     * @param string $field `topicType` or `department`
+     */
+    private static function presence(string $field): string
+    {
+        return TopicFormFields::isRequired($field) ? 'required' : 'nullable';
     }
 }

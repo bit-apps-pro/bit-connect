@@ -20,13 +20,13 @@ describe('reading the portal settings', () => {
     vi.mocked(getRequest).mockResolvedValue({
       data: {
         topicAccess: { comment: true, upvote: true },
-        topicFormFields: { requireDepartment: false, requireTopicType: false }
+        topicFormFields: { department: 'hidden', topicType: 'optional' } as const
       }
     } as never)
 
     await expect(fetchAdminSettingsApi()).resolves.toEqual({
       topicAccess: { comment: true, upvote: true },
-      topicFormFields: { requireDepartment: false, requireTopicType: false }
+      topicFormFields: { department: 'hidden', topicType: 'optional' } as const
     })
   })
 
@@ -44,18 +44,25 @@ describe('reading the portal settings', () => {
     })
   })
 
-  // `false` is a setting an admin chose, not a gap to be filled.
-  it('keeps a switch the admin turned off', async () => {
+  // `hidden` is a setting an admin chose, not a gap to be filled.
+  it('keeps a field the admin hid', async () => {
     vi.mocked(getRequest).mockResolvedValue({
-      data: { topicFormFields: { requireDepartment: false, requireTopicType: false } }
+      data: { topicFormFields: { department: 'hidden', topicType: 'optional' } }
     } as never)
 
     const settings = await fetchAdminSettingsApi()
 
-    expect(settings.topicFormFields).toEqual({
-      requireDepartment: false,
-      requireTopicType: false
-    })
+    expect(settings.topicFormFields).toEqual({ department: 'hidden', topicType: 'optional' })
+  })
+
+  it('reads a mode it does not know as the default', async () => {
+    vi.mocked(getRequest).mockResolvedValue({
+      data: { topicFormFields: { department: 'sometimes', topicType: true } }
+    } as never)
+
+    const settings = await fetchAdminSettingsApi()
+
+    expect(settings.topicFormFields).toEqual(defaultSettings.topicFormFields)
   })
 
   it('falls back to the defaults for a body it cannot read', async () => {
@@ -80,7 +87,7 @@ describe('writing the portal settings', () => {
   it('sends the settings and reads back what was stored', async () => {
     const settings = {
       topicAccess: { comment: true, upvote: true },
-      topicFormFields: { requireDepartment: true, requireTopicType: false }
+      topicFormFields: { department: 'required', topicType: 'hidden' } as const
     }
 
     vi.mocked(postRequest).mockResolvedValue({ data: settings } as never)

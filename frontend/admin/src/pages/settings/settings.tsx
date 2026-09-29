@@ -1,5 +1,4 @@
-import { __, sprintf } from '@common/helpers/i18nWrap'
-import config from '@config/config'
+import { __ } from '@common/helpers/i18nWrap'
 import { Alert, Button, Divider, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -10,10 +9,12 @@ import ModerationSection from './internal/moderation-section'
 import SectionCard from './internal/section-card'
 import SettingsSection from './internal/settings-section'
 import TopicAccessExtras from './internal/topic-access-extras'
+import TopicFormSection from './internal/topic-form-section'
 import {
   type CleanupSettings,
   type SettingsFormData,
   type TopicAccessSettings,
+  type TopicFieldMode,
   type TopicFormFieldsSettings
 } from './shared/types'
 
@@ -117,8 +118,8 @@ export default function Settings() {
 
   const handleSettingChange = useCallback(
     (
-      section: 'cleanup' | 'topicAccess' | 'topicFormFields',
-      key: keyof CleanupSettings | keyof TopicAccessSettings | keyof TopicFormFieldsSettings,
+      section: 'cleanup' | 'topicAccess',
+      key: keyof CleanupSettings | keyof TopicAccessSettings,
       value: boolean
     ) => {
       setForm(prev => {
@@ -130,8 +131,6 @@ export default function Settings() {
         }
         if (section === 'topicAccess') {
           updated.topicAccess[key as keyof TopicAccessSettings] = value
-        } else if (section === 'topicFormFields') {
-          updated.topicFormFields[key as keyof TopicFormFieldsSettings] = value
         } else {
           updated.cleanup[key as keyof CleanupSettings] = value
         }
@@ -140,6 +139,10 @@ export default function Settings() {
     },
     []
   )
+
+  const handleFieldModeChange = useCallback((field: keyof TopicFormFieldsSettings, mode: TopicFieldMode) => {
+    setForm(prev => prev && { ...prev, topicFormFields: { ...prev.topicFormFields, [field]: mode } })
+  }, [])
 
   const handleSave = useCallback(async () => {
     if (!form) return
@@ -154,15 +157,15 @@ export default function Settings() {
     if (!form?.topicAccess) return []
     return [
       {
-        description: __('On/off your Topic Upvote'),
+        description: __('Let members upvote topics.'),
         key: 'upvote',
-        label: __('Upvote'),
+        label: __('Upvotes'),
         value: form.topicAccess.upvote ?? false
       },
       {
-        description: __('On/off your Comment'),
+        description: __('Let members reply to topics.'),
         key: 'comment',
-        label: __('Comment'),
+        label: __('Comments'),
         value: form.topicAccess.comment ?? false
       },
       // Neither comment upvoting nor private topics is here, for the same
@@ -177,28 +180,12 @@ export default function Settings() {
     if (!form?.cleanup) return []
     return [
       {
-        description: __('Delete all plugin settings, terms and posts when uninstalling this plugin'),
+        description: __(
+          'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.'
+        ),
         key: 'deleteDataOnUninstall',
-        label: __('Delete Data on Uninstall'),
+        label: __('Delete data on uninstall'),
         value: form.cleanup.deleteDataOnUninstall ?? false
-      }
-    ]
-  }, [form])
-
-  const topicFormFieldsSettings = useMemo(() => {
-    if (!form?.topicFormFields) return []
-    return [
-      {
-        description: __('Show and require Topic Type when creating a topic'),
-        key: 'requireTopicType',
-        label: __('Require Topic Type'),
-        value: form.topicFormFields.requireTopicType ?? true
-      },
-      {
-        description: sprintf(__('Show and require %s when creating a topic'), config.DEPARTMENT_NAMING.singular),
-        key: 'requireDepartment',
-        label: sprintf(__('Require %s'), config.DEPARTMENT_NAMING.singular),
-        value: form.topicFormFields.requireDepartment ?? true
       }
     ]
   }, [form])
@@ -224,7 +211,9 @@ export default function Settings() {
 
       {errorMessage && <Alert className="bc-mb-5" message={errorMessage} type="error" />}
 
-      <div className="bc-grid bc-gap-5 xl:bc-grid-cols-2">
+      {/* Top-aligned: each card is as tall as what it holds. Stretched to its
+          row's tallest, a two-row card sat above a block of empty white. */}
+      <div className="bc-grid bc-items-start bc-gap-5 xl:bc-grid-cols-2">
         <SettingsSection
           disabled={isUpdatingSettings}
           note={TopicAccessExtras && <TopicAccessExtras />}
@@ -232,18 +221,16 @@ export default function Settings() {
             handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
           }
           settings={topicAccessSettings}
-          subtitle={__('Choose what members can do on a topic')}
-          title={__('Topic Access Settings')}
+          subtitle={__('Choose what members can do on a topic.')}
+          title={__('Topic access')}
         />
-        <SettingsSection
-          disabled={isUpdatingSettings}
-          onChange={(key, value) =>
-            handleSettingChange('topicFormFields', key as keyof TopicFormFieldsSettings, value)
-          }
-          settings={topicFormFieldsSettings}
-          subtitle={__('Control which fields are shown and required when creating a topic')}
-          title={__('Topic Form Fields')}
-        />
+        {form && (
+          <TopicFormSection
+            disabled={isUpdatingSettings}
+            onChange={handleFieldModeChange}
+            value={form.topicFormFields}
+          />
+        )}
         {/* Takes nothing from this form: this plugin stores no moderation
             setting. Another plugin's section would read and save its own. */}
         <ModerationSection />
@@ -251,8 +238,8 @@ export default function Settings() {
           disabled={isUpdatingSettings}
           onChange={(key, value) => handleSettingChange('cleanup', key as keyof CleanupSettings, value)}
           settings={cleanupSettings}
-          subtitle={__('Manage what data is removed when the plugin is uninstalled')}
-          title={__('Data Cleanup')}
+          subtitle={__('Choose what happens to your community’s data if the plugin is deleted.')}
+          title={__('Data cleanup')}
         />
 
         <div className="xl:bc-col-span-2">

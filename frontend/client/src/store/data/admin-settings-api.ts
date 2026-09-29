@@ -1,7 +1,7 @@
 import getRequest from '@utils/request/get'
 import postRequest from '@utils/request/post'
 
-import { type AdminSettings } from '../admin-settings.type'
+import { type AdminSettings, type TopicFieldMode } from '../admin-settings.type'
 
 const defaultSettings: AdminSettings = {
   topicAccess: {
@@ -9,9 +9,15 @@ const defaultSettings: AdminSettings = {
     upvote: false
   },
   topicFormFields: {
-    requireDepartment: true,
-    requireTopicType: true
+    department: 'required',
+    topicType: 'required'
   }
+}
+
+const FIELD_MODES: ReadonlySet<unknown> = new Set<TopicFieldMode>(['hidden', 'optional', 'required'])
+
+function fieldMode(value: unknown, fallback: TopicFieldMode): TopicFieldMode {
+  return FIELD_MODES.has(value) ? (value as TopicFieldMode) : fallback
 }
 
 function normalizeAdminSettings(data: unknown): AdminSettings {
@@ -27,12 +33,11 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
       upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
     },
     topicFormFields: {
-      requireDepartment:
-        settingsData.topicFormFields?.requireDepartment ??
-        defaultSettings.topicFormFields.requireDepartment,
-      requireTopicType:
-        settingsData.topicFormFields?.requireTopicType ??
-        defaultSettings.topicFormFields.requireTopicType
+      department: fieldMode(
+        settingsData.topicFormFields?.department,
+        defaultSettings.topicFormFields.department
+      ),
+      topicType: fieldMode(settingsData.topicFormFields?.topicType, defaultSettings.topicFormFields.topicType)
     }
   }
 }

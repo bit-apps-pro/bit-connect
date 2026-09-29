@@ -14,6 +14,7 @@ use BitApps\BitConnect\Enum\AdminSettings;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Http\Requests\GetAdminSettingsRequest;
 use BitApps\BitConnect\Http\Requests\UpdateAdminSettingsRequest;
+use BitApps\BitConnect\Services\TopicFormFields;
 
 final class AdminSettingsController
 {
@@ -44,10 +45,10 @@ final class AdminSettingsController
                 $defaults['cleanup'],
                 \is_array($settings['cleanup'] ?? null) ? $settings['cleanup'] : []
             ),
-            'topicFormFields' => array_merge(
-                $defaults['topicFormFields'],
-                \is_array($settings['topicFormFields'] ?? null) ? $settings['topicFormFields'] : []
-            ),
+            // A mode per field. Read through normalize() so a forum saved by an
+            // earlier build, which stored one require-and-show boolean per
+            // field, reports the same form it has been drawing.
+            'topicFormFields' => TopicFormFields::normalize($settings['topicFormFields'] ?? []),
         ];
 
         // The portal reads this endpoint too — it builds the topic form and
@@ -95,10 +96,7 @@ final class AdminSettingsController
             'cleanup' => [
                 'deleteDataOnUninstall' => false,
             ],
-            'topicFormFields' => [
-                'requireTopicType'  => true,
-                'requireDepartment' => true,
-            ],
+            'topicFormFields' => TopicFormFields::defaults(),
         ];
     }
 }

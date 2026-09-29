@@ -4,6 +4,8 @@ import { Form } from 'antd'
 import { useEffect } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { type TopicFieldMode } from '@/store/admin-settings.type'
+
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 
 // The editor and the uploader pull in Quill and the file store, neither of
@@ -18,7 +20,7 @@ vi.mock('@features/file-uploader/state/use-file-store', () => ({ default: () => 
 // Which taxonomy selects the form offers is an admin setting, so the tests that
 // care about the row's layout set it per render. The `mock` prefix keeps it
 // reachable from the factory, which vitest hoists above this file's own code.
-const mockTopicFormFields: { requireDepartment?: boolean; requireTopicType?: boolean } = {}
+const mockTopicFormFields: { department?: TopicFieldMode; topicType?: TopicFieldMode } = {}
 vi.mock('@/store/admin-settings.zustand', () => ({
   useAdminSettingsStore: (selector: (s: unknown) => unknown) =>
     selector({ settings: { topicFormFields: mockTopicFormFields } })
@@ -199,20 +201,23 @@ const searchTags = async (query: string) => {
   await userEvent.type(box, query)
 }
 
-// The two taxonomy selects share a row. Either can be switched off by an admin,
-// and the one left behind should not sit at half width beside dead space.
+// The two taxonomy selects share a row. Either can be hidden by an admin, and
+// the one left behind should not sit at half width beside dead space.
 const row = () => document.querySelector('.bc-grid')
+// antd marks the label, and only on an item whose rules require it.
+const requiredLabel = (label: string) =>
+  screen.getByLabelText(label).closest('.ant-form-item')?.querySelector('label.ant-form-item-required')
 
 describe('TopicForm taxonomy row', () => {
   afterEach(() => {
     cleanup()
-    delete mockTopicFormFields.requireDepartment
-    delete mockTopicFormFields.requireTopicType
+    delete mockTopicFormFields.department
+    delete mockTopicFormFields.topicType
   })
 
-  it('splits the row when both selects are required', () => {
-    mockTopicFormFields.requireDepartment = true
-    mockTopicFormFields.requireTopicType = true
+  it('splits the row when both selects are shown', () => {
+    mockTopicFormFields.department = 'required'
+    mockTopicFormFields.topicType = 'optional'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
@@ -220,26 +225,45 @@ describe('TopicForm taxonomy row', () => {
     expect(screen.getByLabelText('Department')).toBeInTheDocument()
   })
 
-  it('gives Topic Type the whole row when Department is switched off', () => {
-    mockTopicFormFields.requireTopicType = true
+  it('shows both, required, before the settings have said otherwise', () => {
+    render(<Harness taxonomies={taxonomies} />)
+
+    expect(row()).toHaveClass('sm:bc-grid-cols-2')
+  })
+
+  it('gives Topic Type the whole row when Department is hidden', () => {
+    mockTopicFormFields.department = 'hidden'
+    mockTopicFormFields.topicType = 'required'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
     expect(screen.queryByLabelText('Department')).not.toBeInTheDocument()
   })
 
-  it('gives Department the whole row when Topic Type is switched off', () => {
-    mockTopicFormFields.requireDepartment = true
+  it('gives Department the whole row when Topic Type is hidden', () => {
+    mockTopicFormFields.department = 'required'
+    mockTopicFormFields.topicType = 'hidden'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
     expect(screen.queryByLabelText('Topic Type')).not.toBeInTheDocument()
   })
 
-  it('drops the row entirely when neither is required', () => {
+  it('drops the row entirely when both are hidden', () => {
+    mockTopicFormFields.department = 'hidden'
+    mockTopicFormFields.topicType = 'hidden'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toBeNull()
+  })
+
+  it('marks only a required select as required', () => {
+    mockTopicFormFields.department = 'optional'
+    mockTopicFormFields.topicType = 'required'
+    render(<Harness taxonomies={taxonomies} />)
+
+    expect(requiredLabel('Topic Type')).not.toBeNull()
+    expect(requiredLabel('Department')).toBeNull()
   })
 })
 
