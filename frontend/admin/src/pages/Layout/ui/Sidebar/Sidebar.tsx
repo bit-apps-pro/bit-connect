@@ -8,7 +8,7 @@ import {
   LuBell,
   LuChartLine,
   LuChartNoAxesColumn,
-  LuCircleDashed,
+  LuCircleCheck,
   LuHash,
   LuLayers,
   LuLayoutGrid,
@@ -51,7 +51,7 @@ const navItems: {
   { icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
   { icon: LuLayers, label: __('Products'), path: '../products', requires: 'manage' },
   { icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
-  { icon: LuCircleDashed, label: __('Status'), path: '../status', requires: 'manage' },
+  { icon: LuCircleCheck, label: __('Status'), path: '../status', requires: 'manage' },
   { icon: LuUsers, label: __('Manager'), path: '../manager', requires: 'manage' },
   // Ordered to match the WordPress menu, so the two navs read the same way.
   { icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },

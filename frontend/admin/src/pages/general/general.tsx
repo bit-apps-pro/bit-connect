@@ -1,5 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import { PageSaveContext, type SaveParticipant } from '@common/hooks/page-save'
 import useCopyToClipboard from '@common/hooks/useCopyToClipboard'
 import { Button, ConfigProvider, Segmented, Spin, theme, Typography } from 'antd'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
@@ -16,6 +17,7 @@ import useUpdateGeneralSettings from './data/use-update-general-settings'
 import useUpdatePortalSlug from './data/use-update-portal-slug'
 import AccessSection from './internal/access-section'
 import AuthSection from './internal/auth-section'
+import BrandingExtras from './internal/branding-extras'
 import BrandingSection from './internal/branding-section'
 import LocationSection from './internal/location-section'
 import { panelVariants } from './internal/motion'
@@ -41,6 +43,20 @@ export default function General() {
   const [authForm, setAuthForm] = useState<AuthSettings>(authSettings)
   const [slugInput, setSlugInput] = useState('')
   const [activeTab, setActiveTab] = useState('branding')
+  const [participants, setParticipants] = useState<Record<string, SaveParticipant>>({})
+
+  // Cards whose values live behind another endpoint join this page's Save
+  // rather than carrying a button of their own — see useSaveParticipant.
+  const reportParticipant = useCallback((key: string, participant?: SaveParticipant) => {
+    setParticipants(prev => {
+      const rest = Object.fromEntries(Object.entries(prev).filter(([name]) => name !== key))
+      return participant ? { ...rest, [key]: participant } : rest
+    })
+  }, [])
+  const dirtyParticipants = useMemo(
+    () => Object.values(participants).filter(participant => participant.isDirty),
+    [participants]
+  )
 
   useEffect(() => {
     setForm(generalSettings)
@@ -70,8 +86,9 @@ export default function General() {
     () =>
       !isSame(form, generalSettings) ||
       !isSame(authForm, authSettings) ||
-      slugInput.trim() !== portalPage.slug,
-    [form, generalSettings, authForm, authSettings, slugInput, portalPage.slug]
+      slugInput.trim() !== portalPage.slug ||
+      dirtyParticipants.length > 0,
+    [form, generalSettings, authForm, authSettings, slugInput, portalPage.slug, dirtyParticipants]
   )
 
   const handleSave = useCallback(async () => {
@@ -99,6 +116,8 @@ export default function General() {
         updateAuthSettings(authForm),
         ...(slugChanged ? [updatePortalSlug(slugInput.trim())] : [])
       ])
+      // After the page's own writes, so `results[2]` above stays the slug's.
+      await Promise.all(dirtyParticipants.map(participant => participant.save()))
       const slugResult = results[2]
       if (slugChanged) refetchPortalPage()
       notificationApi?.success({ key: 'save', message: __('Settings saved successfully') })
@@ -127,7 +146,8 @@ export default function General() {
     updateGeneralSettings,
     updateAuthSettings,
     updatePortalSlug,
-    refetchPortalPage
+    refetchPortalPage,
+    dirtyParticipants
   ])
 
   const isSaving = isUpdatingGeneralSettings || isUpdatingAuthSettings
@@ -136,13 +156,16 @@ export default function General() {
   const tabs = [
     {
       children: (
-        <BrandingSection
-          disabled={disabled}
-          form={form}
-          onCopy={copy}
-          onPatch={patch}
-          portalUrl={portalPage.url}
-        />
+        <>
+          <BrandingSection
+            disabled={disabled}
+            form={form}
+            onCopy={copy}
+            onPatch={patch}
+            portalUrl={portalPage.url}
+          />
+          {BrandingExtras && <BrandingExtras />}
+        </>
       ),
       icon: <LuSquarePen aria-hidden className="bc-shrink-0" size={16} />,
       key: 'branding',
@@ -211,6 +234,7 @@ export default function General() {
     // `reducedMotion="user"` rather than a per-component check: everything on
     // this page keeps its opacity fades but stops moving for anyone whose
     // system asks for that.
+    <PageSaveContext.Provider value={reportParticipant}>
     <MotionConfig reducedMotion="user">
       <div className="bc-px-6 bc-pb-6">
         <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
@@ -295,5 +319,6 @@ export default function General() {
         </AnimatePresence>
       </div>
     </MotionConfig>
+    </PageSaveContext.Provider>
   )
 }

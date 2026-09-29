@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { PageSaveContext, type SaveParticipant } from '@common/hooks/page-save'
 import { Alert, Button, InputNumber, Switch, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -12,7 +13,6 @@ import EmailWordingSection from './internal/email-wording-section'
 import PageSkeleton from './internal/page-skeleton'
 import SectionCard from './internal/section-card'
 import TypeMatrix from './internal/type-matrix'
-import { PageSaveContext, type SaveParticipant } from './shared/page-save'
 import { type NotificationSettingsData } from './shared/types'
 
 const { Text, Title } = Typography

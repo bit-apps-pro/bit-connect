@@ -9,12 +9,12 @@ export interface SaveParticipant {
 type ReportParticipant = (key: string, participant?: SaveParticipant) => void
 
 /**
- * How a card on this page joins the page's one Save button.
+ * How a card joins its page's one Save button.
  *
- * Most of the page is a single settings blob the page itself holds. A card
- * whose values are stored somewhere else reports them here instead, and Save
- * writes them alongside the blob — so the screen never has a second button
- * that saves only part of it.
+ * Most of a settings page is state the page itself holds. A card whose values
+ * are stored somewhere else reports them here instead, and Save writes them
+ * alongside — so the screen never has a second button that saves only part of
+ * it. The page provides the context; Notifications and General both do.
  */
 // Undefined outside the page, where a card has no Save to join.
 export const PageSaveContext = createContext<ReportParticipant | undefined>(undefined)
