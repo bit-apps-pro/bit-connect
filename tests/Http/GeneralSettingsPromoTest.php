@@ -45,7 +45,7 @@ final class GeneralSettingsPromoTest extends TestCase
 
         $this->assertTrue($promo['enabled']);
         $this->assertSame('https://bitapps.pro', $promo['url']);
-        $this->assertSame('A Bit Apps product', $promo['eyebrow']);
+        $this->assertSame('a Bit Apps product', $promo['eyebrow']);
         $this->assertSame('Built with Bit Connect', $promo['headline']);
         $this->assertSame('We also build', $promo['prefix']);
         $this->assertSame(

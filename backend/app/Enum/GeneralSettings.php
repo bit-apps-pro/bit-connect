@@ -56,7 +56,7 @@ enum GeneralSettings: string
         return [
             'enabled'  => filter_var($promo['enabled'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'url'      => 'https://bitapps.pro',
-            'eyebrow'  => __('A Bit Apps product', 'bit-connect'),
+            'eyebrow'  => __('a Bit Apps product', 'bit-connect'),
             'headline' => __('Built with Bit Connect', 'bit-connect'),
             'prefix'   => __('We also build', 'bit-connect'),
             'phrases'  => [
