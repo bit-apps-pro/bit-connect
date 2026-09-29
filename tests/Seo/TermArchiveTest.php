@@ -142,6 +142,27 @@ final class TermArchiveTest extends TestCase
         $this->assertNull(PortalTaxonomies::resolve('department', 'bit-crm'));
     }
 
+    public function testARenamedDepartmentArchiveRedirectsFromItsOriginalSegment(): void
+    {
+        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
+        $GLOBALS['__wp_filters']['bit_connect_department_naming'] = ['slug' => 'product'];
+
+        // Still routed, so links indexed before the rename reach the redirect…
+        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'department');
+        $this->assertSame('https://example.com/community/product/bit-crm', PortalTaxonomies::renamedArchiveUrl('department', 'bit-crm'));
+
+        // …while a term that does not exist stays a 404.
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('department', 'no-such-term'));
+    }
+
+    public function testAnUnrenamedDepartmentArchiveHasNothingToRedirect(): void
+    {
+        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
+
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('department', 'bit-crm'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+    }
+
     // -----------------------------------------------------------------------
     // What a crawler receives.
     // -----------------------------------------------------------------------

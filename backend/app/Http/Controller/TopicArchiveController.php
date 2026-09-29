@@ -41,6 +41,14 @@ class TopicArchiveController
      */
     public function show(Request $request, $segment, $termSlug)
     {
+        $movedTo = PortalTaxonomies::renamedArchiveUrl((string) $segment, (string) $termSlug);
+
+        if ($movedTo !== '') {
+            wp_safe_redirect($movedTo, 301);
+
+            exit;
+        }
+
         $term = PortalTaxonomies::resolve((string) $segment, (string) $termSlug);
 
         // An unknown term is a genuine 404, not an empty archive answering 200 —

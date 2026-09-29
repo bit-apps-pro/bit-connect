@@ -188,7 +188,7 @@ final class RootRouter
             $segment = $matches[1];
             $termSlug = $matches[2];
 
-            if (PortalTaxonomies::resolve($segment, $termSlug) !== null) {
+            if (PortalTaxonomies::resolve($segment, $termSlug) !== null || PortalTaxonomies::renamedArchiveUrl($segment, $termSlug) !== '') {
                 $this->claim(
                     $portal,
                     static fn () => (new TopicArchiveController())->show(new Request(), $segment, $termSlug)

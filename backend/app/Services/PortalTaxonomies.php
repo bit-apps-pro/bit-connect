@@ -135,7 +135,29 @@ final class PortalTaxonomies
     {
         $slugs = array_map([self::class, 'slugFor'], self::segments());
 
-        return implode('|', array_map('preg_quote', $slugs));
+        // The departments archive's own segment stays routable after a rename,
+        // so its old URLs reach renamedArchiveUrl() and redirect instead of 404ing.
+        $slugs[] = DepartmentNaming::KEY;
+
+        return implode('|', array_map('preg_quote', array_unique($slugs)));
+    }
+
+    /**
+     * Where `/department/{slug}` now lives when the departments archive has
+     * been renamed, or '' when that URL is not one.
+     *
+     * Search engines and shared links keep pointing at the segment the archive
+     * started under, so a rename redirects them rather than 404ing each one.
+     * Only that original segment is remembered: a later rename of a rename
+     * leaves the intermediate name unrouted.
+     */
+    public static function renamedArchiveUrl(string $urlSegment, string $termSlug): string
+    {
+        if ($urlSegment !== DepartmentNaming::KEY || DepartmentNaming::slug() === DepartmentNaming::KEY) {
+            return '';
+        }
+
+        return self::resolve(DepartmentNaming::slug(), $termSlug) === null ? '' : self::url(DepartmentNaming::KEY, $termSlug);
     }
 
     /**
