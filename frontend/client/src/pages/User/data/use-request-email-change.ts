@@ -21,8 +21,8 @@ interface RequestEmailChangeResponse {
  *
  * Nothing changes on success — the address is parked until the member clicks
  * the link sent to it. checkAuth() is still called so the form can read the
- * pending address back and say so, rather than looking as though the request
- * was swallowed.
+ * pending address back and name it under the field, rather than looking as
+ * though the request was swallowed.
  */
 export default function useRequestEmailChange(form: FormInstance, userId: number | undefined) {
   const { notificationApi } = useContext(NotifyContext)
@@ -52,12 +52,11 @@ export default function useRequestEmailChange(form: FormInstance, userId: number
 
       notificationApi?.error({ message: msg })
     },
-    onSuccess: async response => {
+    onSuccess: async () => {
       notificationApi?.success({
         description: __('Open it from that inbox to finish the change.'),
         message: __('Confirmation link sent')
       })
-      form.setFieldsValue({ email: response.data?.pending_email ?? '' })
       await checkAuth()
     }
   })

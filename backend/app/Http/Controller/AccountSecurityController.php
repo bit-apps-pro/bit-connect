@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
+use BitApps\BitConnect\Http\Requests\CancelEmailChangeRequest;
 use BitApps\BitConnect\Http\Requests\ChangePasswordRequest;
 use BitApps\BitConnect\Http\Requests\RequestEmailChangeRequest;
 use BitApps\BitConnect\Http\Requests\RestVerifyEmailChangeRequest;
@@ -24,6 +25,7 @@ use WP_User;
  *
  * POST /users/{id}/password           — change password (owner only)
  * POST /users/{id}/email              — start an email change (owner only)
+ * POST /users/{id}/email/cancel       — drop a pending one (owner only)
  * POST /auth/verify-email-change      — finish one (owner only, with the token)
  *
  * Members could already do both through wp-login.php and wp-admin; keeping them
@@ -150,6 +152,21 @@ final class AccountSecurityController
                 'pending_email' => EmailChangeService::pendingEmail($userId),
                 'message'       => __('Check your new inbox for a confirmation link.', 'bit-connect'),
             ]
+        );
+    }
+
+    /**
+     * Drop a pending change, so the link already sent stops working.
+     *
+     * Succeeds when nothing is pending, too: the outcome the member asked for —
+     * no change waiting — holds either way.
+     */
+    public function cancelEmailChange(CancelEmailChangeRequest $request)
+    {
+        EmailChangeService::clear((int) $request->id);
+
+        return Response::success(
+            ['message' => __('The email change was cancelled.', 'bit-connect')]
         );
     }
 
