@@ -1,7 +1,8 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { type Response } from '@common/helpers/request'
 import { wpApi } from '@common/request/wp-api'
+import config from '@config/config'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useContext } from 'react'
 
@@ -24,10 +25,10 @@ export default function useDeleteStage() {
     },
     mutationKey: ['departments', 'delete'],
     onError: () => {
-      messageApi?.error(__('Failed to delete department'))
+      messageApi?.error(sprintf(__('Failed to delete %s'), config.DEPARTMENT_NAMING.singular))
     },
     onSuccess: () => {
-      messageApi?.success(__('Department deleted successfully'))
+      messageApi?.success(sprintf(__('%s deleted successfully'), config.DEPARTMENT_NAMING.singular))
       queryClient.invalidateQueries({ queryKey: ['departments'] })
     }
   })

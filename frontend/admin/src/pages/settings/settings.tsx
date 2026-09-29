@@ -1,4 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 import { Alert, Button, Divider, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -194,9 +195,9 @@ export default function Settings() {
         value: form.topicFormFields.requireTopicType ?? true
       },
       {
-        description: __('Show and require Products/Department when creating a topic'),
+        description: sprintf(__('Show and require %s when creating a topic'), config.DEPARTMENT_NAMING.singular),
         key: 'requireDepartment',
-        label: __('Require Products/Department'),
+        label: sprintf(__('Require %s'), config.DEPARTMENT_NAMING.singular),
         value: form.topicFormFields.requireDepartment ?? true
       }
     ]

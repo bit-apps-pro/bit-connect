@@ -179,7 +179,7 @@ export default function NotificationPreferencesForm() {
           />
         }
         subtitle={__(
-          'Get a notification for every topic posted anywhere on the portal, not only in the products and tags you follow.'
+          'Get a notification for every topic posted anywhere on the portal, not only under what you follow.'
         )}
         title={__('Tell me about every new topic')}
       />

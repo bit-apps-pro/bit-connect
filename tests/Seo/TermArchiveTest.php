@@ -127,6 +127,21 @@ final class TermArchiveTest extends TestCase
         );
     }
 
+    public function testDepartmentArchivesAnswerToTheNamedSegment(): void
+    {
+        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
+        $GLOBALS['__wp_filters']['bit_connect_department_naming'] = ['slug' => 'product'];
+
+        $this->assertSame('https://example.com/community/product/bit-crm', PortalTaxonomies::url('department', 'bit-crm'));
+        $this->assertInstanceOf(WP_Term::class, PortalTaxonomies::resolve('product', 'bit-crm'));
+        $this->assertStringContainsString('product', PortalTaxonomies::segmentPattern());
+
+        // The key stays what SEO settings and sitemap names store…
+        $this->assertSame('department', PortalTaxonomies::segmentFor(Taxonomies::DEPARTMENTS->value));
+        // …and the old segment stops answering, rather than serving a duplicate.
+        $this->assertNull(PortalTaxonomies::resolve('department', 'bit-crm'));
+    }
+
     // -----------------------------------------------------------------------
     // What a crawler receives.
     // -----------------------------------------------------------------------

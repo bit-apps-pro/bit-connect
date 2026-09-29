@@ -10,6 +10,7 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\DefaultTermService;
+use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TermOrderService;
@@ -154,10 +155,11 @@ class PostTypeProvider
             _x('Topic Types', 'Taxonomy General Name', 'bit-connect'),
             true
         );
+        $departmentNaming = DepartmentNaming::get();
         $this->registerTaxonomy(
             Taxonomies::DEPARTMENTS->value,
-            _x('Department', 'Taxonomy Singular Name', 'bit-connect'),
-            _x('Departments', 'Taxonomy General Name', 'bit-connect'),
+            $departmentNaming['singular'],
+            $departmentNaming['plural'],
             true
         );
         $this->registerTaxonomy(

@@ -1,4 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 import { Alert, Form, Modal } from 'antd'
 
 import { type ErrorResponse } from '../data/use-store-product'
@@ -41,11 +42,11 @@ export default function ProductCreateModal() {
       // close, so the Form instance created above is always connected to a
       // <Form>; antd warns otherwise when fields are reset while it is closed.
       forceRender
-      okText={__('Create Product')}
+      okText={sprintf(__('Create %s'), config.DEPARTMENT_NAMING.singular)}
       onCancel={handleCancel}
       onOk={handleOk}
       open={isProductModalOpen}
-      title={__('Product')}
+      title={config.DEPARTMENT_NAMING.singular}
     >
       <ProductForm form={form} open={isProductModalOpen} />
       {errorMessage && <Alert message={errorMessage} type="error" />}

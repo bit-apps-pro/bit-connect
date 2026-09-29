@@ -1,10 +1,11 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { uploadRequest } from '@common/helpers/request'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
+import config from '@config/config'
 import FileUploader from '@features/file-uploader'
 import useFileStore, { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import FileList from '@features/file-uploader/ui/file-list'
@@ -238,11 +239,21 @@ export default function TopicForm({
           {showDepartment && (
             <Form.Item
               className="bc-mb-0"
-              label={__('Products/Department')}
+              label={config.DEPARTMENT_NAMING.singular}
               name="departments"
-              rules={[{ message: __('Please select a department'), required: true }]}
+              rules={[
+                {
+                  // translators: %s: what the portal calls a department.
+                  message: sprintf(__('%s is required'), config.DEPARTMENT_NAMING.singular),
+                  required: true
+                }
+              ]}
             >
-              <Select options={departmentOptions} placeholder={__('All Products/Department')} />
+              <Select
+                options={departmentOptions}
+                // translators: %s: what the portal calls a department.
+                placeholder={sprintf(__('Select %s'), config.DEPARTMENT_NAMING.singular)}
+              />
             </Form.Item>
           )}
         </div>

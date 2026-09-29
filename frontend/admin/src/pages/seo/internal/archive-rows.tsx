@@ -1,10 +1,11 @@
 import { __ } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 
 import { type ArchiveSegment, type SeoDiagnostics, type SeoSettings } from '../shared/types'
 import SeoFieldRows, { type SeoField } from './seo-field-rows'
 
 const SEGMENT_LABELS: Record<ArchiveSegment, string> = {
-  department: __('Departments'),
+  department: config.DEPARTMENT_NAMING.plural,
   stage: __('Stages'),
   status: __('Statuses'),
   tag: __('Tags'),
@@ -34,7 +35,7 @@ export default function ArchiveRows({ diagnostics, disabled, form, onChange }: A
     description: (
       <span className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
         <code className="bc-rounded bc-bg-surface-sunken bc-px-1.5 bc-py-0.5 bc-text-xs bc-text-ink-muted">
-          /{segment}/{__('{name}')}
+          /{segment === 'department' ? config.DEPARTMENT_NAMING.slug : segment}/{__('{name}')}
         </code>
         <span>
           {diagnostics.archives[segment]?.terms ?? 0} {__('terms')}

@@ -30,7 +30,11 @@ use WP_Term;
 final class PortalTaxonomies
 {
     /**
-     * URL segment => taxonomy name.
+     * Archive key => taxonomy name.
+     *
+     * The key is what SEO settings and sitemap names store, so it never
+     * changes. It is also the URL segment, except for departments, whose
+     * segment is named by DepartmentNaming — see slugFor().
      *
      * Built in a method rather than a class constant: these are backed enum
      * cases, and reading `->value` is not a constant expression.
@@ -43,11 +47,11 @@ final class PortalTaxonomies
         // and topic pages link to their terms, so an archive that 404s strands
         // the portal's own links. Whether search sees one is isIndexable().
         return [
-            'topic'      => Taxonomies::TOPIC_TYPES->value,
-            'department' => Taxonomies::DEPARTMENTS->value,
-            'tag'        => Taxonomies::TAGS->value,
-            'stage'      => Taxonomies::STAGES->value,
-            'status'     => Taxonomies::STATUSES->value,
+            'topic'               => Taxonomies::TOPIC_TYPES->value,
+            DepartmentNaming::KEY => Taxonomies::DEPARTMENTS->value,
+            'tag'                 => Taxonomies::TAGS->value,
+            'stage'               => Taxonomies::STAGES->value,
+            'status'              => Taxonomies::STATUSES->value,
         ];
     }
 
@@ -92,7 +96,7 @@ final class PortalTaxonomies
     }
 
     /**
-     * Every archive segment, for building rewrite rules and route patterns.
+     * Every archive key.
      *
      * @return array<int, string>
      */
@@ -102,11 +106,36 @@ final class PortalTaxonomies
     }
 
     /**
-     * A regex alternation of the segments, e.g. `topic|department|stage`.
+     * The URL segment an archive key is served under, e.g. `department`.
+     */
+    public static function slugFor(string $segment): string
+    {
+        return $segment === DepartmentNaming::KEY ? DepartmentNaming::slug() : $segment;
+    }
+
+    /**
+     * The archive key a URL segment addresses, or '' when it addresses none.
+     */
+    public static function segmentForSlug(string $slug): string
+    {
+        foreach (self::segments() as $segment) {
+            if (self::slugFor($segment) === $slug) {
+                return $segment;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * A regex alternation of the URL segments, e.g. `topic|department|stage`,
+     * for building rewrite rules and route patterns.
      */
     public static function segmentPattern(): string
     {
-        return implode('|', array_map('preg_quote', self::segments()));
+        $slugs = array_map([self::class, 'slugFor'], self::segments());
+
+        return implode('|', array_map('preg_quote', $slugs));
     }
 
     /**
@@ -128,14 +157,16 @@ final class PortalTaxonomies
     }
 
     /**
-     * The term behind `/{segment}/{slug}`, or null when nothing matches.
+     * The term behind `/{urlSegment}/{slug}`, or null when nothing matches.
+     *
+     * Takes the segment as it appears in the URL, not the archive key.
      *
      * Returning null is what keeps a mistyped archive URL a genuine 404 rather
      * than an empty page answering 200 — the same rule the topic routes follow.
      */
-    public static function resolve(string $segment, string $termSlug): ?WP_Term
+    public static function resolve(string $urlSegment, string $termSlug): ?WP_Term
     {
-        $taxonomy = self::taxonomyFor($segment);
+        $taxonomy = self::taxonomyFor(self::segmentForSlug($urlSegment));
 
         if ($taxonomy === '' || $termSlug === '') {
             return null;
@@ -154,7 +185,7 @@ final class PortalTaxonomies
         // In the site's permalink form, like SeoContent::portalUrl(): this is
         // the archive's canonical, sitemap entry and redirect target, and a
         // missing trailing slash would make each of them a 301.
-        return user_trailingslashit(PortalLocation::url($segment . '/' . $termSlug));
+        return user_trailingslashit(PortalLocation::url(self::slugFor($segment) . '/' . $termSlug));
     }
 
     /**

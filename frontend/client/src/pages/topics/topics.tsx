@@ -464,7 +464,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
           )}
           {showProductFilter && (
             <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Product')}</span>
+              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{config.DEPARTMENT_NAMING.singular}</span>
               <ProductFilter />
             </div>
           )}

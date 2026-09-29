@@ -1,4 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 import TermIconCell from '@utilities/term-icon-cell'
 import {
   dragColumn,
@@ -18,6 +19,7 @@ import { type Product } from '../shared/types'
 const TAXONOMY = 'bit-connect-departments'
 
 export default function ProductsTable() {
+  const { singular } = config.DEPARTMENT_NAMING
   const { isProductsPending, products } = useProducts()
   const { handleDragEnd, rows, sensors } = useSortableRows(products, TAXONOMY, ['departments'])
   const [, setSearchParams] = useSearchParams()
@@ -29,7 +31,7 @@ export default function ProductsTable() {
     try {
       await deleteProduct(id)
     } catch (error) {
-      console.error('Failed to delete product:', error)
+      console.error('Failed to delete department:', error)
     }
   }
   const columns: TableColumnsType<Product> = [
@@ -37,7 +39,7 @@ export default function ProductsTable() {
     {
       dataIndex: 'name',
       key: 'name',
-      title: __('Product Name')
+      title: __('Name')
     },
     {
       dataIndex: 'icon',
@@ -56,7 +58,7 @@ export default function ProductsTable() {
       render: (_, record: Product) => (
         <Space>
           <Button
-            aria-label={__('Edit product')}
+            aria-label={sprintf(__('Edit %s'), singular)}
             className="hover:bc-text-blue-600"
             icon={<LuPencilLine size={16} />}
             onClick={() => handleEdit(record.id)}
@@ -68,10 +70,10 @@ export default function ProductsTable() {
             okButtonProps={{ danger: true }}
             okText={__('Delete')}
             onConfirm={() => handleDelete(record.id)}
-            title={__('Delete Product')}
+            title={sprintf(__('Delete %s'), singular)}
           >
             <Button
-              aria-label={__('Delete Product')}
+              aria-label={sprintf(__('Delete %s'), singular)}
               danger
               disabled={isDeletingProduct}
               icon={<LuTrash2 size={16} />}

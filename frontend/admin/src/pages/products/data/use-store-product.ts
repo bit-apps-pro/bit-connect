@@ -1,7 +1,8 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { type Response } from '@common/helpers/request'
 import { wpApi } from '@common/request/wp-api'
+import config from '@config/config'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useContext } from 'react'
 
@@ -26,7 +27,7 @@ export default function useStoreProduct() {
     },
     mutationKey: ['departments', 'store'],
     onSuccess: () => {
-      messageApi?.success(__('Product created successfully'))
+      messageApi?.success(sprintf(__('%s created successfully'), config.DEPARTMENT_NAMING.singular))
       queryClient.invalidateQueries({ queryKey: ['departments'] })
     }
   })

@@ -96,7 +96,7 @@ function NavList({
       </NavSection>
 
       {productItems.length > 0 && (
-        <NavSection title={__('Products')}>
+        <NavSection title={config.DEPARTMENT_NAMING.plural}>
           {productItems.map(item => (
             <SidebarNavItem
               key={item.path}
@@ -133,8 +133,28 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isMobile, isOpen, onClose])
 
+  // The sidebar is where both halves of the listing are chosen — a stage and a
+  // department — so each list's links keep what the other has chosen. See
+  // listing-link.ts for the URLs that produces.
+  //
+  // The open department is the one whose archive this is (`/department/bit-crm`,
+  // under the segment the server names), or `?product=` on the links shared
+  // before the sidebar took over from the toolbar's picker. The named stage is
+  // one the reader picked: `?stage=` or a stage archive. The root's default
+  // stage is not named, so opening a department from `/` lands on its bare
+  // archive — the URL search indexes — rather than on a `?stage=` view of it.
+  const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
+  const [archiveSegment, archiveSlug] = pathname.split('/').filter(Boolean)
+  const openProduct =
+    archiveSegment === config.DEPARTMENT_NAMING.slug
+      ? archiveSlug
+      : (searchParams.get('product') ?? '')
+  const namedStage = searchParams.get('stage') || (archiveSegment === 'stage' ? archiveSlug : '')
+
   // Already in the admin-defined order when the store loads them.
   const navItems = stages.map(stage => ({
+    department: openProduct,
     icon: pickThemedIcon(stage.meta, isDarkTheme),
     label: stage.name,
     path: stage.slug
@@ -143,25 +163,29 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   // leave the unindented layout untouched for portals that set none.
   const reserveIconSlot = navItems.some(item => !!item.icon)
 
-  // Products link to their own archive (`/department/bit-crm`), the canonical
-  // URL for that list, the same way stages do. The `?product=` filter still
-  // counts as the product being open, since the toolbar's picker writes it.
-  // Dropped with the product picker when an admin switches that filter off.
-  const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
-  const [archiveSegment, archiveSlug] = pathname.split('/').filter(Boolean)
-  const openProduct =
-    archiveSegment === 'department' ? archiveSlug : (searchParams.get('product') ?? '')
+  // Dropped when an admin switches the department filter off. "All" leads the
+  // list so a department can be left again, keeping the stage; it is current
+  // only on a listing, the way the stage rows are.
   const departments = useTaxonomiesStoreSelect()?.['bit-connect-departments'] || []
-  const productItems: NavItem[] = config.PORTAL_FILTERS.product
-    ? departments.map(department => ({
-        icon: pickThemedIcon(department.meta, isDarkTheme),
-        isActive: department.slug === openProduct,
-        label: department.name,
-        path: department.slug,
-        to: routePath(`/department/${department.slug}`)
-      }))
-    : []
+  const productItems: NavItem[] =
+    config.PORTAL_FILTERS.product && departments.length > 0
+      ? [
+          {
+            isActive: openProduct === '' && isListingPath(pathname),
+            // translators: %s: what the portal calls its departments, plural.
+            label: sprintf(__('All %s'), config.DEPARTMENT_NAMING.plural),
+            path: '',
+            to: listingLink({ stage: namedStage })
+          },
+          ...departments.map(department => ({
+            icon: pickThemedIcon(department.meta, isDarkTheme),
+            isActive: department.slug === openProduct,
+            label: department.name,
+            path: department.slug,
+            to: listingLink({ department: department.slug, stage: namedStage })
+          }))
+        ]
+      : []
 
   return (
     <>

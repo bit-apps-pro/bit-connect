@@ -15,8 +15,8 @@ export default function ProductForm({ form, isEditMode, open }: ProductFormProps
 
   return (
     <Form form={form} layout="vertical">
-      <Form.Item label={__('Product Name')} name="name" rules={[{ required: true }]}>
-        <Input onChange={event => onNameChange(event.target.value)} placeholder={__('Product Name')} />
+      <Form.Item label={__('Name')} name="name" rules={[{ required: true }]}>
+        <Input onChange={event => onNameChange(event.target.value)} placeholder={__('Name')} />
       </Form.Item>
       <SlugField isEditMode={isEditMode} onChange={onSlugChange} />
       <Form.Item label={__('Description')} name="description">
@@ -27,14 +27,14 @@ export default function ProductForm({ form, isEditMode, open }: ProductFormProps
         extra={iconSizeHint()}
         form={form}
         label={__('Icon (light mode)')}
-        previewAlt={__('Product icon')}
+        previewAlt={__('Icon')}
       />
       <IconPickerField
         baseName="icon_dark"
         extra={iconDarkHint()}
         form={form}
         label={__('Icon (dark mode)')}
-        previewAlt={__('Product icon for dark mode')}
+        previewAlt={__('Icon for dark mode')}
       />
     </Form>
   )

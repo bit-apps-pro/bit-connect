@@ -1,7 +1,8 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { type Response } from '@common/helpers/request'
 import { wpApi } from '@common/request/wp-api'
+import config from '@config/config'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useContext } from 'react'
 
@@ -29,10 +30,10 @@ export default function useUpdateProduct() {
     },
     mutationKey: ['departments', 'update'],
     onError: () => {
-      messageApi?.error(__('Failed to update product'))
+      messageApi?.error(sprintf(__('Failed to update %s'), config.DEPARTMENT_NAMING.singular))
     },
     onSuccess: () => {
-      messageApi?.success(__('Product updated successfully'))
+      messageApi?.success(sprintf(__('%s updated successfully'), config.DEPARTMENT_NAMING.singular))
       queryClient.invalidateQueries({ queryKey: ['departments'] })
     }
   })

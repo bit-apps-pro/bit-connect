@@ -9,6 +9,8 @@ if (!defined('ABSPATH')) {
 
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Services\DepartmentNaming;
+use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\TopicsView;
@@ -32,6 +34,22 @@ class TopicsController
     public function index(Request $request, $page = 1) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
     {
         $page = max(1, (int) $page);
+
+        // `?product=` on the list is the department's archive under a second
+        // address — the picker wrote it before it navigated to the archive, so
+        // shared links still carry it. Redirecting keeps one URL per department
+        // collecting the links, where a canonical would only point at the root.
+        // Read-only navigation, so there is no nonce to check.
+        $product = isset($_GET['product']) ? sanitize_title(wp_unslash($_GET['product'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $department = $product === '' ? null : PortalTaxonomies::resolve(PortalTaxonomies::slugFor(DepartmentNaming::KEY), $product);
+
+        if ($department !== null) {
+            $query = array_diff_key(wp_unslash($_GET), ['product' => true, 'page' => true]); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+            wp_safe_redirect(add_query_arg(urlencode_deep($query), PortalTaxonomies::urlForTerm($department)), 301);
+
+            exit;
+        }
 
         // Prepare data for the topics view
         $topicsView = new TopicsView();

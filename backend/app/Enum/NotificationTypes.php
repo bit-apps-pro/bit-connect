@@ -42,7 +42,7 @@ enum NotificationTypes: string
     case COMMENT_REPLY = 'comment_reply';
 
     #[Label('A new topic is posted')]
-    #[Description('A topic appears under a product or tag you follow.')]
+    #[Description('A topic appears under something you follow.')]
     case TOPIC_NEW = 'topic_new';
 
     #[Label('Someone mentions you')]
@@ -118,7 +118,7 @@ enum NotificationTypes: string
         return match ($type) {
             self::TOPIC_REPLY          => __('A new top-level comment on a topic you wrote or follow.', 'bit-connect'),
             self::COMMENT_REPLY        => __('A direct reply to something you wrote in a thread.', 'bit-connect'),
-            self::TOPIC_NEW            => __('A topic appears under a product or tag you follow.', 'bit-connect'),
+            self::TOPIC_NEW            => __('A topic appears under something you follow.', 'bit-connect'),
             self::MENTION              => __('Your name is used in a topic or comment.', 'bit-connect'),
             self::VOTE_RECEIVED        => __('Collapsed into one entry per item, so a popular post is one line and not fifty.', 'bit-connect'),
             self::REPORT_RESOLVED      => __('A moderator reaches a decision on something you reported.', 'bit-connect'),

@@ -1,17 +1,18 @@
 import { cn } from '@common/helpers/globalHelpers'
-import config from '@config/config'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
-import { routePath } from '@utils/route-path'
 import { theme } from 'antd'
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
 import { NavLink } from 'react-router'
 
+import { listingLink } from './listing-link'
 import { navItemStyle } from './SidebarNavItem.style'
 
 interface SidebarNavProps {
   props: {
+    /** The department open alongside, which a stage row keeps. */
+    department?: string
     icon?: string
     /** Overrides the stage match below, for rows that are not stages. */
     isActive?: boolean
@@ -30,7 +31,7 @@ interface SidebarNavProps {
 }
 export default memo(SidebarNavItem)
 function SidebarNavItem({
-  props: { icon, isActive: isActiveOverride, label, path, reserveIconSlot, to: toOverride }
+  props: { department, icon, isActive: isActiveOverride, label, path, reserveIconSlot, to: toOverride }
 }: SidebarNavProps) {
   const { token } = theme.useToken()
   // The URL of an icon that failed to load, so a stage whose attachment was
@@ -54,8 +55,10 @@ function SidebarNavItem({
   // behind a second URL. The server 301s that archive back here, and this keeps
   // the nav from relying on the redirect. `?stage=` still works for links
   // already shared — see pages/topics/topics.tsx.
-  const to =
-    toOverride ?? (path === config.DEFAULT_STAGE_SLUG ? '/' : routePath(`/stage/${path}`))
+  //
+  // With a department open the row narrows that department instead of leaving
+  // it, since the sidebar is the only place either choice is made.
+  const to = toOverride ?? listingLink({ department, stage: path })
 
   return (
     <NavLink

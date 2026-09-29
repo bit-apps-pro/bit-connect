@@ -22,7 +22,7 @@ export interface NotificationPreferenceRow {
 }
 
 interface NotificationPreferences {
-  /** Following the whole forum: every new topic arrives, not just followed products and tags. */
+  /** Following the whole forum: every new topic arrives, not just what they follow. */
   followsForum: boolean
   frequency: 'daily' | 'instant' | 'never' | 'weekly'
   types: NotificationPreferenceRow[]

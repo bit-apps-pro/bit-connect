@@ -217,7 +217,7 @@ describe('TopicForm taxonomy row', () => {
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
     expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
-    expect(screen.getByLabelText('Products/Department')).toBeInTheDocument()
+    expect(screen.getByLabelText('Department')).toBeInTheDocument()
   })
 
   it('gives Topic Type the whole row when Department is switched off', () => {
@@ -225,7 +225,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.queryByLabelText('Products/Department')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Department')).not.toBeInTheDocument()
   })
 
   it('gives Department the whole row when Topic Type is switched off', () => {

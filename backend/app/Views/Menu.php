@@ -5,6 +5,7 @@ namespace BitApps\BitConnect\Views;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Services\AdminAccessService;
+use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\ReportService;
 
 if (!defined('ABSPATH')) {
@@ -111,7 +112,7 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Products',
+            'name'       => DepartmentNaming::get()['plural'],
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/products',
         ];

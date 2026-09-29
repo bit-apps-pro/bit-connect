@@ -6,6 +6,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
@@ -134,6 +135,7 @@ class BaseView
             'portalAccess'           => $generalSettings['portalAccess'] ?? 'everyone',
             'portalFilters'          => GeneralSettings::portalFilters($generalSettings),
             'promo'                  => GeneralSettings::promo($generalSettings),
+            'departmentNaming'       => DepartmentNaming::get(),
             'defaultStageSlug'       => StageService::defaultStageSlug(),
             'defaultStatusSlug'      => StatusService::defaultStatusSlug(),
             'wpMediaSettings'        => [

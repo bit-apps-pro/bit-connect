@@ -65,6 +65,11 @@ interface ConfigType {
   DATE_FORMAT: string
   DEFAULT_STAGE_SLUG: string
   DEFAULT_STATUS_SLUG: string
+  /**
+   * What the departments taxonomy is called, already translated, and the
+   * segment its archives answer to — see DepartmentNaming.php.
+   */
+  DEPARTMENT_NAMING: { plural: string; singular: string; slug: string }
   FREE_VERSION: string
   IS_DEV: boolean
   IS_LOGGED_IN: boolean
@@ -125,6 +130,9 @@ const portalFilters = getServerVariable('portalFilters', {}) ?? {}
 // about a "missing" server variable on every load of every portal that did not.
 const promo = getServerVariable('promo', {}) ?? {}
 
+// Missing only during the SSR prerender, where the English defaults stand in.
+const departmentNaming = SERVER_VARIABLES?.departmentNaming ?? {}
+
 const config = {
   API_URL: getServerVariable('apiURL', `${siteURL}/wp-json/bit-connect/v1`),
   AUTH_MODE:
@@ -146,6 +154,11 @@ const config = {
   // fresh install happens to start with.
   DEFAULT_STAGE_SLUG: getServerVariable('defaultStageSlug', 'questions') || 'questions',
   DEFAULT_STATUS_SLUG: getServerVariable('defaultStatusSlug', 'need-approval') || 'need-approval',
+  DEPARTMENT_NAMING: {
+    plural: departmentNaming.plural || 'Departments',
+    singular: departmentNaming.singular || 'Department',
+    slug: departmentNaming.slug || 'department'
+  },
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
   IS_LOGGED_IN:

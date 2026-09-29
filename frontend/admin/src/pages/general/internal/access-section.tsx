@@ -1,4 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 import { Switch, Typography } from 'antd'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -30,9 +31,9 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
           label: __('Sort')
         },
         {
-          description: __('Narrow the list down to one product or department.'),
+          description: sprintf(__('Narrow the list down to one %s.'), config.DEPARTMENT_NAMING.singular),
           key: 'product',
-          label: __('Product')
+          label: config.DEPARTMENT_NAMING.singular
         },
         {
           description: __('Narrow the list down to a tag.'),

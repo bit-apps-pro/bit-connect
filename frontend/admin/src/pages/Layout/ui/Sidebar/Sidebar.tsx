@@ -49,7 +49,7 @@ const navItems: {
   { icon: LuSlidersHorizontal, label: __('General'), path: '../general', requires: 'manage' },
   { icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
   { icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
-  { icon: LuLayers, label: __('Products'), path: '../products', requires: 'manage' },
+  { icon: LuLayers, label: config.DEPARTMENT_NAMING.plural, path: '../products', requires: 'manage' },
   { icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
   { icon: LuCircleCheck, label: __('Status'), path: '../status', requires: 'manage' },
   { icon: LuUsers, label: __('Manager'), path: '../manager', requires: 'manage' },

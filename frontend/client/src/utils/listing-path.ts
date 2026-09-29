@@ -1,12 +1,15 @@
+import config from '@config/config'
+
 /**
  * URL segment -> the topics filter a term archive pins.
  *
- * Mirrors PortalTaxonomies::map() on the server. A segment missing here renders
- * the not-found page rather than an unfiltered list: the server only claims URLs
+ * Mirrors PortalTaxonomies::map() on the server, departments under whatever
+ * segment the server named for them. A segment missing here renders the
+ * not-found page rather than an unfiltered list: the server only claims URLs
  * whose term it resolved, so anything else reaching that route is not an archive.
  */
 export const ARCHIVE_SEGMENT_FILTER: Record<string, string> = {
-  department: 'departments',
+  [config.DEPARTMENT_NAMING.slug]: 'departments',
   stage: 'stages',
   status: 'statuses',
   tag: 'tags',

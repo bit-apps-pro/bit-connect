@@ -1,4 +1,5 @@
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 import { Alert, Form, Modal } from 'antd'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router'
@@ -78,7 +79,7 @@ export default function ProductEditModal() {
       onCancel={handleCancel}
       onOk={handleOk}
       open={isProductEditModalOpen}
-      title={__('Edit Product')}
+      title={sprintf(__('Edit %s'), config.DEPARTMENT_NAMING.singular)}
     >
       <ProductForm form={form} isEditMode open={isProductEditModalOpen} />
       {errorMessage && <Alert message={errorMessage} type="error" />}

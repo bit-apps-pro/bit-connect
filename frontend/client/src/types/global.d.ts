@@ -56,6 +56,8 @@ declare const SERVER_VARIABLES: {
   dateFormat: string
   defaultStageSlug?: string
   defaultStatusSlug?: string
+  /** What the departments taxonomy is called, and its portal URL segment. */
+  departmentNaming?: { plural?: string; singular?: string; slug?: string }
   isLoggedIn?: '0' | '1' | boolean
   loggedInUserName: string
   loginPageCustomization?: {
