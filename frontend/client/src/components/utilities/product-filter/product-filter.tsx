@@ -54,7 +54,7 @@ export default function ProductFilter({ loading = false }: { loading?: boolean }
       popupMatchSelectWidth={false}
       size={isMobile ? 'middle' : 'large'}
       value={productValue}
-      variant={isMobile ? 'borderless' : 'filled'}
+      variant={isMobile ? 'borderless' : 'outlined'}
     />
   )
 }

@@ -70,14 +70,15 @@ export default function Layout() {
       <LoginWarningModal />
       <Header isScrolled={isScrolled} onMenuOpen={() => setSidebarOpen(true)} />
       <AntLayout
-        className={cn([cls.layoutWrp, 'sm:bc-p-5'])}
+        className={cls.layoutWrp}
         color-scheme={isDarkTheme ? 'dark' : 'light'}
         hasSider
         style={{
-          // One step below the cards in both themes, so the panels read as
-          // raised. `transparent` here in dark mode let the page body — which
-          // this app does not own — show through as white gutters.
-          backgroundColor: 'var(--bc-surface-sunken)',
+          // One flat surface: the sider and the list are separated by a rule,
+          // not floated as two cards over a sunken backdrop. Explicit rather
+          // than `transparent`, which let the page body — which this app does
+          // not own — show through in dark mode.
+          backgroundColor: 'var(--bc-surface)',
           // The root is a 100dvh flex column (see global.css); growing into the
           // space left after the header replaces the old hard-coded 90vh, which
           // under-shot on tall screens and over-shot on short ones.
@@ -86,18 +87,7 @@ export default function Layout() {
         }}
       >
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        {/* Gutter keyed to `md`, not `lg`: Sidebar renders the desktop Sider from
-            `md` up (`isMobile = !screens.md`), so an `lg` gutter left the sider
-            and the content edge-to-edge across the whole 768–1023px band. */}
-        {/* Frame from md, where the sider appears and this stops being the whole
-            screen: below that its border ran down the outside edges of the phone
-            and its radius cut a curve out of each corner — a rounded card drawn
-            around a viewport that is not a card. */}
-        <Content
-          className={cn([
-            cls.contentWrp,
-            'scroller thin bc-bg-surface md:bc-ml-5 md:bc-rounded-md md:bc-border md:bc-border-solid md:bc-border-line'
-          ])}
+        <Content className={cn([cls.contentWrp, 'scroller thin bc-bg-surface'])}
           style={{ overflow: 'auto' }}
         >
           {/* Scroll sentinel for the header rule above. The negative margin

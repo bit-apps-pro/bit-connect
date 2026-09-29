@@ -1,23 +1,9 @@
+import { ARCHIVE_SEGMENT_FILTER as SEGMENT_FILTER } from '@utils/listing-path'
 import { useMemo } from 'react'
 import { useParams } from 'react-router'
 
 import Error404 from '../Error404'
-import Topics from './topics'
-
-/**
- * URL segment -> the topics filter it pins.
- *
- * Mirrors PortalTaxonomies::map() on the server. A segment missing here renders
- * the not-found page rather than an unfiltered list: the server only claims URLs
- * whose term it resolved, so anything else reaching this route is not an archive.
- */
-const SEGMENT_FILTER: Record<string, string> = {
-  department: 'departments',
-  stage: 'stages',
-  status: 'statuses',
-  tag: 'tags',
-  topic: 'topic-types'
-}
+import Topics from './topic-list-page'
 
 /**
  * A term archive, e.g. `/tag/api` or `/topic/question`.

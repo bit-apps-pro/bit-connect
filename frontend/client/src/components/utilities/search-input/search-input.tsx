@@ -71,7 +71,7 @@ export default function SearchInput({
       </div>
       <Input
         allowClear
-        className="bc-rounded-full bc-pl-11"
+        className="bc-rounded-lg bc-pl-11"
         name="search"
         onChange={handleSearchChange}
         placeholder={__('Search topic, tag, etc.')}

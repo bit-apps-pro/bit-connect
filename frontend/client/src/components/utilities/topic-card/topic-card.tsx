@@ -3,7 +3,7 @@ import { type Topic } from '@features/topic-modal/shared/type'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
 import UserLink from '@utilities/user-link'
 import { Flex, Tag, Typography } from 'antd'
-import { LuClock, LuMessageCircle } from 'react-icons/lu'
+import { LuCalendar, LuMessageCircle } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
@@ -13,6 +13,13 @@ import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
 import './topic-card.css'
+
+/** "20 Nov 2025" — in the reader's own locale's order. */
+const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+})
 
 /** Upper bound on the string handed to the DOM; CSS clamps what is shown. */
 const EXCERPT_LENGTH = 320
@@ -59,11 +66,13 @@ export default function TopicCard({
     post_content: postContent,
     post_date_gmt: postDateGmt,
     post_title: postTitle,
-    terms: { statuses, tags, topic_types: topicTypes },
+    terms: { departments, statuses, tags, topic_types: topicTypes },
     vote: { hasVoted, total }
   } = topic
 
-  const formattedDate = relativeTime(postDateGmt)
+  const postDate = new Date(postDateGmt.replace(' ', 'T') + 'Z')
+  const relativeDate = relativeTime(postDateGmt)
+  const calendarDate = DATE_FORMATTER.format(postDate)
   const { settings } = useAdminSettingsStore()
   const canComment = settings.topicAccess.comment
   const { can, isLoggedIn } = useAuthStore()
@@ -142,22 +151,34 @@ export default function TopicCard({
           />
 
           <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap="small">
-            {/* The icon is decoration next to a self-explanatory "2mo ago"; at
-                320px its 26px was the difference between the meta fitting on
-                two lines and spilling onto three. */}
-            <LuClock className="bc-hidden sm:bc-block" size={18} />
-            <span className="bc-whitespace-nowrap">{formattedDate}</span>
+            {/* The icon is decoration next to a self-explanatory date; at 320px
+                its 26px was the difference between the meta fitting on two
+                lines and spilling onto three. */}
+            <LuCalendar className="bc-hidden sm:bc-block" size={18} />
+            {/* The calendar date from sm, where the row has room for it; the
+                shorter "2mo ago" on phones. Each carries the other as a hint. */}
+            <time
+              className="bc-whitespace-nowrap"
+              dateTime={postDate.toISOString()}
+              title={relativeDate}
+            >
+              <span className="sm:bc-hidden">{relativeDate}</span>
+              <span className="bc-hidden sm:bc-inline">{calendarDate}</span>
+            </time>
           </Flex>
 
           {canComment && (
-            <Flex
-              align="center"
-              aria-label={`${commentsCount} ${__('comments')}`}
-              className="bc-text-sm bc-text-ink-muted"
-              gap="small"
-            >
+            <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap="small">
               <LuMessageCircle size={18} />
-              <span>{commentsCount}</span>
+              {/* The count alone on phones, where the icon says what it is. */}
+              <span className="bc-whitespace-nowrap">
+                {commentsCount}
+                <span className="bc-hidden sm:bc-inline">
+                  {' '}
+                  {/* The count arrives as a string from WordPress. */}
+                  {Number(commentsCount) === 1 ? __('Comment') : __('Comments')}
+                </span>
+              </span>
             </Flex>
           )}
 
@@ -168,6 +189,15 @@ export default function TopicCard({
               {...chipTagProps(topicTypes.meta.color)}
             >
               {topicTypes.name}
+            </Tag>
+          )}
+
+          {/* The product, from md like the type beside it. Neutral rather than
+              coloured: it names where the topic belongs, not what state it is
+              in, and one more hue on the row would compete with the status. */}
+          {departments && (
+            <Tag className="bc-m-0 bc-hidden bc-shrink-0 md:bc-inline-block" {...chipTagProps()}>
+              {departments.name}
             </Tag>
           )}
 

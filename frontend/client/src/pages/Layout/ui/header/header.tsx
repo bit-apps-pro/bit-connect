@@ -10,6 +10,7 @@ import logo from '@resource/img/logo.svg'
 import ThemeToggle from '@utilities/theme-toggle'
 import { userProfilePath } from '@utilities/user-link'
 import { externalLoginUrl, externalRegisterUrl, registrationIsOffered } from '@utils/auth-urls'
+import { isListingPath } from '@utils/listing-path'
 import { routePath } from '@utils/route-path'
 import { Avatar, Button, Dropdown, Grid } from 'antd'
 import { useEffect } from 'react'
@@ -33,6 +34,9 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
   // The server refuses the topic anyway; a button that only ever answers
   // "not authorized" is worse than no button.
   const canCreatePost = can('bit_connect_forum_create_post')
+  // The topic list carries its own Create button beside the search from `lg`,
+  // so there the header's would be the same action twice on one screen.
+  const listHasCreate = isListingPath(location.pathname)
   const { fetchSettings } = useAdminSettingsStore()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
@@ -140,10 +144,10 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
     <>
       <img
         alt={`${config.COMMUNITY_TITLE || config.PRODUCT_NAME} logo`}
-        className="bc-h-8 bc-w-8 bc-shrink-0 bc-object-contain"
+        className="bc-h-8 bc-w-8 bc-shrink-0 bc-object-contain md:bc-h-9 md:bc-w-9"
         src={config.LOGO_LIGHT || logo}
       />
-      <span className="bc-hidden bc-truncate bc-font-bold bc-text-lg bc-text-ink md:bc-inline md:bc-text-xl">
+      <span className="bc-hidden bc-truncate bc-font-bold bc-text-lg bc-text-ink md:bc-inline md:bc-text-2xl">
         {config.COMMUNITY_TITLE || config.PRODUCT_NAME}
       </span>
     </>
@@ -170,10 +174,12 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
           three without an explicit width would otherwise fall back to `medium`
           and frame the header. */}
       <header
+        // From md the rule is there at rest too: the sider's own rule runs up
+        // into it, and a T-junction with one arm missing reads as a gap.
         className={cn([
-          'bc-sticky bc-top-0 bc-z-20 bc-border-0 bc-border-b bc-border-solid bc-bg-surface bc-px-4 bc-py-3',
+          'bc-sticky bc-top-0 bc-z-20 bc-border-0 bc-border-b bc-border-solid bc-bg-surface bc-px-4 bc-py-3 md:bc-px-7 md:bc-py-5',
           'bc-transition-colors bc-duration-200',
-          isScrolled ? 'bc-border-line' : 'bc-border-transparent'
+          isScrolled ? 'bc-border-line' : 'bc-border-transparent md:bc-border-line'
         ])}
       >
         <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
@@ -254,6 +260,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                 aria-label={__('Create New Topic')}
                 className={cn([
                   'bc-w-9 bc-px-0 sm:bc-w-auto sm:bc-px-4 md:bc-px-5',
+                  listHasCreate && 'lg:bc-hidden',
                   '[&_.ant-btn-icon+span]:bc-ms-0 [&_.ant-btn-icon]:bc-me-0 sm:[&_.ant-btn-icon]:bc-me-1.5'
                 ])}
                 icon={

@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\GetTaxonomiesRequest;
 use BitApps\BitConnect\Http\Requests\ReorderTermsRequest;
 use BitApps\BitConnect\Services\TermOrderService;
@@ -44,22 +45,40 @@ final class TaxonomyController
             }
 
             // Sorted here rather than in the clients: this payload carries no
-            // meta, and it is the single read path the portal's filters and the
-            // topic form all go through.
+            // order meta, and it is the single read path the portal's filters
+            // and the topic form all go through.
             if (TermOrderService::isOrderable($taxonomy->name)) {
                 $terms = TermOrderService::sort($terms);
             }
 
+            // Icons ride along for the taxonomies that have them, so the portal
+            // sider can list products with their artwork. get_terms() has
+            // already primed the term meta cache, so these reads cost no query.
+            $hasIcons = \in_array(
+                $taxonomy->name,
+                [Taxonomies::STAGES->value, Taxonomies::STATUSES->value, Taxonomies::DEPARTMENTS->value],
+                true
+            );
+
             // Names are stored escaped ("API &amp; Integrations"); JSON wants the text.
             $termsData = [];
             foreach ($terms as $term) {
-                $termsData[] = [
+                $termData = [
                     'id'     => $term->term_id,
                     'name'   => wp_specialchars_decode($term->name, ENT_QUOTES),
                     'slug'   => $term->slug,
                     'count'  => $term->count,
                     'parent' => $term->parent,
                 ];
+
+                if ($hasIcons) {
+                    $termData['meta'] = [
+                        'bit_connect_icon_url'      => (string) get_term_meta($term->term_id, 'bit_connect_icon_url', true),
+                        'bit_connect_icon_dark_url' => (string) get_term_meta($term->term_id, 'bit_connect_icon_dark_url', true),
+                    ];
+                }
+
+                $termsData[] = $termData;
             }
 
             $data[$taxonomy->name] = $termsData;

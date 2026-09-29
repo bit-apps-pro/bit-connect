@@ -1,4 +1,5 @@
 import queryRequest from '@common/helpers/request'
+import { type ThemedIconMeta } from '@shared/theme/themed-icon'
 import { useQuery } from '@tanstack/react-query'
 
 import { useTaxonomiesStoreActions } from '@/store/use-taxonomies-store'
@@ -6,6 +7,8 @@ import { useTaxonomiesStoreActions } from '@/store/use-taxonomies-store'
 export interface TaxonomyTerm {
   count: number
   id: number
+  /** Stages, statuses and products only — the taxonomies that carry icons. */
+  meta?: ThemedIconMeta
   name: string
   parent: number
   slug: string

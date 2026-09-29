@@ -5,19 +5,22 @@ import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
 import { type TaxonomiesResponse } from '@features/topic-modal/data/use-taxonomies'
+import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import ProductFilter from '@utilities/product-filter'
 import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
 import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
 import TopicCard from '@utilities/topic-card'
+import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Button, Drawer } from 'antd'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
+import { LuArrowUp, LuPlus, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useSearchParams } from 'react-router'
 
 import config from '@/config/config'
+import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
@@ -83,6 +86,15 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // to the query below, so links people have already shared keep working.
   const { product: showProductFilter, sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
   const showAnyFilter = showSortFilter || showProductFilter || showTagFilter
+  // The type chips ride the sort filter's switch, which is where the type
+  // choice lived before it had a row of its own. A type archive (`/topic/bug`)
+  // has already chosen, and a chip there could not override the path anyway.
+  const showTypeChips = showSortFilter && !archiveFilter?.['topic-types']
+
+  const { setCreateModalOpen } = useTopicModalStore()
+  const { can, isLoggedIn } = useAuthStore()
+  // Same rule as the header's button: the server refuses the topic anyway.
+  const canCreatePost = can('bit_connect_forum_create_post')
 
   const [filterOpen, setFilterOpen] = useState(false)
   const hasActiveFilters =
@@ -108,9 +120,16 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
   const clearSort = () =>
     setSearchParams(prev => {
-      for (const key of ['sort', 'visibility', 'my_topics', 'topic-types']) {
+      for (const key of ['sort', 'visibility', 'my_topics']) {
         prev.delete(key)
       }
+      if (prev.has('page')) prev.set('page', '1')
+      return prev
+    })
+
+  const clearTopicType = () =>
+    setSearchParams(prev => {
+      prev.delete('topic-types')
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -158,14 +177,15 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       activeChips.push({ key: 'sort', label: __('My Topics'), onRemove: clearSort })
     } else if (visibility === 'private') {
       activeChips.push({ key: 'sort', label: __('Private'), onRemove: clearSort })
-    } else if (topicType !== '') {
-      activeChips.push({
-        key: 'sort',
-        label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
-        onRemove: clearSort
-      })
     } else if (sortBy !== 'newest') {
       activeChips.push({ key: 'sort', label: __('Oldest'), onRemove: clearSort })
+    }
+    if (topicType !== '') {
+      activeChips.push({
+        key: 'topic-type',
+        label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
+        onRemove: clearTopicType
+      })
     }
   }
   if (showProductFilter && product !== '') {
@@ -319,7 +339,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     // two are the same journey, and at 12 here the card edges sat 4px inside
     // where the topic's own text lands, so tapping a card shifted everything.
     // From sm both fall back to 12, where each panel adds padding of its own.
-    <div className="bc-p-4 sm:bc-p-3 lg:bc-p-4 lg:bc-space-y-4" ref={rootRef}>
+    <div className="bc-p-4 sm:bc-p-3 lg:bc-p-6 lg:bc-space-y-4" ref={rootRef}>
       <div className="bc-flex bc-flex-col bc-gap-2 bc-mb-4">
         {/* mobile: always-visible search + a filter button that opens a sheet */}
         <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
@@ -380,14 +400,35 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
           )}
         </AnimatePresence>
 
-        {/* desktop toolbar row */}
-        <div className="bc-hidden bc-items-center bc-justify-between lg:bc-flex lg:bc-gap-12">
-          <SearchInput className="bc-min-w-48" />
-          {showAnyFilter && (
-            <div className="bc-flex bc-items-center bc-gap-3">
-              {showSortFilter && <SortFilter />}
-              {showProductFilter && <ProductFilter />}
-              {showTagFilter && <TagFilter />}
+        {/* desktop toolbar: search and Create, then the type chips opposite
+            the pickers. Create lives here rather than in the header on the
+            list — the header hides its own from lg on listing routes. */}
+        <div className="bc-hidden bc-flex-col bc-gap-4 lg:bc-flex">
+          <div className="bc-flex bc-items-center bc-justify-between bc-gap-6">
+            <SearchInput className="bc-min-w-48 bc-max-w-[600px]" />
+            {isLoggedIn && canCreatePost && (
+              <Button
+                icon={<LuPlus size={18} strokeWidth={2.5} />}
+                onClick={() => {
+                  if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
+                }}
+                size="large"
+                type="primary"
+              >
+                {__('Create New Topic')}
+              </Button>
+            )}
+          </div>
+          {(showTypeChips || showAnyFilter) && (
+            <div className="bc-flex bc-items-center bc-justify-between bc-gap-6">
+              {showTypeChips ? <TopicTypeFilter /> : <span />}
+              {showAnyFilter && (
+                <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
+                  {showSortFilter && <SortFilter />}
+                  {showProductFilter && <ProductFilter />}
+                  {showTagFilter && <TagFilter />}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -409,6 +450,12 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         title={__('Filters')}
       >
         <div className="bc-flex bc-flex-col bc-gap-3 bc-pb-2">
+          {showTypeChips && (
+            <div className="bc-flex bc-flex-col bc-gap-2 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-3">
+              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Topic type')}</span>
+              <TopicTypeFilter />
+            </div>
+          )}
           {showSortFilter && (
             <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
               <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Sort by')}</span>

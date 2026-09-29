@@ -146,7 +146,7 @@ export default function TagFilter({ loading = false }: { loading?: boolean }) {
       size={isMobile ? 'middle' : 'large'}
       style={{ width: isMobile ? 190 : 200 }}
       value={selected}
-      variant={isMobile ? 'borderless' : 'filled'}
+      variant={isMobile ? 'borderless' : 'outlined'}
     />
   )
 }

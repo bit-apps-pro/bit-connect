@@ -13,6 +13,8 @@ import { navItemStyle } from './SidebarNavItem.style'
 interface SidebarNavProps {
   props: {
     icon?: string
+    /** Overrides the stage match below, for rows that are not stages. */
+    isActive?: boolean
     label: JSX.Element | string
     path: string
     /**
@@ -22,10 +24,14 @@ interface SidebarNavProps {
      * stage icons at all.
      */
     reserveIconSlot?: boolean
+    /** Overrides the stage archive URL below, for rows that are not stages. */
+    to?: string
   }
 }
 export default memo(SidebarNavItem)
-function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: SidebarNavProps) {
+function SidebarNavItem({
+  props: { icon, isActive: isActiveOverride, label, path, reserveIconSlot, to: toOverride }
+}: SidebarNavProps) {
   const { token } = theme.useToken()
   // The URL of an icon that failed to load, so a stage whose attachment was
   // deleted from the media library falls back to its name instead of showing a
@@ -35,7 +41,8 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
 
   // Not read off `?stage=` alone: a topic URL carries no query string, so the
   // reader's stage has to be recovered from the topic itself. See the hook.
-  const isActive = useActiveStage() === path
+  const activeStage = useActiveStage()
+  const isActive = isActiveOverride ?? activeStage === path
 
   // The stage archive's own path, not `/?stage=`: the sidebar is the portal's
   // primary navigation, so the URLs it hands out are the ones that get shared,
@@ -47,7 +54,8 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
   // behind a second URL. The server 301s that archive back here, and this keeps
   // the nav from relying on the redirect. `?stage=` still works for links
   // already shared — see pages/topics/topics.tsx.
-  const to = path === config.DEFAULT_STAGE_SLUG ? '/' : routePath(`/stage/${path}`)
+  const to =
+    toOverride ?? (path === config.DEFAULT_STAGE_SLUG ? '/' : routePath(`/stage/${path}`))
 
   return (
     <NavLink
@@ -78,7 +86,9 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
       <If conditions={isActive}>
         <motion.span
           className="bc-absolute bc-inset-0 bc--z-10 bc-h-full bc-w-full bc-rounded-md bc-bg-primary/10 bc-border bc-border-solid bc-border-primary/30"
-          layoutId="sidebar-nav-item-active"
+          // One pill per section: a stage and a product can both be current
+          // (`/?product=`), and a shared id would fling one pill between them.
+          layoutId={toOverride ? 'sidebar-nav-other-active' : 'sidebar-nav-item-active'}
         />
       </If>
     </NavLink>

@@ -4,12 +4,15 @@ import { useStagesStore } from '@pages/Layout/data/use-stages'
 import logo from '@resource/img/logo.svg'
 import { pickThemedIcon } from '@shared/theme/themed-icon'
 import Loop from '@utilities/Loop'
+import { routePath } from '@utils/route-path'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
-import { useEffect } from 'react'
-import { LuX } from 'react-icons/lu'
+import { type ReactNode, useEffect, useId, useState } from 'react'
+import { LuChevronDown, LuX } from 'react-icons/lu'
+import { useLocation, useSearchParams } from 'react-router'
 
 import { navItemsStore } from '@/store/ssr/nav-items'
+import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
@@ -23,22 +26,85 @@ interface SidebarProps {
   onClose?: () => void
 }
 
+/**
+ * A titled, collapsible group of sider links. The rows hang off a hairline down
+ * their left edge, so the group reads as the heading's children rather than as
+ * a second list that happens to follow the first.
+ */
+function NavSection({ children, title }: { children: ReactNode; title: string }) {
+  const [isOpen, setIsOpen] = useState(true)
+  const listId = useId()
+
+  return (
+    <section>
+      <button
+        aria-controls={listId}
+        aria-expanded={isOpen}
+        className={cn([
+          'bc-flex bc-w-full bc-cursor-pointer bc-items-center bc-justify-between bc-rounded-md bc-border-none bc-bg-transparent bc-px-0 bc-py-2',
+          'bc-text-xs bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-muted hover:bc-text-ink',
+          'bc-outline-none focus-visible:bc-ring-2 focus-visible:bc-ring-primary/40'
+        ])}
+        onClick={() => setIsOpen(open => !open)}
+        type="button"
+      >
+        {title}
+        <LuChevronDown
+          aria-hidden
+          className={cn(['bc-transition-transform bc-duration-200', !isOpen && '-bc-rotate-90'])}
+          size={16}
+        />
+      </button>
+      <div
+        className="bc-mb-3 bc-mt-1 bc-space-y-1 bc-border-0 bc-border-l bc-border-solid bc-border-line bc-pl-3"
+        hidden={!isOpen}
+        id={listId}
+      >
+        {children}
+      </div>
+    </section>
+  )
+}
+
+interface NavItem {
+  icon?: string
+  isActive?: boolean
+  label: string
+  path: string
+  to?: string
+}
+
 function NavList({
   className,
   navItems,
+  productItems,
   reserveIconSlot
 }: {
   className?: string
-  navItems: { icon?: string; label: string; path: string }[]
+  navItems: NavItem[]
+  productItems: NavItem[]
   reserveIconSlot?: boolean
 }) {
+  const reserveProductIconSlot = productItems.some(item => !!item.icon)
+
   return (
-    <nav className={cn(['bc-flex bc-w-full bc-flex-col bc-justify-between', className])}>
-      <div className="bc-space-y-1">
+    <nav className={cn(['bc-flex bc-w-full bc-flex-col', className])}>
+      <NavSection title={__('Stages')}>
         <Loop data={navItems} each="navItems" store={navItemsStore}>
           {(link, key) => <SidebarNavItem key={key} props={{ ...link, reserveIconSlot }} />}
         </Loop>
-      </div>
+      </NavSection>
+
+      {productItems.length > 0 && (
+        <NavSection title={__('Products')}>
+          {productItems.map(item => (
+            <SidebarNavItem
+              key={item.path}
+              props={{ ...item, reserveIconSlot: reserveProductIconSlot }}
+            />
+          ))}
+        </NavSection>
+      )}
     </nav>
   )
 }
@@ -77,6 +143,26 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   // leave the unindented layout untouched for portals that set none.
   const reserveIconSlot = navItems.some(item => !!item.icon)
 
+  // Products link to their own archive (`/department/bit-crm`), the canonical
+  // URL for that list, the same way stages do. The `?product=` filter still
+  // counts as the product being open, since the toolbar's picker writes it.
+  // Dropped with the product picker when an admin switches that filter off.
+  const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
+  const [archiveSegment, archiveSlug] = pathname.split('/').filter(Boolean)
+  const openProduct =
+    archiveSegment === 'department' ? archiveSlug : (searchParams.get('product') ?? '')
+  const departments = useTaxonomiesStoreSelect()?.['bit-connect-departments'] || []
+  const productItems: NavItem[] = config.PORTAL_FILTERS.product
+    ? departments.map(department => ({
+        icon: pickThemedIcon(department.meta, isDarkTheme),
+        isActive: department.slug === openProduct,
+        label: department.name,
+        path: department.slug,
+        to: routePath(`/department/${department.slug}`)
+      }))
+    : []
+
   return (
     <>
       {/* Desktop sidebar */}
@@ -91,14 +177,16 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             // which the old rule left to `Promo`'s margin and lost with it.
             // `bc-justify-center` is gone with it: NavList takes `bc-flex-1`, so
             // there was never free space on the cross axis to distribute.
-            'bc-no-underline bc-p-4 bc-flex bc-h-full bc-flex-col bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface',
+            // Flush with the window's left edge and ruled off from the list on
+            // the right; the header's rule closes the top.
+            'bc-no-underline bc-p-5 bc-flex bc-h-full bc-flex-col bc-border-0 bc-border-r bc-border-solid bc-border-line bc-bg-surface',
             '[&>.ant-layout-sider-children]:bc-contents'
           ])}
           collapsed={false}
           collapsedWidth={0}
           id="sidebar"
           theme={isDarkTheme ? 'dark' : 'light'}
-          width={250}
+          width={272}
         >
           {/* flex-1 in place of the old `h-[calc(100%-58px)]`: the credit below
               is a real sibling when it is on, so the nav has to yield its height
@@ -108,6 +196,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           <NavList
             className="scroller thin bc-min-h-0 bc-flex-1 bc-overflow-y-auto"
             navItems={navItems}
+            productItems={productItems}
             reserveIconSlot={reserveIconSlot}
           />
 
@@ -116,11 +205,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               // Top margin only — the gap below now comes from the panel's own
               // padding, so this no longer doubles it.
               className="bc-mt-4 bc-shrink-0"
-              cta={config.PROMO.cta}
               eyebrow={config.PROMO.eyebrow}
               headline={config.PROMO.headline}
-              phrases={config.PROMO.phrases}
-              prefix={config.PROMO.prefix}
               url={config.PROMO.url}
             />
           )}
@@ -207,17 +293,18 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
           <div className="bc-mx-4 bc-shrink-0 bc-border-0 bc-border-b bc-border-solid bc-border-line" />
           <div className="bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-px-3 bc-py-3">
-            <NavList navItems={navItems} reserveIconSlot={reserveIconSlot} />
+            <NavList
+              navItems={navItems}
+              productItems={productItems}
+              reserveIconSlot={reserveIconSlot}
+            />
           </div>
 
           {config.PROMO.enabled && (
             <Promo
-              className="bc-mx-3 bc-mb-4 bc-shrink-0"
-              cta={config.PROMO.cta}
+              className="bc-mx-4 bc-mb-4 bc-shrink-0"
               eyebrow={config.PROMO.eyebrow}
               headline={config.PROMO.headline}
-              phrases={config.PROMO.phrases}
-              prefix={config.PROMO.prefix}
               url={config.PROMO.url}
             />
           )}
