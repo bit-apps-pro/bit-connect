@@ -66,6 +66,14 @@ html {
   border-color: var(--bc-line-strong) !important;
 }
 
+/* WP admin's input[type=text] (min-height: 30px; line-height: 2) outranks antd's
+   :where() styles, so the bare input inside a prefix/allowClear wrapper grew to
+   30px and the wrapper's own padding pushed it 8px taller than a Select. */
+#bit-apps-root .ant-input-affix-wrapper > input.ant-input {
+  min-height: 0;
+  line-height: inherit;
+}
+
 svg {
   pointer-events: none;
   display: inline-block;
