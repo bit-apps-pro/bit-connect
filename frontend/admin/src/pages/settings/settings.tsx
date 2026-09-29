@@ -1,11 +1,12 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Button, Descriptions, Typography } from 'antd'
+import { Alert, Button, Divider, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import useSettings from './data/use-settings'
 import useUpdateSettings from './data/use-update-settings'
 import { type ErrorResponse } from './data/use-update-settings'
 import ModerationSection from './internal/moderation-section'
+import SectionCard from './internal/section-card'
 import SettingsSection from './internal/settings-section'
 import TopicAccessExtras from './internal/topic-access-extras'
 import {
@@ -15,7 +16,7 @@ import {
   type TopicFormFieldsSettings
 } from './shared/types'
 
-const { Title } = Typography
+const { Text, Title } = Typography
 
 interface WpMediaSettings {
   bigImageThresholdPx: number
@@ -33,39 +34,59 @@ function formatBytes(bytes: number): string {
   return `${bytes} B`
 }
 
+interface MediaLimitRowProps {
+  hint?: string
+  label: string
+  value: string
+}
+
+function MediaLimitRow({ hint, label, value }: MediaLimitRowProps) {
+  return (
+    <>
+      <Divider className="bc-my-0" />
+      <div className="bc-py-4 last:bc-pb-0 sm:bc-flex sm:bc-items-baseline sm:bc-gap-6">
+        <Text className="bc-mb-1 bc-block bc-text-sm bc-font-medium bc-text-ink sm:bc-w-64 sm:bc-shrink-0">{label}</Text>
+        <div className="bc-min-w-0">
+          <Text className="bc-text-sm bc-text-ink" strong>
+            {value}
+          </Text>
+          {hint && (
+            <Text className="bc-ml-2 bc-text-sm" type="secondary">
+              {hint}
+            </Text>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
 function MediaLimitsInfo() {
   const media = getWpMediaSettings()
   const maxSize = media ? formatBytes(media.maxUploadBytes) : '—'
   const maxPx = media ? `${media.bigImageThresholdPx} px` : '—'
 
   return (
-    <div className="bc-mt-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-5">
-      <Title className="bc-mb-1" level={5}>
-        {__('WordPress Media Limits')}
-      </Title>
-      <p className="bc-mb-4 bc-text-sm bc-text-ink-muted">
-        {__(
-          'These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.'
-        )}
-      </p>
-      <Descriptions bordered column={1} size="small">
-        <Descriptions.Item label={__('Max upload size')}>
-          <span className="bc-font-medium">{maxSize}</span>
-          <span className="bc-ml-2 bc-text-xs bc-text-ink-subtle">
-            {__('(set by server php.ini via wp_max_upload_size)')}
-          </span>
-        </Descriptions.Item>
-        <Descriptions.Item label={__('Max image dimensions')}>
-          <span className="bc-font-medium">{maxPx}</span>
-          <span className="bc-ml-2 bc-text-xs bc-text-ink-subtle">
-            {__('(WordPress big_image_size_threshold filter, default 2560 px)')}
-          </span>
-        </Descriptions.Item>
-        <Descriptions.Item label={__('Allowed file types')}>
-          <span className="bc-font-medium">JPEG, PNG, GIF, WebP, PDF, DOC, DOCX</span>
-        </Descriptions.Item>
-      </Descriptions>
-    </div>
+    <SectionCard
+      subtitle={__(
+        'These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.'
+      )}
+      title={__('WordPress Media Limits')}
+    >
+      <div>
+        <MediaLimitRow
+          hint={__('(set by server php.ini via wp_max_upload_size)')}
+          label={__('Max upload size')}
+          value={maxSize}
+        />
+        <MediaLimitRow
+          hint={__('(WordPress big_image_size_threshold filter, default 2560 px)')}
+          label={__('Max image dimensions')}
+          value={maxPx}
+        />
+        <MediaLimitRow label={__('Allowed file types')} value="JPEG, PNG, GIF, WebP, PDF, DOC, DOCX" />
+      </div>
+    </SectionCard>
   )
 }
 
@@ -182,28 +203,32 @@ export default function Settings() {
   }, [form])
 
   return (
-    <div>
-      <div className="bc-py-6 bc-px-5 bc-flex bc-items-center bc-justify-between">
-        <Title className="bc-mb-0" level={2}>
-          {__('Settings')}
-        </Title>
+    <div className="bc-p-6">
+      <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-start bc-justify-between bc-gap-4">
+        <div className="bc-min-w-0">
+          <Title className="bc-mb-1" level={3}>
+            {__('Settings')}
+          </Title>
+          <Text type="secondary">
+            {__(
+              'What members can do on a topic, what the topic form asks for, and what happens to reported content and to your data.'
+            )}
+          </Text>
+        </div>
         <Button
           disabled={isUpdatingSettings}
           loading={isUpdatingSettings}
           onClick={handleSave}
+          size="large"
           type="primary"
         >
           {__('Save')}
         </Button>
       </div>
 
-      {errorMessage && (
-        <div className="bc-px-5 bc-mb-4">
-          <Alert message={errorMessage} type="error" />
-        </div>
-      )}
+      {errorMessage && <Alert className="bc-mb-5" message={errorMessage} type="error" />}
 
-      <div className="bc-px-5">
+      <div className="bc-grid bc-gap-5 xl:bc-grid-cols-2">
         <SettingsSection
           disabled={isUpdatingSettings}
           note={TopicAccessExtras && <TopicAccessExtras />}
@@ -234,7 +259,9 @@ export default function Settings() {
           title={__('Data Cleanup')}
         />
 
-        <MediaLimitsInfo />
+        <div className="xl:bc-col-span-2">
+          <MediaLimitsInfo />
+        </div>
       </div>
     </div>
   )
