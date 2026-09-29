@@ -958,11 +958,31 @@ return [
 
     'Settings updated successfully' => __('Settings updated successfully', 'bit-connect'),
 
+    'Hidden' => __('Hidden', 'bit-connect'),
+
+    'Optional' => __('Optional', 'bit-connect'),
+
+    'Required' => __('Required', 'bit-connect'),
+
     'What happens to reported content' => __('What happens to reported content', 'bit-connect'),
 
     'Moderation' => __('Moderation', 'bit-connect'),
 
     'Reported content stays visible until a moderator reviews the report and decides what to do with it.' => __('Reported content stays visible until a moderator reviews the report and decides what to do with it.', 'bit-connect'),
+
+    'Choose what people fill in when they create a topic, besides its title and text.' => __('Choose what people fill in when they create a topic, besides its title and text.', 'bit-connect'),
+
+    'Topic form' => __('Topic form', 'bit-connect'),
+
+    'What kind of post it is, such as a question or a bug report.' => __('What kind of post it is, such as a question or a bug report.', 'bit-connect'),
+
+    'Topic type' => __('Topic type', 'bit-connect'),
+
+    /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
+    'Which %s the topic is about.' => __('Which %s the topic is about.', 'bit-connect'),
+
+    /* translators: %1$s, %2$s — value(s) inserted by the plugin; keep them in the translation. */
+    'New topics won’t belong to any of your %1$s, so they won’t appear when visitors browse by %2$s.' => __('New topics won’t belong to any of your %1$s, so they won’t appear when visitors browse by %2$s.', 'bit-connect'),
 
     'These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.' => __('These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.', 'bit-connect'),
 
@@ -978,37 +998,23 @@ return [
 
     'Allowed file types' => __('Allowed file types', 'bit-connect'),
 
-    'On/off your Topic Upvote' => __('On/off your Topic Upvote', 'bit-connect'),
+    'Let members upvote topics.' => __('Let members upvote topics.', 'bit-connect'),
 
-    'Upvote' => __('Upvote', 'bit-connect'),
+    'Upvotes' => __('Upvotes', 'bit-connect'),
 
-    'On/off your Comment' => __('On/off your Comment', 'bit-connect'),
+    'Let members reply to topics.' => __('Let members reply to topics.', 'bit-connect'),
 
-    'Delete all plugin settings, terms and posts when uninstalling this plugin' => __('Delete all plugin settings, terms and posts when uninstalling this plugin', 'bit-connect'),
+    'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.' => __('When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.', 'bit-connect'),
 
-    'Delete Data on Uninstall' => __('Delete Data on Uninstall', 'bit-connect'),
+    'Delete data on uninstall' => __('Delete data on uninstall', 'bit-connect'),
 
-    'Show and require Topic Type when creating a topic' => __('Show and require Topic Type when creating a topic', 'bit-connect'),
+    'Choose what members can do on a topic.' => __('Choose what members can do on a topic.', 'bit-connect'),
 
-    'Require Topic Type' => __('Require Topic Type', 'bit-connect'),
+    'Topic access' => __('Topic access', 'bit-connect'),
 
-    /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
-    'Show and require %s when creating a topic' => __('Show and require %s when creating a topic', 'bit-connect'),
+    'Choose what happens to your community’s data if the plugin is deleted.' => __('Choose what happens to your community’s data if the plugin is deleted.', 'bit-connect'),
 
-    /* translators: %s — value(s) inserted by the plugin; keep them in the translation. */
-    'Require %s' => __('Require %s', 'bit-connect'),
-
-    'Choose what members can do on a topic' => __('Choose what members can do on a topic', 'bit-connect'),
-
-    'Topic Access Settings' => __('Topic Access Settings', 'bit-connect'),
-
-    'Control which fields are shown and required when creating a topic' => __('Control which fields are shown and required when creating a topic', 'bit-connect'),
-
-    'Topic Form Fields' => __('Topic Form Fields', 'bit-connect'),
-
-    'Manage what data is removed when the plugin is uninstalled' => __('Manage what data is removed when the plugin is uninstalled', 'bit-connect'),
-
-    'Data Cleanup' => __('Data Cleanup', 'bit-connect'),
+    'Data cleanup' => __('Data cleanup', 'bit-connect'),
 
     'Please enter a valid Custom Login Page URL, for example https://example.com/login' => __('Please enter a valid Custom Login Page URL, for example https://example.com/login', 'bit-connect'),
 
@@ -1466,8 +1472,6 @@ return [
 
     'All' => __('All', 'bit-connect'),
 
-    'Topic type' => __('Topic type', 'bit-connect'),
-
     'Reset password' => __('Reset password', 'bit-connect'),
 
     'Something went wrong. Please try again.' => __('Something went wrong. Please try again.', 'bit-connect'),
@@ -1637,8 +1641,6 @@ return [
 
     'Out of public view while a moderator reviews a report about it' => __('Out of public view while a moderator reviews a report about it', 'bit-connect'),
 
-    'Hidden' => __('Hidden', 'bit-connect'),
-
     'Reply' => __('Reply', 'bit-connect'),
 
     'More actions' => __('More actions', 'bit-connect'),
@@ -1721,8 +1723,6 @@ return [
 
     'Member since' => __('Member since', 'bit-connect'),
 
-    'Upvotes' => __('Upvotes', 'bit-connect'),
-
     'Sort comments' => __('Sort comments', 'bit-connect'),
 
     'This comment is no longer available' => __('This comment is no longer available', 'bit-connect'),
@@ -1738,6 +1738,8 @@ return [
     'Related topics' => __('Related topics', 'bit-connect'),
 
     'Remove your upvote' => __('Remove your upvote', 'bit-connect'),
+
+    'Upvote' => __('Upvote', 'bit-connect'),
 
     'Voting is not available to you' => __('Voting is not available to you', 'bit-connect'),
 

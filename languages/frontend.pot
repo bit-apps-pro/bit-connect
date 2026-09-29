@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Tue Sep 29 2026 18:51:03 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Tue Sep 29 2026 19:08:45 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -92,7 +92,7 @@ msgstr ""
 #: frontend/client/src/common/helpers/i18nWrap.test.ts:40
 #: frontend/client/src/components/features/report-modal/ui/report-modal.tsx:90
 #: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:144
-#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:66
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:78
 #: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:117
 #: frontend/client/src/pages/Post/CommentEditor.tsx:474
 #: frontend/client/src/pages/Post/CommentItem.tsx:109
@@ -302,6 +302,7 @@ msgstr ""
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:42
 #: frontend/admin/src/pages/root/internal/activity-chart.tsx:76
 #: frontend/admin/src/pages/root/internal/activity-chart.tsx:130
+#: frontend/admin/src/pages/settings/settings.tsx:168
 #: frontend/client/src/components/utilities/topic-card/topic-card.tsx:179
 #: frontend/client/src/pages/Post/PostDetailsPage.tsx:311
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:91
@@ -421,7 +422,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/activity/ui/activity-row.tsx:65
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:93
-#: frontend/admin/src/pages/settings/settings.tsx:165
 #: frontend/client/src/components/utilities/topic-card/topic-card.tsx:179
 msgid "Comment"
 msgstr ""
@@ -510,7 +510,7 @@ msgstr ""
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:98
 #: frontend/admin/src/pages/notifications/notifications.tsx:139
 #: frontend/admin/src/pages/seo/seo.tsx:71
-#: frontend/admin/src/pages/settings/settings.tsx:221
+#: frontend/admin/src/pages/settings/settings.tsx:208
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
 msgid "Save"
 msgstr ""
@@ -1062,7 +1062,7 @@ msgid "SEO"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:61
-#: frontend/admin/src/pages/settings/settings.tsx:211
+#: frontend/admin/src/pages/settings/settings.tsx:198
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:133
 msgid "Settings"
 msgstr ""
@@ -2183,6 +2183,20 @@ msgstr ""
 msgid "Settings updated successfully"
 msgstr ""
 
+#: frontend/admin/src/pages/settings/internal/field-mode-row.tsx:37
+#: frontend/client/src/pages/Post/CommentItem.tsx:343
+#: frontend/client/src/pages/Post/PostHeader.tsx:620
+msgid "Hidden"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/field-mode-row.tsx:38
+msgid "Optional"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/field-mode-row.tsx:39
+msgid "Required"
+msgstr ""
+
 #: frontend/admin/src/pages/settings/internal/moderation-section.tsx:18
 msgid "What happens to reported content"
 msgstr ""
@@ -2197,95 +2211,105 @@ msgid ""
 "decides what to do with it."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:72
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:26
+msgid ""
+"Choose what people fill in when they create a topic, besides its title and "
+"text."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:27
+msgid "Topic form"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:31
+msgid "What kind of post it is, such as a question or a bug report."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:33
+#: frontend/client/src/components/utilities/topic-type-filter/topic-type-filter.tsx:40
+#: frontend/client/src/pages/topics/topics.tsx:468
+msgid "Topic type"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:39
+msgid "Which %s the topic is about."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:51
+msgid ""
+"New topics won’t belong to any of your %1$s, so they won’t appear when "
+"visitors browse by %2$s."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:73
 msgid ""
 "These limits are controlled by your server and WordPress. Pasted images "
 "that exceed them are automatically resized before upload."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:75
+#: frontend/admin/src/pages/settings/settings.tsx:76
 msgid "WordPress Media Limits"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:79
+#: frontend/admin/src/pages/settings/settings.tsx:80
 msgid "(set by server php.ini via wp_max_upload_size)"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:80
+#: frontend/admin/src/pages/settings/settings.tsx:81
 msgid "Max upload size"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:84
+#: frontend/admin/src/pages/settings/settings.tsx:85
 msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:85
+#: frontend/admin/src/pages/settings/settings.tsx:86
 msgid "Max image dimensions"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:88
+#: frontend/admin/src/pages/settings/settings.tsx:89
 msgid "Allowed file types"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:157
-msgid "On/off your Topic Upvote"
+#: frontend/admin/src/pages/settings/settings.tsx:160
+msgid "Let members upvote topics."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:159
-#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
-msgid "Upvote"
+#: frontend/admin/src/pages/settings/settings.tsx:162
+#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:93
+#: frontend/client/src/pages/User/ui/ProfileCard.tsx:164
+#: frontend/client/src/pages/User/UserProfilePage.tsx:160
+msgid "Upvotes"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:163
-msgid "On/off your Comment"
+#: frontend/admin/src/pages/settings/settings.tsx:166
+msgid "Let members reply to topics."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:180
-msgid "Delete all plugin settings, terms and posts when uninstalling this plugin"
+#: frontend/admin/src/pages/settings/settings.tsx:183
+msgid ""
+"When the plugin is deleted, remove every topic and reply, its terms and "
+"settings, and the portal page. This can’t be undone."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:182
-msgid "Delete Data on Uninstall"
+#: frontend/admin/src/pages/settings/settings.tsx:187
+msgid "Delete data on uninstall"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:192
-msgid "Show and require Topic Type when creating a topic"
+#: frontend/admin/src/pages/settings/settings.tsx:224
+msgid "Choose what members can do on a topic."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:194
-msgid "Require Topic Type"
+#: frontend/admin/src/pages/settings/settings.tsx:225
+msgid "Topic access"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:198
-msgid "Show and require %s when creating a topic"
+#: frontend/admin/src/pages/settings/settings.tsx:241
+msgid "Choose what happens to your community’s data if the plugin is deleted."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:200
-msgid "Require %s"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:235
-msgid "Choose what members can do on a topic"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:236
-msgid "Topic Access Settings"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:244
-msgid "Control which fields are shown and required when creating a topic"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:245
-msgid "Topic Form Fields"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:254
-msgid "Manage what data is removed when the plugin is uninstalled"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:255
-msgid "Data Cleanup"
+#: frontend/admin/src/pages/settings/settings.tsx:242
+msgid "Data cleanup"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/shared/auth-validation.ts:22
@@ -3027,16 +3051,16 @@ msgstr ""
 msgid "Already taken — this topic will be saved as"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:76
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:88
 #: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:126
 msgid "Uploading files..."
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:76
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:88
 msgid "Submit"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:91
+#: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:103
 #: frontend/client/src/pages/Layout/ui/header/header.tsx:252
 #: frontend/client/src/pages/Layout/ui/header/header.tsx:265
 #: frontend/client/src/pages/topics/topics.tsx:432
@@ -3051,80 +3075,80 @@ msgstr ""
 msgid "Edit Topic"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:100
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:103
 #: frontend/client/src/pages/Post/CommentEditor.tsx:245
 msgid "Failed to upload image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:176
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:179
 msgid "Topic Title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:179
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:182
 msgid "Please enter a topic title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:180
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:183
 msgid "Topic title cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:183
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:186
 msgid "Write a post title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:191
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:194
 msgid "Permalink"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:194
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:197
 msgid "Slug cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:201
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:204
 msgid "Slug must contain at least one letter or number"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:231
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:234
 msgid "Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:233
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:236
 msgid "Please select a topic type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:235
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:241
 msgid "Select a Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:247
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:254
 msgid "%s is required"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:255
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:263
 msgid "Select %s"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:266
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:274
 msgid "Write Your Topic Description Here"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:277
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:285
 msgid "Please enter a description or add an image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:280
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:288
 msgid "Description cannot exceed 10000 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:291
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:299
 msgid "Write your topic description..."
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:297
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:305
 msgid "Tag"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:305
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:313
 msgid "Select tags.."
 msgstr ""
 
@@ -3254,11 +3278,6 @@ msgstr ""
 #: frontend/client/src/components/utilities/topic-type-filter/topic-type-filter.tsx:34
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:131
 msgid "All"
-msgstr ""
-
-#: frontend/client/src/components/utilities/topic-type-filter/topic-type-filter.tsx:40
-#: frontend/client/src/pages/topics/topics.tsx:468
-msgid "Topic type"
 msgstr ""
 
 #: frontend/client/src/pages/Auth/ForgotPasswordPage.tsx:18
@@ -3616,11 +3635,6 @@ msgstr ""
 msgid "Out of public view while a moderator reviews a report about it"
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentItem.tsx:343
-#: frontend/client/src/pages/Post/PostHeader.tsx:620
-msgid "Hidden"
-msgstr ""
-
 #: frontend/client/src/pages/Post/CommentItem.tsx:384
 msgid "Reply"
 msgstr ""
@@ -3798,12 +3812,6 @@ msgstr ""
 msgid "Member since"
 msgstr ""
 
-#: frontend/client/src/pages/Post/ui/AuthorCard.tsx:93
-#: frontend/client/src/pages/User/ui/ProfileCard.tsx:164
-#: frontend/client/src/pages/User/UserProfilePage.tsx:160
-msgid "Upvotes"
-msgstr ""
-
 #: frontend/client/src/pages/Post/ui/comment-sort-select.tsx:27
 msgid "Sort comments"
 msgstr ""
@@ -3836,6 +3844,10 @@ msgstr ""
 
 #: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
 msgid "Remove your upvote"
+msgstr ""
+
+#: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:20
+msgid "Upvote"
 msgstr ""
 
 #: frontend/client/src/pages/Post/ui/voteBox/VoteBox.tsx:25
