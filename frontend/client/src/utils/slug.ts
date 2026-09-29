@@ -60,37 +60,91 @@ export const slugRedirectPath = (
   return routePath(`/${nextSlug}`)
 }
 
+/** What `sanitize_title_with_dashes()` strips outright, decoded. */
+const STRIPPED_CHARACTERS =
+  /[\u00AD\u00A1\u00BF\u00AB\u00BB\u2039\u203A\u2018\u2019\u201C\u201D\u201A\u201B\u201E\u201F\u2022\u00A9\u00AE\u00B0\u2026\u2122\u00B4\u02CA\u200B-\u200F\u202A-\u202E\uFEFF\uFFFC]|\u0300|\u0301|\u0304|\u030C|\u0341/g
+
+/** Latin letters `remove_accents()` spells out rather than decomposes. */
+const LATIN_LIGATURES: Record<string, string> = {
+  ª: 'a',
+  Æ: 'AE',
+  æ: 'ae',
+  Đ: 'D',
+  đ: 'd',
+  Ð: 'D',
+  ð: 'd',
+  Ħ: 'H',
+  ħ: 'h',
+  Ĳ: 'IJ',
+  ĳ: 'ij',
+  ı: 'i',
+  Ł: 'L',
+  ł: 'l',
+  Ŀ: 'L',
+  ŀ: 'l',
+  Ŋ: 'N',
+  ŋ: 'n',
+  º: 'o',
+  Ø: 'O',
+  ø: 'o',
+  Œ: 'OE',
+  œ: 'oe',
+  ĸ: 'k',
+  ſ: 's',
+  ß: 's',
+  Ŧ: 'T',
+  ŧ: 't',
+  Þ: 'TH',
+  þ: 'th',
+  ŉ: 'N'
+}
+
+/**
+ * `remove_accents()`: Latin letters lose their diacritics; other scripts are
+ * left alone. Scoped to Latin on purpose — core's table has no entry for a
+ * Cyrillic й or an Indic vowel sign, and stripping those would change the word.
+ * Recomposed to NFC so the slug matches the server's byte-for-byte.
+ */
+const removeAccents = (value: string): string =>
+  value
+    .normalize('NFD')
+    .replaceAll(/(\p{Script=Latin})[̀-ͯ]+/gu, '$1')
+    .normalize('NFC')
+    .replaceAll(/[ÆæÐðĐđĦħıĲĳĸĿŀŁłŉŊŋØøŒœßſÞþŦŧªº]/g, ch => LATIN_LIGATURES[ch] ?? ch)
+
 /**
  * The readable form of the slug WordPress will store for a piece of text.
  *
- * Follows core's `cleanForSlug()`: letters and numbers in *any* script survive,
- * so a Bengali or Arabic title still yields a slug the author can read and
- * edit. `sanitize_title()` on the server is authoritative and percent-encodes
- * whatever is left outside ASCII — see the note at the top of this file — so
- * this only has to agree with it on the decoded form.
+ * Mirrors `sanitize_title()` in its 'save' context (`remove_accents()` then
+ * `sanitize_title_with_dashes()`), step for step, on the decoded form — see the
+ * note at the top of this file. The server stays authoritative; this exists so
+ * the slug the form shows is the one the save will store.
  *
- * Two deliberate departures from the JS in core, both to avoid corrupting the
- * scripts `sanitize_title()` preserves intact:
- *
- * - Combining marks are kept. An Indic vowel sign is a mark, not a letter, so
- *   `\p{L}\p{N}` alone turns "সমস্যা" into "সমসয" — a different word.
- * - The result is recomposed to NFC, undoing the decomposition the accent strip
- *   needs, so the slug matches the server's byte-for-byte instead of merely
- *   rendering the same.
+ * That means ASCII is held to letters, digits, `_` and `-`, while everything
+ * outside ASCII survives — not just letters in any script, but emoji and
+ * symbols too: "Hello 🔥 world" → "hello-🔥-world", as WordPress stores it.
+ * Only the handful of typographic characters core names are stripped or turned
+ * into hyphens. Not `cleanForSlug()` from the block editor, which drops emoji
+ * and so disagrees with the server whenever a title carries one.
  *
  * Returns '' for input with nothing sluggable in it; callers treat that as
  * "let the server derive one from the title".
  */
 export const slugify = (value: string): string =>
-  value
-    .normalize('NFKD')
-    .replaceAll(/[̀-ͯ]/g, '') // drop the accents NFKD split off
-    .replaceAll(/[\s./]+/g, '-')
-    .replaceAll(/[^\p{L}\p{M}\p{N}_-]+/gu, '')
+  removeAccents(value.replaceAll(/<[^>]*>/g, ''))
     .toLowerCase()
+    .replaceAll(/[\u00A0\u2011\u2013\u2014/]/g, '-')
+    .replaceAll(/&(?:nbsp|#8209|#160|ndash|#8211|mdash|#8212);/g, '-')
+    .replaceAll(STRIPPED_CHARACTERS, '')
+    .replaceAll(/[\u2000-\u200A\u2028\u2029\u202F]/g, '-')
+    .replaceAll('\u00D7', 'x')
+    .replaceAll(/&.+?;/g, '')
+    .replaceAll('.', '-')
+    // ASCII outside `[a-z0-9 _-]` goes; nothing above ASCII is touched here.
+    .replaceAll(/(?![a-z0-9 _-])[\0-\u007F]/g, '')
+    .replaceAll(/ +/g, '-')
     .replaceAll(/-+/g, '-')
     .replaceAll(/^-+|-+$/g, '')
-    .normalize('NFC')
 
 /**
  * Whether the server stored a different slug than the author asked for.

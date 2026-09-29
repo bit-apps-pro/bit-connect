@@ -93,8 +93,31 @@ describe('slugify', () => {
     expect(slugify('日本語のトピック')).toBe('日本語のトピック')
   })
 
-  it('drops punctuation and emoji, which carry no letters or digits', () => {
-    expect(slugify('Bug: it crashed! 🔥')).toBe('bug-it-crashed')
+  // Expected values are what `sanitize_title()` stores, decoded.
+  it('drops ASCII punctuation but keeps emoji and symbols, as WordPress does', () => {
+    expect(slugify('Bug: it crashed! 🔥')).toBe('bug-it-crashed-🔥')
+    expect(slugify('Hello 🔥 world')).toBe('hello-🔥-world')
+    expect(slugify('🔥')).toBe('🔥')
+    expect(slugify('★ star → arrow')).toBe('★-star-→-arrow')
+  })
+
+  it('strips or hyphenates the typographic characters core names', () => {
+    expect(slugify('“Quoted” — dash – en…')).toBe('quoted-dash-en')
+    expect(slugify('©2024 Brand™')).toBe('2024-brand')
+    expect(slugify('5 × 3 = 15')).toBe('5-x-3-15')
+    // The joiner goes, so a joined emoji falls apart into its parts.
+    expect(slugify('👨‍👩‍👧 family')).toBe('👨👩👧-family')
+  })
+
+  it('removes accents from Latin letters only', () => {
+    expect(slugify('Straße Ærø Łódź œuvre')).toBe('strase-aero-lodz-oeuvre')
+    expect(slugify('Привет й мир')).toBe('привет-й-мир')
+    expect(slugify('Ελληνικά άλφα')).toBe('ελληνικά-άλφα')
+  })
+
+  it('strips tags and HTML entities', () => {
+    expect(slugify('<b>bold</b> text')).toBe('bold-text')
+    expect(slugify('Price: $100 &amp; more')).toBe('price-100-more')
   })
 
   it('collapses runs of separators and trims the ends', () => {
