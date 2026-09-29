@@ -95,7 +95,7 @@ describe('TopicForm slug field', () => {
     render(<Harness />)
 
     await userEvent.type(title(), 'My First Topic')
-    await openSlug()
+    await openSlug('Edit permalink')
 
     expect(slugBox()).toHaveValue('my-first-topic')
   })
@@ -104,7 +104,7 @@ describe('TopicForm slug field', () => {
     render(<Harness />)
 
     await userEvent.type(title(), 'My First')
-    await openSlug()
+    await openSlug('Edit permalink')
     await userEvent.clear(slugBox())
     await userEvent.type(slugBox(), 'chosen-slug')
     await userEvent.type(title(), ' Topic')
@@ -175,8 +175,39 @@ describe('TopicForm slug field', () => {
 
     expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
 
-    await openSlug()
+    await openSlug('Edit permalink')
     expect(slugBox()).toHaveValue('a-chosen-slug')
+  })
+
+  // What WordPress shows under a post title: the address, not just an opener.
+  it('previews the slug it will use once there is one', async () => {
+    render(<Harness />)
+
+    await userEvent.type(title(), 'My First Topic')
+
+    expect(screen.getByText('my-first-topic')).toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+  })
+
+  it('confirms on Enter without submitting the topic', async () => {
+    render(<Harness />)
+
+    await openSlug()
+    await userEvent.type(slugBox(), 'a chosen slug{Enter}')
+
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.getByText('a-chosen-slug')).toBeInTheDocument()
+  })
+
+  it('backs out on Escape, putting the slug back', async () => {
+    render(<Harness isEditMode slug="original-slug" />)
+
+    await openSlug('Edit permalink')
+    await userEvent.clear(slugBox())
+    await userEvent.type(slugBox(), 'second-thoughts{Escape}')
+
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.getByText('original-slug')).toBeInTheDocument()
   })
 })
 
