@@ -38,7 +38,7 @@ export default function MostRequested({ className, hues, period, portalUrl, topi
     {
       key: 'stage',
       render: topic =>
-        topic.stage ? <StageChip hue={hues.get(topic.stage.name)} name={topic.stage.name} /> : '—',
+        topic.stage ? <StageChip hue={hues.get(topic.stage.name)} name={topic.stage.name} /> : '-',
       title: __('Stage')
     },
     {

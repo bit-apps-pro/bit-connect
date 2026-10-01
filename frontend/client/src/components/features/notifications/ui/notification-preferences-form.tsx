@@ -162,7 +162,7 @@ export default function NotificationPreferencesForm() {
           />
         }
         subtitle={__(
-          'How often email should arrive. This does not change what you are notified about — only when it is sent.'
+          'How often emails arrive. This only changes when they are sent, not what you are notified about.'
         )}
         title={__('Email frequency')}
       />

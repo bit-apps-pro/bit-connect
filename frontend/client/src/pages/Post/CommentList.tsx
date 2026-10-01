@@ -110,7 +110,7 @@ export default function CommentList({
 
       {hasPaginated && !hasMore && !isLoadingMore && topLevelComments.length > 0 && (
         <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
-          <span>{__("🎉 You're all caught up — no more comments")}</span>
+          <span>{__("🎉 You're all caught up. That's every comment!")}</span>
         </div>
       )}
     </div>

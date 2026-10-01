@@ -117,7 +117,7 @@ export default function Seo() {
 
       <SeoSection
         subtitle={__(
-          'A page per term, listing its topics — the pages that can rank for a subject rather than for one question about it. Switched on, a taxonomy’s archives are indexed and listed in the sitemap. Switched off, they still work for visitors but are hidden from search.'
+          'Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines won’t see them.'
         )}
         title={__('Term archives')}
       >

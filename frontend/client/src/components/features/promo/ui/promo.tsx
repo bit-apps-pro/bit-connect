@@ -88,7 +88,7 @@ export default function Promo({ className, eyebrow, headline, url }: PromoProps)
 
   return (
     <a
-      aria-label={`${[title, byline].filter(Boolean).join(' — ')} (${__('opens in a new tab')})`}
+      aria-label={`${[title, byline].filter(Boolean).join(', ')} (${__('opens in a new tab')})`}
       className={shell}
       href={href}
       rel="noreferrer noopener nofollow"

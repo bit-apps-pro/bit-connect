@@ -65,8 +65,8 @@ function MediaLimitRow({ hint, label, value }: MediaLimitRowProps) {
 
 function MediaLimitsInfo() {
   const media = getWpMediaSettings()
-  const maxSize = media ? formatBytes(media.maxUploadBytes) : '—'
-  const maxPx = media ? `${media.bigImageThresholdPx} px` : '—'
+  const maxSize = media ? formatBytes(media.maxUploadBytes) : '-'
+  const maxPx = media ? `${media.bigImageThresholdPx} px` : '-'
 
   return (
     <SectionCard

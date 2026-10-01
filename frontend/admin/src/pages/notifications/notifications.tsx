@@ -168,7 +168,7 @@ export default function NotificationSettingsPage() {
 
         <SectionCard
           subtitle={__(
-            'How long read notifications are kept. Unread ones are never removed by age — nobody has seen them yet.'
+            'How long read notifications are kept. Unread ones are never removed by age, since nobody has seen them yet.'
           )}
           title={__('Keep read notifications for')}
         >

@@ -301,7 +301,7 @@ final class ReportController
             return [
                 'topic_id'    => (int) $comment->comment_post_ID,
                 'topic_title' => $topic ? (string) $topic->post_title : '',
-                'excerpt'     => ActivityLogService::excerpt($comment->comment_content),
+                'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $comment->comment_content)),
                 'url'         => (string) get_comment_link($comment),
             ];
         }
@@ -315,7 +315,7 @@ final class ReportController
         return [
             'topic_id'    => $targetId,
             'topic_title' => (string) $post->post_title,
-            'excerpt'     => ActivityLogService::excerpt($post->post_content),
+            'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $post->post_content)),
             'url'         => PortalLocation::topicUrl($post),
         ];
     }

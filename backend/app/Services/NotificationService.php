@@ -90,6 +90,41 @@ final class NotificationService
     }
 
     /**
+     * Sends an event on behalf of the member it belongs to.
+     *
+     * For an event that comes true on someone else's request: a topic that
+     * reaches the public only when another member acts on it was still written
+     * by its author, and "posted a new topic" has to name them rather than
+     * whoever made it visible.
+     *
+     * @param int                  $actorId    the member the event is attributed to
+     * @param array<string, mixed> $context
+     * @param null|array<int, int> $recipients
+     * @param array<int, int>      $exclude
+     */
+    public static function dispatchAs(
+        int $actorId,
+        NotificationTypes $type,
+        string $targetType,
+        int $targetId,
+        array $context = [],
+        ?int $topicId = null,
+        ?array $recipients = null,
+        array $exclude = []
+    ): int {
+        return self::send(
+            max(self::SYSTEM_ACTOR, $actorId),
+            $type,
+            $targetType,
+            $targetId,
+            $context,
+            $topicId,
+            $recipients,
+            $exclude
+        );
+    }
+
+    /**
      * Sends an event nobody chose.
      *
      * An ordinary dispatch() cannot express this: it reads the current user, and

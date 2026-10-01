@@ -262,7 +262,7 @@ function SlugStatus({
     <span className="bc-flex bc-items-start bc-gap-1.5 bc-text-xs bc-text-info">
       <LuInfo className="bc-mt-0.5 bc-shrink-0" size={13} />
       <span>
-        {__('Already taken — this topic will be saved as')} <strong>{resolved}</strong>
+        {__('That one is taken, so this topic will be saved as')} <strong>{resolved}</strong>
       </span>
     </span>
   )

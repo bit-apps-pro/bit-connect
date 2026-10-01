@@ -45,7 +45,7 @@ const TAB_TOTALS: Record<string, string> = {
  */
 const TAB_HELP: Record<string, string> = {
   pending: __(
-    'Reported topics and replies waiting for a decision. Keep one if it is fine — anything the reports hid comes back — or remove it for good.'
+    'Reported topics and replies waiting for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.'
   ),
   resolved_kept: __('Reviewed and left up. The reporters were told; the author was not.'),
   resolved_removed: __('Reviewed and deleted for good. The reporters and the author were both told.')

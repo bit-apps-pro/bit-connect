@@ -63,7 +63,7 @@ function EmptyLog({ isFiltered }: { isFiltered: boolean }) {
       </Text>
       <Text className="bc-max-w-md bc-text-sm" type="secondary">
         {isFiltered
-          ? __('Widen the search — a topic and a comment can share an id, so check the type too.')
+          ? __('Try a wider search. A topic and a comment can have the same ID, so check the type too.')
           : __('Rows appear when someone acts on content they did not write.')}
       </Text>
     </div>
@@ -148,7 +148,7 @@ export default function Activity() {
             topic by a phrase nobody can look up any more. The id is stable, it
             is printed on every row, and it is the handle a moderator already has
             when someone asks what happened to their post. */}
-        <Tooltip title={__('Ids are unique per kind — a topic and a comment can share one.')}>
+        <Tooltip title={__('IDs are unique per type, so a topic and a comment can have the same one.')}>
           <Input
             allowClear
             className="bc-max-w-[220px]"

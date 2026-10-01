@@ -137,7 +137,7 @@ export default function ActivityDetail({ row }: { row: ActivityRow }) {
             {__('Closed')} {closed} {closed === 1 ? __('report') : __('reports')}
           </>
         )}
-        {closed > 0 && decision && ' — '}
+        {closed > 0 && decision && ': '}
         {decision}
       </Note>
     )

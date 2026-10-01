@@ -64,7 +64,7 @@ final class SeoMeta
         $title = $page > 1
             ? \sprintf(
                 // translators: 1: community name, 2: page number.
-                __('%1$s — page %2$s', 'bit-connect'),
+                __('%1$s | Page %2$s', 'bit-connect'),
                 $community,
                 number_format_i18n($page)
             )
@@ -148,7 +148,7 @@ final class SeoMeta
         $termName = wp_specialchars_decode($term->name, ENT_QUOTES);
 
         // translators: 1: term name, 2: community name.
-        $title = \sprintf(__('%1$s — %2$s', 'bit-connect'), $termName, $community);
+        $title = \sprintf(__('%1$s | %2$s', 'bit-connect'), $termName, $community);
 
         $description = $term->description !== ''
             ? wp_trim_words(wp_strip_all_tags($term->description), 30, '…')
@@ -198,9 +198,9 @@ final class SeoMeta
 
         $title = $displayName === ''
             // translators: %s: community name.
-            ? \sprintf(__('Member profile — %s', 'bit-connect'), $community)
+            ? \sprintf(__('Member profile | %s', 'bit-connect'), $community)
             // translators: 1: member display name, 2: community name.
-            : \sprintf(__('%1$s — %2$s', 'bit-connect'), $displayName, $community);
+            : \sprintf(__('%1$s | %2$s', 'bit-connect'), $displayName, $community);
 
         // Indexed only when the site asks for it — a profile publishes a member's
         // name and activity, which is the owner's call rather than an SEO
@@ -245,7 +245,7 @@ final class SeoMeta
         self::$meta = [
             'title' => \sprintf(
                 // translators: %s: community name.
-                __('Notifications — %s', 'bit-connect'),
+                __('Notifications | %s', 'bit-connect'),
                 $community
             ),
             'description' => '',
@@ -273,7 +273,7 @@ final class SeoMeta
 
         self::$meta = [
             // translators: %s: community name.
-            'title'       => \sprintf(__('Page not found — %s', 'bit-connect'), $community),
+            'title'       => \sprintf(__('Page not found | %s', 'bit-connect'), $community),
             'description' => '',
             'canonical'   => '',
             'image'       => '',
@@ -294,7 +294,7 @@ final class SeoMeta
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         self::$meta = [
-            'title'       => $pageTitle . ' — ' . $community,
+            'title'       => $pageTitle . ' | ' . $community,
             'description' => '',
             'canonical'   => '',
             'image'       => '',

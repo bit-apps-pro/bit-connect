@@ -114,7 +114,7 @@ final class Bit_Connect_ActivityLog extends Migration
         if ($result === false) {
             $error = Connection::prop('last_error');
 
-            throw new RuntimeException(esc_html("Activity log migration failed: {$error} — while running: {$sql}"));
+            throw new RuntimeException(esc_html("Activity log migration failed: {$error} (while running: {$sql})"));
         }
     }
 

@@ -6,6 +6,18 @@ import { type NotificationItem } from '../data/use-notifications'
 import appearanceFor from '../shared/appearance'
 
 /**
+ * Plain text for the excerpt line.
+ *
+ * The server strips markup before storing an excerpt, but rows written before
+ * it did still carry the post's HTML, and React would print the tags verbatim.
+ */
+const plain = (html: string) =>
+  html
+    .replaceAll(/<[^>]*>/g, ' ')
+    .replaceAll(/\s+/g, ' ')
+    .trim()
+
+/**
  * One line of the bell, and of the full list.
  *
  * Every word comes from `context`, which the server stored when the event
@@ -93,7 +105,7 @@ function describe(item: NotificationItem) {
       return (
         <>
           {__('A moderator reviewed something you reported')}
-          {item.context.decision_label ? ` — ${item.context.decision_label}` : ''}
+          {item.context.decision_label ? `: ${item.context.decision_label}` : ''}
         </>
       )
     }
@@ -155,7 +167,7 @@ interface NotificationRowProps {
 }
 
 export default function NotificationRow({ item, onSelect, variant = 'flat' }: NotificationRowProps) {
-  const excerpt = item.context.excerpt?.trim()
+  const excerpt = item.context.excerpt && plain(item.context.excerpt)
   const { bg, fg, Icon } = appearanceFor(item.type)
   const initial = (item.actor.name || '?').charAt(0).toUpperCase()
   const isCard = variant === 'card'

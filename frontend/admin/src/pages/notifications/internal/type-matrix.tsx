@@ -138,7 +138,7 @@ export default function TypeMatrix({ catalog, enabled, onChange, types }: TypeMa
                             'Only moderators receive this, so there is nothing for a member to change.'
                           )}
                         >
-                          <span className="bc-text-xs bc-text-ink-subtle">—</span>
+                          <span className="bc-text-xs bc-text-ink-subtle">-</span>
                         </Tooltip>
                       ) : (
                         <Checkbox

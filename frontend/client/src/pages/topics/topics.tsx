@@ -488,7 +488,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
           {!hasMore && !isLoadingMore && (
             <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
-              <span>{__("🎉 You're all caught up — no more topics")}</span>
+              <span>{__("🎉 You're all caught up. That's every topic!")}</span>
             </div>
           )}
         </div>

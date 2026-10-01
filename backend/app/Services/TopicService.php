@@ -311,12 +311,27 @@ class TopicService
             return null;
         }
 
+        $status = $data['post_status'] ?? $existingPost->post_status;
+
+        // A hidden topic comes back through ContentVisibilityService::restorePost()
+        // and nothing else. Its author's edit form sends a status with every
+        // save, and written here that would put the topic back in public view
+        // without the moderator who hid it; it becomes the status the topic
+        // returns to instead.
+        if ($existingPost->post_status === ContentVisibilityService::HIDDEN_STATUS) {
+            if (isset($data['post_status']) && $data['post_status'] !== ContentVisibilityService::HIDDEN_STATUS) {
+                update_post_meta($id, ContentVisibilityService::PREV_STATUS_META, $data['post_status']);
+            }
+
+            $status = ContentVisibilityService::HIDDEN_STATUS;
+        }
+
         $postData = [
             'ID'           => $id,
             'post_title'   => $data['post_title'] ?? $existingPost->post_title,
             'post_content' => $data['post_content'] ?? $existingPost->post_content,
             'post_excerpt' => $data['post_excerpt'] ?? $existingPost->post_excerpt,
-            'post_status'  => $data['post_status'] ?? $existingPost->post_status,
+            'post_status'  => $status,
             // The permalink belongs to the topic once it exists: only an explicit
             // slug replaces it. Renaming the title used to silently re-mint this
             // and break every link already pointing at the topic.
@@ -690,7 +705,7 @@ class TopicService
             );
         }
 
-        return $data;
+        return ExtensionPoints::topicFields($data, (int) $post->ID);
     }
 
     /**

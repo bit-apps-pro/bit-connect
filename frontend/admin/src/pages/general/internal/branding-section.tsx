@@ -30,7 +30,7 @@ export default function BrandingSection({
 }: BrandingSectionProps) {
   return (
     <SectionCard
-      subtitle={__('How your community looks to visitors — its name, logo and where the logo leads.')}
+      subtitle={__('How your community looks to visitors: its name, its logo and where the logo links to.')}
       title={__('Branding')}
     >
       <SettingRow

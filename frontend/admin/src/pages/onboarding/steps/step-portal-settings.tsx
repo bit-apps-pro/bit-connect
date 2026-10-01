@@ -84,7 +84,7 @@ export default function StepPortalSettings({ onNext }: Props) {
             <div>
               <Text strong>{__('On its own page')}</Text>
               <Text className="bc-mt-0.5 bc-block bc-text-sm" type="secondary">
-                {__('yoursite.com/community — the rest of your website stays as it is. Recommended.')}
+                {__('yoursite.com/community. The rest of your website stays as it is. Recommended.')}
               </Text>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function StepPortalSettings({ onNext }: Props) {
             <div className="bc-w-full">
               <Text strong>{__('As the homepage')}</Text>
               <Text className="bc-mt-0.5 bc-block bc-text-sm" type="secondary">
-                {__('yoursite.com — the community is the first thing visitors see.')}
+                {__('yoursite.com. Visitors land on the community first.')}
               </Text>
               {placement === 'site_root' && (
                 <Alert
@@ -138,7 +138,7 @@ export default function StepPortalSettings({ onNext }: Props) {
         )}
         {placement === 'site_root' && (
           <Text className="bc-block bc-text-sm" type="secondary">
-            {__('Only used as the page name in WordPress — visitors see yoursite.com.')}
+            {__('This is only the page name inside WordPress. Visitors will just see yoursite.com.')}
           </Text>
         )}
       </div>

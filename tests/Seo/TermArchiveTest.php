@@ -197,7 +197,7 @@ final class TermArchiveTest extends TestCase
             $head
         );
         $this->assertSame(
-            ['title' => 'Billing — Acme Community'],
+            ['title' => 'Billing | Acme Community'],
             SeoMeta::filterTitle(['title' => 'Community — Acme'])
         );
     }

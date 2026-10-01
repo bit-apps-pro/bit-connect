@@ -358,7 +358,7 @@ final class CommentController
         $topic = get_post((int) $comment->comment_post_ID);
         $notice = [
             'topic_title' => $topic ? (string) $topic->post_title : '',
-            'excerpt'     => ActivityLogService::excerpt($comment->comment_content),
+            'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $comment->comment_content)),
             'url'         => PortalLocation::topicUrl((int) $comment->comment_post_ID),
         ];
 

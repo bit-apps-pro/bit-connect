@@ -273,7 +273,7 @@ final class NotificationMailer
             case NotificationTypes::REPORT_RESOLVED:
                 return \sprintf(
                     // translators: %1$s: the moderator's decision, e.g. "Dismissed"
-                    __('A moderator reviewed something you reported — %1$s', 'bit-connect'),
+                    __('A moderator reviewed something you reported: %1$s', 'bit-connect'),
                     (string) ($context['decision_label'] ?? '')
                 );
 
@@ -308,7 +308,7 @@ final class NotificationMailer
     {
         // May be empty: a site that never set a title has no blogname, and
         // fromName() has nothing to fall back to. Every branch below therefore
-        // has a version without it — a subject ending in a dangling "— " looks
+        // has a version without it — a subject ending in a dangling "| " looks
         // like the mail was cut off mid-send.
         $site = trim(NotificationSettings::fromName(NotificationPreferences::settings()));
 
@@ -340,7 +340,7 @@ final class NotificationMailer
         }
 
         // translators: 1: what happened, 2: site name
-        return \sprintf(__('%1$s — %2$s', 'bit-connect'), $label, $site);
+        return \sprintf(__('%1$s | %2$s', 'bit-connect'), $label, $site);
     }
 
     /**

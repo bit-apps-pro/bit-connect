@@ -58,7 +58,7 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
             <ChoiceCard
               checked={form.mode === 'custom_url'}
               description={__(
-                'People are sent to pages you already have — a membership plugin, or your theme.'
+                'People are sent to pages you already have, like the ones from a membership plugin or your theme.'
               )}
               disabled={disabled}
               label={__('My own login page')}

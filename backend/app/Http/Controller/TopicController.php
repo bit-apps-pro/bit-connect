@@ -389,7 +389,7 @@ final class TopicController
                 (int) $id,
                 [
                     'topic_title' => (string) $deleted['post_title'],
-                    'excerpt'     => (string) $deleted['post_content'],
+                    'excerpt'     => wp_strip_all_tags((string) $deleted['post_content']),
                 ],
                 (int) $id,
                 [$deletedAuthor]
@@ -528,7 +528,11 @@ final class TopicController
             return;
         }
 
-        NotificationService::dispatch(
+        // From the author, whoever saved. Only the author writes a topic's words,
+        // but the save that first makes them public can be someone else's — a
+        // moderator changing the status of a topic another plugin was holding.
+        NotificationService::dispatchAs(
+            (int) ($after['post_author'] ?? 0),
             NotificationTypes::MENTION,
             NotificationService::TARGET_TOPIC,
             $id,

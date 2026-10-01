@@ -155,7 +155,7 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
         <Alert
           className="bc-mb-4"
           description={__(
-            'You signed in without one, so there is nothing to confirm — just choose a password below.'
+            'You signed in without one, so there is nothing to confirm. Just choose a password below.'
           )}
           message={__('Your account has no password yet')}
           showIcon

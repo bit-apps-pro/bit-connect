@@ -54,7 +54,7 @@ describe('Promo credit', () => {
     )
 
     expect(link()).toHaveAccessibleName(
-      'Built with Bit Connect — a Bit Apps product (opens in a new tab)'
+      'Built with Bit Connect, a Bit Apps product (opens in a new tab)'
     )
   })
 })

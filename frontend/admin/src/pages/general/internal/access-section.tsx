@@ -25,7 +25,7 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
     () =>
       [
         {
-          description: __('Newest, oldest, most active — how the topic list is ordered.'),
+          description: __('How the topic list is sorted: newest, oldest or most active.'),
           key: 'sort',
           label: __('Sort')
         },

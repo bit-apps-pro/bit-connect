@@ -120,7 +120,7 @@ The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), includ
 
 Join our [Bit Apps Community](https://www.facebook.com/groups/bitcommunityusers) for the latest plugin updates.
 
-View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/) — see *Source Code* above.
+View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/). See *Source Code* above.
 
 == External Services ==
 
@@ -133,7 +133,7 @@ On the **Bit Connect → Support** screen, the bottom of the page offers a **Sho
 * **What is sent:** nothing beyond an ordinary web request. No site content, user data, email addresses or settings are transmitted. As with any web request, the receiving server sees your IP address and the referring admin URL.
 * **What is received:** a list of plugin names, descriptions and links, plus the address of each plugin's icon image, which your browser then loads from Bit Apps' servers to display the card.
 * **When:** only after an administrator clicks the button on the Support screen. Never automatically, never on the front end, and never on other admin screens.
-* **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
+* **Provider:** Bit Apps. See the [terms of service](https://bitapps.pro/terms-of-service/) and [privacy policy](https://bitapps.pro/privacy-policy/).
 
 == Installation ==
 

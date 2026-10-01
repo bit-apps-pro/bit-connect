@@ -202,7 +202,7 @@ export default function InsightsOverview({
                         {topic.topic_type ? (
                           <TypeChip color={colorFor(topic.topic_type)} term={topic.topic_type} />
                         ) : (
-                          <span className="bc-text-ink-subtle">—</span>
+                          <span className="bc-text-ink-subtle">-</span>
                         )}
                       </td>
                       <td className="bc-px-4 bc-py-4 bc-text-right bc-font-semibold bc-text-ink">

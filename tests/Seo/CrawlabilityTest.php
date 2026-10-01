@@ -564,7 +564,7 @@ final class CrawlabilityTest extends TestCase
         SeoMeta::forTopics([$this->topic], 2);
 
         $this->assertSame(
-            ['title' => 'Acme Community — page 2'],
+            ['title' => 'Acme Community | Page 2'],
             SeoMeta::filterTitle(['title' => 'Community — Acme', 'page' => 'Page 2'])
         );
     }
@@ -699,7 +699,7 @@ final class CrawlabilityTest extends TestCase
         SeoMeta::forProfile('Casey');
 
         $this->assertSame(
-            ['title' => 'Casey — Acme Community'],
+            ['title' => 'Casey | Acme Community'],
             SeoMeta::filterTitle(['title' => 'Community — Acme'])
         );
     }
@@ -710,7 +710,7 @@ final class CrawlabilityTest extends TestCase
 
         $parts = SeoMeta::filterTitle(['title' => 'Community — Acme']);
 
-        $this->assertSame('Member profile — Acme Community', $parts['title']);
+        $this->assertSame('Member profile | Acme Community', $parts['title']);
     }
 
     /**

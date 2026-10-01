@@ -141,10 +141,10 @@ export default function LocationSection({
               message={
                 portalPage.configured
                   ? __(
-                      'No published page at this address — create one with the shortcode in it, or change the slug below.'
+                      'There is no published page at this address. Create one with the shortcode in it, or change the slug below.'
                     )
                   : __(
-                      'No page yet — add the shortcode below to a page and publish it to start the community.'
+                      'No page yet. Add the shortcode below to a page and publish it to get your community started.'
                     )
               }
               showIcon
@@ -165,7 +165,7 @@ export default function LocationSection({
             <Alert
               className="bc-mb-3 bc-mt-2 bc-py-2 bc-text-sm"
               message={__(
-                'Your homepage is not the community page — pick it in Settings → Reading, or turn off "Serve at the site root".'
+                'Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off "Serve at the site root".'
               )}
               showIcon
               type="error"
@@ -227,7 +227,7 @@ export default function LocationSection({
 
       <SettingRow
         description={__(
-          'Serve the portal from the site root instead of a slug — it becomes your homepage. Only for a WordPress install dedicated to the forum.'
+          'Serve the portal from the site root instead of a slug, so it becomes your homepage. Use this only if the whole WordPress site is for the forum.'
         )}
         inline
         label={__('Serve at the site root')}

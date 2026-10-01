@@ -46,7 +46,7 @@ export default function CoverImageSection({ profile }: { profile: undefined | Us
   return (
     <SettingsCard
       subtitle={sprintf(
-        __('The strip behind your picture. Wide images work best — up to %s MB.'),
+        __('The banner behind your picture. Wide images work best, up to %s MB.'),
         String(maxMb)
       )}
       title={__('Cover image')}

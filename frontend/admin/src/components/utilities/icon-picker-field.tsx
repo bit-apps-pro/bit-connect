@@ -128,5 +128,5 @@ export const iconSizeHint = () =>
 
 export const iconDarkHint = () =>
   __(
-    'Optional. Shown when the portal is viewed in dark mode — upload a lighter version here if your icon is dark. Falls back to the light-mode icon when empty.'
+    'Optional. Used when the portal is in dark mode. If your icon is dark, upload a lighter version here. Leave it empty to use the light-mode icon.'
   )

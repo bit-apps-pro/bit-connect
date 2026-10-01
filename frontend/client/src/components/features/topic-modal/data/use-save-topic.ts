@@ -46,10 +46,22 @@ export default function useSaveTopic(form: FormInstance) {
       notificationApi?.error({ message: msg })
     },
     onSuccess: (response, payload) => {
-      notificationApi?.success({
-        description: slugDisclosure(payload.post_name, response.data?.post_name),
-        message: __('Topic created successfully')
-      })
+      // A topic can come back hidden — a site may hold new topics for a
+      // moderator — and then the list reloaded below will not show it. Said
+      // here, or its author is told it was created and cannot find it.
+      notificationApi?.success(
+        response.data?.hidden
+          ? {
+              description: __(
+                'Only you and the moderators can see it until a moderator has reviewed it.'
+              ),
+              message: __('Topic submitted for review')
+            }
+          : {
+              description: slugDisclosure(payload.post_name, response.data?.post_name),
+              message: __('Topic created successfully')
+            }
+      )
       // Reload the list (page 1) with the currently active filters.
       void fetchAllPosts(usePostsStore.getState().filters)
       // This save just consumed a slug; a cached verdict from before it would

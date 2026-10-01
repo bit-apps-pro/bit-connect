@@ -249,7 +249,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
             className="bc-min-w-[200px] bc-max-w-md bc-flex-1"
             disabled={isBusy}
             onChange={event => setNote(event.target.value)}
-            placeholder={__('Note (optional) — kept on every report closed')}
+            placeholder={__('Note (optional), saved on every report you close')}
             value={note}
           />
 
@@ -263,7 +263,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
                 loading={deciding === 'resolved_kept'}
                 onClick={() => decide('resolved_kept')}
               >
-                {__('Looks fine — keep it')}
+                {__('Looks fine, keep it')}
               </Button>
             </Tooltip>
 

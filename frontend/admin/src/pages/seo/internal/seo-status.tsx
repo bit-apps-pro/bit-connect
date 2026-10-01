@@ -73,7 +73,7 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
       <div>
         <StatusRow label={__('Portal URL')}>
           <a href={diagnostics.portalUrl} rel="noreferrer" target="_blank">
-            {diagnostics.portalUrl || '—'}
+            {diagnostics.portalUrl || '-'}
           </a>
         </StatusRow>
 
@@ -90,7 +90,7 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
               </p>
             </>
           ) : (
-            '—'
+            '-'
           )}
         </StatusRow>
 

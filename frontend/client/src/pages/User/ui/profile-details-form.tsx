@@ -113,7 +113,7 @@ export default function ProfileDetailsForm({ profile }: { profile: undefined | U
         </Form.Item>
 
         <Form.Item
-          extra={__('Links you have already shared keep working — they redirect here.')}
+          extra={__('Links you have already shared will keep working and bring people here.')}
           label={__('Profile URL')}
           name="slug"
           rules={[{ message: __('Please enter a profile URL'), required: true }]}

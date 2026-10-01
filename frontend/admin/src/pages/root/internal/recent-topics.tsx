@@ -31,7 +31,7 @@ export default function RecentTopics({ className, hues, portalUrl, topics }: Rec
     {
       key: 'stage',
       render: topic =>
-        topic.stage ? <StageChip hue={hues.get(topic.stage.name)} name={topic.stage.name} /> : '—',
+        topic.stage ? <StageChip hue={hues.get(topic.stage.name)} name={topic.stage.name} /> : '-',
       title: __('Stage')
     },
     {

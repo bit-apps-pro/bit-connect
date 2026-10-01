@@ -168,6 +168,26 @@ final class ExtensionPoints
     }
 
     /**
+     * The fields a formatted topic carries.
+     *
+     * The topic counterpart of commentFields(): everything this plugin knows
+     * about a topic is in `$fields` already, and this is where a plugin that
+     * knows something more about the same topic adds it.
+     *
+     * Trusted no further than the shape: an answer that is not an array gets
+     * this plugin's own fields sent instead of breaking the topic.
+     *
+     * @param array $fields the topic as this plugin formats it
+     * @param int   $postId the topic being formatted
+     */
+    public static function topicFields(array $fields, int $postId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_fields', $fields, $postId);
+
+        return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
      * A thread ordered by something this plugin cannot order by.
      *
      * This plugin sorts a thread by date, either way round, and that is every
