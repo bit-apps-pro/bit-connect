@@ -49,13 +49,6 @@ const fullDate = (iso: string | undefined) => {
   return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-/**
- * The quiet pill an ordinary member gets. Staff standings are drawn by
- * MemberBadge, which is keyed by tone — this map used to key off the printed
- * label, so renaming Moderator to Team would have dropped it to this style.
- */
-const PLAIN_MEMBER_STYLE = 'bc-bg-surface-sunken bc-text-ink-muted'
-
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bc-flex bc-flex-col">
@@ -98,7 +91,6 @@ export default function ProfileCard({
   stats: undefined | UserStats
 }) {
   const joined = fullDate(profile?.registered_at ?? stats?.registered_at)
-  const role = profile?.role_label ?? 'Member'
   const badges = profile?.badges ?? (profile?.badge ? [profile.badge] : [])
 
   return (
@@ -137,18 +129,11 @@ export default function ProfileCard({
                   page is about one person and has the width to say Developer
                   and Support both. `badges` is optional on the type because a
                   cached payload from before it existed has only `badge` — that
-                  fallback keeps such a response showing one badge, not none. */}
-              {badges.length > 0 ? (
-                badges.map((badge, index) => (
-                  <MemberBadge badge={badge} key={badge.id ?? `standing-${index}`} size="md" />
-                ))
-              ) : (
-                <span
-                  className={`bc-rounded-full bc-px-2 bc-py-0.5 bc-text-[11px] bc-font-semibold ${PLAIN_MEMBER_STYLE}`}
-                >
-                  {role}
-                </span>
-              )}
+                  fallback keeps such a response showing one badge, not none.
+                  A member wearing none gets nothing beside their name. */}
+              {badges.map((badge, index) => (
+                <MemberBadge badge={badge} key={badge.id ?? `badge-${index}`} size="md" />
+              ))}
             </div>
 
             {profile?.bio && (
