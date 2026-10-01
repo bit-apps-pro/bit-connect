@@ -1,24 +1,22 @@
 import config from '@config/config'
 import Promo from '@features/promo'
-import useListingSelection from '@pages/Layout/data/use-listing-selection'
 import { useStagesStore } from '@pages/Layout/data/use-stages'
 import logo from '@resource/img/logo.svg'
 import { pickThemedIcon } from '@shared/theme/themed-icon'
 import Loop from '@utilities/Loop'
-import { isListingPath } from '@utils/listing-path'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
-import { type ReactNode, useEffect, useId, useState } from 'react'
-import { LuChevronDown, LuX } from 'react-icons/lu'
-import { useLocation } from 'react-router'
+import { useEffect } from 'react'
+import { LuX } from 'react-icons/lu'
 
 import { navItemsStore } from '@/store/ssr/nav-items'
-import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
-import { __, sprintf } from '../../../../common/helpers/i18nWrap'
-import { listingLink } from './listing-link'
+import { __ } from '../../../../common/helpers/i18nWrap'
+import useListingSelection from '../../data/use-listing-selection'
+import NavSection from './nav-section'
+import SidebarSections from './sidebar-sections'
 import SidebarNavItem from './SidebarNavItem'
 
 const { Sider } = Layout
@@ -28,86 +26,39 @@ interface SidebarProps {
   onClose?: () => void
 }
 
-/**
- * A titled, collapsible group of sider links. The rows hang off a hairline down
- * their left edge, so the group reads as the heading's children rather than as
- * a second list that happens to follow the first.
- */
-function NavSection({ children, title }: { children: ReactNode; title: string }) {
-  const [isOpen, setIsOpen] = useState(true)
-  const listId = useId()
-
-  return (
-    <section>
-      <button
-        aria-controls={listId}
-        aria-expanded={isOpen}
-        className={cn([
-          'bc-flex bc-w-full bc-cursor-pointer bc-items-center bc-justify-between bc-rounded-md bc-border-none bc-bg-transparent bc-px-0 bc-py-2',
-          'bc-text-xs bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-muted hover:bc-text-ink',
-          'bc-outline-none focus-visible:bc-ring-2 focus-visible:bc-ring-primary/40'
-        ])}
-        onClick={() => setIsOpen(open => !open)}
-        type="button"
-      >
-        {title}
-        <LuChevronDown
-          aria-hidden
-          className={cn(['bc-transition-transform bc-duration-200', !isOpen && '-bc-rotate-90'])}
-          size={16}
-        />
-      </button>
-      <div
-        className="bc-mb-3 bc-mt-1 bc-space-y-1 bc-border-0 bc-border-l bc-border-solid bc-border-line bc-pl-3"
-        hidden={!isOpen}
-        id={listId}
-      >
-        {children}
-      </div>
-    </section>
-  )
-}
-
 interface NavItem {
-  department?: string
   icon?: string
-  isActive?: boolean
   label: string
   path: string
-  to?: string
+  scope?: string
 }
 
 function NavList({
   className,
   navItems,
-  productItems,
   reserveIconSlot
 }: {
   className?: string
   navItems: NavItem[]
-  productItems: NavItem[]
   reserveIconSlot?: boolean
 }) {
-  const reserveProductIconSlot = productItems.some(item => !!item.icon)
+  const stageLinks = (
+    <Loop data={navItems} each="navItems" store={navItemsStore}>
+      {(link, key) => <SidebarNavItem key={key} props={{ ...link, reserveIconSlot }} />}
+    </Loop>
+  )
+
+  // The stages alone are the whole nav, so they need no heading to tell them
+  // from anything and nothing to fold away: a plain list. Titled, collapsible
+  // groups only when another section joins them.
+  if (!SidebarSections) {
+    return <nav className={cn(['bc-flex bc-w-full bc-flex-col bc-space-y-1', className])}>{stageLinks}</nav>
+  }
 
   return (
     <nav className={cn(['bc-flex bc-w-full bc-flex-col', className])}>
-      <NavSection title={__('Stages')}>
-        <Loop data={navItems} each="navItems" store={navItemsStore}>
-          {(link, key) => <SidebarNavItem key={key} props={{ ...link, reserveIconSlot }} />}
-        </Loop>
-      </NavSection>
-
-      {productItems.length > 0 && (
-        <NavSection title={config.DEPARTMENT_NAMING.plural}>
-          {productItems.map(item => (
-            <SidebarNavItem
-              key={item.path}
-              props={{ ...item, reserveIconSlot: reserveProductIconSlot }}
-            />
-          ))}
-        </NavSection>
-      )}
+      <NavSection title={__('Stages')}>{stageLinks}</NavSection>
+      <SidebarSections />
     </nav>
   )
 }
@@ -136,46 +87,20 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isMobile, isOpen, onClose])
 
-  // The sidebar is where both halves of the listing are chosen — a stage and a
-  // department — so each list's links keep what the other has chosen. See
-  // listing-link.ts for the URLs that produces.
-  const { pathname } = useLocation()
-  const { department: openProduct, stage: namedStage } = useListingSelection()
+  // A stage link keeps the archive the listing is scoped to, if a choice made
+  // beside the stages narrowed it to one. See listing-link.ts for the URLs.
+  const { scope } = useListingSelection()
 
   // Already in the admin-defined order when the store loads them.
   const navItems = stages.map(stage => ({
-    department: openProduct,
     icon: pickThemedIcon(stage.meta, isDarkTheme),
     label: stage.name,
-    path: stage.slug
+    path: stage.slug,
+    scope
   }))
   // All-or-nothing per list: align the labels once any stage has an icon, and
   // leave the unindented layout untouched for portals that set none.
   const reserveIconSlot = navItems.some(item => !!item.icon)
-
-  // Dropped when an admin switches the department filter off. "All" leads the
-  // list so a department can be left again, keeping the stage; it is current
-  // only on a listing, the way the stage rows are.
-  const departments = useTaxonomiesStoreSelect()?.['bit-connect-departments'] || []
-  const productItems: NavItem[] =
-    config.PORTAL_FILTERS.product && departments.length > 0
-      ? [
-          {
-            isActive: openProduct === '' && isListingPath(pathname),
-            // translators: %s: what the portal calls its departments, plural.
-            label: sprintf(__('All %s'), config.DEPARTMENT_NAMING.plural),
-            path: '',
-            to: listingLink({ stage: namedStage })
-          },
-          ...departments.map(department => ({
-            icon: pickThemedIcon(department.meta, isDarkTheme),
-            isActive: department.slug === openProduct,
-            label: department.name,
-            path: department.slug,
-            to: listingLink({ department: department.slug, stage: namedStage })
-          }))
-        ]
-      : []
 
   return (
     <>
@@ -210,7 +135,6 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           <NavList
             className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto"
             navItems={navItems}
-            productItems={productItems}
             reserveIconSlot={reserveIconSlot}
           />
 
@@ -307,11 +231,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
           <div className="bc-mx-4 bc-shrink-0 bc-border-0 bc-border-b bc-border-solid bc-border-line" />
           <div className="bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-px-3 bc-py-3">
-            <NavList
-              navItems={navItems}
-              productItems={productItems}
-              reserveIconSlot={reserveIconSlot}
-            />
+            <NavList navItems={navItems} reserveIconSlot={reserveIconSlot} />
           </div>
 
           {config.PROMO.enabled && (

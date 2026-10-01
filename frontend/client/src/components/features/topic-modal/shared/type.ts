@@ -27,6 +27,22 @@ export interface Term {
   term_taxonomy_id: number
 }
 
+/** The term lists this plugin files a topic under itself. */
+const OWN_TERM_KEYS = new Set(['stages', 'statuses', 'tags', 'topic_types'])
+
+/**
+ * The term a topic carries in each taxonomy a plugin adds, by the parameter
+ * the server returns it under — see TopicTaxonomies.php. Empty when it carries
+ * none, which is always the case without such a plugin.
+ */
+export function addedTerms(terms: Topic['terms'] | undefined): Record<string, Term> {
+  return Object.fromEntries(
+    Object.entries(terms ?? {}).filter(
+      (entry): entry is [string, Term] => !OWN_TERM_KEYS.has(entry[0]) && !!entry[1] && !Array.isArray(entry[1])
+    )
+  )
+}
+
 export interface TopicAttachmentInfo {
   filename: string
   filesize: number
@@ -65,8 +81,9 @@ export function normalizeAttachments(attachments: unknown): TopicAttachmentInfo[
 }
 
 export interface SaveTopicPayload {
+  /** A term of a taxonomy a plugin adds, under its parameter — see TopicTaxonomies.php. */
+  [param: string]: number | number[] | string | undefined
   attachments: number[]
-  departments?: number
   post_content: string
   /** Optional custom permalink. Blank lets the server derive one from the title. */
   post_name?: string
@@ -88,7 +105,6 @@ export interface Topic {
   comment_count: string
   comment_status: string
   comments_count: string
-  departments: Term
   /** Who last edited this topic's words, or null when nobody has. */
   edited?: EditAttributionResponse | null
   filter: string
@@ -138,7 +154,8 @@ export interface Topic {
   // A topic need not have a term in every taxonomy — the server sends null for
   // the ones it has none in, including in the SSR state the first render uses.
   terms: {
-    departments: null | Term
+    /** One term of a taxonomy a plugin adds, under its parameter — see TopicTaxonomies.php. */
+    [param: string]: null | Term | Term[] | undefined
     stages: null | Term
     statuses: null | Term
     tags: Term[]

@@ -16,7 +16,7 @@ use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\TopicsView;
 
 /**
- * Serves a term archive: every topic carrying one stage, tag, department, ….
+ * Serves a term archive: every topic carrying one stage, tag, topic type, ….
  *
  * These are the portal's topic clusters — the page that can rank for a subject
  * rather than for one question about it, and the hub that links deep topics

@@ -14,7 +14,6 @@ export interface TopicAccessSettings {
 export type TopicFieldMode = 'hidden' | 'optional' | 'required'
 
 export interface TopicFormFieldsSettings {
-  department: TopicFieldMode
   topicType: TopicFieldMode
 }
 

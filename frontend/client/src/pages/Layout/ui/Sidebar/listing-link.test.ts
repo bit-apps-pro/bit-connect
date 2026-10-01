@@ -5,7 +5,6 @@ import { listingLink } from './listing-link'
 
 const original = {
   DEFAULT_STAGE_SLUG: config.DEFAULT_STAGE_SLUG,
-  DEPARTMENT_NAMING: config.DEPARTMENT_NAMING,
   TRAILING_SLASH: config.TRAILING_SLASH
 }
 
@@ -14,13 +13,7 @@ function setConfig(values: Partial<typeof original>) {
 }
 
 describe('listingLink', () => {
-  beforeEach(() =>
-    setConfig({
-      DEFAULT_STAGE_SLUG: 'questions',
-      DEPARTMENT_NAMING: { ...original.DEPARTMENT_NAMING, slug: 'department' },
-      TRAILING_SLASH: true
-    })
-  )
+  beforeEach(() => setConfig({ DEFAULT_STAGE_SLUG: 'questions', TRAILING_SLASH: true }))
   afterEach(() => setConfig(original))
 
   it('opens the portal root when nothing is chosen', () => {
@@ -32,30 +25,20 @@ describe('listingLink', () => {
     expect(listingLink({ stage: 'questions' })).toBe('/')
   })
 
-  it("opens a department's archive", () => {
-    expect(listingLink({ department: 'mobile-app' })).toBe('/department/mobile-app/')
+  it('opens the archive the listing is scoped to', () => {
+    expect(listingLink({ scope: '/team/platform' })).toBe('/team/platform/')
   })
 
-  it("narrows the department's archive by stage, the default one included", () => {
-    expect(listingLink({ department: 'mobile-app', stage: 'planned' })).toBe(
-      '/department/mobile-app/?stage=planned'
+  it('narrows the scoped archive by stage, the default one included', () => {
+    expect(listingLink({ scope: '/team/platform', stage: 'planned' })).toBe('/team/platform/?stage=planned')
+    expect(listingLink({ scope: '/team/platform', stage: 'questions' })).toBe(
+      '/team/platform/?stage=questions'
     )
-    expect(listingLink({ department: 'mobile-app', stage: 'questions' })).toBe(
-      '/department/mobile-app/?stage=questions'
-    )
-  })
-
-  it('follows the segment the portal renamed departments to', () => {
-    setConfig({ DEPARTMENT_NAMING: { ...original.DEPARTMENT_NAMING, slug: 'product' } })
-
-    expect(listingLink({ department: 'mobile-app' })).toBe('/product/mobile-app/')
   })
 
   it("follows the site's permalink form", () => {
     setConfig({ TRAILING_SLASH: false })
 
-    expect(listingLink({ department: 'mobile-app', stage: 'planned' })).toBe(
-      '/department/mobile-app?stage=planned'
-    )
+    expect(listingLink({ scope: '/team/platform', stage: 'planned' })).toBe('/team/platform?stage=planned')
   })
 })

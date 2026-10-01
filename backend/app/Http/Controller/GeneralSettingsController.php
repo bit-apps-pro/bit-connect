@@ -55,9 +55,8 @@ final class GeneralSettingsController
             // Portal topic-list filter controls. Visible unless an admin turns
             // one off, so installs that predate this setting keep their toolbar.
             'portalFilters' => [
-                'sort'    => true,
-                'product' => true,
-                'tags'    => true,
+                'sort' => true,
+                'tags' => true,
             ],
             // The Bit Apps credit card at the foot of the portal sidebar. Off
             // until an admin asks for it: it links off the owner's own public

@@ -63,7 +63,6 @@ describe('the portal’s filter switches', () => {
     const result = await load({ communityTitle: 'Acme' })
 
     expect(result.current.generalSettings.portalFilters).toEqual({
-      product: true,
       sort: true,
       tags: true
     })
@@ -73,7 +72,6 @@ describe('the portal’s filter switches', () => {
     const result = await load({ portalFilters: { tags: false } })
 
     expect(result.current.generalSettings.portalFilters).toEqual({
-      product: true,
       sort: true,
       tags: false
     })

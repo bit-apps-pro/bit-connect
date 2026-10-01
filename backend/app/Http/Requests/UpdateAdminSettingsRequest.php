@@ -45,8 +45,7 @@ final class UpdateAdminSettingsRequest extends Request
             'cleanup'         => ['required', 'array'],
             'topicFormFields' => ['required', 'array'],
             // One mode per field — see TopicFieldMode.
-            'topicFormFields.topicType'  => ['required', 'string', new InRule(TopicFieldMode::values())],
-            'topicFormFields.department' => ['required', 'string', new InRule(TopicFieldMode::values())],
+            'topicFormFields.topicType' => ['required', 'string', new InRule(TopicFieldMode::values())],
         ];
     }
 

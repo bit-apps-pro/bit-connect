@@ -10,7 +10,6 @@ import {
   LuChartNoAxesColumn,
   LuCircleCheck,
   LuHash,
-  LuLayers,
   LuLayoutGrid,
   LuLifeBuoy,
   LuListFilter,
@@ -25,6 +24,7 @@ import { Link } from 'react-router'
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
+import useAddedPages from '../../../use-added-pages'
 import SidebarNavItem from './SidebarNavItem'
 
 const { Sider } = Layout
@@ -49,7 +49,6 @@ const navItems: {
   { icon: LuSlidersHorizontal, label: __('General'), path: '../general', requires: 'manage' },
   { icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
   { icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
-  { icon: LuLayers, label: config.DEPARTMENT_NAMING.plural, path: '../products', requires: 'manage' },
   { icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
   { icon: LuCircleCheck, label: __('Status'), path: '../status', requires: 'manage' },
   { icon: LuUsers, label: __('Manager'), path: '../manager', requires: 'manage' },
@@ -66,7 +65,16 @@ const navItems: {
 
 export default function Sidebar() {
   const isDarkTheme = useAtomValue($isDarkTheme)
-  const visibleNavItems = navItems.filter(item =>
+  const addedPages = useAddedPages()
+  // Each added screen goes in after the one it names, or last when that one is
+  // not here.
+  const allNavItems = addedPages.reduce((items, page) => {
+    const entry = { icon: page.icon, label: page.label, path: `../${page.path}`, requires: page.requires }
+    const index = items.findIndex(item => item.path === `../${page.after}`)
+
+    return index === -1 ? [...items, entry] : [...items.slice(0, index + 1), entry, ...items.slice(index + 1)]
+  }, navItems)
+  const visibleNavItems = allNavItems.filter(item =>
     item.requires === 'moderate' ? config.CAN_MODERATE : config.CAN_MANAGE
   )
   // An icon rail below md. At 220px the full column took more than half a

@@ -11,8 +11,6 @@ import { navItemStyle } from './SidebarNavItem.style'
 
 interface SidebarNavProps {
   props: {
-    /** The department open alongside, which a stage row keeps. */
-    department?: string
     icon?: string
     /** Overrides the stage match below, for rows that are not stages. */
     isActive?: boolean
@@ -25,13 +23,15 @@ interface SidebarNavProps {
      * stage icons at all.
      */
     reserveIconSlot?: boolean
+    /** The archive the listing is scoped to, which a stage row keeps — see listing-link. */
+    scope?: string
     /** Overrides the stage archive URL below, for rows that are not stages. */
     to?: string
   }
 }
 export default memo(SidebarNavItem)
 function SidebarNavItem({
-  props: { department, icon, isActive: isActiveOverride, label, path, reserveIconSlot, to: toOverride }
+  props: { icon, isActive: isActiveOverride, label, path, reserveIconSlot, scope, to: toOverride }
 }: SidebarNavProps) {
   const { token } = theme.useToken()
   // The URL of an icon that failed to load, so a stage whose attachment was
@@ -56,9 +56,9 @@ function SidebarNavItem({
   // the nav from relying on the redirect. `?stage=` still works for links
   // already shared — see pages/topics/topics.tsx.
   //
-  // With a department open the row narrows that department instead of leaving
-  // it, since the sidebar is the only place either choice is made.
-  const to = toOverride ?? listingLink({ department, stage: path })
+  // With the listing scoped to an archive the row narrows that archive instead
+  // of leaving it, since the sidebar is the only place either choice is made.
+  const to = toOverride ?? listingLink({ scope, stage: path })
 
   return (
     <NavLink
@@ -89,8 +89,8 @@ function SidebarNavItem({
       <If conditions={isActive}>
         <motion.span
           className="bc-absolute bc-inset-0 bc--z-10 bc-h-full bc-w-full bc-rounded-md bc-bg-primary/10 bc-border bc-border-solid bc-border-primary/30"
-          // One pill per section: a stage and a product can both be current
-          // (`/?product=`), and a shared id would fling one pill between them.
+          // One pill per section: a stage and a row of another section can
+          // both be current, and a shared id would fling one pill between them.
           layoutId={toOverride ? 'sidebar-nav-other-active' : 'sidebar-nav-item-active'}
         />
       </If>

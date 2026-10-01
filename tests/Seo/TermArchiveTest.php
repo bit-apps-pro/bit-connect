@@ -59,6 +59,7 @@ final class TermArchiveTest extends TestCase
     {
         $GLOBALS['__wp_posts'] = [];
         $GLOBALS['__wp_terms'] = [];
+        $GLOBALS['__wp_taxonomies'] = [];
 
         PortalLocation::resetCache();
     }
@@ -127,40 +128,55 @@ final class TermArchiveTest extends TestCase
         );
     }
 
-    public function testDepartmentArchivesAnswerToTheNamedSegment(): void
+    public function testAnAddedArchiveAnswersToItsOwnSegment(): void
     {
-        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
-        $GLOBALS['__wp_filters']['bit_connect_department_naming'] = ['slug' => 'product'];
+        $this->addTeamsTaxonomy('squad');
 
-        $this->assertSame('https://example.com/community/product/bit-crm', PortalTaxonomies::url('department', 'bit-crm'));
-        $this->assertInstanceOf(WP_Term::class, PortalTaxonomies::resolve('product', 'bit-crm'));
-        $this->assertStringContainsString('product', PortalTaxonomies::segmentPattern());
+        $this->assertSame('https://example.com/community/squad/platform', PortalTaxonomies::url('team', 'platform'));
+        $this->assertInstanceOf(WP_Term::class, PortalTaxonomies::resolve('squad', 'platform'));
+        $this->assertStringContainsString('squad', PortalTaxonomies::segmentPattern());
 
         // The key stays what SEO settings and sitemap names store…
-        $this->assertSame('department', PortalTaxonomies::segmentFor(Taxonomies::DEPARTMENTS->value));
-        // …and the old segment stops answering, rather than serving a duplicate.
-        $this->assertNull(PortalTaxonomies::resolve('department', 'bit-crm'));
+        $this->assertSame('team', PortalTaxonomies::segmentFor('example-teams'));
+        // …and the key itself does not answer, rather than serving a duplicate.
+        $this->assertNull(PortalTaxonomies::resolve('team', 'platform'));
     }
 
-    public function testARenamedDepartmentArchiveRedirectsFromItsOriginalSegment(): void
+    public function testARenamedArchiveRedirectsFromItsOriginalSegment(): void
     {
-        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
-        $GLOBALS['__wp_filters']['bit_connect_department_naming'] = ['slug' => 'product'];
+        $this->addTeamsTaxonomy('squad');
 
         // Still routed, so links indexed before the rename reach the redirect…
-        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'department');
-        $this->assertSame('https://example.com/community/product/bit-crm', PortalTaxonomies::renamedArchiveUrl('department', 'bit-crm'));
+        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'team');
+        $this->assertSame('https://example.com/community/squad/platform', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
 
         // …while a term that does not exist stays a 404.
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('department', 'no-such-term'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'no-such-term'));
     }
 
-    public function testAnUnrenamedDepartmentArchiveHasNothingToRedirect(): void
+    public function testAnUnrenamedArchiveHasNothingToRedirect(): void
     {
-        $GLOBALS['__wp_terms'][] = $this->makeTerm('bit-crm', 'Bit CRM', Taxonomies::DEPARTMENTS->value);
+        $this->addTeamsTaxonomy('team');
 
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('department', 'bit-crm'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
         $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+    }
+
+    public function testAnAddedArchiveCannotTakeASegmentThePortalRoutes(): void
+    {
+        $this->addTeamsTaxonomy('stage');
+
+        $this->assertSame('', PortalTaxonomies::segmentFor('example-teams'));
+        $this->assertSame(Taxonomies::STAGES->value, PortalTaxonomies::taxonomyFor(PortalTaxonomies::segmentForSlug('stage')));
+    }
+
+    public function testAnArchiveForATaxonomyThatIsNotRegisteredIsNotServed(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'archive' => 'team', 'slug' => 'team'],
+        ];
+
+        $this->assertNotContains('team', PortalTaxonomies::segments());
     }
 
     // -----------------------------------------------------------------------
@@ -337,8 +353,14 @@ final class TermArchiveTest extends TestCase
     {
         $this->assertTrue(PortalTaxonomies::isIndexable('topic'));
         $this->assertTrue(PortalTaxonomies::isIndexable('tag'));
-        $this->assertTrue(PortalTaxonomies::isIndexable('department'));
         $this->assertFalse(PortalTaxonomies::isIndexable('status'));
+    }
+
+    public function testAnAddedArchiveStartsIndexable(): void
+    {
+        $this->addTeamsTaxonomy('team');
+
+        $this->assertTrue(PortalTaxonomies::isIndexable('team'));
     }
 
     // -----------------------------------------------------------------------
@@ -421,6 +443,25 @@ final class TermArchiveTest extends TestCase
 
         $this->assertStringContainsString('/community/tag/api', $html);
         $this->assertStringContainsString('/community/tag/webhooks', $html);
+    }
+
+    /**
+     * A taxonomy another plugin files topics under, with an archive keyed
+     * `team` and served under `$slug`, holding one term.
+     */
+    private function addTeamsTaxonomy(string $slug): void
+    {
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_terms'][] = $this->makeTerm('platform', 'Platform', 'example-teams');
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => [
+                'taxonomy' => 'example-teams',
+                'singular' => 'Team',
+                'plural'   => 'Teams',
+                'archive'  => 'team',
+                'slug'     => $slug,
+            ],
+        ];
     }
 
     private function makeTerm(string $slug, string $name, string $taxonomy): WP_Term

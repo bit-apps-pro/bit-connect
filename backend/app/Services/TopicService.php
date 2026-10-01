@@ -269,9 +269,7 @@ class TopicService
             $res = wp_set_post_terms($postId, $data['topic_types'], Taxonomies::TOPIC_TYPES->value); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
         }
 
-        if (isset($data['departments'])) {
-            wp_set_post_terms($postId, $data['departments'], Taxonomies::DEPARTMENTS->value);
-        }
+        TopicTaxonomies::setTerms($postId, $data);
 
         if (isset($data['stages'])) {
             wp_set_post_terms($postId, $data['stages'], Taxonomies::STAGES->value);
@@ -376,9 +374,7 @@ class TopicService
             wp_set_post_terms($id, $data['topic_types'], Taxonomies::TOPIC_TYPES->value);
         }
 
-        if (isset($data['departments'])) {
-            wp_set_post_terms($id, $data['departments'], Taxonomies::DEPARTMENTS->value);
-        }
+        TopicTaxonomies::setTerms($id, $data);
 
         if (isset($data['stages'])) {
             wp_set_post_terms($id, $data['stages'], Taxonomies::STAGES->value);
@@ -490,6 +486,17 @@ class TopicService
     {
         $totalTopics = wp_count_posts(PostTypes::BIT_CONNECT->value);
 
+        $taxonomyCounts = [
+            'topic_types' => wp_count_terms([Taxonomies::TOPIC_TYPES->value]),
+            'stages'      => wp_count_terms([Taxonomies::STAGES->value]),
+            'statuses'    => wp_count_terms([Taxonomies::STATUSES->value]),
+            'tags'        => wp_count_terms([Taxonomies::TAGS->value]),
+        ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $taxonomyCounts[$param] = wp_count_terms([$entry['taxonomy']]);
+        }
+
         return [
             'total'         => (int) $totalTopics->publish,
             'status_counts' => [
@@ -497,13 +504,7 @@ class TopicService
                 'draft'   => (int) $totalTopics->draft,
                 'pending' => (int) $totalTopics->pending,
             ],
-            'taxonomy_counts' => [
-                'topic_types' => wp_count_terms([Taxonomies::TOPIC_TYPES->value]),
-                'departments' => wp_count_terms([Taxonomies::DEPARTMENTS->value]),
-                'stages'      => wp_count_terms([Taxonomies::STAGES->value]),
-                'statuses'    => wp_count_terms([Taxonomies::STATUSES->value]),
-                'tags'        => wp_count_terms([Taxonomies::TAGS->value]),
-            ]
+            'taxonomy_counts' => $taxonomyCounts,
         ];
     }
 
@@ -726,10 +727,15 @@ class TopicService
     {
         $singleTermTaxonomies = [
             Taxonomies::TOPIC_TYPES->value => ['key' => 'topic_types', 'meta' => ['color']],
-            Taxonomies::DEPARTMENTS->value => ['key' => 'departments', 'meta' => []],
             Taxonomies::STAGES->value      => ['key' => 'stages', 'meta' => ['icon']],
             Taxonomies::STATUSES->value    => ['key' => 'statuses', 'meta' => ['color']],
         ];
+
+        // One term each from a taxonomy another plugin adds, under the
+        // parameter that carries it.
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $singleTermTaxonomies[$entry['taxonomy']] = ['key' => $param, 'meta' => []];
+        }
 
         $terms = [];
         foreach ($singleTermTaxonomies as $taxonomy => $config) {

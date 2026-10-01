@@ -1,5 +1,4 @@
-import { __, sprintf } from '@common/helpers/i18nWrap'
-import config from '@config/config'
+import { __ } from '@common/helpers/i18nWrap'
 import { Switch, Typography } from 'antd'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -29,17 +28,6 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
           description: __('Newest, oldest, most active — how the topic list is ordered.'),
           key: 'sort',
           label: __('Sort')
-        },
-        {
-          // The one filter not above the list: it is the sidebar's second list,
-          // and a chip beside the stage's on phones.
-          description: sprintf(
-            // translators: %s: what the portal calls a department.
-            __('Narrow the list down to one %s, picked from the sidebar.'),
-            config.DEPARTMENT_NAMING.singular
-          ),
-          key: 'product',
-          label: config.DEPARTMENT_NAMING.singular
         },
         {
           description: __('Narrow the list down to a tag.'),

@@ -78,7 +78,7 @@ final class NotificationRecipients
     /**
      * Who to tell about a brand-new topic.
      *
-     * Followers of the products and tags it was filed under, plus anyone
+     * Followers of the terms it was filed under, plus anyone
      * following the forum as a whole. Deliberately *not* every member: a
      * broadcast is unusable past a handful of topics a week, and a notification
      * nobody asked for is the fastest way to teach people to ignore the bell.
@@ -90,9 +90,14 @@ final class NotificationRecipients
         $ids = FollowService::followerIdsFor(Follow::TARGET_FORUM, 0);
 
         $taxonomyTargets = [
-            Taxonomies::DEPARTMENTS->value => Follow::TARGET_DEPARTMENT,
-            Taxonomies::TAGS->value        => Follow::TARGET_TAG,
+            Taxonomies::TAGS->value => Follow::TARGET_TAG,
         ];
+
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['follow'] !== '') {
+                $taxonomyTargets[$entry['taxonomy']] = $entry['follow'];
+            }
+        }
 
         foreach ($taxonomyTargets as $taxonomy => $targetType) {
             $termIds = wp_get_object_terms($topicId, $taxonomy, ['fields' => 'ids']);

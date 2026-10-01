@@ -30,11 +30,18 @@ use WP_Term;
 final class PortalTaxonomies
 {
     /**
+     * Segments the portal already routes besides its archives, which an
+     * archive segment would shadow or be shadowed by: the list's own
+     * pagination, member profiles and the notifications page.
+     */
+    private const ROUTED_SEGMENTS = ['page', 'user', 'notifications'];
+
+    /**
      * Archive key => taxonomy name.
      *
      * The key is what SEO settings and sitemap names store, so it never
-     * changes. It is also the URL segment, except for departments, whose
-     * segment is named by DepartmentNaming — see slugFor().
+     * changes. It is also the URL segment, except for an archive a plugin
+     * names otherwise through TopicTaxonomies — see slugFor().
      *
      * Built in a method rather than a class constant: these are backed enum
      * cases, and reading `->value` is not a constant expression.
@@ -46,20 +53,30 @@ final class PortalTaxonomies
         // Every segment is always served: the sidebar links to stage archives
         // and topic pages link to their terms, so an archive that 404s strands
         // the portal's own links. Whether search sees one is isIndexable().
-        return [
-            'topic'               => Taxonomies::TOPIC_TYPES->value,
-            DepartmentNaming::KEY => Taxonomies::DEPARTMENTS->value,
-            'tag'                 => Taxonomies::TAGS->value,
-            'stage'               => Taxonomies::STAGES->value,
-            'status'              => Taxonomies::STATUSES->value,
-        ];
+        $map = self::builtIn();
+
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] !== '' && !isset($map[$entry['archive']])) {
+                $map[$entry['archive']] = $entry['taxonomy'];
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Whether a URL segment is one an added archive may not take.
+     */
+    public static function isReservedSegment(string $segment): bool
+    {
+        return isset(self::builtIn()[$segment]) || \in_array($segment, self::ROUTED_SEGMENTS, true);
     }
 
     /**
      * Whether a segment's archives belong in the index.
      *
      * Set per segment on the SEO screen. The shipped defaults index the subject
-     * taxonomies — topic type, department, tag — because those are what people
+     * taxonomies — topic type and tag — because those are what people
      * search for and their archives are the cluster pages worth ranking, and
      * stage, because the sidebar navigates by it: those archives are the pages
      * every other page in the portal links to, so they carry the internal
@@ -106,11 +123,33 @@ final class PortalTaxonomies
     }
 
     /**
-     * The URL segment an archive key is served under, e.g. `department`.
+     * The URL segment an archive key is served under, e.g. `tag`.
      */
     public static function slugFor(string $segment): string
     {
-        return $segment === DepartmentNaming::KEY ? DepartmentNaming::slug() : $segment;
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] === $segment) {
+                return $entry['slug'];
+            }
+        }
+
+        return $segment;
+    }
+
+    /**
+     * What an archive's terms are called, plural, e.g. `Tags`.
+     */
+    public static function labelFor(string $segment): string
+    {
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] === $segment) {
+                return $entry['plural'];
+            }
+        }
+
+        $taxonomy = get_taxonomy(self::taxonomyFor($segment));
+
+        return $taxonomy ? (string) $taxonomy->labels->name : $segment;
     }
 
     /**
@@ -128,23 +167,24 @@ final class PortalTaxonomies
     }
 
     /**
-     * A regex alternation of the URL segments, e.g. `topic|department|stage`,
-     * for building rewrite rules and route patterns.
+     * A regex alternation of the URL segments, e.g. `topic|tag|stage`, for
+     * building rewrite rules and route patterns.
      */
     public static function segmentPattern(): string
     {
         $slugs = array_map([self::class, 'slugFor'], self::segments());
 
-        // The departments archive's own segment stays routable after a rename,
-        // so its old URLs reach renamedArchiveUrl() and redirect instead of 404ing.
-        $slugs[] = DepartmentNaming::KEY;
+        // An archive served under a segment other than its key stays routable
+        // at the key, so its old URLs reach renamedArchiveUrl() and redirect
+        // instead of 404ing.
+        $slugs = [...$slugs, ...self::segments()];
 
         return implode('|', array_map('preg_quote', array_unique($slugs)));
     }
 
     /**
-     * Where `/department/{slug}` now lives when the departments archive has
-     * been renamed, or '' when that URL is not one.
+     * Where `/{key}/{slug}` now lives when that archive is served under a
+     * segment of its own, or '' when that URL is not one.
      *
      * Search engines and shared links keep pointing at the segment the archive
      * started under, so a rename redirects them rather than 404ing each one.
@@ -153,11 +193,11 @@ final class PortalTaxonomies
      */
     public static function renamedArchiveUrl(string $urlSegment, string $termSlug): string
     {
-        if ($urlSegment !== DepartmentNaming::KEY || DepartmentNaming::slug() === DepartmentNaming::KEY) {
+        if (self::taxonomyFor($urlSegment) === '' || self::slugFor($urlSegment) === $urlSegment) {
             return '';
         }
 
-        return self::resolve(DepartmentNaming::slug(), $termSlug) === null ? '' : self::url(DepartmentNaming::KEY, $termSlug);
+        return self::resolve(self::slugFor($urlSegment), $termSlug) === null ? '' : self::url($urlSegment, $termSlug);
     }
 
     /**
@@ -218,5 +258,20 @@ final class PortalTaxonomies
         $segment = self::segmentFor($term->taxonomy);
 
         return $segment === '' ? '' : self::url($segment, $term->slug);
+    }
+
+    /**
+     * This plugin's own archives.
+     *
+     * @return array<string, string>
+     */
+    private static function builtIn(): array
+    {
+        return [
+            'topic'  => Taxonomies::TOPIC_TYPES->value,
+            'tag'    => Taxonomies::TAGS->value,
+            'stage'  => Taxonomies::STAGES->value,
+            'status' => Taxonomies::STATUSES->value,
+        ];
     }
 }

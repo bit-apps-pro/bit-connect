@@ -26,8 +26,8 @@ if (!defined('ABSPATH')) {
  *     the member's side the forum would look like it had ignored them. Muting is
  *     a standing answer that auto-follow cannot overwrite.
  *
- *   - `target_type` is open (topic, department, tag, forum) rather than a topic
- *     id column. Following a product so you hear about new topics in it is the
+ *   - `target_type` is open (topic, tag, forum, …) rather than a topic id
+ *     column. Following a tag so you hear about new topics in it is the
  *     same question as following a thread, and splitting them into two tables
  *     would mean two of every query above this line.
  */
@@ -49,7 +49,7 @@ final class Bit_Connect_Follows extends Migration
             function (Blueprint $table): void {
                 $table->id();
                 $table->bigint('user_id')->unsigned();
-                // topic | department | tag | forum
+                // topic | tag | forum, or a type TopicTaxonomies adds
                 $table->varchar('target_type', 16);
                 $table->bigint('target_id')->unsigned();
                 // auto | manual. Kept so the UI can tell "you are following this

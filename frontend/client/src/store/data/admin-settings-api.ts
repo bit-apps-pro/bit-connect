@@ -9,7 +9,6 @@ const defaultSettings: AdminSettings = {
     upvote: false
   },
   topicFormFields: {
-    department: 'required',
     topicType: 'required'
   }
 }
@@ -33,10 +32,6 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
       upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
     },
     topicFormFields: {
-      department: fieldMode(
-        settingsData.topicFormFields?.department,
-        defaultSettings.topicFormFields.department
-      ),
       topicType: fieldMode(settingsData.topicFormFields?.topicType, defaultSettings.topicFormFields.topicType)
     }
   }

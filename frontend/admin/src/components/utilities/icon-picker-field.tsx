@@ -4,6 +4,8 @@ import { Button, Form, type FormInstance, Space, Typography } from 'antd'
 import { type ReactNode } from 'react'
 import { LuUpload } from 'react-icons/lu'
 
+const hiddenValueProps = (value: unknown) => ({ value: value ?? '' })
+
 interface IconPickerFieldProps {
   /**
    * Field-name stem. `icon` drives `icon_url` / `icon_id` / `icon_file_name`;
@@ -97,14 +99,17 @@ export default function IconPickerField({
         </Space>
       </Form.Item>
 
-      {/* Carry the picked attachment through the form, out of sight. */}
-      <Form.Item hidden name={idField}>
+      {/* Carry the picked attachment through the form, out of sight. Given ''
+          while empty so each input is controlled from its first render — an
+          undefined value made React warn the moment an icon was picked or a
+          stored term was loaded into the form. The form keeps its own value. */}
+      <Form.Item getValueProps={hiddenValueProps} hidden name={idField}>
         <input type="hidden" />
       </Form.Item>
-      <Form.Item hidden name={urlField}>
+      <Form.Item getValueProps={hiddenValueProps} hidden name={urlField}>
         <input type="hidden" />
       </Form.Item>
-      <Form.Item hidden name={fileNameField}>
+      <Form.Item getValueProps={hiddenValueProps} hidden name={fileNameField}>
         <input type="hidden" />
       </Form.Item>
     </>

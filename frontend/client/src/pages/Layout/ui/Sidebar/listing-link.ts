@@ -2,23 +2,21 @@ import config from '@config/config'
 import { routePath } from '@utils/route-path'
 
 /**
- * Where the sidebar sends a reader for a stage and a department taken together.
+ * Where the sidebar sends a reader for a stage, within the listing's scope.
  *
- * The two lists narrow one listing, so a link in either keeps what the other
- * has chosen. Each lands on the one URL search indexes for it — a department's
- * archive (`/department/bit-crm`), a stage's archive (`/stage/planned`), or the
- * portal root for the default stage — and a pair is the department's archive
- * narrowed by `?stage=`, which canonicalises to that archive: one page per
- * department and per stage, never one per combination of them.
+ * Each lands on the one URL search indexes for it — a stage's archive
+ * (`/stage/planned`), or the portal root for the default stage. A listing
+ * narrowed to one archive by a choice made beside the stages keeps it: the
+ * stage then narrows that archive by `?stage=`, which canonicalises to the
+ * archive itself, so there is one page per archive and per stage, never one
+ * per combination of them.
  *
- * @param department slug of the open department, or '' for all of them
- * @param stage      slug of the stage the reader named, or '' for none
+ * @param scope router path of the archive the listing is narrowed to, or '' for none
+ * @param stage slug of the stage the reader named, or '' for none
  */
-export function listingLink({ department = '', stage = '' }: { department?: string; stage?: string }) {
-  if (department !== '') {
-    const archive = `/${config.DEPARTMENT_NAMING.slug}/${department}`
-
-    return routePath(stage === '' ? archive : `${archive}?stage=${encodeURIComponent(stage)}`)
+export function listingLink({ scope = '', stage = '' }: { scope?: string; stage?: string }) {
+  if (scope !== '') {
+    return routePath(stage === '' ? scope : `${scope}?stage=${encodeURIComponent(stage)}`)
   }
 
   // `/stage/questions` lists exactly what `/` lists; the server 301s it there.

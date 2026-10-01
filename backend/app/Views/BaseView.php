@@ -5,11 +5,13 @@ namespace BitApps\BitConnect\Views;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\AuthService;
-use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\NotificationService;
+use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use WP_Post;
 
@@ -128,17 +130,20 @@ class BaseView
             // own links, and without this every one of them named a URL that
             // WordPress answers with a 301 to the slashed form — see
             // utils/route-path.ts.
-            'trailingSlash' => str_ends_with((string) get_option('permalink_structure'), '/'),
-            'logoLight'              => $generalSettings['logoLight'] ?? '',
-            'logoPermalinkMode'      => $generalSettings['logoPermalinkMode'] ?? 'default',
-            'logoPermalinkCustom'    => $generalSettings['logoPermalinkCustom'] ?? '',
-            'portalAccess'           => $generalSettings['portalAccess'] ?? 'everyone',
-            'portalFilters'          => GeneralSettings::portalFilters($generalSettings),
-            'promo'                  => GeneralSettings::promo($generalSettings),
-            'departmentNaming'       => DepartmentNaming::get(),
-            'defaultStageSlug'       => StageService::defaultStageSlug(),
-            'defaultStatusSlug'      => StatusService::defaultStatusSlug(),
-            'wpMediaSettings'        => [
+            'trailingSlash'       => str_ends_with((string) get_option('permalink_structure'), '/'),
+            'logoLight'           => $generalSettings['logoLight'] ?? '',
+            'logoPermalinkMode'   => $generalSettings['logoPermalinkMode'] ?? 'default',
+            'logoPermalinkCustom' => $generalSettings['logoPermalinkCustom'] ?? '',
+            'portalAccess'        => $generalSettings['portalAccess'] ?? 'everyone',
+            'portalFilters'       => GeneralSettings::portalFilters($generalSettings),
+            'promo'               => GeneralSettings::promo($generalSettings),
+            // URL segment => the topics filter its archive pins and the taxonomy
+            // behind it, for every archive the portal serves — including any a
+            // plugin adds, which the app cannot know of in advance.
+            'portalArchives'    => self::portalArchives(),
+            'defaultStageSlug'  => StageService::defaultStageSlug(),
+            'defaultStatusSlug' => StatusService::defaultStatusSlug(),
+            'wpMediaSettings'   => [
                 'maxUploadBytes'      => wp_max_upload_size(),
                 'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),
             ],
@@ -227,5 +232,37 @@ class BaseView
         if (!wp_script_is('media-upload')) {
             wp_enqueue_media();
         }
+    }
+
+    /**
+     * Each archive the portal serves, by the URL segment it answers to.
+     *
+     * The filter key is the topics endpoint's parameter for that taxonomy:
+     * this plugin's own are fixed, and an added one is named by TopicTaxonomies.
+     *
+     * @return array<string, array{filter: string, taxonomy: string}>
+     */
+    private static function portalArchives(): array
+    {
+        $filters = [
+            Taxonomies::TOPIC_TYPES->value => 'topic-types',
+            Taxonomies::TAGS->value        => 'tags',
+            Taxonomies::STAGES->value      => 'stages',
+            Taxonomies::STATUSES->value    => 'statuses',
+        ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $filters[$entry['taxonomy']] = $param;
+        }
+
+        $archives = [];
+
+        foreach (PortalTaxonomies::map() as $segment => $taxonomy) {
+            if (isset($filters[$taxonomy])) {
+                $archives[PortalTaxonomies::slugFor($segment)] = ['filter' => $filters[$taxonomy], 'taxonomy' => $taxonomy];
+            }
+        }
+
+        return $archives;
     }
 }

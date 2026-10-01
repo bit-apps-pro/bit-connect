@@ -29,6 +29,7 @@ use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
 
 final class TopicController
@@ -59,11 +60,14 @@ final class TopicController
         // Build taxonomy filters
         $taxonomyFilters = [
             Taxonomies::STAGES->value      => $validatedData['stages'] ?? null,
-            Taxonomies::DEPARTMENTS->value => $validatedData['departments'] ?? null,
             Taxonomies::TOPIC_TYPES->value => $validatedData['topic-types'] ?? null,
             Taxonomies::STATUSES->value    => $validatedData['statuses'] ?? null,
             Taxonomies::TAGS->value        => $validatedData['tags'] ?? null,
         ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $taxonomyFilters[$entry['taxonomy']] = $validatedData[$param] ?? null;
+        }
 
         // Build tax_query array for WP_Query
         $taxQuery = [];
@@ -157,10 +161,13 @@ final class TopicController
             'post_excerpt' => $validatedData['post_content'],
             'post_status'  => $validatedData['post_status'] ?? 'publish',
             'topic_types'  => $validatedData['topic-types'] ?? [],
-            'departments'  => $validatedData['departments'] ?? [],
             'tags'         => $validatedData['tags'] ?? [],
             'attachments'  => $validatedData['attachments'] ?? [],
         ];
+
+        foreach (array_keys(TopicTaxonomies::all()) as $param) {
+            $topicData[$param] = $validatedData[$param] ?? [];
+        }
 
         // Only when the author actually chose one. A slug of separators alone
         // sanitizes to '', which must fall through to the title rather than
@@ -295,8 +302,10 @@ final class TopicController
             if (isset($validatedData['topic-types'])) {
                 $updateData['topic_types'] = $validatedData['topic-types'];
             }
-            if (isset($validatedData['departments'])) {
-                $updateData['departments'] = $validatedData['departments'];
+            foreach (array_keys(TopicTaxonomies::all()) as $param) {
+                if (isset($validatedData[$param])) {
+                    $updateData[$param] = $validatedData[$param];
+                }
             }
             if (isset($validatedData['tags'])) {
                 $updateData['tags'] = $validatedData['tags'];
@@ -658,5 +667,4 @@ final class TopicController
             );
         }
     }
-
 }

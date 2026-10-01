@@ -7,15 +7,19 @@ import { useTaxonomiesStoreActions } from '@/store/use-taxonomies-store'
 export interface TaxonomyTerm {
   count: number
   id: number
-  /** Stages, statuses and products only — the taxonomies that carry icons. */
+  /** Only on the taxonomies that carry icons — stages, statuses, and any added one that does. */
   meta?: ThemedIconMeta
   name: string
   parent: number
   slug: string
 }
 
+/**
+ * Every taxonomy topics are filed under, by name: this plugin's own, and any a
+ * plugin adds on the topic post type, which the endpoint returns alongside.
+ */
 export interface TaxonomiesResponse {
-  'bit-connect-departments': TaxonomyTerm[]
+  [taxonomy: string]: TaxonomyTerm[] | undefined
   'bit-connect-stages': TaxonomyTerm[]
   'bit-connect-statuses': TaxonomyTerm[]
   'bit-connect-tags': TaxonomyTerm[]

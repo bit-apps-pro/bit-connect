@@ -4,7 +4,6 @@ import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
-import { type TaxonomiesResponse } from '@features/topic-modal/data/use-taxonomies'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
@@ -23,16 +22,12 @@ import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
+import useListingSelection from '../Layout/data/use-listing-selection'
 import ListingContext from './listing-context'
 
-/** The taxonomy each archive filter key names — see pages/topics/archive.tsx. */
-const ARCHIVE_TAXONOMY: Record<string, keyof TaxonomiesResponse> = {
-  departments: 'bit-connect-departments',
-  stages: 'bit-connect-stages',
-  statuses: 'bit-connect-statuses',
-  tags: 'bit-connect-tags',
-  'topic-types': 'bit-connect-topic-types'
-}
+/** The taxonomy an archive filter key names — see pages/topics/archive.tsx. */
+const archiveTaxonomy = (filter: string) =>
+  Object.values(config.PORTAL_ARCHIVES).find(archive => archive.filter === filter)?.taxonomy ?? ''
 
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
@@ -62,7 +57,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const search = searchParams.get('search') || ''
   const sortBy = searchParams.get('sort') || 'newest'
-  const product = searchParams.get('product') || ''
   const visibility = searchParams.get('visibility') || ''
   const myTopics = searchParams.get('my_topics') || ''
   const topicType = searchParams.get('topic-types') || ''
@@ -85,10 +79,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // Filters). Hiding one removes its control, its chip and its share of the
   // reset/"filters are active" state; the matching URL params are still applied
   // to the query below, so links people have already shared keep working.
-  const { product: showProductFilter, sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
-  // The department switch drives the sidebar's list rather than a control here,
-  // so it opens no filter row or sheet of its own; it still owns the chip below
-  // for `?product=` links shared before the sidebar took the choice over.
+  const { sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
   const showAnyFilter = showSortFilter || showTagFilter
   // The type chips ride the sort filter's switch, which is where the type
   // choice lived before it had a row of its own. A type archive (`/topic/bug`)
@@ -104,13 +95,11 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const hasActiveFilters =
     (showSortFilter &&
       (sortBy !== 'newest' || visibility !== '' || myTopics !== '' || topicType !== '')) ||
-    (showProductFilter && product !== '') ||
     (showTagFilter && tags !== '')
 
   // Active (non-default) filters, shown as removable chips under the search bar.
   const taxonomies = useTaxonomiesStoreSelect()
   const topicTypes = taxonomies?.['bit-connect-topic-types'] || []
-  const departments = taxonomies?.['bit-connect-departments'] || []
   const tagTerms = taxonomies?.['bit-connect-tags'] || []
 
   // The tab title, as the server sets it: the community name for the listing,
@@ -118,9 +107,10 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // loaded, rather than flashing the bare community name first.
   const [archiveKey, archiveSlug] = archiveFilter ? (Object.entries(archiveFilter)[0] ?? []) : []
   const archiveName = archiveKey
-    ? taxonomies?.[ARCHIVE_TAXONOMY[archiveKey]]?.find(term => term.slug === archiveSlug)?.name
+    ? taxonomies?.[archiveTaxonomy(archiveKey)]?.find(term => term.slug === archiveSlug)?.name
     : ''
   usePageTitle(archiveName)
+  const { scope: listingScope } = useListingSelection()
 
   const clearSort = () =>
     setSearchParams(prev => {
@@ -134,13 +124,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const clearTopicType = () =>
     setSearchParams(prev => {
       prev.delete('topic-types')
-      if (prev.has('page')) prev.set('page', '1')
-      return prev
-    })
-
-  const clearProduct = () =>
-    setSearchParams(prev => {
-      prev.delete('product')
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -165,7 +148,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     setSearchParams(prev => {
       const keys = [
         ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'topic-types'] : []),
-        ...(showProductFilter ? ['product'] : []),
         ...(showTagFilter ? ['tags'] : [])
       ]
       for (const key of keys) {
@@ -192,13 +174,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       })
     }
   }
-  if (showProductFilter && product !== '') {
-    activeChips.push({
-      key: 'product',
-      label: departments.find(d => d.slug === product)?.name ?? product,
-      onRemove: clearProduct
-    })
-  }
   if (showTagFilter) {
     for (const slug of tagSlugs) {
       activeChips.push({
@@ -216,7 +191,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // instead of being rewritten to `?tags=api` the moment React mounts.
   const filters = useMemo(
     () => ({
-      departments: product,
       my_topics: myTopics,
       search,
       sortBy,
@@ -226,7 +200,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       visibility,
       ...archiveFilter
     }),
-    [product, myTopics, search, sortBy, stages, tags, topicType, visibility, archiveFilter]
+    [myTopics, search, sortBy, stages, tags, topicType, visibility, archiveFilter]
   )
 
   const { fetchAllPosts, fetchMorePosts, hasMore, isLoading, isLoadingMore, posts, toggleVote } =
@@ -363,13 +337,12 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
           )}
         </div>
 
-        {/* phone: which stage and department the list is showing, since the
-            sidebar that says so is folded into the drawer there. */}
+        {/* phone: what the list is showing, since the sidebar that says so is
+            folded into the drawer there. A stage archive, or the archive the
+            listing is scoped to, is a choice the chips themselves offer. */}
         <ListingContext
           archiveName={
-            archiveKey && archiveKey !== 'stages' && archiveKey !== 'departments'
-              ? (archiveName ?? archiveSlug)
-              : ''
+            archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
           }
         />
 

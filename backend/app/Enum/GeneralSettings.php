@@ -26,9 +26,8 @@ enum GeneralSettings: string
         $filters = \is_array($stored['portalFilters'] ?? null) ? $stored['portalFilters'] : [];
 
         return [
-            'sort'    => !isset($filters['sort']) || (bool) $filters['sort'],
-            'product' => !isset($filters['product']) || (bool) $filters['product'],
-            'tags'    => !isset($filters['tags']) || (bool) $filters['tags'],
+            'sort' => !isset($filters['sort']) || (bool) $filters['sort'],
+            'tags' => !isset($filters['tags']) || (bool) $filters['tags'],
         ];
     }
 

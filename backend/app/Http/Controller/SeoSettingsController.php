@@ -78,6 +78,10 @@ final class SeoSettingsController
             $archives[$segment] = [
                 'indexable' => PortalTaxonomies::isIndexable($segment),
                 'terms'     => is_wp_error($terms) ? 0 : \count((array) $terms),
+                // Named and addressed here because the list is not fixed: a
+                // plugin may add an archive the screen has no label for.
+                'label' => PortalTaxonomies::labelFor($segment),
+                'slug'  => PortalTaxonomies::slugFor($segment),
             ];
         }
 

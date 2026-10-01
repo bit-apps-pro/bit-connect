@@ -1,6 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useFileStore from '@features/file-uploader/state/use-file-store'
-import { normalizeAttachments } from '@features/topic-modal/shared/type'
+import { addedTerms, normalizeAttachments, type Topic } from '@features/topic-modal/shared/type'
 import { decodeSlug, slugRedirectPath } from '@utils/slug'
 import { Button, Form, Modal } from 'antd'
 import { useEffect, useRef } from 'react'
@@ -12,6 +12,15 @@ import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 import useUpdateTopic from '../data/use-update-topic'
 import useTopicModalStore from '../state/use-topic-modal-store'
 import TopicForm from './topic-form'
+
+/**
+ * The term a topic carries in each taxonomy a plugin adds, as the form field
+ * of the same name — the server returns it under the parameter that sets it,
+ * so a field the plugin draws is filled in without this form knowing it.
+ */
+function addedTermFields(terms: Topic['terms'] | undefined) {
+  return Object.fromEntries(Object.entries(addedTerms(terms)).map(([param, term]) => [param, term.term_id]))
+}
 
 export default function TopicEditModal() {
   const [form] = Form.useForm()
@@ -83,7 +92,7 @@ export default function TopicEditModal() {
     if (post && isEditModalOpen && populatedForId.current !== editTopicId) {
       populatedForId.current = editTopicId
       form.setFieldsValue({
-        departments: post.terms?.departments?.term_id,
+        ...addedTermFields(post.terms),
         post_content: post.post_content,
         // Stored percent-encoded for non-Latin slugs; show the readable form.
         post_name: decodeSlug(post.post_name ?? ''),

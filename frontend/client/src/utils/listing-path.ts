@@ -3,18 +3,15 @@ import config from '@config/config'
 /**
  * URL segment -> the topics filter a term archive pins.
  *
- * Mirrors PortalTaxonomies::map() on the server, departments under whatever
- * segment the server named for them. A segment missing here renders the
- * not-found page rather than an unfiltered list: the server only claims URLs
- * whose term it resolved, so anything else reaching that route is not an archive.
+ * Mirrors PortalTaxonomies::map() on the server, which sends it — an archive a
+ * plugin adds arrives under whatever segment it serves. A segment missing here
+ * renders the not-found page rather than an unfiltered list: the server only
+ * claims URLs whose term it resolved, so anything else reaching that route is
+ * not an archive.
  */
-export const ARCHIVE_SEGMENT_FILTER: Record<string, string> = {
-  [config.DEPARTMENT_NAMING.slug]: 'departments',
-  stage: 'stages',
-  status: 'statuses',
-  tag: 'tags',
-  topic: 'topic-types'
-}
+export const ARCHIVE_SEGMENT_FILTER: Record<string, string> = Object.fromEntries(
+  Object.entries(config.PORTAL_ARCHIVES).map(([segment, archive]) => [segment, archive.filter])
+)
 
 /**
  * Whether a router path renders the topic list: the portal root, a deeper page

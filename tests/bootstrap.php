@@ -565,6 +565,20 @@ if (!function_exists('sanitize_key')) {
     }
 }
 
+if (!function_exists('taxonomy_exists')) {
+    // This plugin's own taxonomies always exist; a test registers any other
+    // by naming it in $GLOBALS['__wp_taxonomies'].
+    function taxonomy_exists($taxonomy): bool
+    {
+        $own = array_map(
+            static fn (BitApps\BitConnect\Enum\Taxonomies $case): string => $case->value,
+            BitApps\BitConnect\Enum\Taxonomies::cases()
+        );
+
+        return in_array($taxonomy, [...$own, ...($GLOBALS['__wp_taxonomies'] ?? [])], true);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Escaping, formatting and head helpers used by the SSR/SEO renderers.
 // These mirror WordPress semantics closely enough to assert on the emitted

@@ -8,9 +8,9 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
-use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\TopicFormFields;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
  * Provides validation for creating a topic.
@@ -21,7 +21,6 @@ use BitApps\BitConnect\Services\TopicFormFields;
  * @property null|string $post_status
  * @property null|array $attachments
  * @property null|array $topic-types
- * @property null|array $departments
  * @property null|array $stages
  * @property null|array $statuses
  * @property null|array $tags
@@ -35,7 +34,7 @@ final class CreateTopicRequest extends Request
 
     public function rules()
     {
-        return [
+        $rules = [
             'post_title'   => ['required', 'string', 'sanitize:text', 'max:200'],
             'post_content' => ['required', 'string', 'max:10000'],
             // `sanitize:title` is WordPress' own `sanitize_title()`, so whatever
@@ -52,15 +51,22 @@ final class CreateTopicRequest extends Request
             // enforced here rather than only in the portal's form, which is
             // just one of the ways a topic gets created.
             'topic-types' => [self::presence('topicType'), 'integer', 'min:1'],
-            'departments' => [self::presence('department'), 'integer', 'min:1'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['nullable', 'integer', 'min:1'],
         ];
+
+        // One term each from a taxonomy another plugin files topics under,
+        // required when that plugin says so — see TopicTaxonomies.
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $rules[$param] = [$entry['required'] ? 'required' : 'nullable', 'integer', 'min:1'];
+        }
+
+        return $rules;
     }
 
     public function messages()
     {
-        return [
+        $messages = [
             'post_title.required'   => 'The topic title is required.',
             'post_title.max'        => 'The topic title cannot exceed 200 characters.',
             'post_name.string'      => 'The topic slug must be a string.',
@@ -70,14 +76,18 @@ final class CreateTopicRequest extends Request
 
             'attachments.*.max' => 'Each attachment file cannot exceed 10MB.',
             'topic-type'        => 'Each topic type must be a valid ID.',
-            'departments'       => 'Each department must be a valid ID.',
 
             'topic-types.required' => 'Choose a topic type.',
-            'departments.required' => \sprintf('Choose a %s.', DepartmentNaming::get()['singular']),
 
             'tags.*.integer' => 'Each tag must be a valid ID.',
             'tags.*.min'     => 'Each tag ID must be at least 1.',
         ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $messages[$param . '.required'] = \sprintf('Choose a %s.', $entry['singular']);
+        }
+
+        return $messages;
     }
 
     /**
@@ -85,7 +95,7 @@ final class CreateTopicRequest extends Request
      * mode the admin set for it. A hidden field is never asked, so it is as
      * free to leave out as an optional one.
      *
-     * @param string $field `topicType` or `department`
+     * @param string $field `topicType`
      */
     private static function presence(string $field): string
     {

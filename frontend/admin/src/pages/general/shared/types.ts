@@ -4,7 +4,6 @@ export type LogoPermalinkMode = 'custom' | 'default'
 
 /** Which of the portal topic-list filter controls are shown to visitors. */
 export interface PortalFilters {
-  product: boolean
   sort: boolean
   tags: boolean
 }

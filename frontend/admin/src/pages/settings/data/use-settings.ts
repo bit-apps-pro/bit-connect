@@ -14,7 +14,6 @@ const defaultSettings: Settings = {
     upvote: true
   },
   topicFormFields: {
-    department: 'required',
     topicType: 'required'
   }
 }
@@ -61,10 +60,6 @@ export default function useSettings() {
             upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
           },
           topicFormFields: {
-            department: fieldMode(
-              settingsData.topicFormFields?.department,
-              defaultSettings.topicFormFields.department
-            ),
             topicType: fieldMode(
               settingsData.topicFormFields?.topicType,
               defaultSettings.topicFormFields.topicType

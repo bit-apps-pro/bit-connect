@@ -25,7 +25,8 @@ export interface PostsStore {
 }
 
 export interface PostsFilters {
-  departments?: string
+  /** Term slugs of a taxonomy a plugin adds, under its parameter — see TopicTaxonomies.php. */
+  [param: string]: number | string | undefined
   my_topics?: string
   page?: number
   per_page?: number

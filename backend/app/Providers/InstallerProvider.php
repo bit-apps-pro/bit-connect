@@ -350,7 +350,6 @@ final class InstallerProvider
     {
         return [
             Taxonomies::TOPIC_TYPES->value,
-            Taxonomies::DEPARTMENTS->value,
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
             Taxonomies::TAGS->value,

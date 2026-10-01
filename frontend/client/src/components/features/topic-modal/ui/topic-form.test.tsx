@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
-import { useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { type TopicFieldMode } from '@/store/admin-settings.type'
@@ -20,11 +20,15 @@ vi.mock('@features/file-uploader/state/use-file-store', () => ({ default: () => 
 // Which taxonomy selects the form offers is an admin setting, so the tests that
 // care about the row's layout set it per render. The `mock` prefix keeps it
 // reachable from the factory, which vitest hoists above this file's own code.
-const mockTopicFormFields: { department?: TopicFieldMode; topicType?: TopicFieldMode } = {}
+const mockTopicFormFields: { topicType?: TopicFieldMode } = {}
 vi.mock('@/store/admin-settings.zustand', () => ({
   useAdminSettingsStore: (selector: (s: unknown) => unknown) =>
     selector({ settings: { topicFormFields: mockTopicFormFields } })
 }))
+// The fields a plugin adds beside Topic Type. None by default, as in this
+// plugin; a test that needs the row shared adds one.
+const mockAddedTermFields: { fields: ReactNode[] } = { fields: [] }
+vi.mock('../data/use-added-term-fields', () => ({ default: () => mockAddedTermFields.fields }))
 // The availability check needs a query client and the network. What it reports
 // is its own test's business; here it only has to not be in the way.
 vi.mock('../data/use-slug-availability', () => ({
@@ -214,7 +218,6 @@ describe('TopicForm slug field', () => {
 const term = (id: number, name: string) => ({ count: 0, id, name, parent: 0, slug: name })
 
 const taxonomies = {
-  'bit-connect-departments': [],
   'bit-connect-stages': [],
   'bit-connect-statuses': [],
   'bit-connect-tags': [term(11, 'billing'), term(12, 'onboarding'), term(13, 'reporting')],
@@ -232,69 +235,68 @@ const searchTags = async (query: string) => {
   await userEvent.type(box, query)
 }
 
-// The two taxonomy selects share a row. Either can be hidden by an admin, and
-// the one left behind should not sit at half width beside dead space.
+// Topic Type shares its row with any field a plugin adds. An admin can hide
+// Topic Type, and a field left alone should not sit at half width beside dead
+// space.
 const row = () => document.querySelector('.bc-grid')
 // antd marks the label, and only on an item whose rules require it.
 const requiredLabel = (label: string) =>
   screen.getByLabelText(label).closest('.ant-form-item')?.querySelector('label.ant-form-item-required')
 
+const teamField = (
+  <Form.Item className="bc-mb-0" key="teams" label="Team" name="teams">
+    <input />
+  </Form.Item>
+)
+
 describe('TopicForm taxonomy row', () => {
   afterEach(() => {
     cleanup()
-    delete mockTopicFormFields.department
     delete mockTopicFormFields.topicType
+    mockAddedTermFields.fields = []
   })
 
-  it('splits the row when both selects are shown', () => {
-    mockTopicFormFields.department = 'required'
-    mockTopicFormFields.topicType = 'optional'
+  it('gives Topic Type the whole row on its own', () => {
+    render(<Harness taxonomies={taxonomies} />)
+
+    expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
+    expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
+  })
+
+  it('splits the row with a field a plugin adds', () => {
+    mockAddedTermFields.fields = [teamField]
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
     expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
-    expect(screen.getByLabelText('Department')).toBeInTheDocument()
+    expect(screen.getByLabelText('Team')).toBeInTheDocument()
   })
 
-  it('shows both, required, before the settings have said otherwise', () => {
-    render(<Harness taxonomies={taxonomies} />)
-
-    expect(row()).toHaveClass('sm:bc-grid-cols-2')
-  })
-
-  it('gives Topic Type the whole row when Department is hidden', () => {
-    mockTopicFormFields.department = 'hidden'
-    mockTopicFormFields.topicType = 'required'
-    render(<Harness taxonomies={taxonomies} />)
-
-    expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.queryByLabelText('Department')).not.toBeInTheDocument()
-  })
-
-  it('gives Department the whole row when Topic Type is hidden', () => {
-    mockTopicFormFields.department = 'required'
+  it('gives an added field the whole row when Topic Type is hidden', () => {
     mockTopicFormFields.topicType = 'hidden'
+    mockAddedTermFields.fields = [teamField]
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
     expect(screen.queryByLabelText('Topic Type')).not.toBeInTheDocument()
   })
 
-  it('drops the row entirely when both are hidden', () => {
-    mockTopicFormFields.department = 'hidden'
+  it('drops the row entirely when nothing is left in it', () => {
     mockTopicFormFields.topicType = 'hidden'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toBeNull()
   })
 
-  it('marks only a required select as required', () => {
-    mockTopicFormFields.department = 'optional'
+  it('marks Topic Type required only when it is', () => {
     mockTopicFormFields.topicType = 'required'
     render(<Harness taxonomies={taxonomies} />)
-
     expect(requiredLabel('Topic Type')).not.toBeNull()
-    expect(requiredLabel('Department')).toBeNull()
+    cleanup()
+
+    mockTopicFormFields.topicType = 'optional'
+    render(<Harness taxonomies={taxonomies} />)
+    expect(requiredLabel('Topic Type')).toBeNull()
   })
 })
 

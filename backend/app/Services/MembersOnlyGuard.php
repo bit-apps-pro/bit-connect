@@ -9,7 +9,6 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
-use BitApps\BitConnect\Enum\Taxonomies;
 use WP_Error;
 use WP_Query;
 use WP_REST_Request;
@@ -278,6 +277,6 @@ final class MembersOnlyGuard
      */
     private static function taxonomies(): array
     {
-        return array_map(static fn (Taxonomies $taxonomy): string => $taxonomy->value, Taxonomies::cases());
+        return TopicTaxonomies::names();
     }
 }

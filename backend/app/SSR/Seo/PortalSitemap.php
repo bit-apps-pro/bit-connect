@@ -5,10 +5,10 @@ namespace BitApps\BitConnect\SSR\Seo;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
-use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\StageService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use WP_Post_Type;
 use WP_Query;
 use WP_Sitemaps_Provider;
@@ -486,8 +486,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      */
     public static function removeInternalTaxonomies($taxonomies)
     {
-        foreach (Taxonomies::cases() as $taxonomy) {
-            unset($taxonomies[$taxonomy->value]);
+        foreach (TopicTaxonomies::names() as $taxonomy) {
+            unset($taxonomies[$taxonomy]);
         }
 
         return $taxonomies;
@@ -774,13 +774,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
      */
     private static function ownNames(): array
     {
-        $names = [PostTypes::BIT_CONNECT->value];
-
-        foreach (Taxonomies::cases() as $taxonomy) {
-            $names[] = $taxonomy->value;
-        }
-
-        return $names;
+        return [PostTypes::BIT_CONNECT->value, ...TopicTaxonomies::names()];
     }
 
     /**

@@ -105,7 +105,6 @@ final class TopicServiceWriteTest extends TestCase
     public function testANewTopicIsFiledUnderTheTermsItWasGiven(): void
     {
         $created = $this->topics->createTopic([
-            'departments' => [11],
             'post_title'  => 'Hello',
             'stages'      => [12],
             'tags'        => [13, 14],
@@ -115,9 +114,23 @@ final class TopicServiceWriteTest extends TestCase
         $filed = $GLOBALS['__wp_post_terms'][$created['ID']];
 
         $this->assertSame([10], $filed[Taxonomies::TOPIC_TYPES->value]);
-        $this->assertSame([11], $filed[Taxonomies::DEPARTMENTS->value]);
         $this->assertSame([12], $filed[Taxonomies::STAGES->value]);
         $this->assertSame([13, 14], $filed[Taxonomies::TAGS->value]);
+    }
+
+    public function testANewTopicIsFiledUnderAnAddedTaxonomyByItsParameter(): void
+    {
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'singular' => 'Team'],
+        ];
+
+        $created = $this->topics->createTopic(['post_title' => 'Hello', 'teams' => [11]]);
+
+        $this->assertSame([11], $GLOBALS['__wp_post_terms'][$created['ID']]['example-teams']);
+
+        $GLOBALS['__wp_taxonomies'] = [];
+        unset($GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']);
     }
 
     public function testANewTopicAdoptsTheFilesUploadedWithIt(): void

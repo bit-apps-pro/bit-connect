@@ -31,26 +31,12 @@ const getServerVariable: GetServerVariableType = (key, fallback) => {
   return SERVER_VARIABLES[key]
 }
 
-/**
- * What the departments taxonomy is called, and the segment its portal archives
- * answer to. Sent by the server, already translated, so every screen names it
- * the same way — see DepartmentNaming.php.
- */
-export interface DepartmentNaming {
-  plural: string
-  singular: string
-  slug: string
-}
-
-const departmentNaming = SERVER_VARIABLES?.departmentNaming ?? {}
-
 interface ConfigType {
   AJAX_URL: string
   API_URL: string
   CAN_MANAGE: boolean
   CAN_MODERATE: boolean
   DATE_FORMAT: string
-  DEPARTMENT_NAMING: DepartmentNaming
   FREE_VERSION: string
   IS_DEV: boolean
   NONCE: string
@@ -77,11 +63,6 @@ const config = {
   CAN_MANAGE: SERVER_VARIABLES?.canManage === true,
   CAN_MODERATE: SERVER_VARIABLES?.canModerate === true,
   DATE_FORMAT: getServerVariable('dateFormat', 'F j, Y'),
-  DEPARTMENT_NAMING: {
-    plural: departmentNaming.plural || 'Departments',
-    singular: departmentNaming.singular || 'Department',
-    slug: departmentNaming.slug || 'department'
-  },
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
   NONCE: getServerVariable('nonce', ''),

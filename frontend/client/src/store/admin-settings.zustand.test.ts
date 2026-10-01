@@ -23,7 +23,7 @@ vi.mock('./data/admin-settings-api', async importActual => {
 
 const settings = {
   topicAccess: { comment: true, upvote: true },
-  topicFormFields: { department: 'hidden', topicType: 'optional' } as const
+  topicFormFields: { topicType: 'optional' } as const
 }
 
 beforeEach(() => {

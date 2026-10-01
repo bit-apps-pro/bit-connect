@@ -15,6 +15,7 @@ import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
 import useOnboardingStatus from './pages/onboarding/data/use-onboarding-status'
+import useAddedPages from './pages/use-added-pages'
 
 function OnboardingGuard() {
   const { isOnboardingCompleted, isOnboardingStatusPending } = useOnboardingStatus()
@@ -27,7 +28,6 @@ const Root = lazy(() => import('./pages/root/root'))
 const Stages = lazy(() => import('./pages/stages/stages'))
 const Status = lazy(() => import('./pages/status/status'))
 const TopicTypes = lazy(() => import('./pages/topic-types/topic-types'))
-const Products = lazy(() => import('./pages/products/products'))
 const Tags = lazy(() => import('./pages/tags/tags'))
 const General = lazy(() => import('./pages/general/general'))
 const Manager = lazy(() => import('./pages/manager'))
@@ -47,6 +47,7 @@ export default function AppRoutes() {
   const [navigateUrl, setNavigateUrl] = useAtom($navigate)
   const navigate = useNavigate()
   const isDarkTheme = useAtomValue($isDarkTheme)
+  const addedPages = useAddedPages()
   useApplyTheme(isDarkTheme)
   const themeTokens = isDarkTheme ? darkThemeConfig : lightThemeConfig
   const themeAlgorithm = isDarkTheme ? darkAlgorithm : defaultAlgorithm
@@ -119,9 +120,11 @@ export default function AppRoutes() {
               {/* Support, the changelog and what the add-on adds. */}
               <Route element={<Support />} path="support" />
               <Route element={<Tags />} path="tags" />
-              <Route element={<Products />} path="products" />
               <Route element={<Status />} path="status" />
               <Route element={<TopicTypes />} path="topic-types" />
+              {addedPages.map(page => (
+                <Route element={page.element} key={page.path} path={page.path} />
+              ))}
               <Route element={<Error404 />} path="*" />
             </Route>
           </Routes>

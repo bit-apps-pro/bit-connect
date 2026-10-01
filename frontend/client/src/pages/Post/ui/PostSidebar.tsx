@@ -1,15 +1,15 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { ShareRow } from '@features/share'
-import { type Topic } from '@features/topic-modal/shared/type'
+import { addedTerms, type Topic } from '@features/topic-modal/shared/type'
 import { Tag } from 'antd'
-import { Link } from 'react-router'
 
 import useChipProps from '@/utils/use-chip-props'
 
 import AuthorCard from './AuthorCard'
 import { PANEL, PANEL_TITLE } from './panel-styles'
 import RelatedTopics from './RelatedTopics'
-import TagChips, { CHIP, CHIP_LINK, listingLinkOf } from './tag-chips'
+import TagChips from './tag-chips'
+import TopicDetailTerms from './topic-detail-terms'
 
 /**
  * Desktop-only rail beside a topic.
@@ -22,9 +22,8 @@ import TagChips, { CHIP, CHIP_LINK, listingLinkOf } from './tag-chips'
 export default function PostSidebar({ topic }: { topic: Topic }) {
   const tags = topic.terms?.tags ?? []
   const topicType = topic.terms?.topic_types
-  const department = topic.terms?.departments
+  const hasAddedTerms = TopicDetailTerms !== null && Object.keys(addedTerms(topic.terms)).length > 0
   const { chipTagProps } = useChipProps()
-  const listingLink = listingLinkOf(topic)
 
   return (
     <aside className="bc-hidden bc-w-[300px] bc-shrink-0 xl:bc-block">
@@ -42,7 +41,7 @@ export default function PostSidebar({ topic }: { topic: Topic }) {
           <ShareRow topicSlug={topic.post_name} topicTitle={topic.post_title} variant="panel" />
         </section>
 
-        {(topicType || department || tags.length > 0) && (
+        {(topicType || hasAddedTerms || tags.length > 0) && (
           <section aria-label={__('Topic details')} className={PANEL}>
             <h3 className={PANEL_TITLE}>{__('Topic details')}</h3>
 
@@ -56,15 +55,7 @@ export default function PostSidebar({ topic }: { topic: Topic }) {
                   {topicType.name}
                 </Tag>
               )}
-              {department && (
-                // Links into the listing filtered by this department — the
-                // topics endpoint already understands these query params.
-                <Link className={CHIP_LINK} to={listingLink('product', department.slug)}>
-                  <Tag className={CHIP} title={department.name}>
-                    {department.name}
-                  </Tag>
-                </Link>
-              )}
+              {TopicDetailTerms && <TopicDetailTerms topic={topic} />}
             </div>
 
             <TagChips className="bc-mt-3" topic={topic} />

@@ -22,8 +22,6 @@ declare const SERVER_VARIABLES: {
   /** Whether this user holds bit_connect_forum_moderate — the Activity screen answers to it. */
   canModerate?: boolean
   dateFormat: string
-  /** What the departments taxonomy is called, and its portal URL segment. */
-  departmentNaming?: { plural?: string; singular?: string; slug?: string }
   loggedInUserName: string
   nonce: string
   pluginAdminURL: string

@@ -29,8 +29,6 @@ class Follow extends Model
 {
     public const TARGET_TOPIC = 'topic';
 
-    public const TARGET_DEPARTMENT = 'department';
-
     public const TARGET_TAG = 'tag';
 
     public const TARGET_FORUM = 'forum';

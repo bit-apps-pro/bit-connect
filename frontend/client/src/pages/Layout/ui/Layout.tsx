@@ -41,7 +41,7 @@ export default function Layout() {
 
   // A tap in the phone drawer is a choice made, so it closes on arrival —
   // leaving it open hid the list the reader just picked. Keyed on the location
-  // entry rather than the path: picking a stage inside a department changes
+  // entry rather than the path: picking a stage inside a scoped archive changes
   // only `?stage=`.
   useEffect(() => {
     setSidebarOpen(false)

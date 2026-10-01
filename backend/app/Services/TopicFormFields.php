@@ -25,20 +25,19 @@ final class TopicFormFields
      * the field and required it: true reads as required, false as hidden.
      */
     private const LEGACY_KEYS = [
-        'topicType'  => 'requireTopicType',
-        'department' => 'requireDepartment',
+        'topicType' => 'requireTopicType',
     ];
 
     /**
-     * What a forum that has never saved this screen asks for: both, required.
+     * What a forum that has never saved this screen asks for: a topic type,
+     * required.
      *
-     * @return array{topicType: string, department: string}
+     * @return array{topicType: string}
      */
     public static function defaults(): array
     {
         return [
-            'topicType'  => TopicFieldMode::REQUIRED->value,
-            'department' => TopicFieldMode::REQUIRED->value,
+            'topicType' => TopicFieldMode::REQUIRED->value,
         ];
     }
 
@@ -47,7 +46,7 @@ final class TopicFormFields
      *
      * @param mixed $stored the `topicFormFields` group as saved, or anything else
      *
-     * @return array{topicType: string, department: string}
+     * @return array{topicType: string}
      */
     public static function normalize($stored): array
     {
@@ -70,7 +69,7 @@ final class TopicFormFields
     /**
      * The saved modes.
      *
-     * @return array{topicType: string, department: string}
+     * @return array{topicType: string}
      */
     public static function current(): array
     {
@@ -82,7 +81,7 @@ final class TopicFormFields
     /**
      * Whether a topic cannot be created without this field.
      *
-     * @param string $field `topicType` or `department`
+     * @param string $field `topicType`
      */
     public static function isRequired(string $field): bool
     {

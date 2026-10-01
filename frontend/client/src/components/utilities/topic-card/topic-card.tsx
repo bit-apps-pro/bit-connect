@@ -12,6 +12,7 @@ import { routePath } from '@/utils/route-path'
 import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
+import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
 
 /** "20 Nov 2025" — in the reader's own locale's order. */
@@ -66,7 +67,7 @@ export default function TopicCard({
     post_content: postContent,
     post_date_gmt: postDateGmt,
     post_title: postTitle,
-    terms: { departments, statuses, tags, topic_types: topicTypes },
+    terms: { statuses, tags, topic_types: topicTypes },
     vote: { hasVoted, total }
   } = topic
 
@@ -200,18 +201,7 @@ export default function TopicCard({
             </Tag>
           )}
 
-          {/* The product, from md like the type beside it. Neutral rather than
-              coloured: it names where the topic belongs, not what state it is
-              in, and one more hue on the row would compete with the status. */}
-          {departments && (
-            <Tag
-              className="bc-m-0 bc-hidden bc-max-w-full bc-shrink-0 bc-truncate md:bc-inline-block"
-              title={departments.name}
-              {...chipTagProps()}
-            >
-              {departments.name}
-            </Tag>
-          )}
+          {TopicCardTerms && <TopicCardTerms topic={topic} />}
 
           {/* Tags are the card's least-used signal and the first thing to wrap:
               on a phone they took a second row of their own on some cards and

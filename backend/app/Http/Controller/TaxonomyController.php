@@ -13,6 +13,7 @@ use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\GetTaxonomiesRequest;
 use BitApps\BitConnect\Http\Requests\ReorderTermsRequest;
 use BitApps\BitConnect\Services\TermOrderService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 final class TaxonomyController
 {
@@ -52,13 +53,10 @@ final class TaxonomyController
             }
 
             // Icons ride along for the taxonomies that have them, so the portal
-            // sider can list products with their artwork. get_terms() has
+            // sider can list terms with their artwork. get_terms() has
             // already primed the term meta cache, so these reads cost no query.
-            $hasIcons = \in_array(
-                $taxonomy->name,
-                [Taxonomies::STAGES->value, Taxonomies::STATUSES->value, Taxonomies::DEPARTMENTS->value],
-                true
-            );
+            $hasIcons = \in_array($taxonomy->name, [Taxonomies::STAGES->value, Taxonomies::STATUSES->value], true)
+                || (TopicTaxonomies::forTaxonomy($taxonomy->name)['icons'] ?? false);
 
             // Names are stored escaped ("API &amp; Integrations"); JSON wants the text.
             $termsData = [];

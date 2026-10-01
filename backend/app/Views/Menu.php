@@ -5,7 +5,6 @@ namespace BitApps\BitConnect\Views;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Services\AdminAccessService;
-use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\ReportService;
 
 if (!defined('ABSPATH')) {
@@ -42,7 +41,6 @@ final class Menu
             'General'     => self::getGeneralMenuAttributes(),
             'Stages'      => self::getStagesMenuAttributes(),
             'Topic Types' => self::getTopicTypesMenuAttributes(),
-            'Products'    => self::getProductsMenuAttributes(),
             'Tags'        => self::getTagsMenuAttributes(),
             'Status'      => self::getStatusMenuAttributes(),
             'Manager'     => self::getManagerMenuAttributes(),
@@ -104,17 +102,6 @@ final class Menu
             'name'       => 'Topic Types',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/topic-types',
-        ];
-    }
-
-    private static function getProductsMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => DepartmentNaming::get()['plural'],
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/products',
         ];
     }
 

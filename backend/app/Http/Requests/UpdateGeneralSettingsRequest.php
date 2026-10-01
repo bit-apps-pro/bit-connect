@@ -63,9 +63,8 @@ final class UpdateGeneralSettingsRequest extends Request
             'logoPermalinkCustom' => esc_url_raw($this->logoPermalinkCustom ?? ''),
             'portalAccess'        => \in_array($this->portalAccess, ['everyone', 'logged_in'], true) ? $this->portalAccess : 'everyone',
             'portalFilters'       => [
-                'sort'    => self::isFilterVisible($portalFilters, 'sort'),
-                'product' => self::isFilterVisible($portalFilters, 'product'),
-                'tags'    => self::isFilterVisible($portalFilters, 'tags'),
+                'sort' => self::isFilterVisible($portalFilters, 'sort'),
+                'tags' => self::isFilterVisible($portalFilters, 'tags'),
             ],
             'promo' => $this->promo(),
         ];

@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Services\PortalAccess;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
  * Provides validation for getting all topics.
@@ -17,7 +18,6 @@ use BitApps\BitConnect\Services\PortalAccess;
  * @property null|int $page
  * @property null|int $per_page
  * @property null|string $stages
- * @property null|string $departments
  * @property null|string $topic-types
  * @property null|string $statuses
  * @property null|string $tags
@@ -45,20 +45,26 @@ final class GetAllTopicsRequest extends Request
 
     public function rules()
     {
-        return [
+        $rules = [
             'search'      => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'name'        => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'sortBy'      => ['nullable', 'string', 'sanitize:text', 'max:50'],
             'page'        => ['nullable', 'integer', 'min:1'],
             'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
             'stages'      => ['nullable', 'string', 'sanitize:text', 'max:200'],
-            'departments' => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'topic-types' => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'statuses'    => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'tags'        => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'visibility'  => ['nullable', 'string', 'sanitize:text', 'max:20'],
             'my_topics'   => ['nullable', 'string', 'sanitize:text', 'max:5'],
         ];
+
+        // Term slugs of a taxonomy another plugin files topics under.
+        foreach (array_keys(TopicTaxonomies::all()) as $param) {
+            $rules[$param] = ['nullable', 'string', 'sanitize:text', 'max:200'];
+        }
+
+        return $rules;
     }
 
     public function messages()
@@ -70,7 +76,6 @@ final class GetAllTopicsRequest extends Request
             'per_page.min'    => 'The per_page parameter must be at least 1.',
             'per_page.max'    => 'The per_page parameter cannot exceed 100.',
             'stages.max'      => 'The stages parameter cannot exceed 200 characters.',
-            'departments.max' => 'The departments parameter cannot exceed 200 characters.',
             'topic-types.max' => 'The topic-types parameter cannot exceed 200 characters.',
             'statuses.max'    => 'The statuses parameter cannot exceed 200 characters.',
             'tags.max'        => 'The tags parameter cannot exceed 200 characters.',

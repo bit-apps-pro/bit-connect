@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
  * Provides validation for updating a topic.
@@ -20,7 +21,6 @@ use BitApps\BitConnect\Services\PermissionService;
  * @property null|string $post_status
  * @property null|array $attachments
  * @property null|array $topic-types
- * @property null|array $departments
  * @property null|array $stages
  * @property null|array $statuses
  * @property null|array $tags
@@ -53,12 +53,12 @@ final class UpdateTopicRequest extends Request
 
     public function rules()
     {
-        return [
+        $rules = [
             'id'           => ['required', 'integer', 'min:1'],
             'post_title'   => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'post_content' => ['nullable', 'string', 'max:10000'],
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
-            'post_name'   => ['nullable', 'string', 'sanitize:title', 'max:200'],
+            'post_name' => ['nullable', 'string', 'sanitize:title', 'max:200'],
             // Publish is the only status this endpoint sets. Sending it for a
             // topic that is currently private makes it public, the same way
             // clearing a capability override is always available. Omitting the
@@ -67,7 +67,6 @@ final class UpdateTopicRequest extends Request
             'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
-            'departments' => ['nullable', 'integer', 'min:1'],
             'stages'      => ['nullable', 'min:1'],
             'statuses'    => ['nullable', 'integer', 'min:1'],
             'tags'        => ['nullable', 'array'],
@@ -75,6 +74,13 @@ final class UpdateTopicRequest extends Request
             'is_pinned'   => ['nullable', 'boolean'],
             'is_locked'   => ['nullable', 'boolean'],
         ];
+
+        // A taxonomy another plugin files topics under — see TopicTaxonomies.
+        foreach (array_keys(TopicTaxonomies::all()) as $param) {
+            $rules[$param] = ['nullable', 'integer', 'min:1'];
+        }
+
+        return $rules;
     }
 
     public function messages()
@@ -90,8 +96,6 @@ final class UpdateTopicRequest extends Request
             'attachments.*.max'     => 'Each attachment file cannot exceed 10MB.',
             'topic-types.*.integer' => 'Each topic type must be a valid ID.',
             'topic-types.*.min'     => 'Each topic type ID must be at least 1.',
-            'departments.*.integer' => 'Each department must be a valid ID.',
-            'departments.*.min'     => 'Each department ID must be at least 1.',
             'stages.*.integer'      => 'Each stage must be a valid ID.',
             'stages.*.min'          => 'Each stage ID must be at least 1.',
             'statuses.*.integer'    => 'Each status must be a valid ID.',

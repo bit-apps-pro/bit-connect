@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Services\PortalTaxonomies;
 
 /**
  * Every SEO behaviour an administrator can steer, in one option.
@@ -31,7 +32,7 @@ enum SeoSettings: string
      */
     public static function defaults(): array
     {
-        return [
+        $defaults = [
             // Which term archives, by URL segment, are offered to search: an
             // indexable archive is also listed in the sitemap, and one that is
             // not is still served to visitors, marked noindex. Subject
@@ -39,9 +40,8 @@ enum SeoSettings: string
             // sidebar navigates by; status is a workflow state nobody looks up
             // and nothing links to, and its archives churn constantly.
             'indexArchives' => [
-                'topic'      => true,
-                'department' => true,
-                'tag'        => true,
+                'topic' => true,
+                'tag'   => true,
                 // The sidebar navigates by stage, so these are the portal's
                 // primary browse pages rather than a workflow filter nobody
                 // links to — every page in the portal points at them, and
@@ -56,6 +56,14 @@ enum SeoSettings: string
             // the site's call and off until it is made.
             'indexProfiles' => false,
         ];
+
+        // An archive another plugin adds is a subject taxonomy too — what a
+        // topic is about — so it starts indexed like the others.
+        foreach (PortalTaxonomies::segments() as $segment) {
+            $defaults['indexArchives'][$segment] ??= true;
+        }
+
+        return $defaults;
     }
 
     /**

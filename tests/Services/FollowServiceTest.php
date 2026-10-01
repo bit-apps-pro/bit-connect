@@ -190,14 +190,29 @@ final class FollowServiceTest extends TestCase
     // What counts as a target
     // -----------------------------------------------------------------------
 
-    public function testTheFourThingsAMemberMayFollow(): void
+    public function testTheThreeThingsAMemberMayFollow(): void
     {
-        foreach ([Follow::TARGET_TOPIC, Follow::TARGET_DEPARTMENT, Follow::TARGET_TAG, Follow::TARGET_FORUM] as $type) {
+        foreach ([Follow::TARGET_TOPIC, Follow::TARGET_TAG, Follow::TARGET_FORUM] as $type) {
             $this->assertTrue(FollowService::isValidTargetType($type), $type . ' should be followable');
         }
 
         $this->assertFalse(FollowService::isValidTargetType('comment'));
         $this->assertFalse(FollowService::isValidTargetType(''));
+    }
+
+    public function testATermOfAnAddedTaxonomyMayBeFollowedByTheTypeItNames(): void
+    {
+        $this->assertFalse(FollowService::isValidTargetType('team'));
+
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'follow' => 'team'],
+        ];
+
+        $this->assertTrue(FollowService::isValidTargetType('team'));
+
+        $GLOBALS['__wp_taxonomies'] = [];
+        unset($GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']);
     }
 
     /**

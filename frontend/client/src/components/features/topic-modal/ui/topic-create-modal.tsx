@@ -1,6 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useFileStore from '@features/file-uploader/state/use-file-store'
-import useListingSelection from '@pages/Layout/data/use-listing-selection'
 import { Button, Form, Modal } from 'antd'
 import { useEffect } from 'react'
 
@@ -16,17 +15,6 @@ export default function TopicCreateModal() {
   const [form] = Form.useForm()
   const taxonomies = useTaxonomiesStoreSelect()
   const { isSavingTopic, saveTopic } = useSaveTopic(form)
-  const { department } = useListingSelection()
-
-  // Opened from a department's listing, a new topic most likely belongs there,
-  // so that department starts filled in — still the author's to change. Set
-  // once the form has mounted, which it does only while the modal is open.
-  useEffect(() => {
-    if (!isCreateModalOpen || department === '') return
-
-    const term = taxonomies?.['bit-connect-departments']?.find(item => item.slug === department)
-    if (term && form.getFieldValue('departments') === undefined) form.setFieldValue('departments', term.id)
-  }, [isCreateModalOpen, department, taxonomies, form])
 
   useEffect(() => {
     if (!isCreateModalOpen) return

@@ -57,7 +57,13 @@ final class UpdateSeoSettingsRequest extends Request
 
         return [
             'indexProfiles' => $this->flag('indexProfiles', $defaults['indexProfiles']),
-            'indexArchives' => $this->group('indexArchives', $defaults['indexArchives']),
+            // Over what is stored, so the switch of an archive that is not
+            // served right now — one a plugin adds, while it is switched off —
+            // survives a save made in the meantime.
+            'indexArchives' => $this->group(
+                'indexArchives',
+                array_merge(SeoSettings::all()['indexArchives'], $defaults['indexArchives'])
+            ),
         ];
     }
 

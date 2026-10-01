@@ -200,9 +200,16 @@ final class FollowService
 
     public static function isValidTargetType(string $targetType): bool
     {
+        // A taxonomy another plugin files topics under can be followed by its
+        // terms the way tags are — see TopicTaxonomies.
         return \in_array(
             $targetType,
-            [Follow::TARGET_TOPIC, Follow::TARGET_DEPARTMENT, Follow::TARGET_TAG, Follow::TARGET_FORUM],
+            [
+                Follow::TARGET_TOPIC,
+                Follow::TARGET_TAG,
+                Follow::TARGET_FORUM,
+                ...array_filter(array_column(TopicTaxonomies::all(), 'follow')),
+            ],
             true
         );
     }

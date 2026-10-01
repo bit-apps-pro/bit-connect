@@ -7,13 +7,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use BitApps\BitConnect\Enum\Taxonomies;
 
 /**
  * Carries the term meta this plugin writes over to its prefixed keys.
  *
- * The colour, icon, default flag and position on a topic type, department,
- * stage or status used to sit under bare keys — `color`, `icon_url`, `order`
+ * The colour, icon, default flag and position on a topic type, stage, status
+ * or a term of an added taxonomy used to sit under bare keys — `color`, `icon_url`, `order`
  * and so on. Term meta is one shared table, so a bare key is a name any other
  * plugin could write to the same term. Every reader and writer now uses the
  * `bit_connect_` keys; this moves what existing sites already stored.
@@ -61,10 +60,10 @@ final class TermMetaKeys
 
         $moved = 0;
 
-        foreach (Taxonomies::cases() as $taxonomy) {
+        foreach (TopicTaxonomies::names() as $taxonomy) {
             $terms = get_terms(
                 [
-                    'taxonomy'   => $taxonomy->value,
+                    'taxonomy'   => $taxonomy,
                     'hide_empty' => false,
                 ]
             );

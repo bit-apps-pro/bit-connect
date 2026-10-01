@@ -53,6 +53,12 @@ interface UserInfo {
   username: string
 }
 
+/** A term archive: the topics filter its segment pins, and the taxonomy behind it. */
+export interface PortalArchive {
+  filter: string
+  taxonomy: string
+}
+
 interface ConfigType {
   API_URL: string
   AUTH_MODE: 'custom_url' | 'plugin_default'
@@ -65,11 +71,6 @@ interface ConfigType {
   DATE_FORMAT: string
   DEFAULT_STAGE_SLUG: string
   DEFAULT_STATUS_SLUG: string
-  /**
-   * What the departments taxonomy is called, already translated, and the
-   * segment its archives answer to — see DepartmentNaming.php.
-   */
-  DEPARTMENT_NAMING: { plural: string; singular: string; slug: string }
   FREE_VERSION: string
   IS_DEV: boolean
   IS_LOGGED_IN: boolean
@@ -80,7 +81,13 @@ interface ConfigType {
   NONCE: string
   PLUGIN_SLUG: string
   PORTAL_ACCESS: 'everyone' | 'logged_in'
-  PORTAL_FILTERS: { product: boolean; sort: boolean; tags: boolean }
+  /**
+   * URL segment of each term archive the portal serves → the topics filter it
+   * pins and the taxonomy behind it. Mirrors PortalTaxonomies::map() on the
+   * server, which a plugin may add to — see BaseView::portalArchives().
+   */
+  PORTAL_ARCHIVES: Record<string, PortalArchive>
+  PORTAL_FILTERS: { sort: boolean; tags: boolean }
   POST_URL: string
   PRO_API_URL: string
   PRODUCT_NAME: string
@@ -130,8 +137,14 @@ const portalFilters = getServerVariable('portalFilters', {}) ?? {}
 // about a "missing" server variable on every load of every portal that did not.
 const promo = getServerVariable('promo', {}) ?? {}
 
-// Missing only during the SSR prerender, where the English defaults stand in.
-const departmentNaming = SERVER_VARIABLES?.departmentNaming ?? {}
+// This plugin's own archives. Missing from the server variables only during
+// the SSR prerender, where these stand in.
+const ownArchives: Record<string, PortalArchive> = {
+  stage: { filter: 'stages', taxonomy: 'bit-connect-stages' },
+  status: { filter: 'statuses', taxonomy: 'bit-connect-statuses' },
+  tag: { filter: 'tags', taxonomy: 'bit-connect-tags' },
+  topic: { filter: 'topic-types', taxonomy: 'bit-connect-topic-types' }
+}
 
 const config = {
   // Endpoint URLs come only from the server (wp_login_url(), get_rest_url()):
@@ -156,11 +169,6 @@ const config = {
   // fresh install happens to start with.
   DEFAULT_STAGE_SLUG: getServerVariable('defaultStageSlug', 'questions') || 'questions',
   DEFAULT_STATUS_SLUG: getServerVariable('defaultStatusSlug', 'need-approval') || 'need-approval',
-  DEPARTMENT_NAMING: {
-    plural: departmentNaming.plural || 'Departments',
-    singular: departmentNaming.singular || 'Department',
-    slug: departmentNaming.slug || 'department'
-  },
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
   IS_LOGGED_IN:
@@ -184,8 +192,8 @@ const config = {
   PORTAL_ACCESS: (getServerVariable('portalAccess', 'everyone') ?? 'everyone') as
     | 'everyone'
     | 'logged_in',
+  PORTAL_ARCHIVES: SERVER_VARIABLES?.portalArchives ?? ownArchives,
   PORTAL_FILTERS: {
-    product: portalFilters.product !== false,
     sort: portalFilters.sort !== false,
     tags: portalFilters.tags !== false
   },

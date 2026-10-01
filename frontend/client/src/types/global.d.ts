@@ -56,8 +56,6 @@ declare const SERVER_VARIABLES: {
   dateFormat: string
   defaultStageSlug?: string
   defaultStatusSlug?: string
-  /** What the departments taxonomy is called, and its portal URL segment. */
-  departmentNaming?: { plural?: string; singular?: string; slug?: string }
   isLoggedIn?: '0' | '1' | boolean
   loggedInUserName: string
   loginPageCustomization?: {
@@ -72,7 +70,9 @@ declare const SERVER_VARIABLES: {
   pluginAdminURL: string
   pluginSlug: string
   portalAccess?: 'everyone' | 'logged_in'
-  portalFilters?: { product?: boolean; sort?: boolean; tags?: boolean }
+  /** URL segment → the filter its archive pins and its taxonomy — see BaseView. */
+  portalArchives?: Record<string, { filter: string; taxonomy: string }>
+  portalFilters?: { sort?: boolean; tags?: boolean }
   postURL: string
   proApiURL: string
   promo?: {

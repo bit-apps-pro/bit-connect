@@ -1,11 +1,10 @@
 import NotifyContext from '@common/context/NotifyContext'
-import { __, sprintf } from '@common/helpers/i18nWrap'
+import { __ } from '@common/helpers/i18nWrap'
 import { uploadRequest } from '@common/helpers/request'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
-import config from '@config/config'
 import FileUploader from '@features/file-uploader'
 import useFileStore, { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import FileList from '@features/file-uploader/ui/file-list'
@@ -17,6 +16,7 @@ import { type ChangeEvent, useCallback, useContext, useMemo, useState } from 're
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 
+import useAddedTermFields from '../data/use-added-term-fields'
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 import useVisibilityOptions from '../data/use-visibility-options'
 import PermalinkField from './permalink-field'
@@ -48,13 +48,12 @@ export default function TopicForm({
   const [isPermalinkOpen, setIsPermalinkOpen] = useState(false)
   // The search title's placeholder names what a blank one falls back to.
 
-  // An admin sets each taxonomy hidden, optional or required (Settings → Topic
-  // form), and the row's layout depends on how many are shown. The server
-  // enforces "required" as well — see CreateTopicRequest.
+  // An admin sets the topic type hidden, optional or required (Settings →
+  // Topic form), and the row's layout depends on how many fields are shown. The
+  // server enforces "required" as well — see CreateTopicRequest.
   const topicTypeMode = topicFormFields?.topicType ?? 'required'
-  const departmentMode = topicFormFields?.department ?? 'required'
   const showTopicType = topicTypeMode !== 'hidden'
-  const showDepartment = departmentMode !== 'hidden'
+  const addedTermFields = useAddedTermFields({ form, isEditMode: !!isEditMode })
 
   // Both modals mount this form only while they are open, so the flag starts
   // false on every open without needing to watch the modal itself.
@@ -112,15 +111,6 @@ export default function TopicForm({
   const topicTypeOptions = useMemo(
     () =>
       taxonomies?.['bit-connect-topic-types']?.map(term => ({
-        label: term.name,
-        value: term.id
-      })) || [],
-    [taxonomies]
-  )
-
-  const departmentOptions = useMemo(
-    () =>
-      taxonomies?.['bit-connect-departments']?.map(term => ({
         label: term.name,
         value: term.id
       })) || [],
@@ -218,14 +208,14 @@ export default function TopicForm({
       </Form.Item>
 
       {/* Two columns only when there are two fields to fill them: an admin can
-          switch either off, and the survivor should take the whole row rather
-          than sit at half width beside dead space. One column on phones
+          switch Topic Type off, and a lone field should take the whole row
+          rather than sit at half width beside dead space. One column on phones
           regardless — side-by-side selects truncate their placeholders long
           before the modal is narrow enough to feel cramped. */}
-      {(showTopicType || showDepartment) && (
+      {(showTopicType || addedTermFields.length > 0) && (
         <div
           className={`bc-mb-4 bc-grid bc-grid-cols-1 bc-gap-4 ${
-            showTopicType && showDepartment ? 'sm:bc-grid-cols-2' : ''
+            Number(showTopicType) + addedTermFields.length > 1 ? 'sm:bc-grid-cols-2' : ''
           }`}
         >
           {showTopicType && (
@@ -243,27 +233,7 @@ export default function TopicForm({
             </Form.Item>
           )}
 
-          {showDepartment && (
-            <Form.Item
-              className="bc-mb-0"
-              label={config.DEPARTMENT_NAMING.singular}
-              name="departments"
-              rules={[
-                {
-                  // translators: %s: what the portal calls a department.
-                  message: sprintf(__('%s is required'), config.DEPARTMENT_NAMING.singular),
-                  required: departmentMode === 'required'
-                }
-              ]}
-            >
-              <Select
-                allowClear={departmentMode === 'optional'}
-                options={departmentOptions}
-                // translators: %s: what the portal calls a department.
-                placeholder={sprintf(__('Select %s'), config.DEPARTMENT_NAMING.singular)}
-              />
-            </Form.Item>
-          )}
+          {addedTermFields}
         </div>
       )}
 

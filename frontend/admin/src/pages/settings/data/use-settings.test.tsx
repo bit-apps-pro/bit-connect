@@ -26,7 +26,7 @@ describe('the settings screen’s values', () => {
       stored({
         cleanup: { deleteDataOnUninstall: true },
         topicAccess: { comment: false, upvote: false },
-        topicFormFields: { department: 'hidden', topicType: 'optional' }
+        topicFormFields: { topicType: 'optional' }
       }) as never
     )
     const { wrapper } = createQueryWrapper()
@@ -38,7 +38,7 @@ describe('the settings screen’s values', () => {
     expect(result.current.settings).toEqual({
       cleanup: { deleteDataOnUninstall: true },
       topicAccess: { comment: false, upvote: false },
-      topicFormFields: { department: 'hidden', topicType: 'optional' }
+      topicFormFields: { topicType: 'optional' }
     })
   })
 
@@ -52,7 +52,7 @@ describe('the settings screen’s values', () => {
 
     expect(result.current.settings.topicAccess.comment).toBe(false)
     expect(result.current.settings.topicAccess.upvote).toBe(true)
-    expect(result.current.settings.topicFormFields.department).toBe('required')
+    expect(result.current.settings.topicFormFields.topicType).toBe('required')
   })
 
   // An older build of the server wrote a `moderation` group. It is not a

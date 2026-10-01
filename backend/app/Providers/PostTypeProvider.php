@@ -10,7 +10,6 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\DefaultTermService;
-use BitApps\BitConnect\Services\DepartmentNaming;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TermOrderService;
@@ -125,7 +124,6 @@ class PostTypeProvider
             'show_in_rest'          => true,
             'taxonomies'            => [
                 Taxonomies::TOPIC_TYPES->value,
-                Taxonomies::DEPARTMENTS->value,
                 Taxonomies::STAGES->value,
                 Taxonomies::STATUSES->value,
                 Taxonomies::TAGS->value,
@@ -153,13 +151,6 @@ class PostTypeProvider
             Taxonomies::TOPIC_TYPES->value,
             _x('Topic Type', 'Taxonomy Singular Name', 'bit-connect'),
             _x('Topic Types', 'Taxonomy General Name', 'bit-connect'),
-            true
-        );
-        $departmentNaming = DepartmentNaming::get();
-        $this->registerTaxonomy(
-            Taxonomies::DEPARTMENTS->value,
-            $departmentNaming['singular'],
-            $departmentNaming['plural'],
             true
         );
         $this->registerTaxonomy(
@@ -320,30 +311,6 @@ class PostTypeProvider
             );
         }
 
-        foreach ([Taxonomies::DEPARTMENTS->value] as $iconTaxonomy) {
-            register_term_meta(
-                $iconTaxonomy,
-                'bit_connect_icon_url',
-                [
-                    'type'              => 'string',
-                    'single'            => true,
-                    'sanitize_callback' => 'sanitize_text_field',
-                    'show_in_rest'      => true,
-                ]
-            );
-
-            register_term_meta(
-                $iconTaxonomy,
-                'bit_connect_icon_id',
-                [
-                    'type'              => 'integer',
-                    'single'            => true,
-                    'sanitize_callback' => 'absint',
-                    'show_in_rest'      => true,
-                ]
-            );
-        }
-
         $this->addIconDarkTermMetaFields();
     }
 
@@ -401,7 +368,6 @@ class PostTypeProvider
         $iconTaxonomies = [
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
-            Taxonomies::DEPARTMENTS->value,
         ];
 
         foreach ($iconTaxonomies as $taxonomy) {
