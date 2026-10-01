@@ -1,5 +1,5 @@
 import { createThemeAtoms } from '@shared/theme/theme-atoms'
-import { readStoredMode, type ThemeMode } from '@shared/theme/theme-mode'
+import { DEFAULT_THEME_MODE, readStoredMode, type ThemeMode } from '@shared/theme/theme-mode'
 import { atomWithStorage } from 'jotai/utils'
 import { type SyncStorage } from 'jotai/vanilla/utils/atomWithStorage'
 
@@ -20,11 +20,11 @@ const $appConfig = atomWithStorage<AppConfigType>(
     isSidebarCollapsed: false,
     isWpMenuCollapsed: false,
     preferNodeDetailsInDrawer: false,
-    // Not `getColorPreference()`. Resolving the OS preference into the default
-    // would bake one reading of it into storage the first time anything writes
-    // this blob; "system" stays a live subscription instead — see
-    // `@shared/theme/theme-atoms`.
-    themeMode: 'system'
+    // A mode, not `getColorPreference()`: resolving the OS preference here would
+    // bake one reading of it into storage the first time anything writes this
+    // blob, so a visitor who picks "system" keeps a live subscription instead —
+    // see `@shared/theme/theme-atoms`.
+    themeMode: DEFAULT_THEME_MODE
   },
   {
     // There is no localStorage during a server render, and reading it would throw

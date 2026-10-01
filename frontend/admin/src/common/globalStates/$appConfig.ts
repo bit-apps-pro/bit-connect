@@ -1,5 +1,5 @@
 import { createThemeAtoms } from '@shared/theme/theme-atoms'
-import { readStoredMode, type ThemeMode } from '@shared/theme/theme-mode'
+import { DEFAULT_THEME_MODE, readStoredMode, type ThemeMode } from '@shared/theme/theme-mode'
 import { atomWithStorage } from 'jotai/utils'
 import { type SyncStorage } from 'jotai/vanilla/utils/atomWithStorage'
 
@@ -18,9 +18,9 @@ const $appConfig = atomWithStorage<AppConfigType>(
     isSidebarCollapsed: false,
     isWpMenuCollapsed: false,
     preferNodeDetailsInDrawer: false,
-    // Not the OS preference resolved to a boolean: "system" stays a live
-    // subscription rather than one reading of the OS frozen into storage.
-    themeMode: 'system'
+    // A mode, not the OS preference resolved to a boolean: a visitor who picks
+    // "system" keeps a live subscription rather than one frozen reading.
+    themeMode: DEFAULT_THEME_MODE
   },
   {
     getItem: (key: string) => {

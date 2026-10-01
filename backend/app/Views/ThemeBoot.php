@@ -47,6 +47,8 @@ final class ThemeBoot
         // - the catch swallows a quota-blocked, disabled or partitioned
         //   localStorage, which throws on read. Light is what the server markup
         //   is styled for, so failing closed costs a flash at worst.
+        // - m starts at "light", matching DEFAULT_THEME_MODE: a browser with
+        //   nothing stored — a fresh install — opens in light, not the OS theme.
         // - Config::SLUG is the same value the frontend reads as `pluginSlug`,
         //   and the config atom keys its blob `${pluginSlug}-config`.
         wp_add_inline_script(
@@ -54,7 +56,7 @@ final class ThemeBoot
             \sprintf(
                 <<<'JS'
                 (function(){try{
-                var m="system",r=localStorage.getItem(%s);
+                var m="light",r=localStorage.getItem(%s);
                 if(r){var v=JSON.parse(r);
                 if(v&&(v.themeMode==="dark"||v.themeMode==="light"||v.themeMode==="system")){m=v.themeMode;}
                 else if(v&&typeof v.isDarkTheme==="boolean"){m=v.isDarkTheme?"dark":"light";}}
