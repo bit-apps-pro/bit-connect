@@ -135,6 +135,58 @@ final class CapabilityService
         }
     }
 
+    /**
+     * Removes every forum_* override granted to an individual user.
+     *
+     * Uninstall only. Deactivation runs removeAllCapabilities() alone and must
+     * not reach these: they are what an administrator set on the user
+     * management screen, and a reactivated forum should still have them.
+     *
+     * @param array<int, int> $userIds users to clear; empty means every user
+     *                                 holding a forum capability of their own
+     *
+     * @return int how many users had an override removed
+     */
+    public static function removeAllUserCapabilities(array $userIds = []): int
+    {
+        // Narrowed by usermeta for the reason migrateModerateSplitForUsers()
+        // gives. Every forum capability shares the `bit_connect_forum_` stem.
+        $users = $userIds === []
+            ? get_users(
+                [
+                    'fields' => 'ID',
+                    // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Narrowing on the indexed capabilities meta is what keeps this off a full user-table scan.
+                    'meta_key'   => $GLOBALS['wpdb']->get_blog_prefix() . 'capabilities',
+                    'meta_value' => 'bit_connect_forum_',
+                    // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+                    'meta_compare' => 'LIKE',
+                ]
+            )
+            : $userIds;
+        $updated = 0;
+
+        foreach ($users as $userId) {
+            $user = get_userdata((int) $userId);
+
+            if (!$user) {
+                continue;
+            }
+
+            // A revoke is stored as an explicit false, so test presence, not truth.
+            $held = array_intersect(ExtensionPoints::capabilities(), array_keys((array) $user->caps));
+
+            foreach ($held as $cap) {
+                $user->remove_cap($cap);
+            }
+
+            if ($held !== []) {
+                ++$updated;
+            }
+        }
+
+        return $updated;
+    }
+
     // -------------------------------------------------------------------------
     // Default settings generation
     // -------------------------------------------------------------------------

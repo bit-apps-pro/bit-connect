@@ -17,6 +17,7 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Controller\PortalSlugController;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\CapabilityService;
 
 final class InstallerProvider
 {
@@ -98,7 +99,11 @@ final class InstallerProvider
         self::deletePluginTerms();
         self::deletePluginTaxonomies();
         self::deletePluginOptions();
+        self::deletePluginUserMeta();
         AuthService::removeCustomRole();
+        // Here and not in removeCustomRole(): that also runs on deactivation,
+        // which must leave an administrator's per-user grants in place.
+        CapabilityService::removeAllUserCapabilities();
         Hooks::doAction(self::$_uninstallHook);
     }
 
@@ -258,6 +263,47 @@ final class InstallerProvider
         }
 
         return strpos($optionName, Config::withPrefix('pro_')) !== 0;
+    }
+
+    /**
+     * Every user meta key this plugin writes.
+     *
+     * Named one by one rather than swept by prefix, unlike the options: the
+     * add-on stores members' badges under `bit_connect_profile_badges`, inside
+     * this plugin's prefix but outside `bit_connect_pro_`, so no prefix rule
+     * tells the two apart. A key added to a service and not here outlives the
+     * uninstall — UninstallCleanupTest reads each service's constant to catch it.
+     *
+     * @return array<int, string>
+     */
+    public static function ownUserMetaKeys(): array
+    {
+        return [
+            'bit_connect_avatar_id',
+            'bit_connect_cover_id',
+            'bit_connect_bio',
+            'bit_connect_social_links',
+            'bit_connect_profile_slug',
+            'bit_connect_profile_slug_aliases',
+            'bit_connect_slug_is_custom',
+            'bit_connect_notification_prefs',
+            'bit_connect_last_digest',
+            'bit_connect_pending_email',
+            'bit_connect_email_change_token',
+            'bit_connect_email_change_expiry',
+            Config::withPrefix('front_page_notice_dismissed'),
+        ];
+    }
+
+    /**
+     * Public for the same reason as deletePluginPosts().
+     */
+    public static function deletePluginUserMeta()
+    {
+        foreach (self::ownUserMetaKeys() as $metaKey) {
+            // $delete_all: the key from every user at once, not one user's copy.
+            delete_metadata('user', 0, $metaKey, '', true);
+        }
     }
 
     private static function shouldDeleteDataOnUninstall()
