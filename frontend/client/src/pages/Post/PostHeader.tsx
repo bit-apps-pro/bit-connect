@@ -30,6 +30,8 @@ import { formattedDate } from './PostDetailsPage'
 import HiddenTopicNotice from './ui/hidden-topic-notice'
 import TagChips from './ui/tag-chips'
 
+const STATUS_MENU_WIDTH = 180
+
 export default function PostHeader({
   post,
   voteBox
@@ -367,6 +369,9 @@ export default function PostHeader({
   // room. Under it they have the full width and cost the title nothing.
   // A plain wrapping row rather than antd's Space, whose items have no width
   // cap: a long stage or status name grew its select past the screen edge.
+  // The menus get a fixed width rather than the trigger's: the trigger is only
+  // as wide as the current value, so a short one ("Open") squeezed the menu
+  // until every other option was truncated.
   const statusControls = (
     <div className="bc-flex bc-max-w-full bc-flex-wrap bc-items-center bc-gap-2">
       {canModerate && (
@@ -377,6 +382,7 @@ export default function PostHeader({
           loading={isStageLoading}
           onChange={handleStageChange}
           options={stageOptions}
+          popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Topic stage')}
           value={post.terms.stages?.term_id}
@@ -391,6 +397,7 @@ export default function PostHeader({
           loading={isLoading}
           onChange={handleStatusChange}
           options={statusOptions}
+          popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Topic status')}
           value={post.terms.statuses?.term_id}
