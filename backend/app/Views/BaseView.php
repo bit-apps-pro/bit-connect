@@ -9,6 +9,7 @@ use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
@@ -147,6 +148,9 @@ class BaseView
                 'maxUploadBytes'      => wp_max_upload_size(),
                 'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),
             ],
+            // Both editors and the upload check read these, so a file or an image
+            // the portal lets through is one the server accepts. See PostingLimits.
+            'postingLimits' => PostingLimits::all(),
             // Sent with the page so the bell's badge is right on first paint
             // instead of appearing a beat after the header draws. The portal
             // polls for changes after that; this is only the starting value.

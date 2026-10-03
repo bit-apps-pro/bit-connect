@@ -30,8 +30,9 @@ export default function useUpdateSettings() {
     onError: () => {
       messageApi?.error(__('Failed to update settings'))
     },
+    // No success toast: the screen saves as it changes, and its status line
+    // says so. A toast per switch would be noise.
     onSuccess: () => {
-      messageApi?.success(__('Settings updated successfully'))
       queryClient.invalidateQueries({ queryKey: ['settings'] })
     }
   })

@@ -53,6 +53,46 @@ interface UserInfo {
   username: string
 }
 
+interface ContextLimits {
+  attachments: number
+  characters: number
+  images: number
+}
+
+/**
+ * The limits in force, with "no limit" as Infinity rather than the server's
+ * null, so every check is a plain comparison: nothing is ever >= Infinity, and
+ * Infinity > 0 keeps a control on screen.
+ */
+export interface PostingLimits {
+  comment: ContextLimits
+  maxFileSize: number
+  topic: ContextLimits
+}
+
+const NO_LIMIT = Number.POSITIVE_INFINITY
+
+const toContextLimits = (raw?: Partial<Record<keyof ContextLimits, null | number>>): ContextLimits => ({
+  attachments: raw?.attachments ?? NO_LIMIT,
+  characters: raw?.characters ?? NO_LIMIT,
+  images: raw?.images ?? NO_LIMIT
+})
+
+/**
+ * Read once from the page (PostingLimits::all()). Missing only during the SSR
+ * prerender, where nothing is posted; the fallbacks are this plugin's own
+ * answer — no limit, and the server's upload cap.
+ */
+function readPostingLimits(): PostingLimits {
+  const raw = SERVER_VARIABLES?.postingLimits
+
+  return {
+    comment: toContextLimits(raw?.comment),
+    maxFileSize: raw?.maxFileSize ?? SERVER_VARIABLES?.wpMediaSettings?.maxUploadBytes ?? 5 * 1024 * 1024,
+    topic: toContextLimits(raw?.topic)
+  }
+}
+
 /** A term archive: the topics filter its segment pins, and the taxonomy behind it. */
 export interface PortalArchive {
   filter: string
@@ -89,6 +129,8 @@ interface ConfigType {
   PORTAL_ARCHIVES: Record<string, PortalArchive>
   PORTAL_FILTERS: { sort: boolean; tags: boolean }
   POST_URL: string
+  /** How long a topic or reply may be and what media it may carry — see PostingLimits.php. */
+  POSTING_LIMITS: PostingLimits
   PRO_API_URL: string
   PRODUCT_NAME: string
   /**
@@ -224,6 +266,7 @@ const config = {
   // commonest correct answer, and getServerVariable treats a falsy value as
   // "missing" — so a member with nothing unread would otherwise warn on every
   // page load and fall through to whatever default was passed.
+  POSTING_LIMITS: readPostingLimits(),
   UNREAD_NOTIFICATIONS: Number(SERVER_VARIABLES?.unreadNotifications ?? 0) || 0,
   WP_LOGIN_URL: getServerVariable('wpLoginURL'),
   WP_MEDIA_SETTINGS: getServerVariable('wpMediaSettings', {

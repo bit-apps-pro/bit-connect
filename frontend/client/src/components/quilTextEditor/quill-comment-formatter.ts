@@ -37,8 +37,7 @@ export const COMMENT_LIMITS = {
   /** MySQL comment_content column is TEXT = 65,535 bytes */
   MAX_HTML_BYTES: 65_000,
   MAX_LINKS: 5,
-  MAX_NESTING_DEPTH: 8,
-  MAX_TEXT_CHARS: 5000
+  MAX_NESTING_DEPTH: 8
 } as const
 
 // ---------------------------------------------------------------------------
@@ -96,16 +95,6 @@ export function formatCommentForWordPress(quillHtml: string): string {
 
   const raw = serializeBody(doc.body)
   return finalCleanup(raw)
-}
-
-/**
- * Quick character-count check for the comment editor UI.
- * Returns number of plain-text characters (not HTML length).
- */
-export function getCommentPlainTextLength(quillHtml: string): number {
-  const tmp = document.createElement('div')
-  tmp.innerHTML = quillHtml
-  return (tmp.textContent || '').length
 }
 
 // ---------------------------------------------------------------------------

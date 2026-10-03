@@ -1555,6 +1555,15 @@ if (!function_exists('wp_delete_comment')) {
 // Uploads
 // ---------------------------------------------------------------------------
 
+if (!function_exists('wp_max_upload_size')) {
+    // What php.ini lets through. Generous by default so the plugin's own limit is
+    // the one a test meets; a test of the server's cap seeds a smaller one.
+    function wp_max_upload_size()
+    {
+        return $GLOBALS['__wp_max_upload_size'] ?? 64 * 1024 * 1024;
+    }
+}
+
 if (!function_exists('sanitize_file_name')) {
     function sanitize_file_name($name)
     {

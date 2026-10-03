@@ -18,6 +18,8 @@ interface LocationSectionProps {
   disabled: boolean
   onCopy: (value: string) => void
   onSlugChange: (slug: string) => void
+  /** Saves the slug: on leaving the field or pressing Enter, never mid-word. */
+  onSlugCommit: () => void
   portalPage: PortalPage
   slug: string
 }
@@ -39,6 +41,7 @@ export default function LocationSection({
   disabled,
   onCopy,
   onSlugChange,
+  onSlugCommit,
   portalPage,
   slug
 }: LocationSectionProps) {
@@ -210,7 +213,9 @@ export default function LocationSection({
           <Input
             addonBefore="/"
             disabled={disabled || portalPage.root}
+            onBlur={onSlugCommit}
             onChange={e => onSlugChange(e.target.value)}
+            onPressEnter={onSlugCommit}
             placeholder={__('e.g. community')}
             value={portalPage.root ? '' : slug}
           />

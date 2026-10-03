@@ -1,39 +1,77 @@
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { createContext, useCallback, useMemo, useState } from 'react'
 
-/** A card's own unsaved values, and how to write them. */
-export interface SaveParticipant {
-  isDirty: boolean
-  save: () => Promise<unknown>
+/** Where one part of a screen stands with what it has been asked to save. */
+export type AutoSaveStatus = 'error' | 'idle' | 'invalid' | 'pending' | 'saved' | 'saving'
+
+export interface AutoSaveState {
+  /** Why the last save failed, or why the value is not being saved. */
+  error?: string
+  /** Saves now, skipping the delay — also how a failed save is retried. */
+  flush?: () => void
+  /** The last save failed to reach the server, and is being retried. */
+  retrying?: boolean
+  status: AutoSaveStatus
 }
 
-type ReportParticipant = (key: string, participant?: SaveParticipant) => void
+type ReportSave = (key: string, state?: AutoSaveState) => void
 
 /**
- * How a card joins its page's one Save button.
+ * How a card tells its page how its saving is going.
  *
- * Most of a settings page is state the page itself holds. A card whose values
- * are stored somewhere else reports them here instead, and Save writes them
- * alongside — so the screen never has a second button that saves only part of
- * it. The page provides the context; Notifications and General both do.
+ * Every settings screen saves as it is changed, and shows one line saying
+ * whether everything on it has been saved. A card whose values are stored
+ * behind another endpoint saves itself through useAutoSave and reports here
+ * under its own key, so that line covers it too. Undefined outside a page that
+ * shows one, where a card simply saves.
  */
-// Undefined outside the page, where a card has no Save to join.
-export const PageSaveContext = createContext<ReportParticipant | undefined>(undefined)
+export const PageSaveContext = createContext<ReportSave | undefined>(undefined)
+
+/** Worst first: the line shows the part that most needs the admin's attention. */
+const PRECEDENCE: AutoSaveStatus[] = ['error', 'invalid', 'saving', 'pending', 'saved', 'idle']
+
+/** The one state a screen shows for all of its parts. */
+export function combineSaves(states: AutoSaveState[]): AutoSaveState {
+  for (const status of PRECEDENCE) {
+    const match = states.find(state => state.status === status)
+    if (match) return match
+  }
+
+  return { status: 'idle' }
+}
 
 /**
- * Registers a card's unsaved values with the page's Save.
- *
- * Keyed, so two cards editing the same stored record share one entry and it is
- * written once. `save` is read through a ref: it closes over the latest draft,
- * and re-reporting on every keystroke would re-render the whole page for it.
+ * Saves every part of a screen now. For a field being left — so text never
+ * waits out its delay — and for the status line's Retry. A part with nothing
+ * waiting does nothing.
  */
-export function useSaveParticipant(key: string, isDirty: boolean, save: () => Promise<unknown>) {
-  const report = useContext(PageSaveContext)
-  const saveRef = useRef(save)
-  saveRef.current = save
+export function flushAll(states: AutoSaveState[]) {
+  for (const state of states) state.flush?.()
+}
 
-  useEffect(() => {
-    report?.(key, { isDirty, save: () => saveRef.current() })
-  }, [isDirty, key, report])
+/** The page's side: collects what its cards report, to provide as PageSaveContext. */
+export function usePageSaves() {
+  const [saves, setSaves] = useState<Record<string, AutoSaveState>>({})
 
-  useEffect(() => () => report?.(key), [key, report])
+  const report = useCallback<ReportSave>((key, state) => {
+    setSaves(prev => {
+      if (!state) {
+        if (!(key in prev)) return prev
+        return Object.fromEntries(Object.entries(prev).filter(([name]) => name !== key))
+      }
+      const current = prev[key]
+      if (
+        current?.status === state.status &&
+        current?.error === state.error &&
+        current?.retrying === state.retrying &&
+        current?.flush === state.flush
+      ) {
+        return prev
+      }
+      return { ...prev, [key]: state }
+    })
+  }, [])
+
+  const states = useMemo(() => Object.values(saves), [saves])
+
+  return { report, states }
 }

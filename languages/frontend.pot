@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Thu Oct 01 2026 17:52:57 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Sat Oct 03 2026 16:10:42 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -73,7 +73,7 @@ msgid "Save changes"
 msgstr ""
 
 #: frontend/admin/src/common/helpers/i18nWrap.test.ts:40
-#: frontend/admin/src/pages/general/internal/location-section.tsx:89
+#: frontend/admin/src/pages/general/internal/location-section.tsx:92
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:275
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:78
 #: frontend/admin/src/pages/stages/stages.tsx:134
@@ -91,9 +91,9 @@ msgstr ""
 #: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:172
 #: frontend/client/src/components/features/topic-modal/ui/topic-create-modal.tsx:66
 #: frontend/client/src/components/features/topic-modal/ui/topic-edit-modal.tsx:126
-#: frontend/client/src/pages/Post/CommentEditor.tsx:474
+#: frontend/client/src/pages/Post/CommentEditor.tsx:477
 #: frontend/client/src/pages/Post/CommentItem.tsx:109
-#: frontend/client/src/pages/Post/PostHeader.tsx:207
+#: frontend/client/src/pages/Post/PostHeader.tsx:209
 #: frontend/client/src/pages/User/ui/account-security-form.tsx:125
 msgid "Cancel"
 msgstr ""
@@ -156,6 +156,30 @@ msgstr ""
 #: frontend/admin/src/components/utilities/Input/Input.test.tsx:27
 #: frontend/client/src/components/utilities/Input/Input.test.tsx:27
 msgid "Write tag name"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:23
+msgid "Not saved."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:23
+msgid "Try the change again."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:24
+msgid "Not saved yet."
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:34
+msgid "Saving…"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:43
+msgid "All changes saved"
+msgstr ""
+
+#: frontend/admin/src/components/utilities/save-status.tsx:49
+msgid "Changes save automatically"
 msgstr ""
 
 #: frontend/admin/src/components/utilities/slug-field/index.tsx:43
@@ -287,6 +311,7 @@ msgid "Any action"
 msgstr ""
 
 #: frontend/admin/src/pages/activity/activity.tsx:140
+#: frontend/admin/src/pages/settings/settings.tsx:110
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:89
 #: frontend/client/src/pages/User/ui/ProfileCard.tsx:147
 msgid "Topics"
@@ -296,7 +321,7 @@ msgstr ""
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:42
 #: frontend/admin/src/pages/root/internal/activity-chart.tsx:76
 #: frontend/admin/src/pages/root/internal/activity-chart.tsx:130
-#: frontend/admin/src/pages/settings/settings.tsx:168
+#: frontend/admin/src/pages/settings/settings.tsx:81
 #: frontend/client/src/components/utilities/topic-card/topic-card.tsx:187
 #: frontend/client/src/pages/Post/PostDetailsPage.tsx:311
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:91
@@ -444,69 +469,42 @@ msgstr ""
 msgid "404"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:101
-msgid "Portal slug is required"
-msgstr ""
-
-#: frontend/admin/src/pages/general/general.tsx:108
-msgid "Saving…"
-msgstr ""
-
-#: frontend/admin/src/pages/general/general.tsx:123
-msgid "Settings saved successfully"
-msgstr ""
-
-#: frontend/admin/src/pages/general/general.tsx:130
+#: frontend/admin/src/pages/general/general.tsx:59
 msgid ""
 "There is no page at the new address yet. Create one with the shortcode in "
 "it, or rename your community page to match."
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:133
+#: frontend/admin/src/pages/general/general.tsx:62
 msgid "Address saved, but no page is there yet"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:137
-msgid "Failed to save settings"
+#: frontend/admin/src/pages/general/general.tsx:94
+msgid "Portal slug is required"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:172
+#: frontend/admin/src/pages/general/general.tsx:130
 #: frontend/admin/src/pages/general/internal/branding-section.tsx:34
 #: frontend/admin/src/pages/onboarding/onboarding.tsx:15
 msgid "Branding"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:186
+#: frontend/admin/src/pages/general/general.tsx:145
 msgid "Location"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:199
+#: frontend/admin/src/pages/general/general.tsx:158
 #: frontend/admin/src/pages/general/internal/access-section.tsx:45
 msgid "Access"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:205
+#: frontend/admin/src/pages/general/general.tsx:164
 msgid "Sign in"
 msgstr ""
 
-#: frontend/admin/src/pages/general/general.tsx:242
+#: frontend/admin/src/pages/general/general.tsx:201
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:49
 msgid "General"
-msgstr ""
-
-#: frontend/admin/src/pages/general/general.tsx:303
-#: frontend/admin/src/pages/notifications/notifications.tsx:131
-#: frontend/admin/src/pages/seo/seo.tsx:63
-msgid "Unsaved changes"
-msgstr ""
-
-#: frontend/admin/src/pages/general/general.tsx:305
-#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:98
-#: frontend/admin/src/pages/notifications/notifications.tsx:139
-#: frontend/admin/src/pages/seo/seo.tsx:71
-#: frontend/admin/src/pages/settings/settings.tsx:208
-#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
-msgid "Save"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:28
@@ -675,8 +673,8 @@ msgstr ""
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:125
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:136
 #: frontend/admin/src/pages/general/internal/branding-section.tsx:87
-#: frontend/admin/src/pages/general/internal/location-section.tsx:187
-#: frontend/admin/src/pages/general/internal/location-section.tsx:256
+#: frontend/admin/src/pages/general/internal/location-section.tsx:190
+#: frontend/admin/src/pages/general/internal/location-section.tsx:261
 #: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:149
 #: frontend/client/src/components/features/share/ui/share-dialog.tsx:116
 msgid "Copy"
@@ -799,163 +797,163 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:58
+#: frontend/admin/src/pages/general/internal/location-section.tsx:61
 msgid "The community is now your homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:59
+#: frontend/admin/src/pages/general/internal/location-section.tsx:62
 msgid "The community is back on its own page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:63
+#: frontend/admin/src/pages/general/internal/location-section.tsx:66
 msgid "Could not change the community address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:80
+#: frontend/admin/src/pages/general/internal/location-section.tsx:83
 msgid "Create a page with the slug \"%s\" and the shortcode in it, then try again."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:83
+#: frontend/admin/src/pages/general/internal/location-section.tsx:86
 msgid "Add the shortcode to a page and publish it, then try again."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:84
+#: frontend/admin/src/pages/general/internal/location-section.tsx:87
 msgid "There is no community page yet"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:91
+#: frontend/admin/src/pages/general/internal/location-section.tsx:94
 msgid ""
 "Your current homepage is replaced by the community, and topic links change "
 "from /slug/topic to /topic. Links people already shared will stop working."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:94
+#: frontend/admin/src/pages/general/internal/location-section.tsx:97
 msgid ""
 "The community goes back to yoursite.com/slug and topic links change again. "
 "Your homepage returns to the default WordPress posts page."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:97
+#: frontend/admin/src/pages/general/internal/location-section.tsx:100
 msgid "Yes, make it my homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:97
+#: frontend/admin/src/pages/general/internal/location-section.tsx:100
 msgid "Yes, move it back"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:100
+#: frontend/admin/src/pages/general/internal/location-section.tsx:103
 msgid "Show the community as your homepage?"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:101
+#: frontend/admin/src/pages/general/internal/location-section.tsx:104
 msgid "Move the community back to its own page?"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:110
+#: frontend/admin/src/pages/general/internal/location-section.tsx:113
 msgid ""
 "The address visitors land on, and the WordPress page that carries the "
 "portal."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:119
+#: frontend/admin/src/pages/general/internal/location-section.tsx:122
 msgid "Site root"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:120
+#: frontend/admin/src/pages/general/internal/location-section.tsx:123
 msgid "Own page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:121
+#: frontend/admin/src/pages/general/internal/location-section.tsx:124
 msgid "Not set up"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:124
+#: frontend/admin/src/pages/general/internal/location-section.tsx:127
 msgid "Portal address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:143
+#: frontend/admin/src/pages/general/internal/location-section.tsx:146
 msgid ""
 "There is no published page at this address. Create one with the shortcode "
 "in it, or change the slug below."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:146
+#: frontend/admin/src/pages/general/internal/location-section.tsx:149
 msgid ""
 "No page yet. Add the shortcode below to a page and publish it to get your "
 "community started."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:167
+#: frontend/admin/src/pages/general/internal/location-section.tsx:170
 msgid ""
 "Your homepage is not set to the community page. Choose it in Settings → "
 "Reading, or turn off \"Serve at the site root\"."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:179
+#: frontend/admin/src/pages/general/internal/location-section.tsx:182
 msgid "Where your community can be reached right now."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:181
+#: frontend/admin/src/pages/general/internal/location-section.tsx:184
 msgid "Live address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:192
+#: frontend/admin/src/pages/general/internal/location-section.tsx:195
 msgid "Edit this page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:202
+#: frontend/admin/src/pages/general/internal/location-section.tsx:205
 msgid "Your community is your homepage, so it has no slug of its own."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:203
+#: frontend/admin/src/pages/general/internal/location-section.tsx:206
 msgid ""
 "The last part of the address, e.g. yoursite.com/community. It must match "
 "the slug of the page that contains the shortcode. Changing it changes every "
 "topic link."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:207
+#: frontend/admin/src/pages/general/internal/location-section.tsx:210
 #: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:119
 msgid "Address slug"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:214
+#: frontend/admin/src/pages/general/internal/location-section.tsx:219
 #: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:128
 msgid "e.g. community"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:220
+#: frontend/admin/src/pages/general/internal/location-section.tsx:225
 msgid ""
 "This page does not contain the [bit-connect] shortcode, so the community "
 "will not show on it."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:229
+#: frontend/admin/src/pages/general/internal/location-section.tsx:234
 msgid ""
 "Serve the portal from the site root instead of a slug, so it becomes your "
 "homepage. Use this only if the whole WordPress site is for the forum."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:233
-#: frontend/admin/src/pages/general/internal/location-section.tsx:236
+#: frontend/admin/src/pages/general/internal/location-section.tsx:238
+#: frontend/admin/src/pages/general/internal/location-section.tsx:241
 msgid "Serve at the site root"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:243
+#: frontend/admin/src/pages/general/internal/location-section.tsx:248
 msgid "Applies immediately"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:243
+#: frontend/admin/src/pages/general/internal/location-section.tsx:248
 msgid "Needs the page first"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:248
+#: frontend/admin/src/pages/general/internal/location-section.tsx:253
 msgid ""
 "Put this on any WordPress page to show the community there. If you have no "
 "community page yet, the page you publish with it becomes the community page."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:251
+#: frontend/admin/src/pages/general/internal/location-section.tsx:256
 msgid "Shortcode"
 msgstr ""
 
@@ -1033,9 +1031,9 @@ msgid "Reports"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:58
-#: frontend/admin/src/pages/notifications/notifications.tsx:104
-#: frontend/admin/src/pages/notifications/notifications.tsx:117
-#: frontend/admin/src/pages/notifications/notifications.tsx:127
+#: frontend/admin/src/pages/notifications/notifications.tsx:83
+#: frontend/admin/src/pages/notifications/notifications.tsx:95
+#: frontend/admin/src/pages/notifications/notifications.tsx:105
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:78
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:132
 #: frontend/client/src/components/features/notifications/ui/notification-bell.tsx:132
@@ -1047,12 +1045,12 @@ msgid "Notifications"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:59
-#: frontend/admin/src/pages/seo/seo.tsx:58
+#: frontend/admin/src/pages/seo/seo.tsx:53
 msgid "SEO"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:60
-#: frontend/admin/src/pages/settings/settings.tsx:198
+#: frontend/admin/src/pages/settings/settings.tsx:158
 #: frontend/client/src/pages/Notifications/ui/notifications-page.tsx:133
 msgid "Settings"
 msgstr ""
@@ -1159,6 +1157,11 @@ msgstr ""
 msgid "Moderation & Admin"
 msgstr ""
 
+#: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:98
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:81
+msgid "Save"
+msgstr ""
+
 #: frontend/admin/src/pages/manager/ui/role-capabilities-modal.tsx:152
 msgid "Forum Capabilities by Role"
 msgstr ""
@@ -1171,11 +1174,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:46
 msgid "Could not save notification settings"
-msgstr ""
-
-#: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:48
-#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:106
-msgid "Notification settings saved"
 msgstr ""
 
 #: frontend/admin/src/pages/notifications/data/use-notification-settings.ts:75
@@ -1310,50 +1308,50 @@ msgstr ""
 msgid "Only moderators receive this, so there is nothing for a member to change."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:62
-#: frontend/admin/src/pages/seo/seo.tsx:105
+#: frontend/admin/src/pages/notifications/notifications.tsx:52
+#: frontend/admin/src/pages/seo/seo.tsx:80
 #: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:108
 msgid "Retry"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:65
+#: frontend/admin/src/pages/notifications/notifications.tsx:55
 msgid "Notification settings could not be loaded."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:124
+#: frontend/admin/src/pages/notifications/notifications.tsx:102
 msgid ""
 "The master switch. Off, the forum writes no notifications and sends no "
 "email at all."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:125
+#: frontend/admin/src/pages/notifications/notifications.tsx:103
 msgid ""
 "Off for everyone. The forum writes no notifications and sends no email at "
 "all."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:145
+#: frontend/admin/src/pages/notifications/notifications.tsx:112
 msgid ""
 "Defaults apply to members who have never opened their own settings. Turn "
 "off \"Member may change\" to make your answer final for everyone."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:148
+#: frontend/admin/src/pages/notifications/notifications.tsx:115
 msgid "What the forum sends"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:170
+#: frontend/admin/src/pages/notifications/notifications.tsx:137
 msgid ""
 "How long read notifications are kept. Unread ones are never removed by age, "
 "since nobody has seen them yet."
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:173
-#: frontend/admin/src/pages/notifications/notifications.tsx:177
+#: frontend/admin/src/pages/notifications/notifications.tsx:140
+#: frontend/admin/src/pages/notifications/notifications.tsx:144
 msgid "Keep read notifications for"
 msgstr ""
 
-#: frontend/admin/src/pages/notifications/notifications.tsx:185
+#: frontend/admin/src/pages/notifications/notifications.tsx:152
 msgid "days"
 msgstr ""
 
@@ -1949,12 +1947,7 @@ msgid "%d more"
 msgstr ""
 
 #: frontend/admin/src/pages/seo/data/use-update-seo-settings.ts:30
-#: frontend/admin/src/pages/seo/seo.tsx:79
 msgid "Failed to update SEO settings"
-msgstr ""
-
-#: frontend/admin/src/pages/seo/data/use-update-seo-settings.ts:33
-msgid "SEO settings updated"
 msgstr ""
 
 #: frontend/admin/src/pages/seo/internal/archive-rows.tsx:9
@@ -2031,11 +2024,11 @@ msgstr ""
 msgid "1 home page · %1$s topics · %2$s archive pages"
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:108
+#: frontend/admin/src/pages/seo/seo.tsx:83
 msgid "SEO settings could not be loaded."
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:119
+#: frontend/admin/src/pages/seo/seo.tsx:94
 msgid ""
 "Each term gets a page that lists its topics. These pages can rank for a "
 "whole subject, not just one question. When on, a taxonomy’s archives are "
@@ -2043,36 +2036,32 @@ msgid ""
 "but search engines won’t see them."
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:122
+#: frontend/admin/src/pages/seo/seo.tsx:97
 msgid "Term archives"
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:133
+#: frontend/admin/src/pages/seo/seo.tsx:108
 msgid ""
 "Profile pages always work for visitors. Indexing them puts member names and "
 "activity in search results, so it is off until you choose it."
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:136
+#: frontend/admin/src/pages/seo/seo.tsx:111
 msgid "Member profiles"
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:143
+#: frontend/admin/src/pages/seo/seo.tsx:118
 msgid ""
 "Show member profile pages in search results, each with its own title, "
 "description and canonical address."
 msgstr ""
 
-#: frontend/admin/src/pages/seo/seo.tsx:147
+#: frontend/admin/src/pages/seo/seo.tsx:122
 msgid "Show profiles in search"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/data/use-update-settings.ts:31
 msgid "Failed to update settings"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/data/use-update-settings.ts:34
-msgid "Settings updated successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/field-mode-row.tsx:37
@@ -2094,6 +2083,7 @@ msgid "What happens to reported content"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/moderation-section.tsx:18
+#: frontend/admin/src/pages/settings/settings.tsx:111
 msgid "Moderation"
 msgstr ""
 
@@ -2101,6 +2091,36 @@ msgstr ""
 msgid ""
 "Reported content stays visible until a moderator reviews the report and "
 "decides what to do with it."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:19
+msgid ""
+"Set by your server and WordPress. Pasted images larger than these are "
+"resized before upload."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:22
+msgid "Uploads"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:26
+msgid "The largest file your server accepts."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:27
+msgid "Max file size"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:31
+msgid "Larger images are scaled down by WordPress."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:32
+msgid "Max image dimensions"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/internal/posting-limits-section.tsx:35
+msgid "Allowed file types"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:23
@@ -2124,74 +2144,52 @@ msgid "Topic type"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:73
-msgid ""
-"These limits are controlled by your server and WordPress. Pasted images "
-"that exceed them are automatically resized before upload."
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:76
-msgid "WordPress Media Limits"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:80
-msgid "(set by server php.ini via wp_max_upload_size)"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:81
-msgid "Max upload size"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:85
-msgid "(WordPress big_image_size_threshold filter, default 2560 px)"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:86
-msgid "Max image dimensions"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:89
-msgid "Allowed file types"
-msgstr ""
-
-#: frontend/admin/src/pages/settings/settings.tsx:160
 msgid "Let members upvote topics."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:162
+#: frontend/admin/src/pages/settings/settings.tsx:75
 #: frontend/client/src/pages/Post/ui/AuthorCard.tsx:93
 #: frontend/client/src/pages/User/ui/ProfileCard.tsx:149
 #: frontend/client/src/pages/User/UserProfilePage.tsx:160
 msgid "Upvotes"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:166
+#: frontend/admin/src/pages/settings/settings.tsx:79
 msgid "Let members reply to topics."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:183
+#: frontend/admin/src/pages/settings/settings.tsx:96
 msgid ""
 "When the plugin is deleted, remove every topic and reply, its terms and "
 "settings, and the portal page. This can’t be undone."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:187
+#: frontend/admin/src/pages/settings/settings.tsx:100
 msgid "Delete data on uninstall"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:224
-msgid "Choose what members can do on a topic."
+#: frontend/admin/src/pages/settings/settings.tsx:112
+msgid "Limits"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:225
-msgid "Topic access"
+#: frontend/admin/src/pages/settings/settings.tsx:113
+msgid "Data"
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:241
+#: frontend/admin/src/pages/settings/settings.tsx:124
 msgid "Choose what happens to your community’s data if the plugin is deleted."
 msgstr ""
 
-#: frontend/admin/src/pages/settings/settings.tsx:242
+#: frontend/admin/src/pages/settings/settings.tsx:125
 msgid "Data cleanup"
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:144
+msgid "Choose what members can do on a topic."
+msgstr ""
+
+#: frontend/admin/src/pages/settings/settings.tsx:145
+msgid "Topic access"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/shared/auth-validation.ts:22
@@ -2219,12 +2217,12 @@ msgid "Stage created successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/stages/data/use-update-stage.ts:31
-#: frontend/client/src/pages/Post/PostHeader.tsx:198
+#: frontend/client/src/pages/Post/PostHeader.tsx:200
 msgid "Failed to update stage"
 msgstr ""
 
 #: frontend/admin/src/pages/stages/data/use-update-stage.ts:34
-#: frontend/client/src/pages/Post/PostHeader.tsx:195
+#: frontend/client/src/pages/Post/PostHeader.tsx:197
 msgid "Stage updated successfully"
 msgstr ""
 
@@ -2300,8 +2298,8 @@ msgstr ""
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:96
 #: frontend/client/src/pages/Post/CommentItem.tsx:112
 #: frontend/client/src/pages/Post/CommentItem.tsx:183
-#: frontend/client/src/pages/Post/PostHeader.tsx:210
-#: frontend/client/src/pages/Post/PostHeader.tsx:314
+#: frontend/client/src/pages/Post/PostHeader.tsx:212
+#: frontend/client/src/pages/Post/PostHeader.tsx:316
 msgid "Delete"
 msgstr ""
 
@@ -2333,12 +2331,12 @@ msgid "Status created successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/status/data/use-update-status.ts:29
-#: frontend/client/src/pages/Post/PostHeader.tsx:186
+#: frontend/client/src/pages/Post/PostHeader.tsx:188
 msgid "Failed to update status"
 msgstr ""
 
 #: frontend/admin/src/pages/status/data/use-update-status.ts:32
-#: frontend/client/src/pages/Post/PostHeader.tsx:183
+#: frontend/client/src/pages/Post/PostHeader.tsx:185
 msgid "Status updated successfully"
 msgstr ""
 
@@ -2585,29 +2583,29 @@ msgstr ""
 msgid "Your account does not have permission to do this."
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:28
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:30
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:29
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:31
 msgid "Word document"
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:33
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:34
 msgid "GIF image"
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:34
 #: frontend/client/src/components/features/file-uploader/attachment-validation.ts:35
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:36
 msgid "JPEG image"
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:36
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:37
 msgid "PDF document"
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:37
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:38
 msgid "PNG image"
 msgstr ""
 
-#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:38
+#: frontend/client/src/components/features/file-uploader/attachment-validation.ts:39
 msgid "WebP image"
 msgstr ""
 
@@ -2626,12 +2624,12 @@ msgid "Add Files"
 msgstr ""
 
 #: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:49
-#: frontend/client/src/pages/Post/CommentEditor.tsx:95
+#: frontend/client/src/pages/Post/CommentEditor.tsx:92
 msgid "Processing…"
 msgstr ""
 
 #: frontend/client/src/components/features/file-uploader/ui/file-list.tsx:49
-#: frontend/client/src/pages/Post/CommentEditor.tsx:95
+#: frontend/client/src/pages/Post/CommentEditor.tsx:92
 msgid "Uploading"
 msgstr ""
 
@@ -2693,6 +2691,10 @@ msgstr ""
 
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:91
 msgid "That could not be saved. Please check your connection and try again."
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:106
+msgid "Notification settings saved"
 msgstr ""
 
 #: frontend/client/src/components/features/notifications/ui/notification-preferences-form.tsx:127
@@ -2961,7 +2963,7 @@ msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/permalink-field.tsx:150
 #: frontend/client/src/pages/Post/CommentItem.tsx:175
-#: frontend/client/src/pages/Post/PostHeader.tsx:295
+#: frontend/client/src/pages/Post/PostHeader.tsx:297
 msgid "Edit"
 msgstr ""
 
@@ -3017,155 +3019,163 @@ msgstr ""
 msgid "Edit Topic"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:102
-#: frontend/client/src/pages/Post/CommentEditor.tsx:245
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:111
+#: frontend/client/src/pages/Post/CommentEditor.tsx:243
 msgid "Failed to upload image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:169
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:178
 msgid "Topic Title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:172
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:181
 msgid "Please enter a topic title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:173
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:182
 msgid "Topic title cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:176
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:185
 msgid "Write a post title"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:184
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:193
 msgid "Permalink"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:187
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:196
 msgid "Slug cannot exceed 200 characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:194
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:203
 msgid "Slug must contain at least one letter or number"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:224
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:233
 msgid "Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:226
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:235
 msgid "Please select a topic type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:231
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:240
 msgid "Select a Topic Type"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:244
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:253
 msgid "Write Your Topic Description Here"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:255
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:264
 msgid "Please enter a description or add an image"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:258
-msgid "Description cannot exceed 10000 characters"
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:269
+msgid "Description cannot exceed %s characters"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:269
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:284
 msgid "Write your topic description..."
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:275
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:290
 msgid "Tag"
 msgstr ""
 
-#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:283
+#: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:298
 msgid "Select tags.."
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:265
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:131
+msgid "You can add only one image here."
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:132
+msgid "You can add up to %d images here."
+msgstr ""
+
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:309
 msgid "Normal text"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:266
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:310
 msgid "Heading"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:267
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:311
 msgid "Subheading"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:268
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:312
 msgid "Small heading"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:765
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:775
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:812
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:822
 msgid "Text format"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:791
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:838
 msgid "Bulleted list"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:797
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:844
 msgid "Numbered list"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:803
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:850
 msgid "Code block"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:845
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1043
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1047
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:892
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1091
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1095
 msgid "Attach file"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:899
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:904
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:946
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:951
 msgid "Bold"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:908
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:913
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:955
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:960
 msgid "Italic"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:917
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:922
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:964
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:969
 msgid "Underline"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:943
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:948
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:990
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:995
 msgid "Apply link"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:952
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:957
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:999
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1004
 msgid "Cancel link"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:979
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:984
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1026
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1031
 msgid "Insert link"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1006
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1035
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1053
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1083
 msgid "Insert image"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1066
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1070
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1114
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1118
 msgid "More formatting"
 msgstr ""
 
-#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1107
+#: frontend/client/src/components/quilTextEditor/QuillEditor.tsx:1155
 msgid "Uploading…"
 msgstr ""
 
@@ -3517,19 +3527,19 @@ msgstr ""
 msgid "That is everything."
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentEditor.tsx:219
+#: frontend/client/src/pages/Post/CommentEditor.tsx:217
 msgid "Please log in to upload images."
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentEditor.tsx:272
+#: frontend/client/src/pages/Post/CommentEditor.tsx:270
 msgid "Attachment limit reached (maximum %d files)."
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentEditor.tsx:393
+#: frontend/client/src/pages/Post/CommentEditor.tsx:392
 msgid "Your account does not have permission to comment."
 msgstr ""
 
-#: frontend/client/src/pages/Post/CommentEditor.tsx:402
+#: frontend/client/src/pages/Post/CommentEditor.tsx:401
 msgid "Replying to"
 msgstr ""
 
@@ -3538,7 +3548,7 @@ msgid "Delete comment?"
 msgstr ""
 
 #: frontend/client/src/pages/Post/CommentItem.tsx:194
-#: frontend/client/src/pages/Post/PostHeader.tsx:325
+#: frontend/client/src/pages/Post/PostHeader.tsx:327
 msgid "Report"
 msgstr ""
 
@@ -3564,7 +3574,7 @@ msgid "Reply"
 msgstr ""
 
 #: frontend/client/src/pages/Post/CommentItem.tsx:404
-#: frontend/client/src/pages/Post/PostHeader.tsx:477
+#: frontend/client/src/pages/Post/PostHeader.tsx:484
 msgid "More actions"
 msgstr ""
 
@@ -3643,57 +3653,57 @@ msgstr ""
 msgid "Log in to post a comment."
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:93
+#: frontend/client/src/pages/Post/PostHeader.tsx:95
 msgid "Failed to load statuses"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:99
+#: frontend/client/src/pages/Post/PostHeader.tsx:101
 msgid "Failed to load stages"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:208
+#: frontend/client/src/pages/Post/PostHeader.tsx:210
 msgid "This action cannot be undone. Are you sure you want to delete this post?"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:214
+#: frontend/client/src/pages/Post/PostHeader.tsx:216
 msgid "Post deleted successfully"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:218
+#: frontend/client/src/pages/Post/PostHeader.tsx:220
 msgid "Failed to delete post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:222
+#: frontend/client/src/pages/Post/PostHeader.tsx:224
 msgid "Delete Post"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:241
+#: frontend/client/src/pages/Post/PostHeader.tsx:243
 msgid "Topic locked. New comments are closed."
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:242
+#: frontend/client/src/pages/Post/PostHeader.tsx:244
 msgid "Topic unlocked. Members can comment again."
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:246
+#: frontend/client/src/pages/Post/PostHeader.tsx:248
 msgid "Failed to update the topic"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:304
+#: frontend/client/src/pages/Post/PostHeader.tsx:306
 msgid "Unlock topic"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:304
+#: frontend/client/src/pages/Post/PostHeader.tsx:306
 msgid "Lock topic"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:374
-#: frontend/client/src/pages/Post/PostHeader.tsx:381
+#: frontend/client/src/pages/Post/PostHeader.tsx:379
+#: frontend/client/src/pages/Post/PostHeader.tsx:387
 msgid "Topic stage"
 msgstr ""
 
-#: frontend/client/src/pages/Post/PostHeader.tsx:388
-#: frontend/client/src/pages/Post/PostHeader.tsx:395
+#: frontend/client/src/pages/Post/PostHeader.tsx:394
+#: frontend/client/src/pages/Post/PostHeader.tsx:402
 msgid "Topic status"
 msgstr ""
 

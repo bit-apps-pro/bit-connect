@@ -1,10 +1,12 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
-import { PageSaveContext, type SaveParticipant } from '@common/hooks/page-save'
+import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
+import useAutoSave from '@common/hooks/use-auto-save'
 import useCopyToClipboard from '@common/hooks/useCopyToClipboard'
-import { Button, ConfigProvider, Segmented, Spin, theme, Typography } from 'antd'
+import SaveStatus from '@utilities/save-status'
+import { ConfigProvider, Segmented, theme, Typography } from 'antd'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { LuLockOpen, LuLogIn, LuMapPin, LuSquarePen } from 'react-icons/lu'
 
 import useAuthSettings from '../settings/data/use-auth-settings'
@@ -23,18 +25,15 @@ import LocationSection from './internal/location-section'
 import { panelVariants } from './internal/motion'
 import { type GeneralSettings, type PortalFilters } from './shared/types'
 
-const { Text, Title } = Typography
-
-/** Same value, ignoring object identity — enough for form-vs-saved comparison. */
-const isSame = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
+const { Title } = Typography
 
 export default function General() {
   const { notificationApi } = useContext(NotifyContext)
-  const { generalSettings } = useGeneralSettings()
-  const { isUpdatingGeneralSettings, updateGeneralSettings } = useUpdateGeneralSettings()
-  const { authSettings } = useAuthSettings()
-  const { isUpdatingAuthSettings, updateAuthSettings } = useUpdateAuthSettings()
-  const { portalPage, refetchPortalPage } = usePortalPage()
+  const { generalSettings, isGeneralSettingsPending } = useGeneralSettings()
+  const { updateGeneralSettings } = useUpdateGeneralSettings()
+  const { authSettings, isAuthSettingsPending } = useAuthSettings()
+  const { updateAuthSettings } = useUpdateAuthSettings()
+  const { isPortalPagePending, portalPage, refetchPortalPage } = usePortalPage()
   const { updatePortalSlug } = useUpdatePortalSlug()
   const { copy } = useCopyToClipboard()
   const { token } = theme.useToken()
@@ -43,30 +42,67 @@ export default function General() {
   const [authForm, setAuthForm] = useState<AuthSettings>(authSettings)
   const [slugInput, setSlugInput] = useState('')
   const [activeTab, setActiveTab] = useState('branding')
-  const [participants, setParticipants] = useState<Record<string, SaveParticipant>>({})
 
-  // Cards whose values live behind another endpoint join this page's Save
-  // rather than carrying a button of their own — see useSaveParticipant.
-  const reportParticipant = useCallback((key: string, participant?: SaveParticipant) => {
-    setParticipants(prev => {
-      const rest = Object.fromEntries(Object.entries(prev).filter(([name]) => name !== key))
-      return participant ? { ...rest, [key]: participant } : rest
-    })
-  }, [])
-  const dirtyParticipants = useMemo(
-    () => Object.values(participants).filter(participant => participant.isDirty),
-    [participants]
+  // Cards whose values live behind another endpoint save themselves and report
+  // here, so the one status line covers them too.
+  const { report, states } = usePageSaves()
+
+  const saveSlug = useCallback(
+    async (slug: string) => {
+      const result = await updatePortalSlug(slug.trim())
+      refetchPortalPage()
+      const pageExists =
+        (result as { data?: { pageExists?: boolean }; pageExists?: boolean })?.data?.pageExists ??
+        (result as { pageExists?: boolean })?.pageExists
+      if (pageExists === false) {
+        notificationApi?.warning({
+          description: __(
+            'There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.'
+          ),
+          message: __('Address saved, but no page is there yet')
+        })
+      }
+    },
+    [notificationApi, refetchPortalPage, updatePortalSlug]
   )
 
-  useEffect(() => {
-    setForm(generalSettings)
-  }, [generalSettings])
-  useEffect(() => {
-    setAuthForm(authSettings)
-  }, [authSettings])
-  useEffect(() => {
-    setSlugInput(portalPage.slug)
-  }, [portalPage.slug])
+  // Three stores, each saved as it changes. Text waits for a pause in typing;
+  // the slug waits for its field to be left, since every topic URL follows it
+  // and a half-typed one would briefly move them all.
+  const generalSave = useAutoSave({
+    draft: form,
+    save: updateGeneralSettings,
+    saved: isGeneralSettingsPending ? undefined : generalSettings,
+    setDraft: setForm
+  })
+  const authSave = useAutoSave({
+    draft: authForm,
+    save: updateAuthSettings,
+    saved: isAuthSettingsPending ? undefined : authSettings,
+    setDraft: setAuthForm,
+    validate: validateAuthForm
+  })
+  // In root mode the portal has no slug to change, and the input is disabled.
+  const slugSave = useAutoSave({
+    delay: 'manual',
+    draft: slugInput,
+    enabled: !portalPage.root,
+    save: saveSlug,
+    saved: isPortalPagePending ? undefined : portalPage.slug,
+    serialize: slug => slug.trim(),
+    setDraft: setSlugInput,
+    validate: slug => (slug.trim() === '' ? __('Portal slug is required') : undefined)
+  })
+  const allSaves = [
+    { ...generalSave, flush: generalSave.flushNow },
+    { ...authSave, flush: authSave.flushNow },
+    { ...slugSave, flush: slugSave.flushNow },
+    ...states
+  ]
+  const pageSave = combineSaves(allSaves)
+  // Leaving any field saves at once, rather than waiting out the delay. The
+  // slug included: leaving its field is exactly when it is meant to save.
+  const saveAll = () => flushAll(allSaves)
 
   const patch = useCallback((values: Partial<GeneralSettings>) => {
     setForm(prev => ({ ...prev, ...values }))
@@ -80,78 +116,9 @@ export default function General() {
     setForm(prev => ({ ...prev, portalFilters: { ...prev.portalFilters, [key]: visible } }))
   }, [])
 
-  // Across the whole page, not per tab: Save writes all of it at once, so this
-  // is the one question the button has to answer.
-  const isDirty = useMemo(
-    () =>
-      !isSame(form, generalSettings) ||
-      !isSame(authForm, authSettings) ||
-      slugInput.trim() !== portalPage.slug ||
-      dirtyParticipants.length > 0,
-    [form, generalSettings, authForm, authSettings, slugInput, portalPage.slug, dirtyParticipants]
-  )
-
-  const handleSave = useCallback(async () => {
-    const authError = validateAuthForm(authForm)
-    if (authError) {
-      notificationApi?.error({ message: authError })
-      return
-    }
-    if (!portalPage.root && !slugInput.trim()) {
-      notificationApi?.error({ message: __('Portal slug is required') })
-      return
-    }
-    notificationApi?.open({
-      duration: 0,
-      icon: <Spin size="small" />,
-      key: 'save',
-      message: __('Saving…')
-    })
-    try {
-      // In root mode the portal has no slug to change, and the input is disabled.
-      const slugChanged =
-        !portalPage.root && slugInput.trim() !== '' && slugInput.trim() !== portalPage.slug
-      const results = await Promise.all([
-        updateGeneralSettings(form),
-        updateAuthSettings(authForm),
-        ...(slugChanged ? [updatePortalSlug(slugInput.trim())] : [])
-      ])
-      // After the page's own writes, so `results[2]` above stays the slug's.
-      await Promise.all(dirtyParticipants.map(participant => participant.save()))
-      const slugResult = results[2]
-      if (slugChanged) refetchPortalPage()
-      notificationApi?.success({ key: 'save', message: __('Settings saved successfully') })
-
-      const pageExists =
-        (slugResult as { data?: { pageExists?: boolean }; pageExists?: boolean })?.data?.pageExists ??
-        (slugResult as { pageExists?: boolean })?.pageExists
-      if (slugChanged && pageExists === false) {
-        notificationApi?.warning({
-          description: __(
-            'There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.'
-          ),
-          message: __('Address saved, but no page is there yet')
-        })
-      }
-    } catch (error: unknown) {
-      const msg = (error as { message?: string })?.message ?? __('Failed to save settings')
-      notificationApi?.error({ key: 'save', message: msg })
-    }
-  }, [
-    form,
-    authForm,
-    slugInput,
-    portalPage,
-    notificationApi,
-    updateGeneralSettings,
-    updateAuthSettings,
-    updatePortalSlug,
-    refetchPortalPage,
-    dirtyParticipants
-  ])
-
-  const isSaving = isUpdatingGeneralSettings || isUpdatingAuthSettings
-  const disabled = isSaving
+  // Only while loading: a save in flight never locks the form, and an edit
+  // made during one is saved after it.
+  const disabled = isGeneralSettingsPending || isAuthSettingsPending
 
   const tabs = [
     {
@@ -177,6 +144,7 @@ export default function General() {
           disabled={disabled}
           onCopy={copy}
           onSlugChange={setSlugInput}
+          onSlugCommit={() => slugSave.flush()}
           portalPage={portalPage}
           slug={slugInput}
         />
@@ -234,17 +202,17 @@ export default function General() {
     // `reducedMotion="user"` rather than a per-component check: everything on
     // this page keeps its opacity fades but stops moving for anyone whose
     // system asks for that.
-    <PageSaveContext.Provider value={reportParticipant}>
+    <PageSaveContext.Provider value={report}>
     <MotionConfig reducedMotion="user">
-      <div className="bc-px-6 bc-pb-6">
+      <div className="bc-px-6 bc-pb-6" onBlur={saveAll}>
         <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
           <Title className="bc-mb-0" level={3}>
             {__('General')}
           </Title>
         </div>
 
-        {/* Save sits on the tab row rather than after the panels: an edit made
-            on one tab has to stay savable from any other. */}
+        {/* The status sits on the tab row rather than after the panels: it
+            speaks for every tab, the ones not open included. */}
         <div className="bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3">
           {/* A filled pill for the open tab, so the bar reads as a switch
               between panels rather than as links. */}
@@ -299,12 +267,7 @@ export default function General() {
             />
           </ConfigProvider>
 
-          <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
-            {isDirty && <Text type="secondary">{__('Unsaved changes')}</Text>}
-            <Button disabled={disabled || !isDirty} loading={isSaving} onClick={handleSave} type="primary">
-              {__('Save')}
-            </Button>
-          </div>
+          <SaveStatus {...pageSave} onRetry={saveAll} />
         </div>
 
         {/* One panel out before the next comes in, in the same place: two

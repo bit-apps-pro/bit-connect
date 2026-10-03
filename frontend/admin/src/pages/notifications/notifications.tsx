@@ -1,7 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { PageSaveContext, type SaveParticipant } from '@common/hooks/page-save'
+import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
+import useAutoSave from '@common/hooks/use-auto-save'
+import SaveStatus from '@utilities/save-status'
 import { Alert, Button, InputNumber, Switch, Typography } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import {
   useNotificationSettings,
@@ -15,42 +17,33 @@ import SectionCard from './internal/section-card'
 import TypeMatrix from './internal/type-matrix'
 import { type NotificationSettingsData } from './shared/types'
 
-const { Text, Title } = Typography
+const { Title } = Typography
 
 /**
  * Forum-wide notification settings.
  *
- * Behind a single Save, unlike the member's own screen. These values are read
- * by cron jobs and by every dispatch, and an admin part-way through changing a
- * matrix should not have half of it live — the member's screen saves per switch
- * because each row there is independent and affects only them.
+ * Saved as they change, like every settings screen. Changes made in quick
+ * succession — several switches across the matrix — go out as one save, and
+ * the status line beside the master switch covers the cards the add-on adds.
  */
 export default function NotificationSettingsPage() {
   const { isSettingsError, isSettingsPending, payload, refetchSettings } = useNotificationSettings()
-  const { isUpdatingSettings, updateSettings } = useUpdateNotificationSettings()
+  const { updateSettings } = useUpdateNotificationSettings()
   const { isSendingTest, sendTestEmail } = useSendTestEmail()
 
   const [form, setForm] = useState<NotificationSettingsData>()
-  const [participants, setParticipants] = useState<Record<string, SaveParticipant>>({})
-  const [isSaving, setIsSaving] = useState(false)
+  const { report, states } = usePageSaves()
 
-  const reportParticipant = useCallback((key: string, participant?: SaveParticipant) => {
-    setParticipants(prev => {
-      const rest = Object.fromEntries(Object.entries(prev).filter(([name]) => name !== key))
-      return participant ? { ...rest, [key]: participant } : rest
-    })
-  }, [])
-
-  useEffect(() => {
-    if (payload?.settings) setForm({ ...payload.settings, types: { ...payload.settings.types } })
-  }, [payload])
-
-  const isFormDirty = useMemo(
-    () => !!form && !!payload && JSON.stringify(form) !== JSON.stringify(payload.settings),
-    [form, payload]
-  )
-  const dirtyParticipants = Object.values(participants).filter(participant => participant.isDirty)
-  const isDirty = isFormDirty || dirtyParticipants.length > 0
+  const save = useAutoSave({
+    draft: form,
+    save: updateSettings,
+    saved: payload?.settings,
+    setDraft: setForm
+  })
+  const allSaves = [{ ...save, flush: save.flushNow }, ...states]
+  const pageSave = combineSaves(allSaves)
+  // Leaving any field saves at once, rather than waiting out the delay.
+  const saveAll = () => flushAll(allSaves)
 
   // An error only once every retry has failed and there is nothing to show.
   if (isSettingsError && !payload) {
@@ -85,20 +78,9 @@ export default function NotificationSettingsPage() {
 
   const { enabled } = form
 
-  // Every part at once, each reporting its own failure: one card's rejected
-  // value should not stop the rest of the page from saving.
-  const save = async () => {
-    setIsSaving(true)
-    await Promise.allSettled([
-      ...(isFormDirty ? [updateSettings(form)] : []),
-      ...dirtyParticipants.map(participant => participant.save())
-    ])
-    setIsSaving(false)
-  }
-
   return (
-    <PageSaveContext.Provider value={reportParticipant}>
-    <div className="bc-p-6">
+    <PageSaveContext.Provider value={report}>
+    <div className="bc-p-6" onBlur={saveAll}>
       <div className="bc-mb-5">
         <Title className="bc-mb-0" level={3}>
           {__('Notifications')}
@@ -106,9 +88,8 @@ export default function NotificationSettingsPage() {
       </div>
 
       <div className="bc-flex bc-flex-col bc-gap-5">
-        {/* Save sits beside the master switch rather than at the foot of the
-            page: it governs every card below, and has to be in reach from the
-            top of a long form. */}
+        {/* The status sits beside the master switch rather than at the foot of
+            the page: it speaks for every card below. */}
         <div className="bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
           <SectionCard
             className="bc-w-full bc-max-w-xl"
@@ -127,18 +108,7 @@ export default function NotificationSettingsPage() {
             title={__('Notifications')}
           />
 
-          <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
-            {isDirty && <Text type="secondary">{__('Unsaved changes')}</Text>}
-            <Button
-              disabled={isSaving || isUpdatingSettings || !isDirty}
-              loading={isSaving || isUpdatingSettings}
-              onClick={save}
-              size="large"
-              type="primary"
-            >
-              {__('Save')}
-            </Button>
-          </div>
+          <SaveStatus {...pageSave} onRetry={saveAll} />
         </div>
 
         <SectionCard

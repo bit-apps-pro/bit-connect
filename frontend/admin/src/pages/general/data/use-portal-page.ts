@@ -31,7 +31,7 @@ const defaultPortalPage: PortalPage = {
 }
 
 export default function usePortalPage() {
-  const { data, refetch } = useQuery<ResponseType<PortalPage>, Error, PortalPage>({
+  const { data, isPending, refetch } = useQuery<ResponseType<PortalPage>, Error, PortalPage>({
     queryFn: ({ signal }) => request<never, PortalPage>('portal-page', { method: 'GET', signal }),
     queryKey: ['portal-page'],
     retry: false,
@@ -39,6 +39,7 @@ export default function usePortalPage() {
   })
 
   return {
+    isPortalPagePending: isPending,
     portalPage: data ?? defaultPortalPage,
     refetchPortalPage: refetch
   }

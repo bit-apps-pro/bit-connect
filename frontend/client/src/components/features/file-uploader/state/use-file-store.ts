@@ -1,7 +1,8 @@
 import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers/request'
 import { create } from 'zustand'
 
-export const DEFAULT_MAX_ATTACHMENTS = 5
+/** No limit unless the forum sets one — see PostingLimits.php. */
+export const DEFAULT_MAX_ATTACHMENTS = Number.POSITIVE_INFINITY
 
 export interface WPAttachmentData {
   filename: string

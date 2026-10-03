@@ -44,8 +44,8 @@ export function useUpdateNotificationSettings() {
         method: 'POST'
       }),
     onError: () => messageApi?.error(__('Could not save notification settings')),
+    // No success toast: the screen's status line reports each save.
     onSuccess: response => {
-      messageApi?.success(__('Notification settings saved'))
       // The server answers with the whole normalised payload, so the form
       // redraws from what was actually stored rather than from what was sent —
       // a digest hour of 99 comes back as 23.

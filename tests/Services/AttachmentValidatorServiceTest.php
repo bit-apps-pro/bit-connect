@@ -3,6 +3,7 @@
 namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Services\AttachmentValidatorService;
+use BitApps\BitConnect\Services\PostingLimits;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -45,6 +46,7 @@ final class AttachmentValidatorServiceTest extends TestCase
 
         $this->tempFiles = [];
         $GLOBALS['__php_uploaded_files'] = [];
+        unset($GLOBALS['__wp_max_upload_size']);
     }
 
     // -----------------------------------------------------------------------
@@ -222,7 +224,9 @@ final class AttachmentValidatorServiceTest extends TestCase
      */
     public function testAFileOverTheLimitIsRejectedOnItsRealSize(): void
     {
-        $oversized = self::JPEG . str_repeat('x', AttachmentValidatorService::MAX_FILE_SIZE);
+        // With no posting limit set, the server's is the one in force.
+        $GLOBALS['__wp_max_upload_size'] = 5 * 1024 * 1024;
+        $oversized = self::JPEG . str_repeat('x', PostingLimits::maxFileSize());
 
         $file = $this->upload('huge.jpg', $oversized);
         $file['size'] = 1024;
@@ -263,7 +267,6 @@ final class AttachmentValidatorServiceTest extends TestCase
      */
     public function testTheLimitAndAllowlistMatchTheOnesTheFrontendEnforces(): void
     {
-        $this->assertSame(5 * 1024 * 1024, AttachmentValidatorService::MAX_FILE_SIZE);
         $this->assertSame(
             ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx'],
             array_keys(AttachmentValidatorService::ALLOWED)

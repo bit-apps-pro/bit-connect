@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
@@ -56,7 +57,7 @@ final class UpdateTopicRequest extends Request
         $rules = [
             'id'           => ['required', 'integer', 'min:1'],
             'post_title'   => ['nullable', 'string', 'sanitize:text', 'max:200'],
-            'post_content' => ['nullable', 'string', 'max:10000'],
+            'post_content' => ['nullable', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
             'post_name' => ['nullable', 'string', 'sanitize:title', 'max:200'],
             // Publish is the only status this endpoint sets. Sending it for a
@@ -92,8 +93,7 @@ final class UpdateTopicRequest extends Request
             'post_title.max'        => 'The topic title cannot exceed 200 characters.',
             'post_name.string'      => 'The topic slug must be a string.',
             'post_name.max'         => 'The topic slug cannot exceed 200 characters.',
-            'post_content.max'      => 'The topic description cannot exceed 10000 characters.',
-            'attachments.*.max'     => 'Each attachment file cannot exceed 10MB.',
+            'post_content.max'      => 'The topic description is too long.',
             'topic-types.*.integer' => 'Each topic type must be a valid ID.',
             'topic-types.*.min'     => 'Each topic type ID must be at least 1.',
             'stages.*.integer'      => 'Each stage must be a valid ID.',

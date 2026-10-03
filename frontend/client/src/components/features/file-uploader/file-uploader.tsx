@@ -112,7 +112,7 @@ export default function FileUploader({
   ) : (
     <Button disabled={isAtLimit} icon={<LuPaperclip />}>
       {__('Add Files')}
-      {storedFiles.length > 0 && ` (${storedFiles.length}/${maxAttachments})`}
+      {storedFiles.length > 0 && Number.isFinite(maxAttachments) && ` (${storedFiles.length}/${maxAttachments})`}
     </Button>
   )
 
@@ -122,7 +122,7 @@ export default function FileUploader({
     : (tooltip ?? (iconOnly ? __('Add Files') : undefined))
 
   return (
-    <Upload {...uploadProps} maxCount={maxAttachments}>
+    <Upload {...uploadProps} maxCount={Number.isFinite(maxAttachments) ? maxAttachments : undefined}>
       {tooltipTitle ? <Tooltip title={tooltipTitle}>{trigger}</Tooltip> : trigger}
     </Upload>
   )

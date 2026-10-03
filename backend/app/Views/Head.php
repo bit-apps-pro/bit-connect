@@ -7,6 +7,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Helpers\DateTimeHelper;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Services\PostingLimits;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -157,6 +158,8 @@ class Head
                     'maxUploadBytes'      => wp_max_upload_size(),
                     'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),
                 ],
+                // The limits the Settings screen states. See PostingLimits.
+                'postingLimits' => PostingLimits::all(),
             ]
         );
 

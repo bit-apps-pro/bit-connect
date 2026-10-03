@@ -245,6 +245,14 @@ class TopicService
     {
         $userId = $userId ?: get_current_user_id();
 
+        // Here rather than in a request, so every route that creates a topic
+        // meets it — including ones another plugin registers.
+        PostingLimits::assertWithin(
+            'topic',
+            (string) ($data['post_content'] ?? ''),
+            \is_array($data['attachments'] ?? null) ? $data['attachments'] : []
+        );
+
         $postData = [
             'post_type'    => PostTypes::BIT_CONNECT->value,
             'post_status'  => $data['post_status'] ?? 'publish',
@@ -310,6 +318,14 @@ class TopicService
         if (!$existingPost || $existingPost->post_type !== PostTypes::BIT_CONNECT->value) {
             return null;
         }
+
+        // Only what this edit sends: a status change carries no content and
+        // must not be refused over a topic written under looser limits.
+        PostingLimits::assertWithin(
+            'topic',
+            isset($data['post_content']) ? (string) $data['post_content'] : null,
+            isset($data['attachments']) ? (array) $data['attachments'] : null
+        );
 
         $status = $data['post_status'] ?? $existingPost->post_status;
 

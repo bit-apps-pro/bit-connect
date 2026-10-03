@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
  * Validation pipeline:
  *   1. Presence check (file exists in $_FILES and was not truncated)
  *   2. PHP upload error codes
- *   3. File size against MAX_FILE_SIZE
+ *   3. File size against PostingLimits::maxFileSize()
  *   4. Extension extracted from the real filename (not MIME)
  *   5. Double-extension / dangerous-extension check
  *   6. Allowed-extension allowlist
@@ -34,10 +34,11 @@ if (!defined('ABSPATH')) {
 final class AttachmentValidatorService
 {
     /**
-     * Maximum file size in bytes.
-     * Must stay in sync with MAX_FILE_SIZE_BYTES in attachment-validation.ts.
+     * Ceiling for avatars and cover images, which the media limits do not
+     * govern: those are for what members post, not for their profile.
+     * Must stay in sync with AVATAR_MAX_BYTES in avatar-validation.ts.
      */
-    public const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    public const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
     /**
      * Allowed file extensions and their expected MIME types.
@@ -78,13 +79,14 @@ final class AttachmentValidatorService
     /**
      * Validate an uploaded file from $_FILES.
      *
-     * @param array $file A single entry from $_FILES (e.g. $_FILES['file']).
+     * @param array    $file    A single entry from $_FILES (e.g. $_FILES['file']).
+     * @param null|int $maxSize bytes allowed; the media limit when left out
      *
      * @throws InvalidArgumentException when the file fails any validation rule
      *
      * @return array the validated file array (same structure as $file input)
      */
-    public function validate(array $file): array
+    public function validate(array $file, ?int $maxSize = null): array
     {
         // 1. Presence
         if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
@@ -100,10 +102,15 @@ final class AttachmentValidatorService
             throw new InvalidArgumentException('Uploaded file is empty or unreadable.');
         }
 
-        if ($actualSize > self::MAX_FILE_SIZE) {
-            $mb = round($actualSize / (1024 * 1024), 1);
+        // The portal reads the same number from the page (`postingLimits`), so
+        // a file it lets through is one this accepts.
+        $maxSize ??= PostingLimits::maxFileSize();
 
-            throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is 5 MB."));
+        if ($actualSize > $maxSize) {
+            $mb = round($actualSize / (1024 * 1024), 1);
+            $maxMb = round($maxSize / (1024 * 1024), 1);
+
+            throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is {$maxMb} MB."));
         }
 
         // 4. Sanitize and extract extension from the real filename

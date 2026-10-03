@@ -42,12 +42,6 @@ final class CommentSanitizerService
     private const MAX_HTML_BYTES = 65_000;
 
     /**
-     * Human-readable plain-text limit shown in validation errors.
-     * Mirrors COMMENT_LIMITS.MAX_TEXT_CHARS in quill-comment-formatter.ts.
-     */
-    private const MAX_TEXT_CHARS = 5_000;
-
-    /**
      * The only classes a comment may carry, on any element.
      *
      * An allowlist rather than a blocklist, because `class` had to be admitted
@@ -87,11 +81,8 @@ final class CommentSanitizerService
             throw new InvalidArgumentException(esc_html(\sprintf('Comment exceeds maximum allowed length of %d bytes.', self::MAX_HTML_BYTES)));
         }
 
-        // 5. Enforce plain-text character limit (prevents giant wall-of-text spam).
-        $plainText = wp_strip_all_tags($sanitized);
-        if (mb_strlen($plainText) > self::MAX_TEXT_CHARS) {
-            throw new InvalidArgumentException(esc_html(\sprintf('Comment exceeds %d characters. Please shorten it.', self::MAX_TEXT_CHARS)));
-        }
+        // 5. The length a reader sees is limited by PostingLimits, which the
+        //    controller asks after this, so an administrator's limit applies.
 
         // 6. Validate and normalise URLs in href attributes.
         $sanitized = $this->sanitizeUrls($sanitized);

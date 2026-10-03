@@ -59,6 +59,18 @@ return [
 
     'Write tag name' => __('Write tag name', 'bit-connect'),
 
+    'Not saved.' => __('Not saved.', 'bit-connect'),
+
+    'Try the change again.' => __('Try the change again.', 'bit-connect'),
+
+    'Not saved yet.' => __('Not saved yet.', 'bit-connect'),
+
+    'Saving…' => __('Saving…', 'bit-connect'),
+
+    'All changes saved' => __('All changes saved', 'bit-connect'),
+
+    'Changes save automatically' => __('Changes save automatically', 'bit-connect'),
+
     'Used in portal URLs. Changing it breaks links that already point here.' => __('Used in portal URLs. Changing it breaks links that already point here.', 'bit-connect'),
 
     'Used in portal URLs. Leave blank to build one from the name.' => __('Used in portal URLs. Leave blank to build one from the name.', 'bit-connect'),
@@ -173,17 +185,11 @@ return [
 
     'Sorry, the page you visited does not exist.' => __('Sorry, the page you visited does not exist.', 'bit-connect'),
 
-    'Portal slug is required' => __('Portal slug is required', 'bit-connect'),
-
-    'Saving…' => __('Saving…', 'bit-connect'),
-
-    'Settings saved successfully' => __('Settings saved successfully', 'bit-connect'),
-
     'There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.' => __('There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.', 'bit-connect'),
 
     'Address saved, but no page is there yet' => __('Address saved, but no page is there yet', 'bit-connect'),
 
-    'Failed to save settings' => __('Failed to save settings', 'bit-connect'),
+    'Portal slug is required' => __('Portal slug is required', 'bit-connect'),
 
     'Branding' => __('Branding', 'bit-connect'),
 
@@ -194,10 +200,6 @@ return [
     'Sign in' => __('Sign in', 'bit-connect'),
 
     'General' => __('General', 'bit-connect'),
-
-    'Unsaved changes' => __('Unsaved changes', 'bit-connect'),
-
-    'Save' => __('Save', 'bit-connect'),
 
     'How the topic list is sorted: newest, oldest or most active.' => __('How the topic list is sorted: newest, oldest or most active.', 'bit-connect'),
 
@@ -475,13 +477,13 @@ return [
 
     'Moderation & Admin' => __('Moderation & Admin', 'bit-connect'),
 
+    'Save' => __('Save', 'bit-connect'),
+
     'Forum Capabilities by Role' => __('Forum Capabilities by Role', 'bit-connect'),
 
     'Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.' => __('Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.', 'bit-connect'),
 
     'Could not save notification settings' => __('Could not save notification settings', 'bit-connect'),
-
-    'Notification settings saved' => __('Notification settings saved', 'bit-connect'),
 
     'WordPress could not send the message. Check this site\'s email configuration.' => __('WordPress could not send the message. Check this site\'s email configuration.', 'bit-connect'),
 
@@ -857,8 +859,6 @@ return [
 
     'Failed to update SEO settings' => __('Failed to update SEO settings', 'bit-connect'),
 
-    'SEO settings updated' => __('SEO settings updated', 'bit-connect'),
-
     'Statuses' => __('Statuses', 'bit-connect'),
 
     'Topic types' => __('Topic types', 'bit-connect'),
@@ -908,8 +908,6 @@ return [
 
     'Failed to update settings' => __('Failed to update settings', 'bit-connect'),
 
-    'Settings updated successfully' => __('Settings updated successfully', 'bit-connect'),
-
     'Hidden' => __('Hidden', 'bit-connect'),
 
     'Optional' => __('Optional', 'bit-connect'),
@@ -922,6 +920,20 @@ return [
 
     'Reported content stays visible until a moderator reviews the report and decides what to do with it.' => __('Reported content stays visible until a moderator reviews the report and decides what to do with it.', 'bit-connect'),
 
+    'Set by your server and WordPress. Pasted images larger than these are resized before upload.' => __('Set by your server and WordPress. Pasted images larger than these are resized before upload.', 'bit-connect'),
+
+    'Uploads' => __('Uploads', 'bit-connect'),
+
+    'The largest file your server accepts.' => __('The largest file your server accepts.', 'bit-connect'),
+
+    'Max file size' => __('Max file size', 'bit-connect'),
+
+    'Larger images are scaled down by WordPress.' => __('Larger images are scaled down by WordPress.', 'bit-connect'),
+
+    'Max image dimensions' => __('Max image dimensions', 'bit-connect'),
+
+    'Allowed file types' => __('Allowed file types', 'bit-connect'),
+
     'Choose what people fill in when they create a topic, besides its title and text.' => __('Choose what people fill in when they create a topic, besides its title and text.', 'bit-connect'),
 
     'Topic form' => __('Topic form', 'bit-connect'),
@@ -929,20 +941,6 @@ return [
     'What kind of post it is, such as a question or a bug report.' => __('What kind of post it is, such as a question or a bug report.', 'bit-connect'),
 
     'Topic type' => __('Topic type', 'bit-connect'),
-
-    'These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.' => __('These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.', 'bit-connect'),
-
-    'WordPress Media Limits' => __('WordPress Media Limits', 'bit-connect'),
-
-    '(set by server php.ini via wp_max_upload_size)' => __('(set by server php.ini via wp_max_upload_size)', 'bit-connect'),
-
-    'Max upload size' => __('Max upload size', 'bit-connect'),
-
-    '(WordPress big_image_size_threshold filter, default 2560 px)' => __('(WordPress big_image_size_threshold filter, default 2560 px)', 'bit-connect'),
-
-    'Max image dimensions' => __('Max image dimensions', 'bit-connect'),
-
-    'Allowed file types' => __('Allowed file types', 'bit-connect'),
 
     'Let members upvote topics.' => __('Let members upvote topics.', 'bit-connect'),
 
@@ -954,13 +952,17 @@ return [
 
     'Delete data on uninstall' => __('Delete data on uninstall', 'bit-connect'),
 
-    'Choose what members can do on a topic.' => __('Choose what members can do on a topic.', 'bit-connect'),
+    'Limits' => __('Limits', 'bit-connect'),
 
-    'Topic access' => __('Topic access', 'bit-connect'),
+    'Data' => __('Data', 'bit-connect'),
 
     'Choose what happens to your community’s data if the plugin is deleted.' => __('Choose what happens to your community’s data if the plugin is deleted.', 'bit-connect'),
 
     'Data cleanup' => __('Data cleanup', 'bit-connect'),
+
+    'Choose what members can do on a topic.' => __('Choose what members can do on a topic.', 'bit-connect'),
+
+    'Topic access' => __('Topic access', 'bit-connect'),
 
     'Please enter a valid Custom Login Page URL, for example https://example.com/login' => __('Please enter a valid Custom Login Page URL, for example https://example.com/login', 'bit-connect'),
 
@@ -1186,6 +1188,8 @@ return [
 
     'That could not be saved. Please check your connection and try again.' => __('That could not be saved. Please check your connection and try again.', 'bit-connect'),
 
+    'Notification settings saved' => __('Notification settings saved', 'bit-connect'),
+
     'Your notification settings could not be loaded.' => __('Your notification settings could not be loaded.', 'bit-connect'),
 
     'Email frequency' => __('Email frequency', 'bit-connect'),
@@ -1367,13 +1371,19 @@ return [
 
     'Please enter a description or add an image' => __('Please enter a description or add an image', 'bit-connect'),
 
-    'Description cannot exceed 10000 characters' => __('Description cannot exceed 10000 characters', 'bit-connect'),
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Description cannot exceed %s characters' => __('Description cannot exceed %s characters', 'bit-connect'),
 
     'Write your topic description...' => __('Write your topic description...', 'bit-connect'),
 
     'Tag' => __('Tag', 'bit-connect'),
 
     'Select tags..' => __('Select tags..', 'bit-connect'),
+
+    'You can add only one image here.' => __('You can add only one image here.', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    'You can add up to %d images here.' => __('You can add up to %d images here.', 'bit-connect'),
 
     'Normal text' => __('Normal text', 'bit-connect'),
 

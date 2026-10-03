@@ -1,9 +1,11 @@
 import { __ } from '@common/helpers/i18nWrap'
+import useAutoSave from '@common/hooks/use-auto-save'
+import SaveStatus from '@utilities/save-status'
 import { Alert, Button, Skeleton, Typography } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import useSeoSettings from './data/use-seo-settings'
-import useUpdateSeoSettings, { type ErrorResponse } from './data/use-update-seo-settings'
+import useUpdateSeoSettings from './data/use-update-seo-settings'
 import ArchiveRows from './internal/archive-rows'
 import SeoFieldRows from './internal/seo-field-rows'
 import SeoSection from './internal/seo-section'
@@ -15,43 +17,37 @@ const { Title } = Typography
 export default function Seo() {
   const { diagnostics, hasSeoSettings, isSeoSettingsError, isSeoSettingsPending, refetchSeoSettings, seoSettings } =
     useSeoSettings()
-  const { error, isError, isUpdatingSeoSettings, updateSeoSettings } = useUpdateSeoSettings()
+  const { updateSeoSettings } = useUpdateSeoSettings()
 
   const [form, setForm] = useState<SeoSettings>(DEFAULT_SEO_SETTINGS)
-  const [isDirty, setIsDirty] = useState(false)
 
-  // The saved settings are the source of truth until the form is touched;
-  // adopting them afterwards would discard edits made while the refetch that
-  // follows a save was still in flight.
-  useEffect(() => {
-    if (!isDirty) setForm(seoSettings)
-  }, [seoSettings, isDirty])
+  // Saved as each switch flips. The hook adopts the saved settings only while
+  // no edit is waiting, so a refetch after one save never undoes the next.
+  const save = useAutoSave({
+    delay: 300,
+    draft: form,
+    save: updateSeoSettings,
+    saved: hasSeoSettings ? seoSettings : undefined,
+    setDraft: setForm
+  })
 
   const setIndexProfiles = useCallback((value: boolean) => {
-    setIsDirty(true)
     setForm(previous => ({ ...previous, indexProfiles: value }))
   }, [])
 
   const setArchiveIndexable = useCallback((segment: string, value: boolean) => {
-    setIsDirty(true)
     setForm(previous => ({
       ...previous,
       indexArchives: { ...previous.indexArchives, [segment]: value }
     }))
   }, [])
 
-  const onSave = useCallback(async () => {
-    await updateSeoSettings(form)
-    setIsDirty(false)
-  }, [form, updateSeoSettings])
-
-  const disabled = isSeoSettingsPending || isUpdatingSeoSettings
+  const disabled = isSeoSettingsPending
 
   return (
     <div className="bc-p-6">
       {/* One page rather than tabs: what is left is a status card and six
-          switches, and tabs only put the switches a click away from the Save
-          button that governs them. */}
+          switches, and each saves as it is flipped. */}
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
         <div className="bc-min-w-0 bc-flex-1 bc-basis-80">
           <Title className="bc-mb-0" level={3}>
@@ -59,28 +55,13 @@ export default function Seo() {
           </Title>
         </div>
 
-        <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-3">
-          {isDirty && <Typography.Text type="secondary">{__('Unsaved changes')}</Typography.Text>}
-          <Button
-            disabled={!isDirty}
-            loading={isUpdatingSeoSettings}
-            onClick={onSave}
-            size="large"
-            type="primary"
-          >
-            {__('Save')}
-          </Button>
-        </div>
-      </div>
-
-      {isError && (
-        <Alert
-          className="bc-mb-5"
-          message={(error as ErrorResponse)?.errors?.message ?? __('Failed to update SEO settings')}
-          showIcon
-          type="error"
+        <SaveStatus
+          error={save.error}
+          onRetry={save.flushNow}
+          retrying={save.retrying}
+          status={save.status}
         />
-      )}
+      </div>
 
       {/* Until the settings arrive the page has nothing true to say: drawn
           from the empty defaults, the status card would warn that the portal

@@ -11,17 +11,25 @@ import { isEmojiImage, replaceEmojiImages } from './quill-emoji'
 // Constants
 // ---------------------------------------------------------------------------
 
+/**
+ * Fixed structural caps. How long the text may be and how many images it may
+ * hold are the forum's posting limits instead (PostingLimits.php), passed to
+ * validateContent() by the editor that knows which apply.
+ */
 export const CONTENT_LIMITS = {
-  /** Raw HTML character limit must match backend CreateTopicRequest max:10000 */
-  MAX_HTML_LENGTH: 10_000,
-  /** Plain-text character limit shown to users */
   MAX_HEADINGS: 10,
-  MAX_IMAGES: 5,
+  /** Backstop on raw HTML — the most a reply's comment_content column holds. */
+  MAX_HTML_LENGTH: 65_000,
   MAX_LINKS: 20,
   MAX_NESTING_DEPTH: 10,
-  MAX_TABLES: 3,
-  MAX_TEXT_LENGTH: 5000
+  MAX_TABLES: 3
 } as const
+
+/** The forum's limits for the content being validated. Unset is no limit. */
+export interface ContentValidationLimits {
+  maxImages?: number
+  maxTextLength?: number
+}
 
 /**
  * Tags that Quill's snow theme produces.  Anything not in this list is
@@ -370,10 +378,19 @@ function htmlToPlainText(html: string): string {
 }
 
 /**
+ * The text a reader sees, counted in characters as the server counts them
+ * (PostingLimits::countCharacters): by code point, so an emoji is one rather
+ * than the two UTF-16 units `.length` would report.
+ */
+export function countCharacters(html: string): number {
+  return [...htmlToPlainText(html).trim()].length
+}
+
+/**
  * Validate the HTML content coming from Quill before submission.
  * Returns all errors so the UI can show them simultaneously.
  */
-export function validateContent(html: string): ValidationResult {
+export function validateContent(html: string, limits: ContentValidationLimits = {}): ValidationResult {
   const errors: string[] = []
 
   if (!html || html === '<p><br></p>' || html.trim() === '') {
@@ -381,7 +398,7 @@ export function validateContent(html: string): ValidationResult {
     return { errors, valid: false }
   }
 
-  // Raw HTML size check (matches backend max:10000)
+  // Raw HTML backstop; the text limit below is the one members meet.
   if (html.length > CONTENT_LIMITS.MAX_HTML_LENGTH) {
     errors.push(
       `Content is too long (${html.length.toLocaleString()} chars). Maximum is ${CONTENT_LIMITS.MAX_HTML_LENGTH.toLocaleString()} characters.`
@@ -389,11 +406,8 @@ export function validateContent(html: string): ValidationResult {
   }
 
   // Human-readable text check
-  const plain = htmlToPlainText(html)
-  if (plain.length > CONTENT_LIMITS.MAX_TEXT_LENGTH) {
-    errors.push(
-      `Content exceeds ${CONTENT_LIMITS.MAX_TEXT_LENGTH.toLocaleString()} characters. Please shorten it.`
-    )
+  if (limits.maxTextLength !== undefined && countCharacters(html) > limits.maxTextLength) {
+    errors.push(`Content exceeds ${limits.maxTextLength.toLocaleString()} characters. Please shorten it.`)
   }
 
   // Parse and count elements
@@ -403,8 +417,8 @@ export function validateContent(html: string): ValidationResult {
   // Emoji sprites are characters, not pictures — counting them meant six 😀
   // failed a draft holding no images at all.
   const imageCount = [...doc.querySelectorAll('img')].filter(img => !isEmojiImage(img)).length
-  if (imageCount > CONTENT_LIMITS.MAX_IMAGES) {
-    errors.push(`Too many images (${imageCount}). Maximum is ${CONTENT_LIMITS.MAX_IMAGES}.`)
+  if (limits.maxImages !== undefined && imageCount > limits.maxImages) {
+    errors.push(`Too many images (${imageCount}). Maximum is ${limits.maxImages}.`)
   }
 
   const linkCount = doc.querySelectorAll('a').length

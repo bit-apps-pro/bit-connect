@@ -347,4 +347,24 @@ final class ExtensionPoints
             $pending
         );
     }
+
+    /**
+     * How much a topic or a reply may hold — its length, its images and its
+     * files — and how large one uploaded file may be.
+     *
+     * This plugin sets none — every value is null, "no limit" — so with
+     * nobody listening a member may post as much as the server takes. A
+     * listener answers with numbers of its own. The answer is raw:
+     * PostingLimits validates its shape and caps the file size at what the
+     * server accepts, so a listener cannot promise an upload PHP will refuse
+     * anyway.
+     *
+     * @param array{topic: array{attachments: null, characters: null, images: null}, comment: array{attachments: null, characters: null, images: null}, maxFileSize: null} $own
+     *
+     * @return mixed
+     */
+    public static function postingLimits(array $own)
+    {
+        return Hooks::applyFilter('bit_connect_posting_limits', $own);
+    }
 }

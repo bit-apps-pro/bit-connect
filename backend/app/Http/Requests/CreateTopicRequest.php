@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\TopicFormFields;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 
@@ -36,7 +37,7 @@ final class CreateTopicRequest extends Request
     {
         $rules = [
             'post_title'   => ['required', 'string', 'sanitize:text', 'max:200'],
-            'post_content' => ['required', 'string', 'max:10000'],
+            'post_content' => ['required', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
             // `sanitize:title` is WordPress' own `sanitize_title()`, so whatever
             // reaches the service is already a valid slug. Left blank, the
             // service derives one from the title the way core does.
@@ -72,10 +73,8 @@ final class CreateTopicRequest extends Request
             'post_name.string'      => 'The topic slug must be a string.',
             'post_name.max'         => 'The topic slug cannot exceed 200 characters.',
             'post_content.required' => 'The topic description is required.',
-            'post_content.max'      => 'The topic description cannot exceed 10000 characters.',
-
-            'attachments.*.max' => 'Each attachment file cannot exceed 10MB.',
-            'topic-type'        => 'Each topic type must be a valid ID.',
+            'post_content.max'      => 'The topic description is too long.',
+            'topic-type'            => 'Each topic type must be a valid ID.',
 
             'topic-types.required' => 'Choose a topic type.',
 

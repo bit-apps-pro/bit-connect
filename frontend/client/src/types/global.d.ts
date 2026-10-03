@@ -73,6 +73,16 @@ declare const SERVER_VARIABLES: {
   /** URL segment → the filter its archive pins and its taxonomy — see BaseView. */
   portalArchives?: Record<string, { filter: string; taxonomy: string }>
   portalFilters?: { sort?: boolean; tags?: boolean }
+  /**
+   * How long a topic or reply may be and what media it may carry
+   * (PostingLimits.php). Both apps receive it: the portal enforces it, the
+   * admin's Settings screen states it.
+   */
+  postingLimits?: {
+    comment: { attachments: null | number; characters: null | number; images: null | number }
+    maxFileSize: number
+    topic: { attachments: null | number; characters: null | number; images: null | number }
+  }
   postURL: string
   proApiURL: string
   promo?: {

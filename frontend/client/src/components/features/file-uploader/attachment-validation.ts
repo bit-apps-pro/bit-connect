@@ -12,6 +12,7 @@
  */
 
 import { __ } from '@common/helpers/i18nWrap'
+import config from '@config/config'
 
 // ---------------------------------------------------------------------------
 // Allowed types — must stay in sync with AttachmentValidatorService::ALLOWED
@@ -38,8 +39,14 @@ const ALLOWED_TYPES: Record<string, AllowedType> = {
   webp: { label: __('WebP image'), mimes: ['image/webp'] }
 }
 
-/** 5 MB — must match AttachmentValidatorService::MAX_FILE_SIZE */
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
+/**
+ * The per-file cap the server enforces (PostingLimits::maxFileSize()), sent with
+ * the page. Read per call so a test can change the config between cases.
+ */
+export const maxFileSizeBytes = () => config.POSTING_LIMITS.maxFileSize
+
+/** "5 MB", "1.5 MB" — one decimal only when the cap is not whole megabytes. */
+export const formatMegabytes = (bytes: number) => `${Number((bytes / (1024 * 1024)).toFixed(1))} MB`
 
 /** Extensions that must never be accepted regardless of MIME type */
 const DANGEROUS_EXTENSIONS = new Set([
@@ -95,9 +102,13 @@ export function validateAttachment(file: File): AttachmentValidationResult {
     return { error: 'File is empty.', valid: false }
   }
 
-  if (file.size > MAX_FILE_SIZE_BYTES) {
+  const maxBytes = maxFileSizeBytes()
+  if (file.size > maxBytes) {
     const mb = (file.size / (1024 * 1024)).toFixed(1)
-    return { error: `File is too large (${mb} MB). Maximum allowed size is 5 MB.`, valid: false }
+    return {
+      error: `File is too large (${mb} MB). Maximum allowed size is ${formatMegabytes(maxBytes)}.`,
+      valid: false
+    }
   }
 
   // 2. Extract and normalise the extension from the filename

@@ -14,7 +14,7 @@ import {
   WarningOutlined
 } from '@ant-design/icons'
 import { __ } from '@common/helpers/i18nWrap'
-import { theme as antdTheme, Button, Flex, Input, Popover, Select, Tooltip } from 'antd'
+import { theme as antdTheme, Button, Flex, Input, Popover, Select, Tooltip, Typography } from 'antd'
 import Quill from 'quill'
 import {
   memo,
@@ -32,8 +32,9 @@ import 'quill/dist/quill.snow.css'
 import './quill-clipboard-sanitizer'
 import './quill-mention'
 import { searchMembers } from './mention-source'
+import { isEmojiSource } from './quill-emoji'
 import { setImageLoadingProgress } from './quill-image-loading-blot'
-import { validateContent, type ValidationResult } from './quill-validation'
+import { countCharacters, validateContent, type ValidationResult } from './quill-validation'
 import { formatForWordPress } from './quill-wp-formatter'
 import styles from './QuillEditor.module.css'
 
@@ -62,6 +63,23 @@ function hasSubmittableContent(quill: Quill): boolean {
   return quill
     .getContents()
     .ops.some(op => typeof op.insert === 'object' && 'image' in (op.insert as object))
+}
+
+/**
+ * Images in the text, finished or still uploading. Both count toward the limit:
+ * leaving the placeholders out would let a burst of pastes past it. Emoji
+ * sprites WordPress swapped in are characters, not pictures, and are saved as
+ * such — see quill-emoji.ts.
+ */
+function countImages(quill: Quill): number {
+  return quill
+    .getContents()
+    .ops.filter(op => {
+      if (typeof op.insert !== 'object' || op.insert === null) return false
+      if ('image-loading' in op.insert) return true
+      const url = (op.insert as { image?: unknown }).image
+      return typeof url === 'string' && !isEmojiSource(url)
+    }).length
 }
 
 /**
@@ -101,8 +119,22 @@ function triggerImageUpload(
   file: File,
   handler: ImageHandler,
   onError: (err: Error) => void,
-  track: UploadTracker
+  track: UploadTracker,
+  maxImages?: number
 ) {
+  // Refused before anything is uploaded. The server refuses the save as well,
+  // but finding out then would cost the member the upload and the wait.
+  if (maxImages !== undefined && countImages(quill) >= maxImages) {
+    onError(
+      new Error(
+        maxImages === 1
+          ? __('You can add only one image here.')
+          : __('You can add up to %d images here.').replace('%d', String(maxImages))
+      )
+    )
+    return
+  }
+
   const loadingId = `ql-img-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
   const range = quill.getSelection(true)
   quill.insertEmbed(range.index, 'image-loading', loadingId, 'user')
@@ -157,6 +189,9 @@ const NO_HEADING = 0
 /** `list` value meaning "not a list item". Quill reports no value for those. */
 const NO_LIST = ''
 
+/** Share of maxLength at which the character counter appears. */
+const COUNTER_THRESHOLD = 0.8
+
 /** Fixed so the control does not resize as the selected level changes. */
 const HEADING_SELECT_WIDTH = 'bc-w-[124px]'
 
@@ -166,6 +201,11 @@ const HEADING_SELECT_MENU_WIDTH = 'bc-w-full'
 interface QuillEditorProps {
   className?: string
   defaultValue?: string
+  /** Most images the text may hold. Unset is no limit; to allow none, leave
+   *  out the image handlers instead, which removes the control. */
+  maxImages?: number
+  /** Most characters the text may hold, checked on submit. Unset is no limit. */
+  maxLength?: number
   /** Opt-out: typing "@" offers the member list. On everywhere the portal
    *  composes forum content, because a mention is how you bring a colleague
    *  into a thread — an editor without it leaves the notification with no way
@@ -207,6 +247,8 @@ interface FormatState {
 function QuillEditorInner({
   className,
   defaultValue,
+  maxImages,
+  maxLength,
   mentions = true,
   onAttachment,
   onChange,
@@ -230,6 +272,8 @@ function QuillEditorInner({
   const onSubmitRef = useRef(onSubmit)
   const onImagePasteRef = useRef(onImagePaste)
   const onImageInsertRef = useRef(onImageInsert)
+  const maxImagesRef = useRef(maxImages)
+  const [characterCount, setCharacterCount] = useState(0)
   const savedSelectionRef = useRef<null | { index: number; length: number }>(null)
   const contentRef = useRef('')
   const isInternalChange = useRef(false)
@@ -280,6 +324,7 @@ function QuillEditorInner({
     onSubmitRef.current = onSubmit
     onImagePasteRef.current = onImagePaste
     onImageInsertRef.current = onImageInsert
+    maxImagesRef.current = maxImages
   })
 
   useEffect(() => {
@@ -362,6 +407,7 @@ function QuillEditorInner({
 
       const newHasContent = hasSubmittableContent(quill)
       setHasContent(prev => (prev === newHasContent ? prev : newHasContent))
+      setCharacterCount(countCharacters(html))
 
       // Clear errors as the user types so they don't persist stale messages
       setValidationErrors([])
@@ -394,7 +440,8 @@ function QuillEditorInner({
         file,
         onImagePasteRef.current,
         error => reportImageError(error, message => setValidationErrors([message])),
-        uploadTracker
+        uploadTracker,
+        maxImagesRef.current
       )
     }
     quill.root.addEventListener('quill-image-paste', handleImagePaste)
@@ -736,7 +783,7 @@ function QuillEditorInner({
     // this holds, so reaching here means a stray call.
     if (isUploadingImage) return
 
-    const result: ValidationResult = validateContent(contentRef.current)
+    const result: ValidationResult = validateContent(contentRef.current, { maxImages, maxTextLength: maxLength })
     if (!result.valid) {
       setValidationErrors(result.errors)
       return
@@ -1026,7 +1073,8 @@ function QuillEditorInner({
                         file,
                         onImageInsertRef.current,
                         error => reportImageError(error, message => setValidationErrors([message])),
-                        uploadTracker
+                        uploadTracker,
+                        maxImagesRef.current
                       )
                     })
                     input.click()
@@ -1110,6 +1158,17 @@ function QuillEditorInner({
             </Tooltip>
           )}
         </Flex>
+      )}
+      {/* Only once the limit is in sight: a counter on every keystroke of a
+          two-line reply is noise. */}
+      {maxLength !== undefined && characterCount >= maxLength * COUNTER_THRESHOLD && (
+        <Typography.Text
+          aria-live="polite"
+          className="bc-mt-1 bc-block bc-text-right bc-text-xs"
+          type={characterCount > maxLength ? 'danger' : 'secondary'}
+        >
+          {`${characterCount.toLocaleString()} / ${maxLength.toLocaleString()}`}
+        </Typography.Text>
       )}
       {validationErrors.length > 0 && !showSubmitButton && (
         <ul className={styles.validationErrors}>

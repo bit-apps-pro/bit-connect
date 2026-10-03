@@ -5,6 +5,8 @@ import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
+import { countCharacters } from '@components/quilTextEditor/quill-validation'
+import config from '@config/config'
 import FileUploader from '@features/file-uploader'
 import useFileStore, { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import FileList from '@features/file-uploader/ui/file-list'
@@ -54,6 +56,13 @@ export default function TopicForm({
   const topicTypeMode = topicFormFields?.topicType ?? 'required'
   const showTopicType = topicTypeMode !== 'hidden'
   const addedTermFields = useAddedTermFields({ form, isEditMode: !!isEditMode })
+  // A limit of zero takes the control away rather than leaving one that only
+  // ever refuses. The server enforces the same numbers — see PostingLimits.php.
+  const {
+    attachments: maxAttachments,
+    characters: maxLength,
+    images: maxImages
+  } = config.POSTING_LIMITS.topic
 
   // Both modals mount this form only while they are open, so the flag starts
   // false on every open without needing to watch the modal itself.
@@ -254,8 +263,12 @@ export default function TopicForm({
               if (!text && !/<img\b/i.test(html)) {
                 return Promise.reject(new Error(__('Please enter a description or add an image')))
               }
-              if (text.length > 10_000) {
-                return Promise.reject(new Error(__('Description cannot exceed 10000 characters')))
+              if (countCharacters(html) > maxLength) {
+                return Promise.reject(
+                  new Error(
+                    __('Description cannot exceed %s characters').replace('%s', maxLength.toLocaleString())
+                  )
+                )
               }
               return Promise.resolve()
             }
@@ -263,9 +276,11 @@ export default function TopicForm({
         ]}
       >
         <QuillEditor
+          maxImages={maxImages}
+          maxLength={maxLength}
           onChange={handleContentChange}
-          onImageInsert={handleImageInsert}
-          onImagePaste={handleImageInsert}
+          onImageInsert={maxImages > 0 ? handleImageInsert : undefined}
+          onImagePaste={maxImages > 0 ? handleImageInsert : undefined}
           placeholder={__('Write your topic description...')}
           showHeadings={true}
           showToolbar={true}
@@ -284,12 +299,16 @@ export default function TopicForm({
         />
       </Form.Item>
 
-      <div className="bc-mb-4">
-        <FileUploader />
-        <If conditions={storedFiles && storedFiles.length > 0}>
-          <FileList files={storedFiles} />
-        </If>
-      </div>
+      <If conditions={maxAttachments > 0 || storedFiles.length > 0}>
+        <div className="bc-mb-4">
+          <If conditions={maxAttachments > 0}>
+            <FileUploader maxAttachments={maxAttachments} />
+          </If>
+          <If conditions={storedFiles && storedFiles.length > 0}>
+            <FileList files={storedFiles} />
+          </If>
+        </div>
+      </If>
     </Form>
   )
 }

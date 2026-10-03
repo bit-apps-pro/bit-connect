@@ -30,6 +30,7 @@ use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
 use BitApps\BitConnect\Services\TopicService;
@@ -177,6 +178,12 @@ final class CommentController
         $parentId = $request->parent_id ? (int) $request->parent_id : 0;
         $attachments = array_map('intval', (array) ($request->attachments ?? []));
 
+        try {
+            PostingLimits::assertWithin('comment', $content, $attachments);
+        } catch (InvalidArgumentException $e) {
+            return Response::error($e->getMessage(), 422);
+        }
+
         if ($parentId > 0) {
             $parentComment = get_comment($parentId);
             if (!$parentComment || $parentComment->comment_post_ID != $postId) {
@@ -269,6 +276,12 @@ final class CommentController
         $newAttachmentIds = $request->attachments !== null
             ? array_map('intval', (array) $request->attachments)
             : null;
+
+        try {
+            PostingLimits::assertWithin('comment', $content, $newAttachmentIds);
+        } catch (InvalidArgumentException $e) {
+            return Response::error($e->getMessage(), 422);
+        }
 
         // Compared before the write: wp_update_comment() overwrites in place and
         // wp_comments carries no modified column, so once this returns there is

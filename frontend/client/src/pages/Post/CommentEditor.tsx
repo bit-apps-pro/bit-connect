@@ -12,12 +12,10 @@ import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
-import {
-  COMMENT_LIMITS,
-  formatCommentForWordPress,
-  getCommentPlainTextLength
-} from '@components/quilTextEditor/quill-comment-formatter'
+import { formatCommentForWordPress } from '@components/quilTextEditor/quill-comment-formatter'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
+import { countCharacters } from '@components/quilTextEditor/quill-validation'
+import config from '@config/config'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import { Alert, Button, List, Progress, Space, Typography } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -54,7 +52,6 @@ interface CommentEditorProps {
   submitButtonText?: string
 }
 
-const MAX_ATTACHMENTS_DEFAULT = 5
 
 const generateFileId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -141,7 +138,7 @@ const toLocalFileItems = (attachments?: WPAttachmentData[]): LocalFileItem[] =>
 export default function CommentEditor({
   initialAttachments,
   initialContent,
-  maxAttachments = MAX_ATTACHMENTS_DEFAULT,
+  maxAttachments = config.POSTING_LIMITS.comment.attachments,
   onCancel,
   onSubmit,
   placeholder = 'Write comment here...',
@@ -159,6 +156,7 @@ export default function CommentEditor({
   onSubmitRef.current = onSubmit
 
   const isUploading = files.some(f => f.isUploading)
+  const { characters: maxLength, images: maxImages } = config.POSTING_LIMITS.comment
 
   const uploadFile = useCallback(async (fileItem: LocalFileItem) => {
     if (!fileItem.file) return
@@ -353,7 +351,8 @@ export default function CommentEditor({
 
       // Format to WordPress comment-compatible HTML and enforce length limit
       const formatted = formatCommentForWordPress(html)
-      if (!formatted || getCommentPlainTextLength(formatted) > COMMENT_LIMITS.MAX_TEXT_CHARS) return
+      // The editor has already said why when this holds; this is the backstop.
+      if (!formatted || countCharacters(formatted) > maxLength) return
 
       const attachments: WPAttachmentData[] = filesRef.current
         .filter(f => f.wpId)
@@ -371,7 +370,7 @@ export default function CommentEditor({
       setFiles([])
       setKey(prev => prev + 1)
     },
-    [revokeAllUrls]
+    [maxLength, revokeAllUrls]
   )
 
   const handleCancel = useCallback(() => {
@@ -405,9 +404,13 @@ export default function CommentEditor({
       <div key={key}>
         <QuillEditor
           defaultValue={initialContent}
-          onAttachment={handleAttachment}
-          onImageInsert={handleImagePaste}
-          onImagePaste={handleImagePaste}
+          maxImages={maxImages}
+          maxLength={maxLength}
+          // A limit of zero takes the control away rather than leaving one
+          // that only ever refuses. The server enforces the same numbers.
+          onAttachment={maxAttachments > 0 ? handleAttachment : undefined}
+          onImageInsert={maxImages > 0 ? handleImagePaste : undefined}
+          onImagePaste={maxImages > 0 ? handleImagePaste : undefined}
           onSubmit={handleSubmit}
           placeholder={placeholder}
           showToolbar={true}
