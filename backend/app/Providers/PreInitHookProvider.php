@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\StaticRouter;
+use BitApps\BitConnect\Http\Controller\PortalSlugController;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\RootRouter;
@@ -28,7 +29,7 @@ class PreInitHookProvider
         $this->_pluginBackend = Config::get('BASEDIR') . DIRECTORY_SEPARATOR;
         $this->loadAppStaticRoutes();
         Hooks::addFilter('page_template', [$this, 'loadPortalTemplate'], 99, 1);
-        Hooks::addAction('theme_switch', [$this, 'handleThemeSwitch']);
+        Hooks::addAction('switch_theme', [$this, 'handleThemeSwitch']);
         // Priority 11: StaticRouter registers its own rules on `init` at the
         // default 10, and this has to be able to see the result.
         Hooks::addAction('init', [$this, 'registerProfileRewrite'], 11);
@@ -177,19 +178,13 @@ class PreInitHookProvider
         return file_exists($customTemplate) ? $customTemplate : $pageTemplate;
     }
 
+    /**
+     * Move the portal template to the newly active theme, so its template
+     * picker keeps offering it after a theme change.
+     */
     public function handleThemeSwitch()
     {
-        $hasTemplates = get_posts(
-            [
-                'name'        => 'bit-connect-portal',
-                'numberposts' => 1,
-                'post_type'   => 'wp_template',
-                'post_status' => 'any',
-            ]
-        );
-        if (\count($hasTemplates) > 0) {
-            wp_set_post_terms($hasTemplates[0]->ID, [get_stylesheet()], 'wp_theme');
-        }
+        PortalSlugController::ensurePortalTemplate();
     }
 
     /**

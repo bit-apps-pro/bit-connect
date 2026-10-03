@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\UserStatsService;
 use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\Seo\SeoPluginBridge;
+use WP_Block_Type;
 
 class HookProvider
 {
@@ -102,6 +103,9 @@ class HookProvider
         Hooks::addFilter('theme_page_templates', [$this, 'registerPortalPageTemplate']);
         Hooks::addFilter('template_include', [$this, 'loadPortalPageTemplate']);
 
+        // Lets "Bit Connect" be found in the block inserter's search.
+        Hooks::addFilter('get_block_type_variations', [$this, 'addPortalShortcodeVariation'], 10, 2);
+
         if (Config::getEnv('CLI_ACTIVE')) {
             include_once __DIR__ . '/../../../cli/RegisterCommands.php';
         }
@@ -112,6 +116,36 @@ class HookProvider
         $templates['bit-connect-portal'] = __('Bit Connect Portal Template', 'bit-connect');
 
         return $templates;
+    }
+
+    /**
+     * A Shortcode block variation that inserts `[bit-connect]` already filled
+     * in, so the portal can be added without knowing the shortcode by heart.
+     *
+     * @param array         $variations
+     * @param WP_Block_Type $blockType
+     *
+     * @return array
+     */
+    public function addPortalShortcodeVariation($variations, $blockType)
+    {
+        if ($blockType->name !== 'core/shortcode') {
+            return $variations;
+        }
+
+        $variations[] = [
+            'name'        => 'bit-connect-portal',
+            'title'       => __('Bit Connect', 'bit-connect'),
+            'description' => __('Show the Bit Connect community portal.', 'bit-connect'),
+            'icon'        => 'groups',
+            'category'    => 'widgets',
+            'keywords'    => [__('forum', 'bit-connect'), __('community', 'bit-connect'), __('portal', 'bit-connect'), 'shortcode'],
+            'attributes'  => ['text' => '[bit-connect]'],
+            'isActive'    => ['text'],
+            'scope'       => ['inserter'],
+        ];
+
+        return $variations;
     }
 
     public function loadPortalPageTemplate($template)

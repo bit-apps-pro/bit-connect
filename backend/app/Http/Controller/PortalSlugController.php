@@ -167,6 +167,16 @@ final class PortalSlugController
         );
     }
 
+    /**
+     * Make the portal template exist and belong to the active theme.
+     *
+     * A block theme only lists a wp_template whose `wp_theme` term names it, so
+     * the term is set on every call, not just on creation: this also runs on
+     * activation and on every theme switch, and a template still tagged with
+     * the previous theme is invisible to the page editor's template picker.
+     *
+     * @return int the template's post id, or 0 when creation failed
+     */
     public static function ensurePortalTemplate(): int
     {
         $existing = get_posts(
@@ -178,22 +188,13 @@ final class PortalSlugController
             ]
         );
 
-        if (!empty($existing)) {
-            return $existing[0]->ID;
+        $id = empty($existing) ? self::insertPortalTemplate() : $existing[0]->ID;
+
+        if ($id > 0) {
+            wp_set_post_terms($id, [get_stylesheet()], 'wp_theme');
         }
 
-        $id = wp_insert_post(
-            [
-                'post_title'   => 'Bit Connect Portal Template',
-                'post_name'    => 'bit-connect-portal',
-                'post_content' => '<!-- wp:post-content /-->',
-                'post_status'  => 'publish',
-                'post_type'    => 'wp_template',
-                'post_excerpt' => 'Clean template for Bit Connect portal with only post content block',
-            ]
-        );
-
-        return is_wp_error($id) ? 0 : $id;
+        return $id;
     }
 
     /**
@@ -229,10 +230,25 @@ final class PortalSlugController
         // Assign the clean Bit Connect Portal template to the page.
         if ($template > 0 && ($tpl = get_post($template))) {
             update_post_meta($page->ID, '_wp_page_template', $tpl->post_name);
-            wp_set_post_terms($tpl->ID, [get_stylesheet()], 'wp_theme');
         }
 
         return $page->ID;
+    }
+
+    private static function insertPortalTemplate(): int
+    {
+        $id = wp_insert_post(
+            [
+                'post_title'   => 'Bit Connect Portal Template',
+                'post_name'    => 'bit-connect-portal',
+                'post_content' => '<!-- wp:post-content /-->',
+                'post_status'  => 'publish',
+                'post_type'    => 'wp_template',
+                'post_excerpt' => 'Clean template for Bit Connect portal with only post content block',
+            ]
+        );
+
+        return is_wp_error($id) ? 0 : $id;
     }
 
     /**
