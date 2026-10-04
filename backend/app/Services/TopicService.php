@@ -109,6 +109,10 @@ class TopicService
             $includeComments = true;
         }
 
+        if (!empty($filters['view'])) {
+            $args = ExtensionPoints::topicListQuery($args, (string) $filters['view']);
+        }
+
         $query = new WP_Query($args);
         $this->lastQueryTotal = (int) $query->found_posts;
 

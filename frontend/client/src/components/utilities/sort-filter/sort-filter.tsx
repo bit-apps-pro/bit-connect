@@ -6,16 +6,25 @@ import { useSearchParams } from 'react-router'
 
 import { useAuthStore } from '@/store/auth.zustand'
 
+import useAddedViews from './use-added-views'
+
 // `topic-types` is not among them: the type has its own chip row now (see
 // topic-type-filter), and choosing an order must not clear it.
-const FILTER_KEYS = ['sort', 'visibility', 'my_topics'] as const
+const FILTER_KEYS = ['sort', 'visibility', 'my_topics', 'view'] as const
+
+/** A named list's option value, kept apart from the orderings' own values. */
+const VIEW_PREFIX = 'view:'
 
 export default function SortFilter({ loading = false }: { loading?: boolean }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useAuthStore()
   const hasPrivateTopics = useHasPrivateTopics()
+  const views = useAddedViews()
 
   const currentValue = (() => {
+    // Only a list this control offers: a stale `?view=` must not show as a raw value.
+    const view = searchParams.get('view')
+    if (view && views.some(offered => offered.value === view)) return VIEW_PREFIX + view
     if (searchParams.get('my_topics') === 'true') return 'my_topics'
     if (searchParams.get('visibility') === 'private') return 'private'
     return searchParams.get('sort') ?? 'newest'
@@ -31,7 +40,9 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
         prev.delete(key)
       }
 
-      if (value === 'private') {
+      if (value.startsWith(VIEW_PREFIX)) {
+        prev.set('view', value.slice(VIEW_PREFIX.length))
+      } else if (value === 'private') {
         prev.set('visibility', 'private')
       } else if (value === 'my_topics') {
         prev.set('my_topics', 'true')
@@ -56,9 +67,10 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
       ...(isLoggedIn && (hasPrivateTopics || currentValue === 'private')
         ? [{ label: __('Private'), value: 'private' }]
         : []),
-      ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : [])
+      ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : []),
+      ...views.map(view => ({ label: view.label, value: VIEW_PREFIX + view.value }))
     ],
-    [isLoggedIn, hasPrivateTopics, currentValue]
+    [isLoggedIn, hasPrivateTopics, currentValue, views]
   )
 
   const screens = Grid.useBreakpoint()

@@ -388,4 +388,30 @@ final class ExtensionPoints
     {
         return Hooks::applyFilter('bit_connect_attachment_types', $own);
     }
+
+    /**
+     * The topic list's query, for a named list this plugin does not define.
+     *
+     * The topic list is this plugin's filters and nothing else; it has no list
+     * of its own under a name. A request that names one (`?view=…`) is offered
+     * here, and a listener that recognises the name returns the query narrowed
+     * to it. Nobody recognising it leaves the ordinary list, filters applied —
+     * a stale link lands on the topics, not on an error.
+     *
+     * The listener answers for who may see what it lists: a list that names a
+     * status this plugin keeps out of the listing must check the reader's
+     * capability itself.
+     *
+     * Trusted no further than the shape: an answer that is not an array is
+     * discarded and the ordinary query runs.
+     *
+     * @param array  $args the WP_Query arguments this plugin built
+     * @param string $view the name asked for
+     */
+    public static function topicListQuery(array $args, string $view): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_list_query', $args, $view);
+
+        return \is_array($offered) ? $offered : $args;
+    }
 }

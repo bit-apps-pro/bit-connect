@@ -56,6 +56,7 @@ final class TopicController
         $perPage = $validatedData['per_page'] ?? 10;
         $visibility = $validatedData['visibility'] ?? '';
         $myTopics = $validatedData['my_topics'] ?? '';
+        $view = $validatedData['view'] ?? '';
 
         // Build taxonomy filters
         $taxonomyFilters = [
@@ -104,6 +105,10 @@ final class TopicController
 
         if ($myTopics === 'true' || $myTopics === '1') {
             $filters['my_topics'] = true;
+        }
+
+        if ($view !== '') {
+            $filters['view'] = $view;
         }
 
         if ($search !== '') {

@@ -22,6 +22,7 @@ import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
+import useAddedViews from '../../components/utilities/sort-filter/use-added-views'
 import useListingSelection from '../Layout/data/use-listing-selection'
 import ListingContext from './listing-context'
 
@@ -59,6 +60,11 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const sortBy = searchParams.get('sort') || 'newest'
   const visibility = searchParams.get('visibility') || ''
   const myTopics = searchParams.get('my_topics') || ''
+  // A named list counts only while the sort control offers it; a stale
+  // `?view=` is the ordinary listing.
+  const viewParam = searchParams.get('view') || ''
+  const activeView = useAddedViews().find(offered => offered.value === viewParam)
+  const view = activeView ? activeView.value : ''
   const topicType = searchParams.get('topic-types') || ''
   const tagSlugs = useMemo(() => parseTagParam(searchParams.get('tags')), [searchParams])
   // Normalised back to the wire format, so a re-render with an equivalent URL
@@ -70,9 +76,10 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // filter or a term archive is a question about the whole forum, though: the
   // tag picker counts topics across every stage, and "no posts found" under a
   // tag that plainly has three is the answer the old stage default gave. Those
-  // span all stages unless the URL names one, and `?stage=` still wins.
+  // span all stages unless the URL names one, and `?stage=` still wins. So does
+  // a named list from the sort control, which is its own question.
   const stageParam = searchParams.get('stage') || ''
-  const spansAllStages = search !== '' || tags !== '' || archiveFilter !== undefined
+  const spansAllStages = search !== '' || tags !== '' || view !== '' || archiveFilter !== undefined
   const stages = stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
 
   // Each filter control can be switched off per-site (admin → General → Portal
@@ -94,7 +101,11 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const [filterOpen, setFilterOpen] = useState(false)
   const hasActiveFilters =
     (showSortFilter &&
-      (sortBy !== 'newest' || visibility !== '' || myTopics !== '' || topicType !== '')) ||
+      (sortBy !== 'newest' ||
+        visibility !== '' ||
+        myTopics !== '' ||
+        topicType !== '' ||
+        view !== '')) ||
     (showTagFilter && tags !== '')
 
   // Active (non-default) filters, shown as removable chips under the search bar.
@@ -114,7 +125,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
   const clearSort = () =>
     setSearchParams(prev => {
-      for (const key of ['sort', 'visibility', 'my_topics']) {
+      for (const key of ['sort', 'visibility', 'my_topics', 'view']) {
         prev.delete(key)
       }
       if (prev.has('page')) prev.set('page', '1')
@@ -147,7 +158,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const resetFilters = () =>
     setSearchParams(prev => {
       const keys = [
-        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'topic-types'] : []),
+        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'view', 'topic-types'] : []),
         ...(showTagFilter ? ['tags'] : [])
       ]
       for (const key of keys) {
@@ -159,7 +170,9 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
   const activeChips: { key: string; label: string; onRemove: () => void }[] = []
   if (showSortFilter) {
-    if (myTopics === 'true') {
+    if (activeView) {
+      activeChips.push({ key: 'sort', label: activeView.label, onRemove: clearSort })
+    } else if (myTopics === 'true') {
       activeChips.push({ key: 'sort', label: __('My Topics'), onRemove: clearSort })
     } else if (visibility === 'private') {
       activeChips.push({ key: 'sort', label: __('Private'), onRemove: clearSort })
@@ -197,10 +210,11 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       stages,
       tags,
       'topic-types': topicType,
+      view,
       visibility,
       ...archiveFilter
     }),
-    [myTopics, search, sortBy, stages, tags, topicType, visibility, archiveFilter]
+    [myTopics, search, sortBy, stages, tags, topicType, view, visibility, archiveFilter]
   )
 
   const { fetchAllPosts, fetchMorePosts, hasMore, isLoading, isLoadingMore, posts, toggleVote } =

@@ -36,5 +36,7 @@ export interface PostsFilters {
   statuses?: string
   tags?: string
   'topic-types'?: string
+  /** A named list another plugin adds — see use-added-views. */
+  view?: string
   visibility?: string
 }
