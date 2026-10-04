@@ -4,71 +4,83 @@ import { Button, Tooltip, Upload, type UploadProps } from 'antd'
 import { type ReactNode, useContext, useEffect, useRef } from 'react'
 import { LuPaperclip } from 'react-icons/lu'
 
-import { acceptMimeTypes, validateAttachment } from './attachment-validation'
+import { acceptMimeTypes, acceptsVideo, fileKindOf, noRoomFor, validateAttachment } from './attachment-validation'
 import { DEFAULT_MAX_ATTACHMENTS, type FileItem } from './state/use-file-store'
 import useFileStore from './state/use-file-store'
 
 interface FileUploaderProps {
   children?: ReactNode
   iconOnly?: boolean
+  /** Attached files other than videos. */
   maxAttachments?: number
+  maxVideos?: number
   tooltip?: string
 }
 
 const generateFileId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
+const toChosen = (items: FileItem[]) => items.map(item => ({ mime: item.mime, name: item.file_name }))
+
 export default function FileUploader({
   children,
   iconOnly,
   maxAttachments = DEFAULT_MAX_ATTACHMENTS,
+  maxVideos = DEFAULT_MAX_ATTACHMENTS,
   tooltip
 }: FileUploaderProps) {
   const { notificationApi } = useContext(NotifyContext)
   const { addFiles, files: storedFiles, setMaxAttachments, uploadFile } = useFileStore()
   const processedFilesRef = useRef<Set<string>>(new Set())
 
+  // The store's ceiling is the two counts together; which kind a file may be
+  // is decided here, file by file.
   useEffect(() => {
-    setMaxAttachments(maxAttachments)
-  }, [maxAttachments, setMaxAttachments])
+    setMaxAttachments(maxAttachments + maxVideos)
+  }, [maxAttachments, maxVideos, setMaxAttachments])
+
+  const limits = { attachments: maxAttachments, videos: maxVideos }
 
   const handleChange: UploadProps['onChange'] = ({ fileList }) => {
-    const remaining = maxAttachments - storedFiles.length
+    const newFiles: FileItem[] = []
+    let refusal: string | undefined
 
-    if (remaining <= 0) {
-      notificationApi?.warning({ message: __(`Maximum ${maxAttachments} attachments allowed`) })
-      return
-    }
+    for (const uploadedFile of fileList) {
+      const fileKey = `${uploadedFile.name}-${uploadedFile.size}`
 
-    const newFiles: FileItem[] = fileList
-      .filter(uploadedFile => {
-        const fileKey = `${uploadedFile.name}-${uploadedFile.size}`
+      if (processedFilesRef.current.has(fileKey)) continue
 
-        if (processedFilesRef.current.has(fileKey)) {
-          return false
-        }
+      if (
+        storedFiles.some(
+          existingFile =>
+            existingFile.file_name === uploadedFile.name &&
+            existingFile.file_size_in_bytes === (uploadedFile.size || 0)
+        )
+      ) {
+        continue
+      }
 
-        if (
-          storedFiles.some(
-            existingFile =>
-              existingFile.file_name === uploadedFile.name &&
-              existingFile.file_size_in_bytes === (uploadedFile.size || 0)
-          )
-        ) {
-          return false
-        }
+      // A video and a document are counted apart, so whether there is room
+      // depends on which this one is.
+      const reason = noRoomFor(
+        { name: uploadedFile.name, type: uploadedFile.type },
+        toChosen([...storedFiles, ...newFiles]),
+        limits
+      )
+      if (reason) {
+        refusal ??= reason
+        continue
+      }
 
-        processedFilesRef.current.add(fileKey)
-        return true
-      })
-      .slice(0, remaining)
-      .map(uploadedFile => ({
+      processedFilesRef.current.add(fileKey)
+      newFiles.push({
         file: uploadedFile.originFileObj,
         file_id: generateFileId(),
         file_name: uploadedFile.name,
         file_size_in_bytes: uploadedFile.size || 0,
         file_url: uploadedFile.originFileObj ? URL.createObjectURL(uploadedFile.originFileObj) : '',
         mime: uploadedFile.type || ''
-      }))
+      })
+    }
 
     if (newFiles.length > 0) {
       addFiles(newFiles)
@@ -78,14 +90,12 @@ export default function FileUploader({
       }
     }
 
-    if (fileList.length > remaining) {
-      notificationApi?.warning({
-        message: __(`Only ${remaining} more file(s) can be added. Maximum is ${maxAttachments}.`)
-      })
-    }
+    if (refusal) notificationApi?.warning({ message: refusal })
   }
 
-  const isAtLimit = storedFiles.length >= maxAttachments
+  const videoCount = storedFiles.filter(item => fileKindOf(item.file_name, item.mime) === 'video').length
+  const fileCount = storedFiles.length - videoCount
+  const isAtLimit = fileCount >= maxAttachments && (videoCount >= maxVideos || !acceptsVideo())
 
   const uploadProps: UploadProps = {
     // Validate each file before it enters the Ant Design upload queue.
@@ -112,18 +122,14 @@ export default function FileUploader({
   ) : (
     <Button disabled={isAtLimit} icon={<LuPaperclip />}>
       {__('Add Files')}
-      {storedFiles.length > 0 && Number.isFinite(maxAttachments) && ` (${storedFiles.length}/${maxAttachments})`}
+      {fileCount > 0 && Number.isFinite(maxAttachments) && ` (${fileCount}/${maxAttachments})`}
     </Button>
   )
 
   const trigger = children ?? defaultTrigger
   const tooltipTitle = isAtLimit
-    ? __(`Maximum ${maxAttachments} attachments reached`)
+    ? __('No more files can be added.')
     : (tooltip ?? (iconOnly ? __('Add Files') : undefined))
 
-  return (
-    <Upload {...uploadProps} maxCount={Number.isFinite(maxAttachments) ? maxAttachments : undefined}>
-      {tooltipTitle ? <Tooltip title={tooltipTitle}>{trigger}</Tooltip> : trigger}
-    </Upload>
-  )
+  return <Upload {...uploadProps}>{tooltipTitle ? <Tooltip title={tooltipTitle}>{trigger}</Tooltip> : trigger}</Upload>
 }

@@ -331,6 +331,18 @@ final class AttachmentValidatorServiceTest extends TestCase
         $this->validator->validate($this->upload('clip.mp4', random_bytes(512)), null, ['mp4' => ['video/mp4']]);
     }
 
+    public function testEachKindOfFileIsHeldToItsOwnSize(): void
+    {
+        // Images may be 1 KB, documents keep the general 1 MB.
+        $GLOBALS['__wp_max_upload_size'] = 1024 * 1024;
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['maxFileSizeByKind' => ['image' => 1024]];
+
+        $this->validator->validate($this->upload('brief.pdf', self::PDF . str_repeat('x', 4096)));
+
+        $this->expectExceptionMessageMatches('/File is too large/');
+        $this->validator->validate($this->upload('photo.png', self::PNG . str_repeat('x', 4096)));
+    }
+
     public function testAProfileImageIgnoresTheListener(): void
     {
         // Avatars and covers validate against ALLOWED, which no listener edits.

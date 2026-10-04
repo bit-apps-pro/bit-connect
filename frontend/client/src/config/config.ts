@@ -54,10 +54,15 @@ interface UserInfo {
 }
 
 interface ContextLimits {
+  /** Attached files other than videos. */
   attachments: number
   characters: number
   images: number
+  videos: number
 }
+
+/** The kinds of file an upload's size is held to separately (PostingLimits::FILE_KINDS). */
+export type FileKind = 'document' | 'image' | 'video'
 
 /**
  * The limits in force, with "no limit" as Infinity rather than the server's
@@ -67,6 +72,7 @@ interface ContextLimits {
 export interface PostingLimits {
   comment: ContextLimits
   maxFileSize: number
+  maxFileSizeByKind: Record<FileKind, number>
   topic: ContextLimits
 }
 
@@ -75,20 +81,23 @@ const NO_LIMIT = Number.POSITIVE_INFINITY
 const toContextLimits = (raw?: Partial<Record<keyof ContextLimits, null | number>>): ContextLimits => ({
   attachments: raw?.attachments ?? NO_LIMIT,
   characters: raw?.characters ?? NO_LIMIT,
-  images: raw?.images ?? NO_LIMIT
+  images: raw?.images ?? NO_LIMIT,
+  videos: raw?.videos ?? NO_LIMIT
 })
 
 /**
  * Read once from the page (PostingLimits::all()). Missing only during the SSR
  * prerender, where nothing is posted; the fallbacks are this plugin's own
- * answer — no limit, and the server's upload cap.
+ * answer — no limit, and the server's upload cap for every kind of file.
  */
 function readPostingLimits(): PostingLimits {
   const raw = SERVER_VARIABLES?.postingLimits
+  const maxFileSize = raw?.maxFileSize ?? SERVER_VARIABLES?.wpMediaSettings?.maxUploadBytes ?? 5 * 1024 * 1024
 
   return {
     comment: toContextLimits(raw?.comment),
-    maxFileSize: raw?.maxFileSize ?? SERVER_VARIABLES?.wpMediaSettings?.maxUploadBytes ?? 5 * 1024 * 1024,
+    maxFileSize,
+    maxFileSizeByKind: raw?.maxFileSizeByKind ?? { document: maxFileSize, image: maxFileSize, video: maxFileSize },
     topic: toContextLimits(raw?.topic)
   }
 }

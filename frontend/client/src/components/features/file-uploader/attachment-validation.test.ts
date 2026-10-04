@@ -1,15 +1,18 @@
 import config from '@config/config'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { acceptMimeTypes, validateAttachment } from './attachment-validation'
+import { acceptMimeTypes, noRoomFor, validateAttachment } from './attachment-validation'
 
 // The config is read-only to the app; a test stands in for the page by writing it.
-const page = config as { ATTACHMENT_TYPES?: Record<string, string[]> }
+const page = config as { ATTACHMENT_TYPES?: Record<string, string[]>; POSTING_LIMITS: typeof config.POSTING_LIMITS }
+const originalLimits = config.POSTING_LIMITS
 
 const file = (name: string, type: string) => new File(['bytes'], name, { type })
+const big = (name: string, type: string) => new File(['x'.repeat(100)], name, { type })
 
 afterEach(() => {
   page.ATTACHMENT_TYPES = undefined
+  page.POSTING_LIMITS = originalLimits
 })
 
 describe('the attachment check without a page', () => {
@@ -52,6 +55,30 @@ describe('the attachment check with the server’s list', () => {
     page.ATTACHMENT_TYPES = { php: ['text/plain'] }
 
     expect(validateAttachment(file('shell.php', 'text/plain')).valid).toBe(false)
+  })
+
+  it('counts videos apart from other files', () => {
+    page.ATTACHMENT_TYPES = { mp4: ['video/mp4'], pdf: ['application/pdf'] }
+    const chosen = [
+      { mime: 'video/mp4', name: 'a.mp4' },
+      { mime: 'application/pdf', name: 'b.pdf' }
+    ]
+    const limits = { attachments: 2, videos: 1 }
+
+    expect(noRoomFor({ name: 'c.pdf' }, chosen, limits)).toBeUndefined()
+    expect(noRoomFor({ name: 'd.mp4' }, chosen, limits)).toBe('You can add only 1 video.')
+    expect(noRoomFor({ name: 'd.mp4' }, [], { attachments: 5, videos: 0 })).toBe('Videos cannot be added here.')
+  })
+
+  it('holds each kind of file to its own size', () => {
+    page.ATTACHMENT_TYPES = { mp4: ['video/mp4'], png: ['image/png'] }
+    page.POSTING_LIMITS = {
+      ...originalLimits,
+      maxFileSizeByKind: { document: 10, image: 10, video: 1000 }
+    }
+
+    expect(validateAttachment(big('clip.mp4', 'video/mp4')).valid).toBe(true)
+    expect(validateAttachment(big('shot.png', 'image/png')).error).toMatch(/too large/)
   })
 
   it('offers the picker each extension as well as its types', () => {

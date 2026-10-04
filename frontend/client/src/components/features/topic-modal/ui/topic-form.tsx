@@ -2,7 +2,7 @@ import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import { uploadRequest } from '@common/helpers/request'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
-import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
+import { acceptsVideo, validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
 import { countCharacters } from '@components/quilTextEditor/quill-validation'
@@ -61,8 +61,11 @@ export default function TopicForm({
   const {
     attachments: maxAttachments,
     characters: maxLength,
-    images: maxImages
+    images: maxImages,
+    videos: maxVideos
   } = config.POSTING_LIMITS.topic
+  // Videos are counted apart from other files, so either may keep the control.
+  const canAttach = maxAttachments > 0 || (maxVideos > 0 && acceptsVideo())
 
   // Both modals mount this form only while they are open, so the flag starts
   // false on every open without needing to watch the modal itself.
@@ -299,10 +302,10 @@ export default function TopicForm({
         />
       </Form.Item>
 
-      <If conditions={maxAttachments > 0 || storedFiles.length > 0}>
+      <If conditions={canAttach || storedFiles.length > 0}>
         <div className="bc-mb-4">
-          <If conditions={maxAttachments > 0}>
-            <FileUploader maxAttachments={maxAttachments} />
+          <If conditions={canAttach}>
+            <FileUploader maxAttachments={maxAttachments} maxVideos={maxVideos} />
           </If>
           <If conditions={storedFiles && storedFiles.length > 0}>
             <FileList files={storedFiles} />

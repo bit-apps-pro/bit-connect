@@ -12,25 +12,33 @@ use InvalidArgumentException;
 /**
  * How much a member may put into a topic or a reply.
  *
- * Three things, counted apart: the length of the text, images placed in it,
- * and files attached below it, each per topic and per comment; and the size of
- * one upload. This plugin sets none of them — null is "no limit" — and an
- * upload is held only to what the server accepts. Another plugin may answer
- * `bit_connect_posting_limits` with limits of its own (see ExtensionPoints),
- * and those are enforced here on every write, not only in the portal's
- * editor, which is just one of the ways content reaches the server.
+ * Counted apart, per topic and per comment: the length of the text, images
+ * placed in it, videos attached to it and the other files attached to it; and
+ * the size of one upload, which may differ by kind of file. This plugin sets
+ * none of them — null is "no limit" — and an upload is held only to what the
+ * server accepts. Another plugin may answer `bit_connect_posting_limits` with
+ * limits of its own (see ExtensionPoints), and those are enforced here on every
+ * write, not only in the portal's editor, which is just one of the ways content
+ * reaches the server.
  *
- * For images and files zero means none; text always allows at least one
- * character.
+ * For images, videos and files zero means none; text always allows at least
+ * one character.
  */
 final class PostingLimits
 {
     public const CONTEXTS = ['topic', 'comment'];
 
+    /**
+     * The kinds of file an upload's size may be held to separately: an image,
+     * a video, or anything else, which is a document.
+     */
+    public const FILE_KINDS = ['image', 'video', 'document'];
+
     public const DEFAULTS = [
-        'topic'       => ['attachments' => null, 'characters' => null, 'images' => null],
-        'comment'     => ['attachments' => null, 'characters' => null, 'images' => null],
-        'maxFileSize' => null,
+        'topic'             => ['attachments' => null, 'characters' => null, 'images' => null, 'videos' => null],
+        'comment'           => ['attachments' => null, 'characters' => null, 'images' => null, 'videos' => null],
+        'maxFileSize'       => null,
+        'maxFileSizeByKind' => ['image' => null, 'video' => null, 'document' => null],
     ];
 
     /**
@@ -44,10 +52,11 @@ final class PostingLimits
     public const TOPIC_HTML_CEILING = 200_000;
 
     /**
-     * The limits in force, null where there is none. The file size is always a
-     * number: what the server accepts, or less if a listener says so.
+     * The limits in force, null where there is none. The file sizes are always
+     * numbers: what the server accepts, or less if a listener says so. A kind
+     * of file a listener sets no size for takes the general one.
      *
-     * @return array{topic: array{attachments: null|int, characters: null|int, images: null|int}, comment: array{attachments: null|int, characters: null|int, images: null|int}, maxFileSize: int}
+     * @return array{topic: array{attachments: null|int, characters: null|int, images: null|int, videos: null|int}, comment: array{attachments: null|int, characters: null|int, images: null|int, videos: null|int}, maxFileSize: int, maxFileSizeByKind: array{image: int, video: int, document: int}}
      */
     public static function all(): array
     {
@@ -63,19 +72,42 @@ final class PostingLimits
             }
         }
 
-        $size = $offered['maxFileSize'] ?? null;
         $serverMax = (int) wp_max_upload_size();
+        $limits['maxFileSize'] = self::capSize($offered['maxFileSize'] ?? null, $serverMax) ?? $serverMax;
 
-        $limits['maxFileSize'] = is_numeric($size) && (int) $size > 0
-            ? ($serverMax > 0 ? min((int) $size, $serverMax) : (int) $size)
-            : $serverMax;
+        foreach (self::FILE_KINDS as $kind) {
+            $limits['maxFileSizeByKind'][$kind] = self::capSize($offered['maxFileSizeByKind'][$kind] ?? null, $serverMax)
+                ?? $limits['maxFileSize'];
+        }
 
         return $limits;
     }
 
+    /**
+     * The largest file of any kind an upload may be — the ceiling checked
+     * before the file's kind is known.
+     */
     public static function maxFileSize(): int
     {
-        return self::all()['maxFileSize'];
+        return max(self::all()['maxFileSizeByKind']);
+    }
+
+    /**
+     * How large a file whose content reads as this MIME type may be.
+     */
+    public static function maxFileSizeFor(string $mime): int
+    {
+        return self::all()['maxFileSizeByKind'][self::kindOf($mime)];
+    }
+
+    /**
+     * Which kind of file a MIME type is, for its size limit and its count.
+     */
+    public static function kindOf(string $mime): string
+    {
+        $family = strtok(strtolower($mime), '/');
+
+        return \in_array($family, ['image', 'video'], true) ? $family : 'document';
     }
 
     /**
@@ -102,7 +134,21 @@ final class PostingLimits
             throw new InvalidArgumentException(esc_html(self::imagesMessage($context, $limits['images'])));
         }
 
-        if ($attachments !== null && $limits['attachments'] !== null && \count($attachments) > $limits['attachments']) {
+        if ($attachments === null) {
+            return;
+        }
+
+        // A video is counted against the videos limit and every other file
+        // against the files limit, so allowing a few videos does not quietly
+        // mean allowing as many videos as files.
+        $videos = \count(array_filter($attachments, fn ($id) => self::isVideo((int) $id)));
+        $files = \count($attachments) - $videos;
+
+        if ($limits['videos'] !== null && $videos > $limits['videos']) {
+            throw new InvalidArgumentException(esc_html(self::videosMessage($context, $limits['videos'])));
+        }
+
+        if ($limits['attachments'] !== null && $files > $limits['attachments']) {
             throw new InvalidArgumentException(esc_html(self::filesMessage($context, $limits['attachments'])));
         }
     }
@@ -121,6 +167,40 @@ final class PostingLimits
     public static function countImages(string $content): int
     {
         return (int) preg_match_all('/<img\b/i', $content);
+    }
+
+    /**
+     * A listener's size, held to what the server accepts; null for none given.
+     *
+     * @param mixed $size
+     */
+    private static function capSize($size, int $serverMax): ?int
+    {
+        if (!is_numeric($size) || (int) $size <= 0) {
+            return null;
+        }
+
+        return $serverMax > 0 ? min((int) $size, $serverMax) : (int) $size;
+    }
+
+    private static function isVideo(int $attachmentId): bool
+    {
+        $mime = get_post_mime_type($attachmentId);
+
+        return \is_string($mime) && self::kindOf($mime) === 'video';
+    }
+
+    private static function videosMessage(string $context, int $limit): string
+    {
+        $noun = self::noun($context);
+
+        if ($limit === 0) {
+            // translators: %s: "a topic" or "a comment"
+            return \sprintf(__('Videos cannot be added to %s.', 'bit-connect'), $noun);
+        }
+
+        // translators: 1: the most videos allowed, 2: "a topic" or "a comment"
+        return \sprintf(_n('You can add only %1$d video to %2$s.', 'You can add up to %1$d videos to %2$s.', $limit, 'bit-connect'), $limit, $noun);
     }
 
     private static function charactersMessage(string $context, int $limit): string

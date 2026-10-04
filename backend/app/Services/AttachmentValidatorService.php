@@ -151,16 +151,12 @@ final class AttachmentValidatorService
             throw new InvalidArgumentException('Uploaded file is empty or unreadable.');
         }
 
-        // The portal reads the same number from the page (`postingLimits`), so
-        // a file it lets through is one this accepts.
-        $maxSize ??= PostingLimits::maxFileSize();
-
-        if ($actualSize > $maxSize) {
-            $mb = round($actualSize / (1024 * 1024), 1);
-            $maxMb = round($maxSize / (1024 * 1024), 1);
-
-            throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is {$maxMb} MB."));
-        }
+        // The portal reads the same numbers from the page (`postingLimits`), so
+        // a file it lets through is one this accepts. With no size given, the
+        // largest any kind of file may be is checked now, before the bytes are
+        // read, and the file's own kind once they have been (step 11).
+        $kindSized = $maxSize === null;
+        $this->assertSize($actualSize, $maxSize ?? PostingLimits::maxFileSize());
 
         // 4. Sanitize and extract extension from the real filename
         $rawName = $file['name'] ?? '';
@@ -220,6 +216,12 @@ final class AttachmentValidatorService
         //     has to agree before the file is accepted.
         $this->assertMediaReadsAsMedia($file['tmp_name'], $checked['type']);
 
+        // 11. The size limit for this kind of file — an image, a video or a
+        //     document may each have their own — read from its verified type.
+        if ($kindSized) {
+            $this->assertSize($actualSize, PostingLimits::maxFileSizeFor($checked['type']));
+        }
+
         // Return the file array with the server-verified name and type substituted
         return array_merge(
             $file,
@@ -233,6 +235,21 @@ final class AttachmentValidatorService
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * @throws InvalidArgumentException when the file is larger than allowed
+     */
+    private function assertSize(int $actualSize, int $maxSize): void
+    {
+        if ($actualSize <= $maxSize) {
+            return;
+        }
+
+        $mb = round($actualSize / (1024 * 1024), 1);
+        $maxMb = round($maxSize / (1024 * 1024), 1);
+
+        throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is {$maxMb} MB."));
+    }
 
     /**
      * Refuse a video or audio file whose bytes finfo does not read as one.

@@ -26,21 +26,21 @@ final class PostingLimitsTest extends TestCase
     protected function setUp(): void
     {
         $GLOBALS['__wp_filters'] = [];
-        unset($GLOBALS['__wp_max_upload_size']);
+        unset($GLOBALS['__wp_max_upload_size'], $GLOBALS['__wp_mime_types']);
     }
 
     protected function tearDown(): void
     {
         $GLOBALS['__wp_filters'] = [];
-        unset($GLOBALS['__wp_max_upload_size']);
+        unset($GLOBALS['__wp_max_upload_size'], $GLOBALS['__wp_mime_types']);
     }
 
     public function testWithNobodyListeningNothingIsLimited(): void
     {
         $limits = PostingLimits::all();
 
-        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null], $limits['topic']);
-        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null], $limits['comment']);
+        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null, 'videos' => null], $limits['topic']);
+        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null, 'videos' => null], $limits['comment']);
     }
 
     public function testWithNobodyListeningAnUploadIsHeldToTheServerAlone(): void
@@ -67,8 +67,8 @@ final class PostingLimitsTest extends TestCase
 
         $limits = PostingLimits::all();
 
-        $this->assertSame(['attachments' => 10, 'characters' => null, 'images' => 30], $limits['topic']);
-        $this->assertSame(['attachments' => 0, 'characters' => 500, 'images' => 2], $limits['comment']);
+        $this->assertSame(['attachments' => 10, 'characters' => null, 'images' => 30, 'videos' => null], $limits['topic']);
+        $this->assertSame(['attachments' => 0, 'characters' => 500, 'images' => 2, 'videos' => null], $limits['comment']);
         $this->assertSame(8 * self::MB, $limits['maxFileSize']);
     }
 
@@ -82,7 +82,7 @@ final class PostingLimitsTest extends TestCase
 
         $limits = PostingLimits::all();
 
-        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null], $limits['topic']);
+        $this->assertSame(['attachments' => null, 'characters' => null, 'images' => null, 'videos' => null], $limits['topic']);
         $this->assertSame(64 * self::MB, $limits['maxFileSize']);
     }
 
@@ -171,5 +171,52 @@ final class PostingLimitsTest extends TestCase
         PostingLimits::assertWithin('topic', null, null);
 
         $this->addToAssertionCount(1);
+    }
+
+    public function testVideosAreCountedApartFromOtherFiles(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['comment' => ['attachments' => 2, 'videos' => 1]];
+        $GLOBALS['__wp_mime_types'] = [1 => 'video/mp4', 2 => 'application/pdf', 3 => 'image/png'];
+
+        // One video and two files: within both limits, though three in all.
+        PostingLimits::assertWithin('comment', null, [1, 2, 3]);
+
+        $GLOBALS['__wp_mime_types'][4] = 'video/webm';
+
+        $this->expectExceptionMessage('You can add only 1 video to a comment.');
+        PostingLimits::assertWithin('comment', null, [1, 2, 4]);
+    }
+
+    public function testAZeroVideoLimitRefusesAnyVideo(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['videos' => 0]];
+        $GLOBALS['__wp_mime_types'] = [1 => 'video/quicktime'];
+
+        $this->expectExceptionMessage('Videos cannot be added to a topic.');
+        PostingLimits::assertWithin('topic', null, [1]);
+    }
+
+    public function testEachKindOfFileMayHaveItsOwnSize(): void
+    {
+        $GLOBALS['__wp_max_upload_size'] = 200 * self::MB;
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = [
+            'maxFileSize'       => 10 * self::MB,
+            'maxFileSizeByKind' => ['video' => 100 * self::MB, 'image' => 5 * self::MB],
+        ];
+
+        $this->assertSame(5 * self::MB, PostingLimits::maxFileSizeFor('image/png'));
+        $this->assertSame(100 * self::MB, PostingLimits::maxFileSizeFor('video/mp4'));
+        // No size of its own: the general one.
+        $this->assertSame(10 * self::MB, PostingLimits::maxFileSizeFor('application/pdf'));
+        // The ceiling before the kind is known is the largest of them.
+        $this->assertSame(100 * self::MB, PostingLimits::maxFileSize());
+    }
+
+    public function testAKindsSizeNeverExceedsWhatTheServerAccepts(): void
+    {
+        $GLOBALS['__wp_max_upload_size'] = 20 * self::MB;
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['maxFileSizeByKind' => ['video' => 500 * self::MB]];
+
+        $this->assertSame(20 * self::MB, PostingLimits::maxFileSizeFor('video/mp4'));
     }
 }

@@ -11,7 +11,8 @@
  * together.  The backend re-validates via magic bytes regardless.
  */
 
-import config from '@config/config'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import config, { type FileKind } from '@config/config'
 
 // ---------------------------------------------------------------------------
 // Allowed types
@@ -52,10 +53,55 @@ const reportedMimesOf = (extension: string) =>
   (allowedTypes()[extension] ?? []).flatMap(mime => [mime, ...(REPORTED_ALIASES[mime] ?? [])])
 
 /**
- * The per-file cap the server enforces (PostingLimits::maxFileSize()), sent with
- * the page. Read per call so a test can change the config between cases.
+ * The per-file cap the server enforces for a kind of file
+ * (PostingLimits::maxFileSizeFor()), sent with the page; with no kind, the
+ * largest of them. Read per call so a test can change the config between cases.
  */
-export const maxFileSizeBytes = () => config.POSTING_LIMITS.maxFileSize
+export const maxFileSizeBytes = (kind?: FileKind) => {
+  const byKind = config.POSTING_LIMITS.maxFileSizeByKind
+  return kind ? byKind[kind] : Math.max(...Object.values(byKind))
+}
+
+/**
+ * Which kind of file this is, for its size limit and its count. Read from the
+ * types the server lists for its extension, so it agrees with how the server
+ * will read the bytes; the browser's own report is the fallback.
+ */
+export function fileKindOf(name: string, mime = ''): FileKind {
+  const listed = allowedTypes()[getExtension(name)]?.[0] ?? mime
+  const family = listed.toLowerCase().split('/')[0]
+  return family === 'image' || family === 'video' ? family : 'document'
+}
+
+/** What a post may still take: attached files and videos are counted apart. */
+interface CountLimits {
+  attachments: number
+  videos: number
+}
+
+/**
+ * Why one more file will not fit beside the ones already chosen, or undefined
+ * when it will. A video counts against the videos limit and anything else
+ * against the files limit, as PostingLimits::assertWithin() counts them.
+ */
+export function noRoomFor(
+  file: { name: string; type?: string },
+  chosen: { mime?: string; name: string }[],
+  limits: CountLimits
+): string | undefined {
+  const isVideo = fileKindOf(file.name, file.type) === 'video'
+  const sameKind = chosen.filter(item => (fileKindOf(item.name, item.mime) === 'video') === isVideo).length
+  const limit = isVideo ? limits.videos : limits.attachments
+
+  if (sameKind < limit) return undefined
+  if (limit === 0) return isVideo ? __('Videos cannot be added here.') : __('Files cannot be attached here.')
+  if (limit === 1) return isVideo ? __('You can add only 1 video.') : __('You can attach only 1 file.')
+  return sprintf(isVideo ? __('You can add up to %s videos.') : __('You can attach up to %s files.'), String(limit))
+}
+
+/** Whether any listed type is a video, so offering to add one makes sense. */
+export const acceptsVideo = () =>
+  Object.values(allowedTypes()).some(mimes => mimes.some(mime => mime.startsWith('video/')))
 
 /** "5 MB", "1.5 MB" — one decimal only when the cap is not whole megabytes. */
 export const formatMegabytes = (bytes: number) => `${Number((bytes / (1024 * 1024)).toFixed(1))} MB`
@@ -114,7 +160,7 @@ export function validateAttachment(file: File): AttachmentValidationResult {
     return { error: 'File is empty.', valid: false }
   }
 
-  const maxBytes = maxFileSizeBytes()
+  const maxBytes = maxFileSizeBytes(fileKindOf(file.name, file.type))
   if (file.size > maxBytes) {
     const mb = (file.size / (1024 * 1024)).toFixed(1)
     return {

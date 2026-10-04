@@ -84,9 +84,10 @@ declare const SERVER_VARIABLES: {
    * admin's Settings screen states it.
    */
   postingLimits?: {
-    comment: { attachments: null | number; characters: null | number; images: null | number }
+    comment: { attachments: null | number; characters: null | number; images: null | number; videos?: null | number }
     maxFileSize: number
-    topic: { attachments: null | number; characters: null | number; images: null | number }
+    maxFileSizeByKind?: { document: number; image: number; video: number }
+    topic: { attachments: null | number; characters: null | number; images: null | number; videos?: null | number }
   }
   postURL: string
   proApiURL: string

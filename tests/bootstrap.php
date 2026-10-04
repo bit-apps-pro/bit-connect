@@ -349,6 +349,14 @@ if (!function_exists('get_post')) {
     }
 }
 
+if (!function_exists('get_post_mime_type')) {
+    // Seed $GLOBALS['__wp_mime_types'][$id] for an attachment's type.
+    function get_post_mime_type($postId = null)
+    {
+        return $GLOBALS['__wp_mime_types'][$postId] ?? false;
+    }
+}
+
 if (!function_exists('get_post_type')) {
     function get_post_type($postId = null)
     {

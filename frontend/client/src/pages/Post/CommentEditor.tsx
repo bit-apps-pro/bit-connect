@@ -10,7 +10,11 @@ import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers/request'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
-import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
+import {
+  acceptsVideo,
+  noRoomFor,
+  validateAttachment
+} from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { formatCommentForWordPress } from '@components/quilTextEditor/quill-comment-formatter'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
@@ -45,6 +49,7 @@ interface CommentEditorProps {
   initialAttachments?: WPAttachmentData[]
   initialContent?: string
   maxAttachments?: number
+  maxVideos?: number
   onCancel?: () => void
   onSubmit?: (content: string, attachments?: WPAttachmentData[]) => void
   placeholder?: string
@@ -139,6 +144,7 @@ export default function CommentEditor({
   initialAttachments,
   initialContent,
   maxAttachments = config.POSTING_LIMITS.comment.attachments,
+  maxVideos = config.POSTING_LIMITS.comment.videos,
   onCancel,
   onSubmit,
   placeholder = 'Write comment here...',
@@ -257,7 +263,14 @@ export default function CommentEditor({
       }
       // Dropping the file silently read as the picker being broken; surface the
       // limit the same way every other rejection is surfaced.
-      if (filesRef.current.length >= maxAttachments) {
+      // Videos and other files are counted apart; one that failed to upload
+      // is not on the comment, so it takes no room.
+      const noRoom = noRoomFor(
+        file,
+        filesRef.current.filter(f => !f.uploadError).map(f => ({ mime: f.mime, name: f.fileName })),
+        { attachments: maxAttachments, videos: maxVideos }
+      )
+      if (noRoom) {
         setFiles(prev => [
           ...prev,
           {
@@ -267,10 +280,7 @@ export default function CommentEditor({
             fileSizeInBytes: file.size,
             fileUrl: '',
             mime: file.type,
-            uploadError: __('Attachment limit reached (maximum %d files).').replace(
-              '%d',
-              String(maxAttachments)
-            )
+            uploadError: noRoom
           }
         ])
         return
@@ -305,7 +315,7 @@ export default function CommentEditor({
       setFiles(prev => [...prev, fileItem])
       uploadFile(fileItem)
     },
-    [isLoggedIn, maxAttachments, openLoginWarning, uploadFile]
+    [isLoggedIn, maxAttachments, maxVideos, openLoginWarning, uploadFile]
   )
 
   const removeFile = useCallback((fileId: string) => {
@@ -408,7 +418,7 @@ export default function CommentEditor({
           maxLength={maxLength}
           // A limit of zero takes the control away rather than leaving one
           // that only ever refuses. The server enforces the same numbers.
-          onAttachment={maxAttachments > 0 ? handleAttachment : undefined}
+          onAttachment={maxAttachments > 0 || (maxVideos > 0 && acceptsVideo()) ? handleAttachment : undefined}
           onImageInsert={maxImages > 0 ? handleImagePaste : undefined}
           onImagePaste={maxImages > 0 ? handleImagePaste : undefined}
           onSubmit={handleSubmit}

@@ -20,10 +20,10 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
 
 function getMediaLimits(): { maxBytes: number; maxPx: number } {
   return {
-    // The smaller of the two: the server's cap, and the forum's own per-file
-    // limit. Shrinking only to the server's let a large photo through the
+    // The smaller of the two: the server's cap, and the forum's own limit for
+    // an image. Shrinking only to the server's let a large photo through the
     // resizer untouched and then fail the forum's limit.
-    maxBytes: Math.min(config.WP_MEDIA_SETTINGS.maxUploadBytes, config.POSTING_LIMITS.maxFileSize),
+    maxBytes: Math.min(config.WP_MEDIA_SETTINGS.maxUploadBytes, config.POSTING_LIMITS.maxFileSizeByKind.image),
     maxPx: config.WP_MEDIA_SETTINGS.bigImageThresholdPx
   }
 }
