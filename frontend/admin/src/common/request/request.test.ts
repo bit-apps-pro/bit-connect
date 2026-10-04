@@ -50,6 +50,23 @@ describe('admin request()', () => {
     })
   })
 
+  // With plain permalinks the REST base is `?rest_route=…`; a query written into
+  // the path then became part of the route and 404'd the onboarding slug check.
+  it('keeps queryParam out of the route on a ?rest_route= base', async () => {
+    const fetchMock = respond(200, { data: {}, status: 'success' })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await request('portal-page/check', {
+      baseUrl: 'https://example.test/?rest_route=/bit-connect/v1',
+      method: 'GET',
+      queryParam: { slug: 'portal' }
+    })
+
+    const url = fetchMock.mock.calls[0][0] as URL
+    expect(url.searchParams.get('rest_route')).toBe('/bit-connect/v1/portal-page/check')
+    expect(url.searchParams.get('slug')).toBe('portal')
+  })
+
   it('throws on a 5xx as well', async () => {
     vi.stubGlobal('fetch', respond(500, { message: 'Something broke.', status: 'error' }))
 

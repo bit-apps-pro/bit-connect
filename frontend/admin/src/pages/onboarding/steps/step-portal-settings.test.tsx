@@ -15,9 +15,9 @@ function ok<T>(data: T) {
 }
 
 function mockSlugCheck(exists: boolean) {
-  mockRequest.mockImplementation(((url: string) => {
-    if (url.startsWith('portal-page/check')) {
-      const slug = decodeURIComponent(url.split('slug=')[1] ?? '')
+  mockRequest.mockImplementation(((url: string, options?: { queryParam?: Record<string, string> }) => {
+    if (url === 'portal-page/check') {
+      const slug = options?.queryParam?.slug ?? ''
       return Promise.resolve(
         ok({ exists, hasShortcode: false, isPortal: false, slug, url: `https://x/${slug}/` })
       )

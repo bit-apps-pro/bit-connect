@@ -26,8 +26,11 @@ export default function useCheckSlug(slug: string) {
   const { data, isFetching } = useQuery<ResponseType<SlugCheck>, Error, SlugCheck>({
     enabled: isEnabled,
     queryFn: ({ signal }) =>
-      request<never, SlugCheck>(`portal-page/check?slug=${encodeURIComponent(settled)}`, {
+      // The slug goes in queryParam, not the path: on plain permalinks the base is
+      // `?rest_route=…`, and a second `?` turns the whole query into the route.
+      request<never, SlugCheck>('portal-page/check', {
         method: 'GET',
+        queryParam: { slug: settled },
         signal
       }),
     queryKey: ['portal-slug-check', settled],
