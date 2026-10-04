@@ -3,8 +3,11 @@ import { isEmojiImage, isEmojiOnly } from '@components/quilTextEditor/quill-emoj
 import { sanitizeHtml } from '@components/quilTextEditor/quill-validation'
 import { Image } from 'antd'
 import { type KeyboardEvent, type MouseEvent, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import styles from './ContentBox.module.css'
+import { type VideoLink, videoOfParagraph } from './shared/video-link'
+import VideoEmbed from './ui/video-embed'
 
 /**
  * Posted images render at one consistent size so a thread of mixed photos reads
@@ -244,6 +247,13 @@ export const isGallery = (html: string) => {
 
 const sourceOf = (element: HTMLImageElement) => element.currentSrc || element.src
 
+/** Where a video link's player is mounted, beside the paragraph it replaces. */
+interface VideoSlot {
+  address: string
+  node: HTMLElement
+  video: VideoLink
+}
+
 export default function ContentBox({
   className,
   compact,
@@ -267,6 +277,7 @@ export default function ContentBox({
 
   const bodyRef = useRef<HTMLDivElement>(null)
   const [previewSource, setPreviewSource] = useState('')
+  const [videoSlots, setVideoSlots] = useState<VideoSlot[]>([])
 
   const isComment = variant === 'comment'
   // One or two pictures in a comment stay stacked at the standard width, where
@@ -298,6 +309,33 @@ export default function ContentBox({
       if (!image.getAttribute('aria-label')) {
         image.setAttribute('aria-label', __('View image full size'))
       }
+    }
+  }, [safeContent, compact])
+
+  // A video address alone on its line is shown as a player in its place. The
+  // stored HTML keeps the address — the player is mounted beside the paragraph
+  // and the paragraph hidden, so prerendered markup, previews and the editor all
+  // still see the plain link. Previews stay one line and get no player.
+  useEffect(() => {
+    const body = bodyRef.current
+    if (compact || !body) return
+
+    const slots: VideoSlot[] = []
+    const hidden: HTMLElement[] = []
+    for (const paragraph of body.querySelectorAll<HTMLElement>(':scope > p')) {
+      const video = videoOfParagraph(paragraph)
+      if (!video) continue
+      const node = document.createElement('div')
+      paragraph.before(node)
+      paragraph.style.display = 'none'
+      hidden.push(paragraph)
+      slots.push({ address: paragraph.textContent?.trim() ?? '', node, video })
+    }
+    setVideoSlots(slots)
+
+    return () => {
+      for (const slot of slots) slot.node.remove()
+      for (const paragraph of hidden) paragraph.style.removeProperty('display')
     }
   }, [safeContent, compact])
 
@@ -338,6 +376,11 @@ export default function ContentBox({
         onKeyDown={handleKeyDown}
         ref={bodyRef}
       />
+
+      {/* By position: the same video may be posted twice in one body. */}
+      {videoSlots.map((slot, index) =>
+        createPortal(<VideoEmbed address={slot.address} video={slot.video} />, slot.node, String(index))
+      )}
 
       {previewSource && (
         <Image
