@@ -1,4 +1,3 @@
-import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import { useStagesStore } from '@pages/Layout/data/use-stages'
@@ -10,8 +9,8 @@ import ListingContextExtras from './listing-context-extras'
 
 /**
  * What the list is showing, as a row of chips — "In Progress ⌄" — on phones,
- * where the sidebar that says so is folded into the drawer. Each chip opens a
- * sheet to switch that choice without leaving the list.
+ * where the sidebar that says so is folded into the drawer. The chips only name
+ * the current position; switching it is the drawer's navigation.
  *
  * Hidden from md, where the sidebar is always shown.
  *
@@ -27,7 +26,7 @@ export default function ListingContext({ archiveName = '' }: { archiveName?: str
   if (archiveName) {
     return (
       <div className="bc-flex md:bc-hidden">
-        <span className={cn([CHIP_CLASS, 'bc-cursor-default active:bc-scale-100'])}>
+        <span className={CHIP_CLASS}>
           <span className="bc-min-w-0 bc-truncate">{archiveName}</span>
         </span>
       </div>
