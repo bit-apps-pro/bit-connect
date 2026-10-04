@@ -367,4 +367,25 @@ final class ExtensionPoints
     {
         return Hooks::applyFilter('bit_connect_posting_limits', $own);
     }
+
+    /**
+     * Which files a member may attach to a topic or a reply: extension →
+     * the MIME types its content may be read as.
+     *
+     * This plugin's answer is its own list of images and documents. A listener
+     * may add to it or take from it. The answer is raw: AttachmentValidatorService
+     * drops malformed entries and anything on its dangerous list, and every
+     * upload is still checked against what WordPress itself allows and against
+     * the file's actual bytes, so a listener widens the list, never the checks.
+     *
+     * Attachments only — avatars and cover images keep their own fixed list.
+     *
+     * @param array<string, string[]> $own
+     *
+     * @return mixed
+     */
+    public static function attachmentTypes(array $own)
+    {
+        return Hooks::applyFilter('bit_connect_attachment_types', $own);
+    }
 }

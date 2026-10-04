@@ -101,6 +101,8 @@ export interface PortalArchive {
 
 interface ConfigType {
   API_URL: string
+  /** Missing only where there is no page — the SSR prerender and tests. */
+  ATTACHMENT_TYPES?: Record<string, string[]>
   AUTH_MODE: 'custom_url' | 'plugin_default'
   CAN_REGISTER: boolean
   COMMUNITY_TITLE: string
@@ -192,6 +194,9 @@ const config = {
   // Endpoint URLs come only from the server (wp_login_url(), get_rest_url()):
   // a site can move the login page or the REST prefix, so no path is guessed.
   API_URL: getServerVariable('apiURL'),
+  // Off the payload directly: getServerVariable would warn during the SSR
+  // prerender, where its absence is expected and the upload check falls back.
+  ATTACHMENT_TYPES: SERVER_VARIABLES?.attachmentTypes,
   AUTH_MODE:
     (getServerVariable('authMode', 'plugin_default') as 'custom_url' | 'plugin_default') ??
     'plugin_default',

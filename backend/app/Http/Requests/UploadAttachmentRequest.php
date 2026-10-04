@@ -64,7 +64,11 @@ final class UploadAttachmentRequest extends Request
             // double-extension and dangerous-extension checks). The
             // client-supplied $file['type'] / $file['size'] are attacker
             // controlled and must never be trusted.
-            $this->validatedFile = (new AttachmentValidatorService())->validate($files['file']);
+            $this->validatedFile = (new AttachmentValidatorService())->validate(
+                $files['file'],
+                null,
+                AttachmentValidatorService::attachmentTypes()
+            );
         } catch (InvalidArgumentException $e) {
             return $e->getMessage();
         }

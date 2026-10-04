@@ -11,33 +11,45 @@
  * together.  The backend re-validates via magic bytes regardless.
  */
 
-import { __ } from '@common/helpers/i18nWrap'
 import config from '@config/config'
 
 // ---------------------------------------------------------------------------
-// Allowed types — must stay in sync with AttachmentValidatorService::ALLOWED
+// Allowed types
 // ---------------------------------------------------------------------------
 
-interface AllowedType {
-  /** Human-readable label shown in error messages */
-  label: string
-  /** MIME types the browser may report for this extension */
-  mimes: string[]
+/**
+ * The plugin's own list, extension → MIME types the browser may report.
+ *
+ * Used only where the page sent none — the SSR prerender, tests. Everywhere
+ * else the list is the server's own (AttachmentValidatorService::attachmentTypes()),
+ * so what this accepts is what the server accepts, including anything another
+ * plugin added. Mirrors AttachmentValidatorService::ALLOWED.
+ */
+const OWN_TYPES: Record<string, string[]> = {
+  doc: ['application/msword'],
+  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+  gif: ['image/gif'],
+  jpeg: ['image/jpeg'],
+  jpg: ['image/jpeg'],
+  pdf: ['application/pdf'],
+  png: ['image/png'],
+  webp: ['image/webp']
 }
 
-const ALLOWED_TYPES: Record<string, AllowedType> = {
-  doc: { label: __('Word document'), mimes: ['application/msword'] },
-  docx: {
-    label: __('Word document'),
-    mimes: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-  },
-  gif: { label: __('GIF image'), mimes: ['image/gif'] },
-  jpeg: { label: __('JPEG image'), mimes: ['image/jpeg', 'image/jpg'] },
-  jpg: { label: __('JPEG image'), mimes: ['image/jpeg', 'image/jpg'] },
-  pdf: { label: __('PDF document'), mimes: ['application/pdf'] },
-  png: { label: __('PNG image'), mimes: ['image/png'] },
-  webp: { label: __('WebP image'), mimes: ['image/webp'] }
+/**
+ * MIME names some browsers report that the server never reads a file as. The
+ * server checks the bytes; this only keeps a browser's own spelling from
+ * refusing a file the server would take.
+ */
+const REPORTED_ALIASES: Record<string, string[]> = {
+  'image/jpeg': ['image/jpg']
 }
+
+/** Read per call so a test can change the config between cases. */
+const allowedTypes = () => config.ATTACHMENT_TYPES ?? OWN_TYPES
+
+const reportedMimesOf = (extension: string) =>
+  (allowedTypes()[extension] ?? []).flatMap(mime => [mime, ...(REPORTED_ALIASES[mime] ?? [])])
 
 /**
  * The per-file cap the server enforces (PostingLimits::maxFileSize()), sent with
@@ -138,9 +150,9 @@ export function validateAttachment(file: File): AttachmentValidationResult {
   }
 
   // 5. Check extension against allowed list
-  const allowedType = ALLOWED_TYPES[extension]
-  if (!allowedType) {
-    const allowed = Object.keys(ALLOWED_TYPES).join(', ')
+  const allowedMimes = reportedMimesOf(extension)
+  if (allowedMimes.length === 0) {
+    const allowed = Object.keys(allowedTypes()).join(', ')
     return {
       error: `File type .${extension} is not allowed. Allowed types: ${allowed}.`,
       valid: false
@@ -149,7 +161,7 @@ export function validateAttachment(file: File): AttachmentValidationResult {
 
   // 6. Cross-check browser-reported MIME against the extension's expected MIMEs
   //    An empty file.type is OK — some browsers don't set it for all types
-  if (file.type && !allowedType.mimes.includes(file.type.toLowerCase())) {
+  if (file.type && !allowedMimes.includes(file.type.toLowerCase())) {
     return {
       error: `File content does not match its extension (.${extension}).`,
       valid: false
@@ -168,13 +180,15 @@ export function validateAttachment(file: File): AttachmentValidationResult {
  * Antd Upload `accept` prop value — a comma-separated list of MIME types.
  */
 export function acceptMimeTypes(): string {
-  const mimes = new Set<string>()
-  for (const type of Object.values(ALLOWED_TYPES)) {
-    for (const mime of type.mimes) {
-      mimes.add(mime)
-    }
+  // Extensions as well as MIME types: a picker filtering on MIME alone hides
+  // files the OS has no type registered for, which is common outside the
+  // everyday image and document formats.
+  const accepted = new Set<string>()
+  for (const extension of Object.keys(allowedTypes())) {
+    accepted.add(`.${extension}`)
+    for (const mime of reportedMimesOf(extension)) accepted.add(mime)
   }
-  return [...mimes].join(',')
+  return [...accepted].join(',')
 }
 
 // ---------------------------------------------------------------------------

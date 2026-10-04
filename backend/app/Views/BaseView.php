@@ -6,6 +6,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PortalTaxonomies;
@@ -151,6 +152,9 @@ class BaseView
             // Both editors and the upload check read these, so a file or an image
             // the portal lets through is one the server accepts. See PostingLimits.
             'postingLimits' => PostingLimits::all(),
+            // The upload check's list of attachable files, from the same source
+            // as the server's, so the two cannot drift. See ExtensionPoints.
+            'attachmentTypes' => AttachmentValidatorService::attachmentTypes(),
             // Sent with the page so the bell's badge is right on first paint
             // instead of appearing a beat after the header draws. The portal
             // polls for changes after that; this is only the starting value.

@@ -28,6 +28,9 @@ final class AttachmentValidatorServiceTest extends TestCase
 
     private const PDF = '%PDF-1.7 body';
 
+    /** The leading `ftyp` box of an MP4, which is what finfo recognises it by. */
+    private const MP4 = "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom";
+
     private AttachmentValidatorService $validator;
 
     /** @var string[] */
@@ -46,6 +49,7 @@ final class AttachmentValidatorServiceTest extends TestCase
 
         $this->tempFiles = [];
         $GLOBALS['__php_uploaded_files'] = [];
+        $GLOBALS['__wp_filters'] = [];
         unset($GLOBALS['__wp_max_upload_size']);
     }
 
@@ -171,6 +175,7 @@ final class AttachmentValidatorServiceTest extends TestCase
     {
         $file = $this->upload('holiday.jpg', self::JPEG);
         $GLOBALS['__php_uploaded_files'] = [];
+        $GLOBALS['__wp_filters'] = [];
 
         $this->expectExceptionMessage('No valid file was uploaded.');
         $this->validator->validate($file);
@@ -257,13 +262,93 @@ final class AttachmentValidatorServiceTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
+    // What a listener may change
+    // -----------------------------------------------------------------------
+
+    public function testWithNobodyListeningAttachmentsTakeThePluginsOwnList(): void
+    {
+        $this->assertSame(AttachmentValidatorService::ALLOWED, AttachmentValidatorService::attachmentTypes());
+    }
+
+    public function testAListenerMayAddATypeAndTakeOneAway(): void
+    {
+        $types = AttachmentValidatorService::ALLOWED;
+        unset($types['doc']);
+        $types['mp4'] = ['video/mp4'];
+        $GLOBALS['__wp_filters']['bit_connect_attachment_types'] = $types;
+
+        $answer = AttachmentValidatorService::attachmentTypes();
+
+        $this->assertSame(['video/mp4'], $answer['mp4']);
+        $this->assertArrayNotHasKey('doc', $answer);
+    }
+
+    public function testAListenerCannotAddADangerousOrMalformedType(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_attachment_types'] = [
+            'png'       => ['image/png'],
+            'php'       => ['image/png'],
+            'SVG'       => ['image/svg+xml'],
+            'tar.gz'    => ['application/gzip'],
+            'mp4'       => ['not a mime', 42],
+            'webm'      => 'video/webm',
+            'MOV'       => ['Video/QuickTime'],
+        ];
+
+        $this->assertSame(
+            ['png' => ['image/png'], 'mov' => ['video/quicktime']],
+            AttachmentValidatorService::attachmentTypes()
+        );
+    }
+
+    public function testAMalformedAnswerFallsBackToThePluginsOwnList(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_attachment_types'] = 'everything';
+
+        $this->assertSame(AttachmentValidatorService::ALLOWED, AttachmentValidatorService::attachmentTypes());
+    }
+
+    public function testAnAddedTypeIsStillCheckedAgainstTheFilesBytes(): void
+    {
+        // A PDF renamed to .mp4 is refused by its content even once mp4 is
+        // listed: the listener widens the list, never the checks.
+        $this->expectExceptionMessageMatches('/does not match its extension/');
+        $this->validator->validate($this->upload('clip.mp4', self::PDF), null, ['mp4' => ['video/mp4']]);
+    }
+
+    public function testAnAddedVideoTypeAcceptsARealVideo(): void
+    {
+        $validated = $this->validator->validate($this->upload('clip.mp4', self::MP4), null, ['mp4' => ['video/mp4']]);
+
+        $this->assertSame('video/mp4', $validated['type']);
+    }
+
+    public function testRandomBytesNamedAsAVideoAreRejected(): void
+    {
+        // WordPress alone takes these: it cannot identify the bytes, and for a
+        // video extension it trusts the name. The validator reads them itself.
+        $this->expectExceptionMessageMatches('/could not be read as the media/');
+        $this->validator->validate($this->upload('clip.mp4', random_bytes(512)), null, ['mp4' => ['video/mp4']]);
+    }
+
+    public function testAProfileImageIgnoresTheListener(): void
+    {
+        // Avatars and covers validate against ALLOWED, which no listener edits.
+        $GLOBALS['__wp_filters']['bit_connect_attachment_types'] = ['zip' => ['application/zip']];
+
+        $this->expectExceptionMessageMatches('/File type \.zip is not allowed/');
+        $this->validator->validate($this->upload('archive.zip', 'PK binary'), AttachmentValidatorService::PROFILE_IMAGE_MAX_SIZE);
+    }
+
+    // -----------------------------------------------------------------------
     // The contract shared with the frontend
     // -----------------------------------------------------------------------
 
     /**
-     * The portal refuses the same files before uploading them; a limit that
-     * drifts apart here shows up as a file the browser accepts and the server
-     * throws away.
+     * The portal is sent attachmentTypes() with the page, and falls back to its
+     * own copy of this list only where there is no page — the SSR prerender.
+     * A list that drifts apart there shows up as a file the browser accepts and
+     * the server throws away.
      */
     public function testTheLimitAndAllowlistMatchTheOnesTheFrontendEnforces(): void
     {

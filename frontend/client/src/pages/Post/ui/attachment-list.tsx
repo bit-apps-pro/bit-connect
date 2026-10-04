@@ -22,6 +22,8 @@ const CLOSED = -1
 
 const isImage = (attachment: TopicAttachmentInfo) => attachment.type?.startsWith('image/') ?? false
 
+const isVideo = (attachment: TopicAttachmentInfo) => attachment.type?.startsWith('video/') ?? false
+
 /**
  * Types a browser renders by itself, so opening one means reading it rather
  * than saving it. Everything else — a zip, a .docx — can only be downloaded,
@@ -60,13 +62,36 @@ export default function AttachmentList({
   const [expanded, setExpanded] = useState(false)
   const [previewAt, setPreviewAt] = useState(CLOSED)
 
-  const images = attachments.filter(element => isImage(element))
-  const hiddenCount = attachments.length - VISIBLE_LIMIT
-  const visible = expanded ? attachments : attachments.slice(0, VISIBLE_LIMIT)
+  // A video is watched where it was posted, so it leaves the chips for a player
+  // of its own. The rest stay one list, whatever they are.
+  const videos = attachments.filter(element => isVideo(element))
+  const files = attachments.filter(element => !isVideo(element))
+  const images = files.filter(element => isImage(element))
+  const hiddenCount = files.length - VISIBLE_LIMIT
+  const visible = expanded ? files : files.slice(0, VISIBLE_LIMIT)
   const shell = `${CHIP_SHELL} ${chipFill(variant)}`
 
   return (
     <div className={className}>
+      {/* The browser's own player, served from the site's own uploads — no
+          third party involved, unlike a linked video. `metadata` fetches enough
+          to show the length and first frame without downloading the file before
+          anyone presses play. A format the browser cannot play still has its
+          chip underneath, so the file is never out of reach. */}
+      {videos.map(video => (
+        <div className="bc-mb-2 bc-flex bc-max-w-[560px] bc-flex-col bc-gap-1" key={video.id}>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- a member's upload carries no caption track to offer */}
+          <video
+            aria-label={video.filename}
+            className="bc-block bc-aspect-video bc-w-full bc-rounded-lg bc-bg-black"
+            controls
+            preload="metadata"
+            src={video.url}
+          />
+          <AttachmentDownloadButton attachment={video} variant={variant} />
+        </div>
+      ))}
+
       {/* Equal cells rather than pills each as wide as its own filename: a
           column of chips that all end in a different place reads as a ragged
           edge, and the download arrows — the one control in the row — landed at

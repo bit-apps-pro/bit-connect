@@ -7,7 +7,8 @@ import {
   FilePptOutlined,
   FileTextOutlined,
   FileWordOutlined,
-  FileZipOutlined
+  FileZipOutlined,
+  VideoCameraOutlined
 } from '@ant-design/icons'
 import { Tooltip } from 'antd'
 
@@ -41,7 +42,8 @@ const ICONS: [test: RegExp, icon: React.ReactNode][] = [
   [/word|document$|opendocument\.text/, <FileWordOutlined className="bc-text-blue-500" key="word" />],
   [/sheet|excel|csv/, <FileExcelOutlined className="bc-text-green-600" key="excel" />],
   [/presentation|powerpoint/, <FilePptOutlined className="bc-text-orange-500" key="ppt" />],
-  [/^text\//, <FileTextOutlined className="bc-text-sky-600" key="text" />]
+  [/^text\//, <FileTextOutlined className="bc-text-sky-600" key="text" />],
+  [/^video\//, <VideoCameraOutlined className="bc-text-pink-500" key="video" />]
 ]
 
 export function fileIconOf(attachment: AttachmentSummary): React.ReactNode {

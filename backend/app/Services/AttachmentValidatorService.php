@@ -41,8 +41,10 @@ final class AttachmentValidatorService
     public const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
     /**
-     * Allowed file extensions and their expected MIME types.
-     * Must stay in sync with ALLOWED_TYPES in attachment-validation.ts.
+     * Allowed file extensions and their expected MIME types — this plugin's own
+     * list, and the whole of it for avatars and cover images. Attachments use
+     * attachmentTypes(), which starts here and which the portal is sent, so
+     * its upload check accepts what this does.
      *
      * Format: 'ext' => ['mime/type', ...]
      */
@@ -77,17 +79,64 @@ final class AttachmentValidatorService
     ];
 
     /**
+     * What a member may attach to a topic or a reply: ALLOWED, as answered by
+     * `bit_connect_attachment_types` (see ExtensionPoints).
+     *
+     * The answer is cleaned rather than trusted. An entry is kept only when its
+     * extension is short and plain, is not on the dangerous list, and names at
+     * least one well-formed MIME type; a malformed answer as a whole falls back
+     * to ALLOWED. Whatever survives still faces every other check in validate().
+     *
+     * @return array<string, string[]>
+     */
+    public static function attachmentTypes(): array
+    {
+        $offered = ExtensionPoints::attachmentTypes(self::ALLOWED);
+
+        if (!\is_array($offered)) {
+            return self::ALLOWED;
+        }
+
+        $types = [];
+
+        foreach ($offered as $ext => $mimes) {
+            $ext = strtolower((string) $ext);
+
+            if (!preg_match('/^[a-z0-9]{1,10}$/', $ext) || \in_array($ext, self::DANGEROUS_EXTENSIONS, true) || !\is_array($mimes)) {
+                continue;
+            }
+
+            $wellFormed = [];
+
+            foreach ($mimes as $mime) {
+                if (\is_string($mime) && preg_match('#^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$#i', $mime)) {
+                    $wellFormed[] = strtolower($mime);
+                }
+            }
+
+            if ($wellFormed !== []) {
+                $types[$ext] = $wellFormed;
+            }
+        }
+
+        return $types;
+    }
+
+    /**
      * Validate an uploaded file from $_FILES.
      *
-     * @param array    $file    A single entry from $_FILES (e.g. $_FILES['file']).
-     * @param null|int $maxSize bytes allowed; the media limit when left out
+     * @param array                        $file    A single entry from $_FILES (e.g. $_FILES['file']).
+     * @param null|int                     $maxSize bytes allowed; the media limit when left out
+     * @param null|array<string, string[]> $allowed extension → MIME types accepted; ALLOWED when left out
      *
      * @throws InvalidArgumentException when the file fails any validation rule
      *
      * @return array the validated file array (same structure as $file input)
      */
-    public function validate(array $file, ?int $maxSize = null): array
+    public function validate(array $file, ?int $maxSize = null, ?array $allowed = null): array
     {
+        $allowed ??= self::ALLOWED;
+
         // 1. Presence
         if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
             throw new InvalidArgumentException('No valid file was uploaded.');
@@ -142,10 +191,10 @@ final class AttachmentValidatorService
         }
 
         // 7. Allowed-extension allowlist check
-        if (!\array_key_exists($ext, self::ALLOWED)) {
-            $allowed = implode(', ', array_keys(self::ALLOWED));
+        if (!\array_key_exists($ext, $allowed)) {
+            $list = implode(', ', array_keys($allowed));
 
-            throw new InvalidArgumentException(esc_html("File type .{$ext} is not allowed. Allowed types: {$allowed}."));
+            throw new InvalidArgumentException(esc_html("File type .{$ext} is not allowed. Allowed types: {$list}."));
         }
 
         // 8. Magic-byte MIME validation via wp_check_filetype_and_ext().
@@ -158,10 +207,18 @@ final class AttachmentValidatorService
         }
 
         // 9. Cross-check: the magic-byte MIME must match the expected MIMEs for this extension
-        $expectedMimes = self::ALLOWED[$ext];
+        $expectedMimes = $allowed[$ext];
         if (!\in_array($checked['type'], $expectedMimes, true)) {
             throw new InvalidArgumentException(esc_html("File content does not match its extension (.{$ext}). Upload rejected."));
         }
+
+        // 10. Media must read as media. wp_check_filetype_and_ext() reads the
+        //     bytes strictly only for images: a file it cannot identify at all
+        //     is waved through for any video, audio or application type, so
+        //     random bytes named clip.mp4 came back as video/mp4. A picture or
+        //     a clip is a format finfo knows, so for video and audio its answer
+        //     has to agree before the file is accepted.
+        $this->assertMediaReadsAsMedia($file['tmp_name'], $checked['type']);
 
         // Return the file array with the server-verified name and type substituted
         return array_merge(
@@ -176,6 +233,35 @@ final class AttachmentValidatorService
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Refuse a video or audio file whose bytes finfo does not read as one.
+     *
+     * Without finfo there is nothing stricter to ask, and the check WordPress
+     * already made stands — the same as it does for every other type.
+     *
+     * @throws InvalidArgumentException when the content is not the media it claims
+     */
+    private function assertMediaReadsAsMedia(string $path, string $type): void
+    {
+        $family = strtok($type, '/');
+
+        if (!\in_array($family, ['video', 'audio'], true) || !\function_exists('finfo_open')) {
+            return;
+        }
+
+        $finfo = finfo_open(\FILEINFO_MIME_TYPE);
+
+        if ($finfo === false) {
+            return;
+        }
+
+        $real = finfo_file($finfo, $path);
+
+        if (!\is_string($real) || strtok($real, '/') !== $family) {
+            throw new InvalidArgumentException('File content could not be read as the media its name says. Upload rejected.');
+        }
+    }
 
     /**
      * Convert PHP upload error codes into human-readable messages.

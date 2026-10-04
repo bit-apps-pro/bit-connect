@@ -18,6 +18,11 @@ declare const SERVER_VARIABLES: {
   ajaxURL: string
   apiURL: string
   assetsURL: string
+  /**
+   * What a member may attach, extension → MIME types
+   * (AttachmentValidatorService::attachmentTypes()). Portal only.
+   */
+  attachmentTypes?: Record<string, string[]>
   authMode?: 'custom_url' | 'plugin_default'
   /**
    * Admin screens only — Head::createConfigVariable() sends these, the portal

@@ -1609,6 +1609,17 @@ if (!function_exists('wp_check_filetype_and_ext')) {
             return ['ext' => 'webp', 'type' => 'image/webp', 'proper_filename' => false];
         }
 
+        // Core reads non-images through finfo, and lets a file it cannot place
+        // at all — "application/octet-stream" — through for any video, audio or
+        // application type, trusting the name. Mirrored for video, so a test
+        // can show what the validator does about that leniency.
+        $byName = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
+        $ext = strtolower(pathinfo((string) $filename, \PATHINFO_EXTENSION));
+
+        if (isset($byName[$ext])) {
+            return ['ext' => $ext, 'type' => $byName[$ext], 'proper_filename' => false];
+        }
+
         return ['ext' => false, 'type' => false, 'proper_filename' => false];
     }
 }
