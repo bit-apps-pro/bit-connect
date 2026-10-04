@@ -87,8 +87,45 @@ export function dayLabel(value: string, todayText: string, yesterdayText: string
   })
 }
 
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  hellip: '…',
+  laquo: '«',
+  ldquo: '“',
+  lsquo: '‘',
+  lt: '<',
+  mdash: '—',
+  nbsp: ' ',
+  ndash: '–',
+  quot: '"',
+  raquo: '»',
+  rdquo: '”',
+  rsquo: '’'
+}
+
 /**
- * Strips tags: excerpts are stored HTML, shown here as plain text.
+ * Decodes character references once.
+ *
+ * One pass on purpose: `&amp;gt;` is someone who typed "&gt;", and decoding the
+ * result again would turn their text into ">".
+ */
+const decodeEntities = (value: string) =>
+  value.replaceAll(/&(#x[\da-f]+|#\d+|[a-z]+);/gi, (entity, ref: string) => {
+    if (ref[0] !== '#') return NAMED_ENTITIES[ref.toLowerCase()] ?? entity
+
+    const hex = ref[1] === 'x' || ref[1] === 'X'
+    const code = Number.parseInt(ref.slice(hex ? 2 : 1), hex ? 16 : 10)
+
+    return code > 0 && code <= 0x10_ff_ff ? String.fromCodePoint(code) : entity
+  })
+
+/**
+ * Stored HTML as plain text: tags out, entities decoded.
+ *
+ * Decoding is not optional — the editor writes `>` as `&gt;`, and React prints
+ * a string verbatim, so a comment saying "man>>" would read "man&gt;&gt;".
  *
  * Takes `unknown` because half its callers read out of an activity row's
  * free-form context blob, where a field is whatever the action that wrote it
@@ -96,8 +133,7 @@ export function dayLabel(value: string, todayText: string, yesterdayText: string
  */
 export const plain = (html: unknown) =>
   typeof html === 'string'
-    ? html
-        .replaceAll(/<[^>]*>/g, ' ')
+    ? decodeEntities(html.replaceAll(/<[^>]*>/g, ' '))
         .replaceAll(/\s+/g, ' ')
         .trim()
     : ''

@@ -1,21 +1,10 @@
 import { cn } from '@common/helpers/globalHelpers'
 import { __, sprintf } from '@common/helpers/i18nWrap'
+import { plainText } from '@common/helpers/plain-text'
 import { Avatar } from 'antd'
 
 import { type NotificationItem } from '../data/use-notifications'
 import appearanceFor from '../shared/appearance'
-
-/**
- * Plain text for the excerpt line.
- *
- * The server strips markup before storing an excerpt, but rows written before
- * it did still carry the post's HTML, and React would print the tags verbatim.
- */
-const plain = (html: string) =>
-  html
-    .replaceAll(/<[^>]*>/g, ' ')
-    .replaceAll(/\s+/g, ' ')
-    .trim()
 
 /**
  * One line of the bell, and of the full list.
@@ -167,7 +156,9 @@ interface NotificationRowProps {
 }
 
 export default function NotificationRow({ item, onSelect, variant = 'flat' }: NotificationRowProps) {
-  const excerpt = item.context.excerpt && plain(item.context.excerpt)
+  // The server strips markup before storing an excerpt but leaves its entities
+  // encoded, and rows written before it stripped still carry the post's HTML.
+  const excerpt = item.context.excerpt && plainText(item.context.excerpt)
   const { bg, fg, Icon } = appearanceFor(item.type)
   const initial = (item.actor.name || '?').charAt(0).toUpperCase()
   const isCard = variant === 'card'

@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { plainText } from '@common/helpers/plain-text'
 import { type Topic } from '@features/topic-modal/shared/type'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
 import UserLink from '@utilities/user-link'
@@ -33,21 +34,8 @@ const EXCERPT_LENGTH = 320
  * markup that never opened. Tags are stripped first, so the count is characters
  * the reader actually sees.
  */
-const ENTITIES: Record<string, string> = {
-  '&#039;': "'",
-  '&amp;': '&',
-  '&gt;': '>',
-  '&lt;': '<',
-  '&nbsp;': ' ',
-  '&quot;': '"'
-}
-
 const excerptOf = (html: string) => {
-  const text = html
-    .replaceAll(/<[^>]*>/g, ' ')
-    .replaceAll(/&(?:#039|amp|gt|lt|nbsp|quot);/g, entity => ENTITIES[entity] ?? entity)
-    .replaceAll(/\s+/g, ' ')
-    .trim()
+  const text = plainText(html)
 
   return text.length > EXCERPT_LENGTH ? text.slice(0, EXCERPT_LENGTH).trimEnd() + '…' : text
 }
