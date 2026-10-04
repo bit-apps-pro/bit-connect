@@ -217,6 +217,21 @@ final class NotificationRecipients
     }
 
     /**
+     * The author of the comment a reply answers, or null for a top-level
+     * comment, a missing parent or one left by a guest.
+     */
+    public static function parentCommentAuthor(int $commentId): ?int
+    {
+        $comment = $commentId > 0 ? get_comment($commentId) : null;
+
+        if (!$comment) {
+            return null;
+        }
+
+        return self::commentAuthor((int) $comment->comment_parent);
+    }
+
+    /**
      * Drops the cached moderator list.
      *
      * Needed after a capability change inside the same request, which the

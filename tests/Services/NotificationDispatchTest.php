@@ -40,6 +40,8 @@ final class NotificationDispatchTest extends TestCase
 
     private const COMMENT = 55;
 
+    private const REPLY = 56;
+
     protected function setUp(): void
     {
         $GLOBALS['__bc_notifications'] = [];
@@ -51,7 +53,10 @@ final class NotificationDispatchTest extends TestCase
         $GLOBALS['__wp_filters'] = [];
         $GLOBALS['__wp_current_user_id'] = self::ACTOR;
         $GLOBALS['__wp_posts'] = [self::TOPIC => $this->topic(self::AUTHOR)];
-        $GLOBALS['__wp_comments'] = [self::COMMENT => $this->comment(self::AUTHOR)];
+        $GLOBALS['__wp_comments'] = [
+            self::COMMENT => $this->comment(self::AUTHOR),
+            self::REPLY   => $this->comment(self::ACTOR, self::REPLY, self::COMMENT),
+        ];
         $GLOBALS['wpdb']->failWrites = false;
 
         unset($GLOBALS['__bc_notification_insert_fails']);
@@ -342,7 +347,7 @@ final class NotificationDispatchTest extends TestCase
         NotificationService::dispatch(
             NotificationTypes::COMMENT_REPLY,
             NotificationService::TARGET_COMMENT,
-            self::COMMENT,
+            self::REPLY,
             [],
             self::TOPIC
         );
@@ -408,12 +413,31 @@ final class NotificationDispatchTest extends TestCase
     }
 
     /**
+     * The target is the reply itself, so its link lands on it; the person told
+     * is whoever wrote the comment being answered, never the replier.
+     */
+    public function testAReplyReachesTheAuthorOfTheCommentItAnswers(): void
+    {
+        $written = NotificationService::dispatch(
+            NotificationTypes::COMMENT_REPLY,
+            NotificationService::TARGET_COMMENT,
+            self::REPLY,
+            [],
+            self::TOPIC
+        );
+
+        $this->assertSame(1, $written);
+        $this->assertSame(self::AUTHOR, $this->onlyRow()['user_id']);
+        $this->assertSame(self::REPLY, $this->onlyRow()['target_id']);
+    }
+
+    /**
      * Each reply is a distinct thing somebody wrote and needs its own link.
      */
     public function testRepliesNeverFoldIntoEachOther(): void
     {
-        NotificationService::dispatch(NotificationTypes::COMMENT_REPLY, NotificationService::TARGET_COMMENT, self::COMMENT, [], self::TOPIC);
-        NotificationService::dispatch(NotificationTypes::COMMENT_REPLY, NotificationService::TARGET_COMMENT, self::COMMENT, [], self::TOPIC);
+        NotificationService::dispatch(NotificationTypes::COMMENT_REPLY, NotificationService::TARGET_COMMENT, self::REPLY, [], self::TOPIC);
+        NotificationService::dispatch(NotificationTypes::COMMENT_REPLY, NotificationService::TARGET_COMMENT, self::REPLY, [], self::TOPIC);
 
         $this->assertCount(2, $GLOBALS['__bc_notifications']);
     }
@@ -535,10 +559,11 @@ final class NotificationDispatchTest extends TestCase
         return $post;
     }
 
-    private function comment(int $authorId): WP_Comment
+    private function comment(int $authorId, int $id = self::COMMENT, int $parentId = 0): WP_Comment
     {
         $comment = new WP_Comment();
-        $comment->comment_ID = self::COMMENT;
+        $comment->comment_ID = $id;
+        $comment->comment_parent = $parentId;
         $comment->user_id = $authorId;
         $comment->comment_post_ID = self::TOPIC;
         $comment->comment_content = 'Same here.';

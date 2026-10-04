@@ -416,7 +416,9 @@ final class NotificationService
                 return NotificationRecipients::newTopicAudience((int) $thread);
 
             case NotificationTypes::COMMENT_REPLY:
-                $author = NotificationRecipients::commentAuthor($targetId);
+                // The target is the reply, so the link lands on it; the person
+                // to tell is whoever wrote the comment it answers.
+                $author = NotificationRecipients::parentCommentAuthor($targetId);
 
                 return $author === null ? [] : [$author];
 
