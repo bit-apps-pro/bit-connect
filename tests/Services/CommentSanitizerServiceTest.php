@@ -51,6 +51,16 @@ class CommentSanitizerServiceTest extends TestCase
         );
     }
 
+    public function testKeepsTheMarkOnAVideoAddressKeptAsALink(): void
+    {
+        $html = '<p><a class="bc-video-link" href="https://youtu.be/dQw4w9WgXcQ">https://youtu.be/dQw4w9WgXcQ</a></p>';
+
+        $this->assertStringContainsString(
+            'class="bc-video-link"',
+            (new CommentSanitizerService())->sanitize($html)
+        );
+    }
+
     public function testDropsEveryOtherClass(): void
     {
         $html = '<p class="bc-fixed bc-inset-0"><a class="bc-mention danger" href="/user/aiden-carter">@Aiden Carter</a></p>';

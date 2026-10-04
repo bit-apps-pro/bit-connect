@@ -26,6 +26,8 @@
  *     → finalCleanup()
  */
 
+import { VIDEO_LINK_CLASS } from '@pages/Post/shared/video-link'
+
 import { MENTION_CLASS } from './mention-markup'
 import { replaceEmojiImages } from './quill-emoji'
 import { normalizeQuillLists } from './quill-list-normalizer'
@@ -279,11 +281,13 @@ function transformLink(element: HTMLElement): void {
   // styling.
   const hrefVal = element.getAttribute('href') || ''
   const titleVal = element.getAttribute('title') || ''
-  const isMention = element.classList.contains(MENTION_CLASS)
+  // A video address its writer chose to keep a link carries a class of its own
+  // for the same reason: without it the portal would show a player instead.
+  const kept = [MENTION_CLASS, VIDEO_LINK_CLASS].find(name => element.classList.contains(name))
   ;[...element.attributes].forEach(a => element.removeAttribute(a.name))
   if (hrefVal) element.setAttribute('href', hrefVal)
   if (titleVal) element.setAttribute('title', titleVal)
-  if (isMention) element.setAttribute('class', MENTION_CLASS)
+  if (kept) element.setAttribute('class', kept)
 
   // External links: add rel="nofollow ugc" (WordPress convention for comment links)
   if (hrefVal.startsWith('http')) {

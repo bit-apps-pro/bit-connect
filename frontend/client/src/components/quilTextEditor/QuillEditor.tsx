@@ -31,6 +31,7 @@ import 'quill/dist/quill.snow.css'
 // Side-effect imports: register custom Quill modules/blots
 import './quill-clipboard-sanitizer'
 import './quill-mention'
+import useEditorExtras from './editor-extras'
 import { searchMembers } from './mention-source'
 import { isEmojiSource } from './quill-emoji'
 import { setImageLoadingProgress } from './quill-image-loading-blot'
@@ -287,6 +288,9 @@ function QuillEditorInner({
   const menuHeadingSelectId = useId()
   const [linkInputValue, setLinkInputValue] = useState('')
   const linkInputRef = useRef('')
+  const extras = useEditorExtras()
+  // Read from inside Quill's listeners, which are bound once at mount.
+  const extrasRef = useRef(extras)
   const [formatState, setFormatState] = useState<FormatState>({
     bold: false,
     codeBlock: false,
@@ -325,6 +329,7 @@ function QuillEditorInner({
     onImagePasteRef.current = onImagePaste
     onImageInsertRef.current = onImageInsert
     maxImagesRef.current = maxImages
+    extrasRef.current = extras
   })
 
   useEffect(() => {
@@ -355,6 +360,7 @@ function QuillEditorInner({
     if (defaultValueRef.current) {
       quill.setContents(quill.clipboard.convert({ html: defaultValueRef.current }))
     }
+    extrasRef.current.onUpdate?.(quill)
 
     const updateFormatState = () => {
       const selection = quill.getSelection()
@@ -399,6 +405,8 @@ function QuillEditorInner({
     }
 
     quill.on(Quill.events.TEXT_CHANGE, () => {
+      extrasRef.current.onUpdate?.(quill)
+
       // Format immediately so the value stored in state and passed to onChange
       // is already WordPress-compatible HTML — no further transformation needed
       // at submit time or on the backend read path.
@@ -423,6 +431,7 @@ function QuillEditorInner({
         savedSelectionRef.current = range
       }
       updateFormatState()
+      extrasRef.current.onUpdate?.(quill)
     })
 
     // Listen for paste rejections dispatched by ClipboardSanitizerModule
@@ -545,6 +554,7 @@ function QuillEditorInner({
 
     isInternalChange.current = true
     quill.setContents(quill.clipboard.convert({ html: value }))
+    extrasRef.current.onUpdate?.(quill)
     contentRef.current = value
     isInternalChange.current = false
   }, [value])
@@ -913,10 +923,11 @@ function QuillEditorInner({
       // but `hidden` makes this a scrollport of its own, and a sticky child
       // resolves against the nearest one — which would pin the toolbar to a box
       // that never scrolls, i.e. not at all. See .stickyToolbar.
-      className={`bc-relative bc-rounded-lg bc-overflow-clip bc-mb-6 ${className || ''}`}
+      className={`bc-relative bc-rounded-lg bc-overflow-clip bc-mb-6 ${extras.wrapperClassName ?? ''} ${className || ''}`}
       style={{ border: `1px solid ${token.colorBorder}` }}
     >
       <div ref={containerRef} />
+      {extras.overlay}
       {showToolbar && (
         // The narrower side padding on a phone is what keeps the toolbar to
         // two rows: 16px each side of a 288px comment box is width the
@@ -1032,6 +1043,7 @@ function QuillEditorInner({
                   type={formatState.link ? 'primary' : 'text'}
                 />
               </Popover>
+              {extras.toolbar}
             </div>
             <div className="bc-hidden bc-items-center bc-gap-1 md:bc-flex">
               {blockControls.map(control => (

@@ -36,6 +36,13 @@ if (!defined('ABSPATH')) {
 final class CommentSanitizerService
 {
     /**
+     * The class a video address carries when its writer chose to keep it a
+     * link rather than have the portal show a player. It styles nothing; the
+     * portal only reads it. Must match VIDEO_LINK_CLASS in video-link.ts.
+     */
+    public const VIDEO_LINK_CLASS = 'bc-video-link';
+
+    /**
      * MySQL TEXT column limit for wp_comments.comment_content.
      * Checked post-sanitization to prevent padding exploits.
      */
@@ -51,7 +58,7 @@ final class CommentSanitizerService
      * this hands every commenter the portal's whole stylesheet — enough to draw
      * a convincing fake button, or to hide text inside their own comment.
      */
-    private const ALLOWED_CLASSES = [MentionService::MARKUP_CLASS];
+    private const ALLOWED_CLASSES = [MentionService::MARKUP_CLASS, self::VIDEO_LINK_CLASS];
 
     /**
      * Sanitize raw comment HTML from the Quill editor.

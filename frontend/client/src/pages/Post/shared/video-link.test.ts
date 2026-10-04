@@ -91,6 +91,11 @@ describe('videoOfParagraph', () => {
     expect(videoOfParagraph(paragraph(html))).toBeUndefined()
   })
 
+  it('leaves a link its writer chose to keep a link alone', () => {
+    const html = '<p><a class="bc-video-link" href="https://youtu.be/dQw4w9WgXcQ">https://youtu.be/dQw4w9WgXcQ</a></p>'
+    expect(videoOfParagraph(paragraph(html))).toBeUndefined()
+  })
+
   it('leaves formatted or doubled links alone', () => {
     const bold = '<p><a href="https://youtu.be/dQw4w9WgXcQ"><strong>https://youtu.be/dQw4w9WgXcQ</strong></a></p>'
     expect(videoOfParagraph(paragraph(bold))).toBeUndefined()

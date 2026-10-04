@@ -13,6 +13,16 @@
  * YouTube plays from its no-cookie domain and Vimeo with Do Not Track set.
  */
 
+/**
+ * The class a video address carries when its writer chose to keep it a link.
+ *
+ * Shared by the editor, which writes it; the comment formatter and
+ * CommentSanitizerService::VIDEO_LINK_CLASS, which are the only places a class
+ * survives on a comment's link; and videoOfParagraph() below, which leaves such
+ * a link alone.
+ */
+export const VIDEO_LINK_CLASS = 'bc-video-link'
+
 export type VideoProvider = 'vimeo' | 'youtube'
 
 export interface VideoLink {
@@ -103,7 +113,8 @@ export function parseVideoLink(address: string): undefined | VideoLink {
  * what to embed, and a player dropped mid-sentence would break the sentence in
  * two. The address may be plain text, which is what pasting one leaves behind,
  * or a single link whose text is the address itself: a link labelled "my demo"
- * is the writer's own words and is left alone.
+ * is the writer's own words and is left alone, and so is one its writer marked
+ * to stay a link (VIDEO_LINK_CLASS).
  */
 export function videoOfParagraph(paragraph: Element): undefined | VideoLink {
   const text = paragraph.textContent?.trim() ?? ''
@@ -114,6 +125,7 @@ export function videoOfParagraph(paragraph: Element): undefined | VideoLink {
   if (elements.length === 1) {
     const [link] = elements
     if (link.tagName !== 'A' || link.children.length > 0) return undefined
+    if (link.classList.contains(VIDEO_LINK_CLASS)) return undefined
     const href = link.getAttribute('href') ?? ''
     if (href.trim() !== text) return undefined
   }
