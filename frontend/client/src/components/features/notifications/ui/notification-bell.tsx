@@ -134,14 +134,17 @@ export default function NotificationBell() {
       // A square, not a pill: the badge sits inside the button as a child, so
       // antd charges it the 15px flanks of a text button and the bell ended up
       // half again as wide as the icon it holds. Squared off, it matches the
-      // menu button at the other end of the bar.
-      className="bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0"
+      // menu button at the other end of the bar. The right margin clears the
+      // badge, which hangs 6px past the button's edge.
+      className="bc-mr-2 bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0"
       onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
       type="text"
     >
       {/* `count` is capped by antd at `overflowCount`; 99+ is plenty and a
-          four-digit badge would push the header around. */}
-      <Badge count={unreadCount} overflowCount={99} size="small">
+          four-digit badge would push the header around. Shifted right, since
+          antd centres it on the icon's corner and two digits covered half the
+          bell. */}
+      <Badge count={unreadCount} offset={[6, 0]} overflowCount={99} size="small">
         <LuBell size={18} />
       </Badge>
     </Button>
