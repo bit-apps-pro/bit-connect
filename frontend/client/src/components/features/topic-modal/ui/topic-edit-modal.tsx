@@ -10,6 +10,7 @@ import { useSinglePostStore } from '@/store/single-post.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useUpdateTopic from '../data/use-update-topic'
+import { TOPIC_MODAL_WIDTH } from '../shared/modal-width'
 import useTopicModalStore from '../state/use-topic-modal-store'
 import TopicForm from './topic-form'
 
@@ -149,6 +150,7 @@ export default function TopicEditModal() {
         }
       }}
       title={__('Edit Topic')}
+      width={TOPIC_MODAL_WIDTH}
     >
       {isEditModalOpen && (
         <TopicForm form={form} isEditMode taxonomies={taxonomies} topicId={editTopicId} />

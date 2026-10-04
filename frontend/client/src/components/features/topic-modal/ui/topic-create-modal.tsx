@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useSaveTopic from '../data/use-save-topic'
+import { TOPIC_MODAL_WIDTH } from '../shared/modal-width'
 import useTopicModalStore from '../state/use-topic-modal-store'
 import TopicForm from './topic-form'
 
@@ -89,6 +90,7 @@ export default function TopicCreateModal() {
         }
       }}
       title={__('Create New Topic')}
+      width={TOPIC_MODAL_WIDTH}
     >
       {isCreateModalOpen && <TopicForm form={form} taxonomies={taxonomies} />}
     </Modal>
