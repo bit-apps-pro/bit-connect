@@ -82,6 +82,20 @@ class TopicService
             $args['author'] = (int) $filters['author'];
         }
 
+        // A list of the reader's own topics names their hidden ones too — "My
+        // Topics" and their own profile. They can already open each by its URL;
+        // without this, a member whose topic is hidden had no way back to it
+        // once they left the page. Nobody else's list changes: the author
+        // clause is what keeps this to their own.
+        if (
+            $currentUserId > 0
+            && (int) ($args['author'] ?? 0) === $currentUserId
+            && !\in_array(ContentVisibilityService::HIDDEN_STATUS, $args['post_status'], true)
+            && $args['post_status'] !== ['private']
+        ) {
+            $args['post_status'][] = ContentVisibilityService::HIDDEN_STATUS;
+        }
+
         // Hydrate an explicit set of IDs (the profile's "voted" list, which is
         // paginated over the votes table rather than over posts). Routing it
         // through here rather than formatting posts directly keeps the status

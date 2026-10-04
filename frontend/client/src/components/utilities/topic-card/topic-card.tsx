@@ -13,6 +13,7 @@ import { routePath } from '@/utils/route-path'
 import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
+import TopicCardState from './topic-card-state'
 import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
 
@@ -134,6 +135,7 @@ export default function TopicCard({
             then tags. The author and tag links sit above the card overlay, so
             they keep their own destinations. */}
         <div className="topic-card__meta bc-mt-3 bc-flex bc-min-w-0 bc-flex-wrap bc-items-center bc-gap-x-3 bc-gap-y-2 md:bc-gap-x-4">
+          <TopicCardState topic={topic} />
           <UserLink
             avatar={authorAvatar}
             avatarSize={24}
