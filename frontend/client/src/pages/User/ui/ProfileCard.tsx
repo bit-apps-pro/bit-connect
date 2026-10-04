@@ -11,7 +11,9 @@ import {
   LuTwitter
 } from 'react-icons/lu'
 
+import { parseMaybeGmt } from '@/common/helpers/globalHelpers'
 import { type UserStats } from '@/pages/Post/data/use-user-stats'
+import { formatSiteTime } from '@/utils/site-time'
 import { relativeTime } from '@/utils/utils'
 
 import { SOCIAL_LINK_KEYS, type SocialLinkKey, type UserProfile } from '../data/use-user-profile'
@@ -44,9 +46,10 @@ const displayUrl = (url: string | undefined) => {
 
 const fullDate = (iso: string | undefined) => {
   if (!iso) return
-  const date = new Date(iso.replace(' ', 'T'))
+  // `user_registered` is GMT with no zone marker.
+  const date = parseMaybeGmt(iso)
   if (Number.isNaN(date.getTime())) return
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  return formatSiteTime(date, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

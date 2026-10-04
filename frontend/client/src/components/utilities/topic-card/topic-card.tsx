@@ -10,6 +10,7 @@ import { Link } from 'react-router'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
 import { routePath } from '@/utils/route-path'
+import { formatSiteTime } from '@/utils/site-time'
 import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
@@ -17,12 +18,8 @@ import TopicCardState from './topic-card-state'
 import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
 
-/** "20 Nov 2025" — in the reader's own locale's order. */
-const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric'
-})
+/** "20 Nov 2025" — on the site's calendar, in the reader's own locale's order. */
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
 
 /** Upper bound on the string handed to the DOM; CSS clamps what is shown. */
 const EXCERPT_LENGTH = 320
@@ -62,7 +59,7 @@ export default function TopicCard({
 
   const postDate = new Date(postDateGmt.replace(' ', 'T') + 'Z')
   const relativeDate = relativeTime(postDateGmt)
-  const calendarDate = DATE_FORMATTER.format(postDate)
+  const calendarDate = formatSiteTime(postDate, DATE_OPTIONS)
   const { settings } = useAdminSettingsStore()
   const canComment = settings.topicAccess.comment
   const { can, isLoggedIn } = useAuthStore()

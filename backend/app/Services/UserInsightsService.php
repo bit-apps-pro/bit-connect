@@ -64,8 +64,8 @@ class UserInsightsService
     /**
      * The GMT instant a period starts at, or the epoch for all time.
      *
-     * Same boundaries as the admin dashboard: midnight at the start of the first
-     * day, or of the first month for the twelve-month view.
+     * Same boundaries as the admin dashboard: the site's midnight at the start of
+     * the first day, or of the first month for the twelve-month view.
      */
     private function periodStart(string $period): string
     {
@@ -73,13 +73,7 @@ class UserInsightsService
             return '1970-01-01 00:00:00';
         }
 
-        if ($period === '12m') {
-            return gmdate('Y-m-01 00:00:00', strtotime('first day of -11 months'));
-        }
-
-        $days = $period === '7d' ? 6 : 29;
-
-        return gmdate('Y-m-d 00:00:00', strtotime("-{$days} days"));
+        return SiteCalendar::periodStart($period);
     }
 
     private function countTopics(int $userId, string $since): int

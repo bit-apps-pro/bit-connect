@@ -110,6 +110,9 @@ class BaseView
             'settings'               => Config::getOption('settings'),
             'dateFormat'             => Config::getOption('date_format', false, true),
             'timeFormat'             => Config::getOption('time_format', false, true),
+            // Settings → General → Timezone, so the portal names every GMT
+            // instant on the site's clock rather than each reader's.
+            'timeZone' => wp_timezone_string(),
             'siteURL'                => Config::get('SITE_URL'),
             'version'                => Config::VERSION,
             'lang'                   => get_locale(),

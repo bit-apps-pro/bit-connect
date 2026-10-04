@@ -1,9 +1,12 @@
+import { parseMaybeGmt } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import { type Topic } from '@features/topic-modal/shared/type'
 import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
 import { Avatar, Skeleton } from 'antd'
 import { Link } from 'react-router'
+
+import { formatSiteTime } from '@/utils/site-time'
 
 import useUserStats from '../data/use-user-stats'
 import { PANEL } from './panel-styles'
@@ -12,9 +15,10 @@ const formatCount = (value: number) =>
   value >= 1000 ? `${(value / 1000).toFixed(value >= 10_000 ? 0 : 1)}k` : String(value)
 
 const memberSince = (iso: string) => {
-  const date = new Date(iso.replace(' ', 'T'))
+  // `user_registered` is GMT with no zone marker.
+  const date = parseMaybeGmt(iso)
   if (Number.isNaN(date.getTime())) return
-  return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+  return formatSiteTime(date, { month: 'short', year: 'numeric' })
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

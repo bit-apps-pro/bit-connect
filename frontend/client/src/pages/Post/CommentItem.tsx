@@ -18,6 +18,7 @@ import useLoginWarningStore from '@/components/features/login-warning-modal/stat
 import { useAuthStore } from '@/store/auth.zustand'
 import { type Comment } from '@/types/post'
 import { flattenReplies, getVisualDepth, MAX_VISUAL_DEPTH, repliesContain } from '@/utils/commentTree'
+import { formatSiteTime } from '@/utils/site-time'
 
 import CommentEditor from './CommentEditor'
 import styles from './CommentThread.module.css'
@@ -311,7 +312,7 @@ export default function CommentItem({
                       // floor for body text. #65676b at 12px clears it and
                       // matches the action row beneath.
                       className="bc-text-ink-muted bc-text-[12px] bc-leading-tight"
-                      title={parseMaybeGmt(comment.createdAt).toLocaleString('en-US', {
+                      title={formatSiteTime(parseMaybeGmt(comment.createdAt), {
                         day: 'numeric',
                         hour: 'numeric',
                         hour12: true,

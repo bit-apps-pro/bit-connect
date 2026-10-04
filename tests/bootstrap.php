@@ -737,6 +737,21 @@ if (!function_exists('date_i18n')) {
     }
 }
 
+if (!function_exists('wp_date')) {
+    // The test site keeps UTC, so its clock is GMT's.
+    function wp_date($format, $timestamp = null, $timezone = null)
+    {
+        return gmdate($format, $timestamp ?? time());
+    }
+}
+
+if (!function_exists('wp_timezone')) {
+    function wp_timezone()
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
 if (!function_exists('wp_json_encode')) {
     function wp_json_encode($data, $options = 0, $depth = 512)
     {

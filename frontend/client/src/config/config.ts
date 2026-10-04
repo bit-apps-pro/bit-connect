@@ -161,6 +161,8 @@ interface ConfigType {
   SITE_NAME: string
   SITE_URL: string
   TIME_FORMAT: string
+  /** Settings → General → Timezone: an IANA name, or `±HH:MM` for a manual offset. */
+  TIME_ZONE: string
   /** Whether portal URLs end in a slash — see utils/route-path.ts. */
   TRAILING_SLASH: boolean
   /** Seed for the bell's badge, so it is right on first paint. */
@@ -272,6 +274,7 @@ const config = {
   SITE_NAME: getServerVariable('siteName', '') ?? '',
   SITE_URL: siteURL,
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
+  TIME_ZONE: getServerVariable('timeZone', '') ?? '',
   // Read straight off the payload rather than through getServerVariable, which
   // treats `false` — the answer on any site without trailing slashes — as a
   // missing value.

@@ -49,6 +49,8 @@ interface ConfigType {
   SITE_BASE_URL: string
   SITE_URL: string
   TIME_FORMAT: string
+  /** Settings → General → Timezone: an IANA name, or `±HH:MM` for a manual offset. */
+  TIME_ZONE: string
   WP_REST_URL: string
 }
 
@@ -75,6 +77,7 @@ const config = {
   SITE_BASE_URL: getServerVariable('siteBaseURL', ''),
   SITE_URL: getServerVariable('siteURL', ''),
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
+  TIME_ZONE: getServerVariable('timeZone', '') ?? '',
   WP_REST_URL: getServerVariable('wpRestURL')
 } as const satisfies ConfigType
 

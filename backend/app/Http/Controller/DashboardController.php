@@ -15,6 +15,7 @@ use BitApps\BitConnect\Enum\ReportStatus;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\GetDashboardRequest;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\SiteCalendar;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\TermOrderService;
 use WP_Term;
@@ -24,7 +25,8 @@ use WP_Term;
  *
  * Every timestamp compared or returned here is GMT — `post_date_gmt`,
  * `comment_date_gmt`, `user_registered` and the plugin's own tables all store
- * it — so a period boundary means the same instant whatever the site timezone.
+ * it. The periods themselves are the site's days and months (SiteCalendar), so
+ * "today" on the chart turns over at the site's midnight, not London's.
  */
 final class DashboardController
 {
@@ -72,19 +74,13 @@ final class DashboardController
     }
 
     /**
-     * The GMT instant a period starts at: midnight at the start of its first day,
-     * or of its first month for the twelve-month view, so the chart's first bar
-     * is a whole bucket rather than a sliver.
+     * The GMT instant a period starts at: the site's midnight at the start of its
+     * first day, or of its first month for the twelve-month view, so the chart's
+     * first bar is a whole bucket rather than a sliver.
      */
     private function periodStart(string $period): string
     {
-        if ($period === '12m') {
-            return gmdate('Y-m-01 00:00:00', strtotime('first day of -11 months'));
-        }
-
-        $days = $period === '7d' ? 6 : 29;
-
-        return gmdate('Y-m-d 00:00:00', strtotime("-{$days} days"));
+        return SiteCalendar::periodStart($period);
     }
 
     private function getStats(string $postType, string $votesTable, string $since): array
@@ -274,23 +270,37 @@ final class DashboardController
         $wpdbPosts = Connection::prop('posts');
 
         $isMonthly = $period === '12m';
-        $sqlFormat = $isMonthly ? '%%Y-%%m' : '%%Y-%%m-%%d';
+        $starts = SiteCalendar::bucketStarts($period);
+
+        // A row's bucket is the last site-local boundary at or before it. Each
+        // boundary is a site midnight converted to GMT, so the grouping follows
+        // the site's calendar — DATE_FORMAT on the GMT column would file a
+        // 02:00 Dhaka topic under the previous day.
+        $boundaries = array_map([SiteCalendar::class, 'toGmt'], \array_slice($starts, 1));
+        $bucketOf = static function (string $column) use ($boundaries): string {
+            $when = '';
+
+            foreach (array_keys($boundaries) as $i) {
+                $when .= " WHEN {$column} < %s THEN {$i}";
+            }
+
+            return "CASE{$when} ELSE " . \count($boundaries) . ' END';
+        };
 
         // phpcs:disable WordPress.DB.DirectDatabaseQuery
         $topicRows = Connection::get_results(
             Connection::prepare(
-                "SELECT DATE_FORMAT(post_date_gmt, '{$sqlFormat}') AS bucket, COUNT(*) AS total
+                'SELECT ' . $bucketOf('post_date_gmt') . " AS bucket, COUNT(*) AS total
                  FROM {$wpdbPosts}
                  WHERE post_type = %s AND post_status = 'publish' AND post_date_gmt >= %s
                  GROUP BY bucket",
-                $postType,
-                $since
+                ...[...$boundaries, $postType, $since]
             )
         );
 
         $commentRows = Connection::get_results(
             Connection::prepare(
-                "SELECT DATE_FORMAT(c.comment_date_gmt, '{$sqlFormat}') AS bucket, COUNT(*) AS total
+                'SELECT ' . $bucketOf('c.comment_date_gmt') . " AS bucket, COUNT(*) AS total
                  FROM {$wpdbComments} c
                  INNER JOIN {$wpdbPosts} p ON c.comment_post_ID = p.ID
                  WHERE p.post_type = %s
@@ -298,37 +308,36 @@ final class DashboardController
                    AND c.comment_approved = '1'
                    AND c.comment_date_gmt >= %s
                  GROUP BY bucket",
-                $postType,
-                $since
+                ...[...$boundaries, $postType, $since]
             )
         );
         // phpcs:enable WordPress.DB.DirectDatabaseQuery
 
         $buckets = [];
-        $cursor = strtotime($since);
-        $count = $isMonthly ? 12 : ($period === '7d' ? 7 : 30);
 
-        for ($i = 0; $i < $count; ++$i) {
-            $at = $isMonthly ? strtotime("+{$i} months", $cursor) : strtotime("+{$i} days", $cursor);
-            $key = gmdate($isMonthly ? 'Y-m' : 'Y-m-d', $at);
-            // The bucket's own date, left for the browser to label in the
-            // reader's language — a month name formatted here would be English.
-            $buckets[$key] = ['date' => gmdate('Y-m-d', $at), 'topics' => 0, 'comments' => 0];
+        foreach ($starts as $start) {
+            // The bucket's own site-local date, left for the browser to label in
+            // the reader's language — a month name formatted here would be English.
+            $buckets[] = [
+                'date'     => $start->format($isMonthly ? 'Y-m-01' : 'Y-m-d'),
+                'topics'   => 0,
+                'comments' => 0,
+            ];
         }
 
         foreach ($topicRows as $row) {
-            if (isset($buckets[$row->bucket])) {
-                $buckets[$row->bucket]['topics'] = (int) $row->total;
+            if (isset($buckets[(int) $row->bucket])) {
+                $buckets[(int) $row->bucket]['topics'] = (int) $row->total;
             }
         }
 
         foreach ($commentRows as $row) {
-            if (isset($buckets[$row->bucket])) {
-                $buckets[$row->bucket]['comments'] = (int) $row->total;
+            if (isset($buckets[(int) $row->bucket])) {
+                $buckets[(int) $row->bucket]['comments'] = (int) $row->total;
             }
         }
 
-        return array_values($buckets);
+        return $buckets;
     }
 
     /**

@@ -376,7 +376,7 @@ HTML,
 
         if (!empty($topic['post_date_gmt'])) {
             $parts[] = '<time datetime="' . esc_attr(gmdate('c', strtotime($topic['post_date_gmt'] . ' UTC'))) . '">'
-                . esc_html(date_i18n(get_option('date_format'), strtotime($topic['post_date'] ?? $topic['post_date_gmt'])))
+                . esc_html((string) wp_date(get_option('date_format'), strtotime($topic['post_date_gmt'] . ' UTC')))
                 . '</time>';
         }
 

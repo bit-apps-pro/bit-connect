@@ -1,6 +1,7 @@
 import { __, sprintf } from '@common/helpers/i18nWrap'
 
 import { parseGmt } from '@/utils/format'
+import { formatSiteTime } from '@/utils/site-time'
 
 import { type DashboardPeriod, type StageProgress } from './types'
 
@@ -73,13 +74,11 @@ export function bucketLabel(date: string, period: DashboardPeriod): string {
   return at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: 'UTC' })
 }
 
-/** "27 Sep 2026" from a GMT timestamp, in the reader's own date order. */
+/** "27 Sep 2026" from a GMT timestamp, on the site's calendar, in the reader's own date order. */
 export function shortDate(value: string): string {
   const at = parseGmt(value)
 
-  return Number.isNaN(at.getTime())
-    ? ''
-    : at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  return Number.isNaN(at.getTime()) ? '' : formatSiteTime(at, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 /** Up to two initials for an avatar: "Sara Khan" → "SK", "admin" → "AD". */
