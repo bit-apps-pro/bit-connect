@@ -76,8 +76,9 @@ export default function NotificationBell() {
       <div className="bc-flex bc-items-center bc-justify-between bc-gap-2 bc-px-4 bc-pb-2 bc-pt-3">
         <span className="bc-flex bc-items-center bc-gap-2">
           <span className="bc-font-semibold bc-text-base bc-text-ink">{__('Notifications')}</span>
-          {/* The count as a quiet pill rather than a second red badge. The bell
-              already carries the alarm; in here the number is just a fact. */}
+          {/* The count as a quiet pill rather than a second solid badge. The
+              bell already carries the signal; in here the number is just a
+              fact. */}
           {unreadCount > 0 && (
             <span className="bc-rounded-full bc-bg-info-soft bc-px-2 bc-py-0.5 bc-text-xs bc-font-medium bc-text-info">
               {unreadCount > 99 ? '99+' : unreadCount}
@@ -143,8 +144,26 @@ export default function NotificationBell() {
       {/* `count` is capped by antd at `overflowCount`; 99+ is plenty and a
           four-digit badge would push the header around. Shifted right, since
           antd centres it on the icon's corner and two digits covered half the
-          bell. */}
-      <Badge count={unreadCount} offset={[6, 0]} overflowCount={99} size="small">
+          bell.
+
+          Brand blue, not antd's error red: an unread count is news, not a
+          fault, and red in the header read as something having gone wrong.
+          A fixed square rounded off, so one digit and two draw the same
+          circle instead of the count stretching into a pill. "99+" is the one
+          label too wide for that circle at 10px, so it alone steps down. */}
+      <Badge
+        classNames={{
+          indicator: [
+            'bc-h-[18px] bc-w-[18px] bc-min-w-[18px] bc-rounded-full bc-bg-primary bc-p-0',
+            'bc-font-semibold bc-leading-[18px]',
+            unreadCount > 99 ? 'bc-text-[8.5px] bc-tracking-tighter' : 'bc-text-[10px]'
+          ].join(' ')
+        }}
+        count={unreadCount}
+        offset={[6, 0]}
+        overflowCount={99}
+        size="small"
+      >
         <LuBell size={18} />
       </Badge>
     </Button>
