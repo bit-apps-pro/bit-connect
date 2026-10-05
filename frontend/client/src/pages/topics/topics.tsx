@@ -421,8 +421,8 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             )}
           </div>
           {(showTypeChips || showAnyFilter) && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-6">
-              {showTypeChips && <TopicTypeFilter />}
+            <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
+              {showTypeChips && <TopicTypeFilter layout="strip" />}
               {/* ml-auto, not the row's justify-between: with no topic types
                   the chip row renders nothing, and the pickers would slide left. */}
               {showAnyFilter && (
