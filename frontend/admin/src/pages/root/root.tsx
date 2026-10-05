@@ -64,7 +64,7 @@ export default function Root() {
 
           {dashboard?.portalUrl && (
             <Button
-              className="bc-h-11 bc-font-medium"
+              className="bc-h-[38px] bc-font-medium"
               href={dashboard.portalUrl}
               icon={<LuArrowUpRight aria-hidden />}
               iconPosition="end"
