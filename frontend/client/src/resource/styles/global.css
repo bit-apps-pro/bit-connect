@@ -258,9 +258,11 @@ a:focus:not(:focus-visible) {
   margin-top: 0;
 }
 
-/* scroll bar style */
+/* scroll bar style
+   A faint, translucent thumb over either surface: the bar is a hint that more
+   is below, not a control to compete with the content beside it. */
 .scroller {
-  --scrollbar-color-thumb: #c1c1c1;
+  --scrollbar-color-thumb: rgb(0 0 0 / 0.14);
   --scrollbar-color-track: transparent;
   --scrollbar-width: auto;
   --scrollbar-width-legacy: 0.75rem;
@@ -272,7 +274,7 @@ a:focus:not(:focus-visible) {
 }
 
 [color-scheme='dark'] .scroller {
-  --scrollbar-color-thumb: #686868;
+  --scrollbar-color-thumb: rgb(255 255 255 / 0.16);
 }
 
 @supports (scrollbar-width: auto) {

@@ -118,7 +118,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             // there was never free space on the cross axis to distribute.
             // Flush with the window's left edge and ruled off from the list on
             // the right; the header's rule closes the top.
-            'bc-no-underline bc-p-5 bc-flex bc-h-full bc-flex-col bc-border-0 bc-border-r bc-border-solid bc-border-line bc-bg-surface',
+            // The right side pads less: the nav takes the difference as its own
+            // `bc-pr-3`, so its scrollbar sits out in the panel's gutter with a
+            // gap before the items instead of butting against their highlights.
+            'bc-no-underline bc-py-5 bc-pl-5 bc-pr-2 bc-flex bc-h-full bc-flex-col bc-border-0 bc-border-r bc-border-solid bc-border-line bc-bg-surface',
             '[&>.ant-layout-sider-children]:bc-contents'
           ])}
           collapsed={false}
@@ -133,7 +136,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               viewports. Harmless when the credit is off — the nav just gets the
               whole column. */}
           <NavList
-            className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto"
+            className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-pr-3"
             navItems={navItems}
             reserveIconSlot={reserveIconSlot}
           />
@@ -142,7 +145,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Promo
               // Top margin only — the gap below now comes from the panel's own
               // padding, so this no longer doubles it.
-              className="bc-mt-4 bc-shrink-0"
+              // `bc-mr-3` restores the right inset the panel gave to the nav.
+              className="bc-mt-4 bc-mr-3 bc-shrink-0"
               eyebrow={config.PROMO.eyebrow}
               headline={config.PROMO.headline}
               url={config.PROMO.url}
