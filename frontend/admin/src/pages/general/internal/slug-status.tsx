@@ -33,6 +33,30 @@ export default function SlugStatus({ check, isChecking, mode }: SlugStatusProps)
     return
   }
 
+  // Whoever is asking, the answer is no: the portal would take over the
+  // archives or the API that WordPress serves from this address.
+  if (check.reserved) {
+    return (
+      <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm" type="danger">
+        <LuCircleX className="bc-shrink-0" />
+        {__('WordPress already uses this address for another part of your site. Please choose another.')}
+      </Text>
+    )
+  }
+
+  // No page here, and none can be made: a media file or another item already
+  // holds this slug, so WordPress would store a new page as `name-2`.
+  if (!check.exists && check.available === false) {
+    return (
+      <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm" type="danger">
+        <LuCircleX className="bc-shrink-0" />
+        {__(
+          'Something else on your site, such as a media file, already uses this name. Please choose another.'
+        )}
+      </Text>
+    )
+  }
+
   if (mode === 'create') {
     // The wizard's own page from an earlier visit: nothing to create, nothing in the way.
     if (check.isPortal) {
@@ -63,7 +87,7 @@ export default function SlugStatus({ check, isChecking, mode }: SlugStatusProps)
         <LuCircleAlert className="bc-shrink-0" />
         {sprintf(
           __(
-            'There is no page at %s yet. Create one with the shortcode in it, or rename your community page to this slug.'
+            'There is no page at %s yet. Create one with the Bit Connect block or shortcode in it, or rename your community page to this slug.'
           ),
           check.url
         )}
@@ -75,7 +99,9 @@ export default function SlugStatus({ check, isChecking, mode }: SlugStatusProps)
     return (
       <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm" type="warning">
         <LuCircleAlert className="bc-shrink-0" />
-        {__('A page exists here, but it does not contain the [bit-connect] shortcode yet.')}
+        {__(
+          'A page exists here, but it does not contain the Bit Connect block or the [bit-connect] shortcode yet.'
+        )}
       </Text>
     )
   }
@@ -85,7 +111,7 @@ export default function SlugStatus({ check, isChecking, mode }: SlugStatusProps)
       <LuCircleCheck className="bc-shrink-0" />
       {check.isPortal
         ? __('This is your community page.')
-        : __('A page with the shortcode is ready here.')}
+        : __('A page showing the community is ready here.')}
     </Text>
   )
 }

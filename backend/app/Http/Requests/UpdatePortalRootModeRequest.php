@@ -19,12 +19,15 @@ final class UpdatePortalRootModeRequest extends Request
 {
     /**
      * The most consequential write in the plugin: enabling root mode rebinds
-     * the site's front page via show_on_front / page_on_front. Nothing short of
-     * the forum-manage capability may reach it.
+     * the site's front page via show_on_front / page_on_front. Those are the
+     * Reading settings, which core guards with `manage_options`, so the
+     * forum-manage capability alone is not enough: it can be granted to any
+     * role, and running the forum is not the same as choosing the site's
+     * homepage.
      */
     public function authorize()
     {
-        return WpCapabilities::check(Capabilities::MANAGE->value);
+        return WpCapabilities::check(Capabilities::MANAGE->value) && current_user_can('manage_options');
     }
 
     public function failedAuthorizationMessage(): string

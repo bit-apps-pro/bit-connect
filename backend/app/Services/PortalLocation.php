@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
+use BitApps\BitConnect\Views\PortalBlock;
 use WP_Comment;
 use WP_Post;
 
@@ -35,6 +36,13 @@ use WP_Post;
 final class PortalLocation
 {
     public const ROOT_OPTION = 'portal_root';
+
+    /**
+     * What the site's homepage was before root mode took it, so that turning
+     * root mode off hands it back instead of leaving the site on the posts
+     * index.
+     */
+    public const PREVIOUS_FRONT_OPTION = 'portal_root_previous_front';
 
     /**
      * In-app routes the SPA renders itself, relative to the portal's base.
@@ -140,7 +148,7 @@ final class PortalLocation
     /**
      * Make this page the portal when no working portal exists yet.
      *
-     * A site owner who drops `[bit-connect]` on a page of their own — instead of
+     * A site owner who puts the portal on a page of their own — instead of
      * letting the wizard create one — gets an app whose router basename is that
      * page, while every rewrite rule, canonical and notification link is still
      * built from `portal_page`. If that option is empty, or names a page that has
@@ -175,7 +183,21 @@ final class PortalLocation
     }
 
     /**
-     * The published page with this slug, or null.
+     * Whether this content puts the portal on its page — as the block the
+     * plugin writes, or as the shortcode an administrator pasted.
+     */
+    public static function embedsPortal(string $content): bool
+    {
+        return has_block(PortalBlock::NAME, $content) || has_shortcode($content, 'bit-connect');
+    }
+
+    /**
+     * The published top-level page with this slug, or null.
+     *
+     * Top-level only: a page's slug is unique among its siblings, not across
+     * the site, so `/docs/community` shares its post_name with `/community`.
+     * The portal's rewrites are scoped to `/{slug}/…`, an address a child page
+     * does not have, so a child must never be mistaken for the portal page.
      */
     public static function pageBySlug(string $slug): ?WP_Post
     {
@@ -184,11 +206,45 @@ final class PortalLocation
                 'name'           => $slug,
                 'post_type'      => 'page',
                 'post_status'    => 'publish',
+                'post_parent'    => 0,
                 'posts_per_page' => 1,
             ]
         );
 
         return $pages[0] ?? null;
+    }
+
+    /**
+     * Whether WordPress or another content type already routes on this slug.
+     *
+     * `/category/…`, `/author/…`, `/wp-json/…` and every post type or taxonomy
+     * base are decided by their first URL segment. The portal's own rules are
+     * registered ahead of those and claim everything one level beneath its
+     * slug, so a portal named after one would swallow that part of the site:
+     * with the portal at `/category`, every category archive would open the
+     * forum instead.
+     */
+    public static function isReservedSlug(string $slug): bool
+    {
+        $slug = trim($slug, '/');
+
+        return $slug !== '' && \in_array($slug, self::routingBases(), true);
+    }
+
+    /**
+     * Whether a new top-level page can be given exactly this slug.
+     *
+     * Pages share their slug namespace with media files and the feed names, and
+     * core resolves a clash by quietly storing the page as `{slug}-2`. Asking
+     * first is what keeps the saved pointer and the page it names in step.
+     */
+    public static function isSlugFree(string $slug): bool
+    {
+        $slug = trim($slug, '/');
+
+        return $slug !== ''
+            && !self::isReservedSlug($slug)
+            && wp_unique_post_slug($slug, 0, 'publish', 'page', 0) === $slug;
     }
 
     /**
@@ -224,7 +280,7 @@ final class PortalLocation
     }
 
     /**
-     * Adopt a hand-made shortcode page the moment it is published, rather than
+     * Adopt a hand-made portal page the moment it is published, rather than
      * waiting for a visitor to render it — so the administrator who just pressed
      * Publish can open a topic link straight away.
      */
@@ -245,7 +301,7 @@ final class PortalLocation
             return;
         }
 
-        if (!has_shortcode((string) $post->post_content, 'bit-connect')) {
+        if (!self::embedsPortal((string) $post->post_content)) {
             return;
         }
 
@@ -386,6 +442,43 @@ final class PortalLocation
             && (int) get_option('page_on_front') === $page->ID;
 
         return self::$frontPageBound;
+    }
+
+    /**
+     * First URL segments that are already spoken for: core's own directories
+     * and rewrite bases, and the base of every post type and taxonomy.
+     *
+     * Read at call time rather than listed: the category and tag bases are
+     * settings, and other plugins register types of their own.
+     *
+     * @return array<int, string>
+     */
+    private static function routingBases(): array
+    {
+        global $wp_rewrite;
+
+        $bases = ['wp-admin', 'wp-content', 'wp-includes', 'embed', rest_get_url_prefix()];
+
+        if (\is_object($wp_rewrite)) {
+            foreach (['author_base', 'search_base', 'comments_base', 'pagination_base', 'comments_pagination_base', 'feed_base'] as $base) {
+                $bases[] = (string) ($wp_rewrite->{$base} ?? '');
+            }
+
+            $bases = array_merge($bases, (array) ($wp_rewrite->feeds ?? []));
+        }
+
+        foreach (get_taxonomies([], 'objects') as $taxonomy) {
+            $bases[] = \is_array($taxonomy->rewrite) ? (string) ($taxonomy->rewrite['slug'] ?? '') : '';
+        }
+
+        foreach (get_post_types([], 'objects') as $type) {
+            $bases[] = \is_array($type->rewrite) ? (string) ($type->rewrite['slug'] ?? '') : '';
+            $bases[] = \is_string($type->has_archive) ? $type->has_archive : '';
+        }
+
+        // A base may be nested (`blog/category`); only a base that is the
+        // whole first segment can collide with a page slug.
+        return array_values(array_unique(array_filter(array_map(static fn ($base) => trim((string) $base, '/'), $bases))));
     }
 
     /**

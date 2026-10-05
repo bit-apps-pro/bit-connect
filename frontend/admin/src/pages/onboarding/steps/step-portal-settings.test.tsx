@@ -14,12 +14,20 @@ function ok<T>(data: T) {
   return { code: 'SUCCESS', data, status: 'success' }
 }
 
-function mockSlugCheck(exists: boolean) {
+function mockSlugCheck(exists: boolean, available = !exists) {
   mockRequest.mockImplementation(((url: string, options?: { queryParam?: Record<string, string> }) => {
     if (url === 'portal-page/check') {
       const slug = options?.queryParam?.slug ?? ''
       return Promise.resolve(
-        ok({ exists, hasShortcode: false, isPortal: false, slug, url: `https://x/${slug}/` })
+        ok({
+          available,
+          exists,
+          hasShortcode: false,
+          isPortal: false,
+          reserved: false,
+          slug,
+          url: `https://x/${slug}/`
+        })
       )
     }
     return Promise.resolve(ok({ slug: 'x', url: 'https://x/x/' }))
@@ -96,6 +104,17 @@ describe('StepPortalSettings', () => {
     expect(calls).toEqual(['portal-page', 'portal-page/root'])
   })
 
+  it('refuses a name WordPress would rename, even with no page there', async () => {
+    // A media file holds the slug: no page exists, but a new one would be stored as portal-2.
+    mockSlugCheck(false, false)
+    renderStep()
+
+    await waitFor(() =>
+      expect(screen.getByText(/such as a media file, already uses this name/)).toBeVisible()
+    )
+    expect(screen.getByRole('button', { name: 'Create page and continue' })).toBeDisabled()
+  })
+
   it('cannot be skipped', () => {
     mockSlugCheck(false)
     renderStep()
@@ -104,10 +123,21 @@ describe('StepPortalSettings', () => {
   })
 
   it('continues past a portal page created on an earlier visit without creating another', async () => {
-    mockRequest.mockImplementation(((_url: string, options?: { queryParam?: Record<string, string> }) => {
+    mockRequest.mockImplementation(((
+      _url: string,
+      options?: { queryParam?: Record<string, string> }
+    ) => {
       const slug = options?.queryParam?.slug ?? ''
       return Promise.resolve(
-        ok({ exists: true, hasShortcode: true, isPortal: true, slug, url: `https://x/${slug}/` })
+        ok({
+          available: false,
+          exists: true,
+          hasShortcode: true,
+          isPortal: true,
+          reserved: false,
+          slug,
+          url: `https://x/${slug}/`
+        })
       )
     }) as typeof request)
     const user = userEvent.setup()

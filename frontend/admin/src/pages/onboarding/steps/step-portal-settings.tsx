@@ -41,7 +41,11 @@ export default function StepPortalSettings({ onNext }: Props) {
   const { isUpdatingPortalRoot, updatePortalRoot } = useUpdatePortalRoot()
 
   const isExistingPortal = check?.isPortal === true
-  const taken = check?.exists === true && !isExistingPortal
+  // Not only an existing page: a reserved address, or a name WordPress would
+  // quietly store as `name-2`, cannot carry the portal either.
+  const taken =
+    !isExistingPortal &&
+    (check?.exists === true || check?.reserved === true || check?.available === false)
   const isNextDisabled = slug.trim().length < 1 || isChecking || !check || taken
 
   const handleNext = async () => {

@@ -135,6 +135,11 @@ if (!function_exists('get_posts')) {
                         }
                     }
 
+                    // A post seeded without a parent is top-level, as in core.
+                    if (isset($args['post_parent']) && (int) ($post->post_parent ?? 0) !== (int) $args['post_parent']) {
+                        return false;
+                    }
+
                     return true;
                 }
             )
@@ -371,11 +376,50 @@ if (!function_exists('get_post_types')) {
      * The registered types, keyed by name the way core returns them. The
      * filter argument is ignored: every type here is public and searchable.
      */
-    function get_post_types($args = [])
+    function get_post_types($args = [], $output = 'names')
     {
+        // Seed $GLOBALS['__wp_post_type_objects'] with objects carrying
+        // `rewrite` / `has_archive` for code that reads how a type is routed.
+        if ($output === 'objects') {
+            return $GLOBALS['__wp_post_type_objects'] ?? [];
+        }
+
         $types = $GLOBALS['__wp_post_types'] ?? ['post', 'page', 'attachment', 'bit-connect'];
 
         return array_combine($types, $types);
+    }
+}
+
+if (!function_exists('get_taxonomies')) {
+    // Seed $GLOBALS['__wp_taxonomy_objects'] with objects carrying `rewrite`.
+    function get_taxonomies($args = [], $output = 'names')
+    {
+        $objects = $GLOBALS['__wp_taxonomy_objects'] ?? [];
+
+        return $output === 'objects' ? $objects : array_keys($objects);
+    }
+}
+
+if (!function_exists('has_shortcode')) {
+    // Core matches the registered tag; a literal `[tag` is what that amounts to here.
+    function has_shortcode($content, $tag)
+    {
+        return (bool) preg_match('/\\[' . preg_quote((string) $tag, '/') . '[\\s\\]\\/]/', (string) $content);
+    }
+}
+
+if (!function_exists('has_block')) {
+    // Core looks for the block's comment delimiter, as this does.
+    function has_block($blockName, $post = null)
+    {
+        return strpos((string) $post, '<!-- wp:' . $blockName . ' ') !== false;
+    }
+}
+
+if (!function_exists('rest_get_url_prefix')) {
+    function rest_get_url_prefix()
+    {
+        return 'wp-json';
     }
 }
 

@@ -4,12 +4,16 @@ import { type ResponseType } from '@common/request/types'
 import { useQuery } from '@tanstack/react-query'
 
 export interface SlugCheck {
+  /** Nothing is here and a new page can be created under exactly this slug. */
+  available: boolean
   /** A published page answers to this slug. */
   exists: boolean
   /** …and it contains the [bit-connect] shortcode. */
   hasShortcode: boolean
   /** …and it is the page carrying the portal today. */
   isPortal: boolean
+  /** WordPress routes on this slug itself (`category`, `author`, `wp-json`…), so no portal may use it. */
+  reserved: boolean
   slug: string
   url: string
 }

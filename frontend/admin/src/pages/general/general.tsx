@@ -1,4 +1,3 @@
-import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
 import useAutoSave from '@common/hooks/use-auto-save'
@@ -6,7 +5,7 @@ import useCopyToClipboard from '@common/hooks/useCopyToClipboard'
 import SaveStatus from '@utilities/save-status'
 import { ConfigProvider, Segmented, theme, Typography } from 'antd'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { LuLockOpen, LuLogIn, LuMapPin, LuSquarePen } from 'react-icons/lu'
 
 import useAuthSettings from '../settings/data/use-auth-settings'
@@ -28,7 +27,6 @@ import { type GeneralSettings, type PortalFilters } from './shared/types'
 const { Title } = Typography
 
 export default function General() {
-  const { notificationApi } = useContext(NotifyContext)
   const { generalSettings, isGeneralSettingsPending } = useGeneralSettings()
   const { updateGeneralSettings } = useUpdateGeneralSettings()
   const { authSettings, isAuthSettingsPending } = useAuthSettings()
@@ -47,23 +45,14 @@ export default function General() {
   // here, so the one status line covers them too.
   const { report, states } = usePageSaves()
 
+  // No toast when the new slug has no page behind it: the Location card says
+  // so itself, in place, next to the button that creates the page.
   const saveSlug = useCallback(
     async (slug: string) => {
-      const result = await updatePortalSlug(slug.trim())
+      await updatePortalSlug(slug.trim())
       refetchPortalPage()
-      const pageExists =
-        (result as { data?: { pageExists?: boolean }; pageExists?: boolean })?.data?.pageExists ??
-        (result as { pageExists?: boolean })?.pageExists
-      if (pageExists === false) {
-        notificationApi?.warning({
-          description: __(
-            'There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.'
-          ),
-          message: __('Address saved, but no page is there yet')
-        })
-      }
     },
-    [notificationApi, refetchPortalPage, updatePortalSlug]
+    [refetchPortalPage, updatePortalSlug]
   )
 
   // Three stores, each saved as it changes. Text waits for a pause in typing;

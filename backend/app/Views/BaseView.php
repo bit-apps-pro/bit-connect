@@ -9,6 +9,7 @@ use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\NotificationService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\StageService;
@@ -186,7 +187,7 @@ class BaseView
         // routed portal pages already register on template_redirect, and
         // registration is idempotent so the shortcode's later call is harmless.
         $post = get_post();
-        $hasShortcode = is_singular() && $post instanceof WP_Post && has_shortcode($post->post_content, 'bit-connect');
+        $hasShortcode = is_singular() && $post instanceof WP_Post && PortalLocation::embedsPortal((string) $post->post_content);
         if ($hasShortcode) {
             $this->registerAssets();
         }

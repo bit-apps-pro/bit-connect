@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "bit-connect/portal",
+  "title": "Bit Connect",
+  "category": "widgets",
+  "icon": "groups",
+  "description": "Show the Bit Connect community portal.",
+  "keywords": ["forum", "community", "portal"],
+  "textdomain": "bit-connect",
+  "supports": {
+    "customClassName": false,
+    "html": false,
+    "multiple": false,
+    "reusable": false
+  },
+  "example": {},
+  "editorScript": "bit_connect_portal_block_editor",
+  "editorStyle": "bit_connect_portal_block_editor"
+}

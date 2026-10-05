@@ -42,8 +42,93 @@ final class PortalLocationTest extends TestCase
         $GLOBALS['__wp_posts'] = [];
         $GLOBALS['__wp_comments'] = [];
         $GLOBALS['__wp_urls_to_postid'] = [];
+        $GLOBALS['__wp_taxonomy_objects'] = [];
+        $GLOBALS['__wp_post_type_objects'] = [];
+        unset($GLOBALS['wp_rewrite'], $GLOBALS['__wp_unique_slug_result']);
 
         PortalLocation::resetCache();
+    }
+
+    // -----------------------------------------------------------------------
+    // Which slugs can carry the portal
+    // -----------------------------------------------------------------------
+
+    public function testThePortalIsRecognisedAsABlockOrAShortcode(): void
+    {
+        // What the plugin writes, and what an administrator pastes.
+        $this->assertTrue(PortalLocation::embedsPortal('<!-- wp:bit-connect/portal /-->'));
+        $this->assertTrue(PortalLocation::embedsPortal('<p>Welcome</p>[bit-connect]'));
+        $this->assertTrue(PortalLocation::embedsPortal('<!-- wp:shortcode -->[bit-connect page="x"]<!-- /wp:shortcode -->'));
+
+        $this->assertFalse(PortalLocation::embedsPortal('<!-- wp:paragraph --><p>About us</p><!-- /wp:paragraph -->'));
+        $this->assertFalse(PortalLocation::embedsPortal('[bit-connect-other]'));
+        $this->assertFalse(PortalLocation::embedsPortal(''));
+    }
+
+    public function testAChildPageSharingTheSlugIsNotThePortalPage(): void
+    {
+        // /docs/community has the post_name `community` but not the address.
+        $child = $this->makePage(7, 'community');
+        $child->post_parent = 3;
+        $GLOBALS['__wp_posts'] = [$child];
+        PortalLocation::resetCache();
+
+        $this->assertNull(PortalLocation::pageBySlug('community'));
+        $this->assertNull(PortalLocation::page());
+    }
+
+    public function testCoreRewriteBasesAndDirectoriesAreReserved(): void
+    {
+        $GLOBALS['wp_rewrite'] = (object) [
+            'author_base' => 'author',
+            'search_base' => 'search',
+            'feeds'       => ['feed', 'rss2', 'atom'],
+        ];
+
+        foreach (['author', 'search', 'feed', 'atom', 'wp-json', 'wp-admin', 'embed'] as $slug) {
+            $this->assertTrue(PortalLocation::isReservedSlug($slug), "{$slug} should be reserved");
+        }
+
+        $this->assertFalse(PortalLocation::isReservedSlug('community'));
+        $this->assertFalse(PortalLocation::isReservedSlug(''));
+    }
+
+    public function testPostTypeAndTaxonomyBasesAreReserved(): void
+    {
+        $GLOBALS['__wp_taxonomy_objects'] = [
+            'category' => (object) ['rewrite' => ['slug' => 'topics']],
+            // Not routed at all, and nested: neither is a first segment.
+            'internal' => (object) ['rewrite' => false],
+            'nested'   => (object) ['rewrite' => ['slug' => 'blog/tag']],
+        ];
+        $GLOBALS['__wp_post_type_objects'] = [
+            'bit-connect' => (object) ['rewrite' => ['slug' => 'bit-connect'], 'has_archive' => false],
+            'product'     => (object) ['rewrite' => ['slug' => 'product'], 'has_archive' => 'shop'],
+        ];
+
+        foreach (['topics', 'bit-connect', 'product', 'shop'] as $slug) {
+            $this->assertTrue(PortalLocation::isReservedSlug($slug), "{$slug} should be reserved");
+        }
+
+        $this->assertFalse(PortalLocation::isReservedSlug('blog'));
+        $this->assertFalse(PortalLocation::isReservedSlug('tag'));
+    }
+
+    public function testASlugCoreWouldRenameIsNotFree(): void
+    {
+        $this->assertTrue(PortalLocation::isSlugFree('forum'));
+
+        // A media file already holds `image`, so core would store the page as image-2.
+        $GLOBALS['__wp_unique_slug_result'] = 'image-2';
+
+        $this->assertFalse(PortalLocation::isSlugFree('image'));
+    }
+
+    public function testAReservedSlugIsNeverFree(): void
+    {
+        $GLOBALS['wp_rewrite'] = (object) ['author_base' => 'author'];
+
+        $this->assertFalse(PortalLocation::isSlugFree('author'));
     }
 
     // -----------------------------------------------------------------------
