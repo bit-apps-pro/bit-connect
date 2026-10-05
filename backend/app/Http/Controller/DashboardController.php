@@ -18,6 +18,7 @@ use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\SiteCalendar;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\TermOrderService;
+use BitApps\BitConnect\Services\UserBadgeService;
 use WP_Term;
 
 /**
@@ -36,7 +37,7 @@ final class DashboardController
 
     private const RECENT_TOPICS_LIMIT = 6;
 
-    private const RECENT_ACTIVITY_LIMIT = 6;
+    private const TOP_CONTRIBUTORS_LIMIT = 5;
 
     public function get(GetDashboardRequest $request)
     {
@@ -48,7 +49,6 @@ final class DashboardController
 
         $mostRequested = $this->getMostRequested($postType, $votesTable, $since);
         $recentTopics = $this->getRecentTopics($postType, $votesTable);
-        $recentActivity = $this->getRecentActivity($postType, $votesTable);
 
         $stages = $this->stagesFor(
             array_merge(
@@ -59,16 +59,16 @@ final class DashboardController
 
         return Response::success(
             [
-                'period'         => $period,
-                'portalUrl'      => PortalLocation::url(),
-                'stats'          => $this->getStats($postType, $votesTable, $since),
-                'topicTypes'     => $this->getTopicTypeNames(),
-                'attention'      => $this->getAttention($postType),
-                'activity'       => $this->getActivity($postType, $period, $since),
-                'stages'         => $this->getStageProgress($postType, $since),
-                'mostRequested'  => $this->withStage($mostRequested, $stages),
-                'recentTopics'   => $this->withStage($recentTopics, $stages),
-                'recentActivity' => $recentActivity,
+                'period'        => $period,
+                'portalUrl'     => PortalLocation::url(),
+                'stats'         => $this->getStats($postType, $votesTable, $since),
+                'topicTypes'    => $this->getTopicTypeNames(),
+                'attention'     => $this->getAttention($postType),
+                'activity'      => $this->getActivity($postType, $period, $since),
+                'stages'        => $this->getStageProgress($postType, $since),
+                'mostRequested' => $this->withStage($mostRequested, $stages),
+                'recentTopics'  => $this->withStage($recentTopics, $stages),
+                'contributors'  => $this->getTopContributors($postType, $votesTable, $since),
             ]
         );
     }
@@ -465,99 +465,87 @@ final class DashboardController
     }
 
     /**
-     * The newest topics, replies and votes, merged into one feed.
+     * The members who did the most during the period, ranked three ways: by
+     * votes and comments together, by votes their topics received, and by
+     * comments they wrote. Each ranking is its own short list, so switching it
+     * on the dashboard shows that ranking's leaders rather than re-sorting
+     * another's.
      *
-     * Votes are grouped per topic per day: twelve people upvoting one topic in an
-     * afternoon is one line, not twelve.
+     * A vote a member casts on their own topic is not counted toward them, and
+     * deleted members drop out with the join on the users table.
      */
-    private function getRecentActivity(string $postType, string $votesTable): array
+    private function getTopContributors(string $postType, string $votesTable, string $since): array
     {
         $wpdbComments = Connection::prop('comments');
         $wpdbPosts = Connection::prop('posts');
         $wpdbUsers = Connection::prop('users');
-        $limit = self::RECENT_ACTIVITY_LIMIT;
 
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery
-        $topics = Connection::get_results(
-            Connection::prepare(
-                "SELECT p.ID AS topic_id, p.post_author AS user_id, u.display_name AS actor,
-                        p.post_date_gmt AS at
-                 FROM {$wpdbPosts} p
-                 LEFT JOIN {$wpdbUsers} u ON p.post_author = u.ID
-                 WHERE p.post_type = %s AND p.post_status = 'publish'
-                 ORDER BY p.post_date_gmt DESC
-                 LIMIT %d",
-                $postType,
-                $limit
-            )
+        $contributions = Connection::prepare(
+            "SELECT t.user_id, SUM(t.votes) AS votes, SUM(t.comments) AS comments
+             FROM (
+                SELECT p.post_author AS user_id, COUNT(*) AS votes, 0 AS comments
+                FROM `{$votesTable}` v
+                INNER JOIN {$wpdbPosts} p ON p.ID = v.post_id
+                WHERE p.post_type = %s AND p.post_status = 'publish'
+                  AND p.post_author > 0 AND v.user_id <> p.post_author
+                  AND v.created_at >= %s
+                GROUP BY p.post_author
+                UNION ALL
+                SELECT c.user_id, 0 AS votes, COUNT(*) AS comments
+                FROM {$wpdbComments} c
+                INNER JOIN {$wpdbPosts} p ON c.comment_post_ID = p.ID
+                WHERE c.comment_approved = '1' AND c.user_id > 0
+                  AND p.post_type = %s AND p.post_status = 'publish'
+                  AND c.comment_date_gmt >= %s
+                GROUP BY c.user_id
+             ) t
+             INNER JOIN {$wpdbUsers} u ON u.ID = t.user_id
+             GROUP BY t.user_id",
+            $postType,
+            $since,
+            $postType,
+            $since
         );
 
-        $replies = Connection::get_results(
-            Connection::prepare(
-                "SELECT c.comment_post_ID AS topic_id, c.user_id, c.comment_author AS actor,
-                        c.comment_date_gmt AS at
-                 FROM {$wpdbComments} c
-                 INNER JOIN {$wpdbPosts} p ON c.comment_post_ID = p.ID
-                 WHERE c.comment_approved = '1' AND p.post_type = %s AND p.post_status = 'publish'
-                 ORDER BY c.comment_date_gmt DESC
-                 LIMIT %d",
-                $postType,
-                $limit
-            )
-        );
+        // The ORDER BY clauses are fixed strings, never request input.
+        $rankings = [
+            'overall'  => 'votes + comments DESC, votes DESC',
+            'votes'    => 'votes DESC, comments DESC',
+            'comments' => 'comments DESC, votes DESC',
+        ];
 
-        $votes = Connection::get_results(
-            Connection::prepare(
-                "SELECT v.post_id AS topic_id, COUNT(*) AS voters, MAX(v.created_at) AS at,
-                        MAX(v.user_id) AS user_id
-                 FROM `{$votesTable}` v
-                 INNER JOIN {$wpdbPosts} p ON p.ID = v.post_id
-                 WHERE p.post_type = %s AND p.post_status = 'publish'
-                 GROUP BY v.post_id, DATE(v.created_at)
-                 ORDER BY at DESC
-                 LIMIT %d",
-                $postType,
-                $limit
-            )
-        );
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+        $count = (int) Connection::get_var("SELECT COUNT(*) FROM ({$contributions}) contributors");
 
-        $feed = [];
+        $lists = [];
+        foreach ($rankings as $key => $order) {
+            $rows = Connection::get_results(
+                "SELECT * FROM ({$contributions}) contributors
+                 WHERE " . ($key === 'overall' ? '1 = 1' : "{$key} > 0") . "
+                 ORDER BY {$order}, user_id ASC
+                 LIMIT " . self::TOP_CONTRIBUTORS_LIMIT
+            );
 
-        foreach ($topics as $row) {
-            $feed[] = ['type' => 'topic', 'actor' => $row->actor, 'userId' => (int) $row->user_id, 'count' => 1] + $this->activityTarget($row);
+            $lists[$key] = array_map([$this, 'contributor'], \is_array($rows) ? $rows : []);
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 
-        foreach ($replies as $row) {
-            $feed[] = ['type' => 'reply', 'actor' => $row->actor, 'userId' => (int) $row->user_id, 'count' => 1] + $this->activityTarget($row);
-        }
-
-        foreach ($votes as $row) {
-            $voters = (int) $row->voters;
-            $user = $voters === 1 ? get_userdata((int) $row->user_id) : null;
-
-            $feed[] = [
-                'type'   => 'vote',
-                'actor'  => $user ? $user->display_name : null,
-                'userId' => $voters === 1 ? (int) $row->user_id : 0,
-                'count'  => $voters,
-            ] + $this->activityTarget($row);
-        }
-
-        usort($feed, static fn ($a, $b) => strcmp($b['at'], $a['at']));
-
-        return \array_slice($feed, 0, $limit);
+        return ['count' => $count] + $lists;
     }
 
-    private function activityTarget(object $row): array
+    private function contributor(object $row): array
     {
-        $topicId = (int) $row->topic_id;
+        $userId = (int) $row->user_id;
+        $user = get_userdata($userId);
+        $badge = UserBadgeService::for($userId);
 
         return [
-            'id'         => $topicId,
-            'topicTitle' => wp_specialchars_decode(get_the_title($topicId), ENT_QUOTES),
-            'topicUrl'   => PortalLocation::topicUrl($topicId),
-            'at'         => (string) $row->at,
+            'id'       => $userId,
+            'name'     => $user ? $user->display_name : '',
+            'avatar'   => get_avatar_url($userId, ['size' => 80]),
+            'badge'    => $badge['label'] ?? null,
+            'votes'    => (int) $row->votes,
+            'comments' => (int) $row->comments,
         ];
     }
 

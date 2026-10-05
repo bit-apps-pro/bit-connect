@@ -19,6 +19,9 @@ interface RecentTopicsProps {
 export default function RecentTopics({ className, hues, portalUrl, topics }: RecentTopicsProps) {
   const columns: TopicColumn<RecentTopic>[] = [
     {
+      // A floor, so on a phone the table scrolls sideways rather than
+      // breaking the title a letter per line.
+      className: 'bc-min-w-48',
       key: 'title',
       render: topic => <TopicTitleLink title={topic.title} url={topic.url} />,
       title: __('Topic')

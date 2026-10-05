@@ -67,14 +67,18 @@ export default function DashboardCard({
           flush ? 'bc-border-0 bc-border-b bc-border-solid bc-border-line bc-pb-4' : ''
         }`}
       >
-        <div className="bc-min-w-0 bc-flex-1">
+        {/* A floor, so on a phone the legend or picker wraps under the title
+            instead of squeezing it until its words run into them. */}
+        <div className="bc-min-w-32 bc-flex-1">
           <h2 className="bc-m-0 bc-text-base bc-font-semibold bc-text-ink">{title}</h2>
           {subtitle && <div className="bc-mt-1 bc-text-xs bc-text-ink-subtle">{subtitle}</div>}
         </div>
         {extra}
         {link && <CardLinkAnchor {...link} />}
       </header>
-      <div className={`bc-flex-1 ${flush ? '' : 'bc-px-6 bc-pb-5 bc-pt-4'}`}>{children}</div>
+      {/* A column, so a body that should take the card's whole height — the
+          chart beside a taller card — can grow into it. */}
+      <div className={`bc-flex bc-flex-1 bc-flex-col ${flush ? '' : 'bc-px-6 bc-pb-5 bc-pt-4'}`}>{children}</div>
     </section>
   )
 }

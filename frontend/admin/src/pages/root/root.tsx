@@ -7,10 +7,10 @@ import useDashboard from './data/use-dashboard'
 import ActivityChart from './internal/activity-chart'
 import MostRequested from './internal/most-requested'
 import PageSkeleton from './internal/page-skeleton'
-import RecentActivity from './internal/recent-activity'
 import RecentTopics from './internal/recent-topics'
 import StageProgress from './internal/stage-progress'
 import StatCards from './internal/stat-cards'
+import TopContributors from './internal/top-contributors'
 import { PERIOD_OPTIONS, stageHues } from './shared/format'
 import { type DashboardPeriod } from './shared/types'
 
@@ -101,8 +101,8 @@ export default function Root() {
         >
           <StatCards period={shownPeriod} stats={dashboard.stats} topicTypes={dashboard.topicTypes} />
 
-          {/* Recent activity spans the last two rows, filling the column beside
-              both tables instead of leaving a gap under Roadmap progress. */}
+          {/* Top contributors sits beside both tables, in the column under
+              Roadmap progress. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
             <ActivityChart
               activity={dashboard.activity}
@@ -118,7 +118,11 @@ export default function Root() {
               portalUrl={dashboard.portalUrl}
               topics={dashboard.mostRequested}
             />
-            <RecentActivity className="xl:bc-row-span-2" entries={dashboard.recentActivity} />
+            <TopContributors
+              className="xl:bc-row-span-2 xl:bc-self-start"
+              contributors={dashboard.contributors}
+              period={shownPeriod}
+            />
             <RecentTopics
               className="xl:bc-col-span-2"
               hues={hues}

@@ -40,7 +40,7 @@ export default function TopicTable<Row>({ columns, empty, rowKey, rows }: TopicT
 
   return (
     <div className="bc-overflow-x-auto">
-      <table className="bc-w-full bc-border-collapse bc-text-sm">
+      <table className="bc-w-full bc-border-collapse bc-text-sm bc-tabular-nums">
         <thead>
           <tr className="bc-border-0 bc-border-b bc-border-solid bc-border-line">
             {columns.map((column, columnIndex) => (

@@ -63,25 +63,33 @@ export interface RecentTopic {
   votes: number
 }
 
-export interface ActivityEntry {
-  actor: null | string
-  at: string
-  /** Voters grouped into this line; always 1 for a topic or reply. */
-  count: number
+export interface Contributor {
+  avatar: string
+  /** The badge shown beside the member's name on the portal, when they carry one. */
+  badge: null | string
+  /** Comments written during the period. */
+  comments: number
   id: number
-  topicTitle: string
-  topicUrl: string
-  type: 'reply' | 'topic' | 'vote'
-  userId: number
+  name: string
+  /** Votes the member's topics received during the period, their own excluded. */
+  votes: number
+}
+
+/** The order the Top contributors list is ranked in. */
+export type ContributorRanking = 'comments' | 'overall' | 'votes'
+
+export type TopContributors = Record<ContributorRanking, Contributor[]> & {
+  /** Every member who received a vote or wrote a comment during the period. */
+  count: number
 }
 
 export interface DashboardData {
   activity: ActivityBucket[]
   attention: DashboardAttention
+  contributors: TopContributors
   mostRequested: MostRequestedTopic[]
   period: DashboardPeriod
   portalUrl: string
-  recentActivity: ActivityEntry[]
   recentTopics: RecentTopic[]
   stages: StageProgress[]
   stats: DashboardStats

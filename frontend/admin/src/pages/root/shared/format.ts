@@ -21,6 +21,19 @@ export function deltaLabel(period: DashboardPeriod, value: number): string {
   return sprintf(__('+%d this month'), value)
 }
 
+/** "12 contributors this month", one whole string per period and number, as above. */
+export function contributorsLabel(period: DashboardPeriod, count: number): string {
+  if (count === 1) {
+    if (period === '7d') return __('1 contributor this week')
+    if (period === '12m') return __('1 contributor this year')
+    return __('1 contributor this month')
+  }
+
+  if (period === '7d') return sprintf(__('%d contributors this week'), count)
+  if (period === '12m') return sprintf(__('%d contributors this year'), count)
+  return sprintf(__('%d contributors this month'), count)
+}
+
 /** Heading for the column that counts votes cast during the period. */
 export function periodColumnLabel(period: DashboardPeriod): string {
   if (period === '7d') return __('This week')
@@ -33,7 +46,7 @@ export function periodColumnLabel(period: DashboardPeriod): string {
  * stage is where topics wait, the last is where they ship, so neutral → blue →
  * amber → green reads as progress the way the portal's defaults do.
  */
-const FALLBACK_STAGE_HUES = ['#94a3b8', '#3266ea', '#d97706', '#16a34a', '#7c3aed', '#0d9488']
+const FALLBACK_STAGE_HUES = ['#9aa3b2', '#3267ea', '#ff9d00', '#22cc00', '#7c3aed', '#0d9488']
 
 /** Stage name → the colour it is drawn in everywhere on the dashboard. */
 export function stageHues(stages: StageProgress[]): Map<string, string> {

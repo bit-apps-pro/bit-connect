@@ -133,8 +133,13 @@ export default function ActivityChart({ activity, attention, className, period }
       subtitle={<AttentionSummary attention={attention} />}
       title={__('Community activity')}
     >
-      <div className="bc-relative bc-h-80">
-        <Bar aria-label={__('Posts and comments over time')} data={data} options={options} role="img" />
+      {/* Grows to the height of the row, which Roadmap progress usually sets.
+          The canvas sits out of flow so its own size cannot feed back into the
+          box Chart.js measures, which would grow it on every resize. */}
+      <div className="bc-relative bc-min-h-80 bc-flex-1">
+        <div className="bc-absolute bc-inset-0">
+          <Bar aria-label={__('Posts and comments over time')} data={data} options={options} role="img" />
+        </div>
       </div>
     </DashboardCard>
   )

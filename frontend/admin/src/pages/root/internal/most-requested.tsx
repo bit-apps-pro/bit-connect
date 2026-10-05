@@ -31,9 +31,12 @@ export default function MostRequested({ className, hues, period, portalUrl, topi
       title: <span aria-label={__('Rank')}>{RANK_SYMBOL}</span>
     },
     {
+      // A floor, so on a phone the table scrolls sideways rather than
+      // breaking the title a letter per line.
+      className: 'bc-min-w-48',
       key: 'title',
       render: topic => <TopicTitleLink title={topic.title} url={topic.url} />,
-      title: __('Request')
+      title: __('Post')
     },
     {
       key: 'stage',
@@ -72,7 +75,7 @@ export default function MostRequested({ className, hues, period, portalUrl, topi
       align: 'right',
       key: 'replies',
       render: topic => <span className="bc-text-ink-muted">{topic.replies}</span>,
-      title: __('Replies')
+      title: __('Comments')
     }
   ]
 
@@ -81,8 +84,8 @@ export default function MostRequested({ className, hues, period, portalUrl, topi
       className={className}
       flush
       link={portalUrl ? { label: __('All topics'), to: portalUrl } : undefined}
-      subtitle={__('Topics ranked by votes')}
-      title={__('Most requested')}
+      subtitle={__('Posts ranked by votes')}
+      title={__('Most upvoted posts')}
     >
       <TopicTable
         columns={columns}
