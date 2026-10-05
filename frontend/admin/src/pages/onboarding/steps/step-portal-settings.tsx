@@ -22,6 +22,11 @@ interface Props {
  * the slug from the URL. The slug is checked live so the administrator sees
  * a conflict before pressing Next, and the page is only created here, once:
  * from then on the settings screen treats the slug as a pointer.
+ *
+ * The step cannot be skipped: the rest of the wizard, and the portal itself,
+ * assume a portal page exists. An administrator who left the wizard after this
+ * step and came back finds their slug already marked as the community page,
+ * and continues past it without creating a second one.
  */
 const cardClass = (active: boolean) =>
   `bc-cursor-pointer bc-transition-all ${active ? 'bc-border-blue-500 bc-shadow-sm' : ''}`
@@ -35,19 +40,22 @@ export default function StepPortalSettings({ onNext }: Props) {
   const { createPortalPage, isCreatingPortalPage } = useCreatePortalPage()
   const { isUpdatingPortalRoot, updatePortalRoot } = useUpdatePortalRoot()
 
-  const taken = check?.exists === true
+  const isExistingPortal = check?.isPortal === true
+  const taken = check?.exists === true && !isExistingPortal
   const isNextDisabled = slug.trim().length < 1 || isChecking || !check || taken
 
   const handleNext = async () => {
     const trimmed = slug.trim()
 
-    try {
-      await createPortalPage(trimmed)
-    } catch (error_: unknown) {
-      setError(
-        (error_ as { message?: string })?.message ?? __('Could not create the page. Please try again.')
-      )
-      return
+    if (!isExistingPortal) {
+      try {
+        await createPortalPage(trimmed)
+      } catch (error_: unknown) {
+        setError(
+          (error_ as { message?: string })?.message ?? __('Could not create the page. Please try again.')
+        )
+        return
+      }
     }
 
     if (placement === 'site_root') {
@@ -143,30 +151,14 @@ export default function StepPortalSettings({ onNext }: Props) {
         )}
       </div>
 
-      <div className="bc-flex bc-flex-col bc-gap-2">
-        <Text strong>{__('Want to use your own page instead?')}</Text>
-        <Input.Search
-          enterButton={__('Copy')}
-          onSearch={e => navigator.clipboard?.writeText(e)}
-          readOnly
-          value="[bit-connect]"
-        />
-        <Text className="bc-block bc-text-sm" type="secondary">
-          {__(
-            'Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community.'
-          )}
-        </Text>
-      </div>
-
       <Space className="bc-justify-end">
-        <Button onClick={onNext}>{__('Skip')}</Button>
         <Button
           disabled={isNextDisabled}
           loading={isCreatingPortalPage || isUpdatingPortalRoot}
           onClick={handleNext}
           type="primary"
         >
-          {__('Create page and continue')}
+          {isExistingPortal ? __('Continue') : __('Create page and continue')}
         </Button>
       </Space>
     </div>

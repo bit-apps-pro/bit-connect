@@ -34,12 +34,20 @@ export default function SlugStatus({ check, isChecking, mode }: SlugStatusProps)
   }
 
   if (mode === 'create') {
+    // The wizard's own page from an earlier visit: nothing to create, nothing in the way.
+    if (check.isPortal) {
+      return (
+        <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm bc-text-green-600">
+          <LuCircleCheck className="bc-shrink-0" />
+          {__('This is already your community page.')}
+        </Text>
+      )
+    }
+
     return check.exists ? (
       <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm" type="danger">
         <LuCircleX className="bc-shrink-0" />
-        {check.isPortal
-          ? __('This is already your community page.')
-          : sprintf(__('A page already exists at %s. Please choose another name.'), check.url)}
+        {sprintf(__('A page already exists at %s. Please choose another name.'), check.url)}
       </Text>
     ) : (
       <Text className="bc-flex bc-items-center bc-gap-2 bc-text-sm bc-text-green-600">

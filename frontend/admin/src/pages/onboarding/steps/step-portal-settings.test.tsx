@@ -96,14 +96,29 @@ describe('StepPortalSettings', () => {
     expect(calls).toEqual(['portal-page', 'portal-page/root'])
   })
 
-  it('can be skipped for the shortcode route', async () => {
+  it('cannot be skipped', () => {
     mockSlugCheck(false)
+    renderStep()
+
+    expect(screen.queryByRole('button', { name: 'Skip' })).not.toBeInTheDocument()
+  })
+
+  it('continues past a portal page created on an earlier visit without creating another', async () => {
+    mockRequest.mockImplementation(((_url: string, options?: { queryParam?: Record<string, string> }) => {
+      const slug = options?.queryParam?.slug ?? ''
+      return Promise.resolve(
+        ok({ exists: true, hasShortcode: true, isPortal: true, slug, url: `https://x/${slug}/` })
+      )
+    }) as typeof request)
     const user = userEvent.setup()
     const onNext = renderStep()
 
-    await user.click(screen.getByRole('button', { name: 'Skip' }))
+    await waitFor(() => expect(screen.getByText('This is already your community page.')).toBeVisible())
+    const next = screen.getByRole('button', { name: 'Continue' })
+    await waitFor(() => expect(next).toBeEnabled())
+    await user.click(next)
 
-    expect(onNext).toHaveBeenCalled()
+    await waitFor(() => expect(onNext).toHaveBeenCalled())
     expect(mockRequest).not.toHaveBeenCalledWith('portal-page', expect.anything())
   })
 })
