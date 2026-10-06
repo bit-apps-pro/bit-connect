@@ -17,7 +17,7 @@ interface CapabilitySettingsResponse {
 }
 
 export default function useCapabilitySettings() {
-  const { data, isError, isFetching } = useQuery<
+  const { data, isError, isFetching, isPending } = useQuery<
     ResponseType<CapabilitySettingsResponse>,
     Error,
     CapabilitySettingsResponse
@@ -32,6 +32,7 @@ export default function useCapabilitySettings() {
   return {
     capabilitySettings: data,
     isCapabilitySettingsError: isError,
-    isCapabilitySettingsFetching: isFetching
+    isCapabilitySettingsFetching: isFetching,
+    isCapabilitySettingsPending: isPending
   }
 }

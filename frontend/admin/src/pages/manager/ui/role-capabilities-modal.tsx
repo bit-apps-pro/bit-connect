@@ -1,6 +1,8 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Button, Checkbox, Modal, Spin, Typography } from 'antd'
-import { useMemo, useState } from 'react'
+import useAutoSave from '@common/hooks/use-auto-save'
+import SaveStatus from '@utilities/save-status'
+import { Checkbox, Modal, Spin, Typography } from 'antd'
+import { useCallback, useMemo, useState } from 'react'
 
 import useCapabilityGroups, { type CapabilityGroup } from '../data/use-capability-groups'
 import useCapabilitySettings, { type RoleCapabilities } from '../data/use-capability-settings'
@@ -66,43 +68,44 @@ const CAP_GROUPS: CapabilityGroup[] = [
 interface RoleRowProps {
   /** The server's translated label per capability slug. */
   capabilityLabels?: Record<string, string>
-  disabled: boolean
   role: RoleCapabilities
 }
 
-function RoleRow({ capabilityLabels, disabled, role }: RoleRowProps) {
-  const [draft, setDraft] = useState<Record<string, boolean>>(() => ({ ...role.capabilities }))
-  const [saving, setSaving] = useState(false)
+function RoleRow({ capabilityLabels, role }: RoleRowProps) {
+  const [draft, setDraft] = useState<Record<string, boolean>>()
   const { updateRoleCapabilities } = useUpdateRoleCapabilities()
   // Empty without the add-on. See use-capability-groups.
   const extraGroups = useCapabilityGroups()
   const groups = useMemo(() => [...CAP_GROUPS, ...extraGroups], [extraGroups])
 
-  const toggle = (cap: string, checked: boolean) => setDraft(prev => ({ ...prev, [cap]: checked }))
+  // Saved as it is ticked: each box is a whole capability on its own. A short
+  // delay, since there is nothing to type — only a quick run of ticks to
+  // gather into one request. Each role saves by itself, so a slow save on one
+  // never holds up another.
+  const save = useAutoSave({
+    delay: 300,
+    draft,
+    save: useCallback(
+      (capabilities: Record<string, boolean>) => updateRoleCapabilities({ capabilities, role: role.slug }),
+      [role.slug, updateRoleCapabilities]
+    ),
+    saved: role.capabilities,
+    setDraft
+  })
 
-  const handleSave = async () => {
-    setSaving(true)
-    try {
-      await updateRoleCapabilities({ capabilities: draft, role: role.slug })
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const isBusy = disabled || saving
+  const toggle = (cap: string, checked: boolean) =>
+    setDraft(prev => ({ ...(prev ?? role.capabilities), [cap]: checked }))
 
   return (
     <div className="bc-border bc-border-solid bc-border-line bc-rounded-lg bc-p-4">
-      <div className="bc-flex bc-items-center bc-justify-between bc-mb-4">
+      <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-mb-4">
         <div>
           <Text strong>{role.name}</Text>
           <Text className="bc-block bc-text-xs" type="secondary">
             {role.slug}
           </Text>
         </div>
-        <Button disabled={isBusy} loading={saving} onClick={handleSave} size="small" type="primary">
-          {__('Save')}
-        </Button>
+        <SaveStatus error={save.error} onRetry={save.flushNow} retrying={save.retrying} status={save.status} />
       </div>
 
       <div className="bc-grid bc-grid-cols-2 md:bc-grid-cols-4 bc-gap-4">
@@ -117,8 +120,7 @@ function RoleRow({ capabilityLabels, disabled, role }: RoleRowProps) {
             <div className="bc-flex bc-flex-col bc-gap-1.5">
               {group.caps.map(cap => (
                 <Checkbox
-                  checked={!!draft[cap]}
-                  disabled={isBusy}
+                  checked={!!(draft ?? role.capabilities)[cap]}
                   key={cap}
                   onChange={e => toggle(cap, e.target.checked)}
                 >
@@ -141,13 +143,14 @@ interface RoleCapabilitiesModalProps {
 }
 
 export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitiesModalProps) {
-  const { capabilitySettings, isCapabilitySettingsFetching } = useCapabilitySettings()
-  const { isUpdatingRoleCapabilities } = useUpdateRoleCapabilities()
+  // Pending, not fetching: every save refetches, and swapping the rows for a
+  // spinner then would throw away a tick made in the meantime.
+  const { capabilitySettings, isCapabilitySettingsPending } = useCapabilitySettings()
 
   return (
     <Modal
-      // No footer: each role saves with its own button. `undefined` would
-      // render antd's default Cancel/OK, and OK had nothing to confirm.
+      // No footer: each role saves as it is changed. `undefined` would render
+      // antd's default Cancel/OK, and OK had nothing to confirm.
       // eslint-disable-next-line unicorn/no-null
       footer={null}
       onCancel={onClose}
@@ -166,19 +169,14 @@ export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitie
       }
       width={800}
     >
-      {isCapabilitySettingsFetching ? (
+      {isCapabilitySettingsPending ? (
         <div className="bc-flex bc-justify-center bc-py-10">
           <Spin size="large" />
         </div>
       ) : (
         <div className="bc-flex bc-flex-col bc-gap-4 bc-py-2">
           {capabilitySettings?.roles?.map(role => (
-            <RoleRow
-              capabilityLabels={capabilitySettings.capabilityLabels}
-              disabled={isUpdatingRoleCapabilities}
-              key={role.slug}
-              role={role}
-            />
+            <RoleRow capabilityLabels={capabilitySettings.capabilityLabels} key={role.slug} role={role} />
           ))}
         </div>
       )}
