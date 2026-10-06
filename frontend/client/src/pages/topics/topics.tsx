@@ -75,8 +75,14 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // tag that plainly has three is the answer the old stage default gave. Those
   // span all stages unless the URL names one, and `?stage=` still wins. So does
   // a named list from the sort control, which is its own question.
+  //
+  // The archive the listing is scoped to is the exception among archives: the
+  // sidebar's stages stay beside it and narrow it, so it is the forum's own
+  // listing over fewer topics, and opens on the default stage as the root does.
+  const { scope: listingScope } = useListingSelection()
   const stageParam = searchParams.get('stage') || ''
-  const spansAllStages = search !== '' || tags !== '' || view !== '' || archiveFilter !== undefined
+  const spansAllStages =
+    search !== '' || tags !== '' || view !== '' || (archiveFilter !== undefined && listingScope === '')
   const stages = stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
 
   // Each filter control can be switched off per-site (admin → General → Portal
@@ -118,7 +124,6 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const archiveTerm = archive ? taxonomies?.[archive.taxonomy]?.find(term => term.slug === archiveSlug) : undefined
   const archiveName = archiveKey ? archiveTerm?.name : ''
   usePageTitle(archiveName)
-  const { scope: listingScope } = useListingSelection()
 
   const clearSort = () =>
     setSearchParams(prev => {

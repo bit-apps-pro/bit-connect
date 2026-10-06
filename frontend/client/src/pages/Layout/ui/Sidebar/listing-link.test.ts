@@ -29,11 +29,14 @@ describe('listingLink', () => {
     expect(listingLink({ scope: '/team/platform' })).toBe('/team/platform/')
   })
 
-  it('narrows the scoped archive by stage, the default one included', () => {
+  it('narrows the scoped archive by stage', () => {
     expect(listingLink({ scope: '/team/platform', stage: 'planned' })).toBe('/team/platform/?stage=planned')
-    expect(listingLink({ scope: '/team/platform', stage: 'questions' })).toBe(
-      '/team/platform/?stage=questions'
-    )
+  })
+
+  // The archive on its own already lists the default stage, so naming it would
+  // put the same listing behind a second URL.
+  it('opens the scoped archive itself for the default stage', () => {
+    expect(listingLink({ scope: '/team/platform', stage: 'questions' })).toBe('/team/platform/')
   })
 
   it("follows the site's permalink form", () => {

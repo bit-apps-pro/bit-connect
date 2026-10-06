@@ -6,7 +6,7 @@ const DEFAULT_STAGE = 'questions'
 
 const resolve = (
   pathname: string,
-  options: { spansAllStages?: boolean; stageParam?: string } = {}
+  options: { isScopedListing?: boolean; spansAllStages?: boolean; stageParam?: string } = {}
 ) => resolveActiveStage({ defaultStage: DEFAULT_STAGE, pathname, ...options })
 
 describe('resolveActiveStage', () => {
@@ -81,5 +81,23 @@ describe('resolveActiveStage', () => {
 
   it('prefers an explicit stage filter over the archive path', () => {
     expect(resolve('/tag/api', { stageParam: 'publish' })).toBe('publish')
+  })
+
+  // -------------------------------------------------------------------------
+  // The archive the listing is scoped to keeps the stages beside it, so it is
+  // a stage listing like the root: the default stage until one is named.
+  // -------------------------------------------------------------------------
+
+  it('marks the default stage on the archive the listing is scoped to', () => {
+    expect(resolve('/team/platform', { isScopedListing: true })).toBe(DEFAULT_STAGE)
+    expect(resolve('/team/platform/', { isScopedListing: true })).toBe(DEFAULT_STAGE)
+  })
+
+  it('marks the stage a scoped archive is narrowed to', () => {
+    expect(resolve('/team/platform', { isScopedListing: true, stageParam: 'planned' })).toBe('planned')
+  })
+
+  it('marks nothing on a scoped archive while it is searching', () => {
+    expect(resolve('/team/platform', { isScopedListing: true, spansAllStages: true })).toBeUndefined()
   })
 })

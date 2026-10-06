@@ -33,18 +33,13 @@ export default function ListingContext({ archiveName = '' }: { archiveName?: str
     )
   }
 
-  // Every stage at once is a listing only inside a scoped archive — the root
-  // is the default stage's — so that row is offered only there.
-  const stageChoices: Choice[] = [
-    ...(scope === ''
-      ? []
-      : [{ isSelected: activeStage === undefined, label: __('All stages'), to: listingLink({ scope }) }]),
-    ...stages.map(stage => ({
-      isSelected: stage.slug === activeStage,
-      label: stage.name,
-      to: listingLink({ scope, stage: stage.slug })
-    }))
-  ]
+  // One stage at a time, scoped or not: the root is the default stage's, and so
+  // is the archive the listing is scoped to, so there is no "every stage" row.
+  const stageChoices: Choice[] = stages.map(stage => ({
+    isSelected: stage.slug === activeStage,
+    label: stage.name,
+    to: listingLink({ scope, stage: stage.slug })
+  }))
 
   return (
     <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 md:bc-hidden">

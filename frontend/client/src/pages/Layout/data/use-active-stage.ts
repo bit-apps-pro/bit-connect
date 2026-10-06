@@ -1,6 +1,8 @@
 import config from '@config/config'
 import { matchPath, useLocation, useSearchParams } from 'react-router'
 
+import useListingSelection from './use-listing-selection'
+
 /**
  * Which stage the sidebar marks as current, for a given location.
  *
@@ -20,11 +22,18 @@ import { matchPath, useLocation, useSearchParams } from 'react-router'
  */
 export function resolveActiveStage({
   defaultStage,
+  isScopedListing = false,
   pathname,
   spansAllStages = false,
   stageParam
 }: {
   defaultStage: string
+  /**
+   * The route is the archive the listing is scoped to. The stages narrow that
+   * archive the way they narrow the root, so it too is the default stage's
+   * until one is named.
+   */
+  isScopedListing?: boolean
   pathname: string
   /**
    * The listing is answering a search or a tag filter, which the topics page
@@ -53,9 +62,11 @@ export function resolveActiveStage({
   // stage's listing while one is running.
   if (spansAllStages) return undefined
 
-  // The portal root, and the deeper pages of it that exist as a crawl path.
-  // Everything else is not a stage listing and marks nothing.
-  const listing = matchPath('/', pathname) ?? matchPath('/page/:pageNumber', pathname)
+  // The portal root, and the deeper pages of it that exist as a crawl path —
+  // or the archive the listing is scoped to, which is the same listing over
+  // fewer topics. Everything else is not a stage listing and marks nothing.
+  const listing =
+    isScopedListing || (matchPath('/', pathname) ?? matchPath('/page/:pageNumber', pathname))
 
   return listing ? defaultStage : undefined
 }
@@ -69,9 +80,11 @@ export function resolveActiveStage({
 export default function useActiveStage(): string | undefined {
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
+  const { scope } = useListingSelection()
 
   return resolveActiveStage({
     defaultStage: config.DEFAULT_STAGE_SLUG,
+    isScopedListing: scope !== '',
     pathname,
     // Mirrors the rule in pages/topics/topics.tsx.
     spansAllStages: Boolean(searchParams.get('search') || searchParams.get('tags')),
