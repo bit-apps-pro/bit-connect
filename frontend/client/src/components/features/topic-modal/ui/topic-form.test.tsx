@@ -215,7 +215,7 @@ describe('TopicForm slug field', () => {
   })
 })
 
-const term = (id: number, name: string) => ({ count: 0, id, name, parent: 0, slug: name })
+const term = (id: number, name: string) => ({ count: 0, description: '', id, name, parent: 0, slug: name })
 
 const taxonomies = {
   'bit-connect-stages': [],

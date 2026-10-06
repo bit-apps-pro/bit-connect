@@ -6,6 +6,7 @@ export {
   useUnreadCount
 } from './data/use-notifications'
 export { ignoreBadgeFailure, default as useOpenNotification } from './shared/use-open-notification'
+export { default as FollowButton } from './ui/follow-button'
 export { default as NotificationBell } from './ui/notification-bell'
 export { NotificationsEmpty, NotificationsSkeleton } from './ui/notification-placeholders'
 export { default as NotificationPreferencesForm } from './ui/notification-preferences-form'

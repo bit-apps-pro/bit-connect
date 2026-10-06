@@ -25,8 +25,13 @@ export const parseTagParam = (value: null | string): string[] => [
   )
 ]
 
-/** Display form of a tag name, matching how topic cards render them. */
-export const tagLabel = (name: string) => `#${name.replaceAll(' ', '_')}`
+/**
+ * How a tag is shown everywhere in the portal: a hash before the name as the
+ * admin typed it. The hash says "this is a tag" where a type or status chip
+ * beside it says nothing; the name is left alone so "API & Integrations" still
+ * reads as words.
+ */
+export const tagLabel = (name: string) => `#${name}`
 
 interface TagOption {
   count: number

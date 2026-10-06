@@ -795,8 +795,15 @@ class TopicService
             );
         }
 
+        // Each tag says whether it is still awaiting review, so the portal can
+        // mark it — a member who suggested it should see that it went somewhere.
         $tagsRaw = get_the_terms($postId, Taxonomies::TAGS->value);
-        $terms['tags'] = \is_array($tagsRaw) ? $tagsRaw : [];
+        $terms['tags'] = \is_array($tagsRaw)
+            ? array_map(
+                static fn (WP_Term $tag): array => (array) $tag + ['pending' => TagApprovalService::isPending((int) $tag->term_id)],
+                $tagsRaw
+            )
+            : [];
 
         return $terms;
     }

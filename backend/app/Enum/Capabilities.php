@@ -45,6 +45,16 @@ enum Capabilities: string
     #[Label('Delete Own Comments')]
     case DELETE_OWN_COMMENT = 'bit_connect_forum_delete_own_comment';
 
+    /*
+     * Adding a tag that is not in the list. A suggestion rather than a
+     * creation: the tag goes on the topic at once, but stays out of the
+     * picker and the filter until an administrator approves it — see
+     * TagApprovalService. Not in memberCaps(): the vocabulary is curated by
+     * default, and a forum that wants members adding to it switches this on.
+     */
+    #[Label('Suggest New Tags')]
+    case CREATE_TAG = 'bit_connect_forum_create_tag';
+
     // Voting
     #[Label('Vote on Posts')]
     case VOTE_POST = 'bit_connect_forum_vote_post';
@@ -130,6 +140,7 @@ enum Capabilities: string
             self::CREATE_COMMENT     => __('Create Comments/Replies', 'bit-connect'),
             self::EDIT_OWN_COMMENT   => __('Edit Own Comments', 'bit-connect'),
             self::DELETE_OWN_COMMENT => __('Delete Own Comments', 'bit-connect'),
+            self::CREATE_TAG         => __('Suggest New Tags', 'bit-connect'),
             self::VOTE_POST          => __('Vote on Posts', 'bit-connect'),
             self::DELETE_ANY         => __('Delete Any Content', 'bit-connect'),
             self::MODERATE           => __('Moderate (Reports, Locked Threads)', 'bit-connect'),

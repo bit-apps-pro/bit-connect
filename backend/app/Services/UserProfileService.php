@@ -40,6 +40,7 @@ class UserProfileService
         'bit_connect_forum_create_post'        => 'Posting',
         'bit_connect_forum_edit_own_post'      => 'Posting',
         'bit_connect_forum_delete_own_post'    => 'Posting',
+        'bit_connect_forum_create_tag'         => 'Posting',
         'bit_connect_forum_create_comment'     => 'Commenting',
         'bit_connect_forum_edit_own_comment'   => 'Commenting',
         'bit_connect_forum_delete_own_comment' => 'Commenting',

@@ -105,6 +105,10 @@ function readPostingLimits(): PostingLimits {
 /** A term archive: the topics filter its segment pins, and the taxonomy behind it. */
 export interface PortalArchive {
   filter: string
+  /** The follow target a term is followed by (`tag`), or '' when it cannot be. */
+  follow: string
+  /** What one of its terms is called, as the site shows it — "Tag". */
+  label: string
   taxonomy: string
 }
 
@@ -195,10 +199,10 @@ const promo = getServerVariable('promo', {}) ?? {}
 // This plugin's own archives. Missing from the server variables only during
 // the SSR prerender, where these stand in.
 const ownArchives: Record<string, PortalArchive> = {
-  stage: { filter: 'stages', taxonomy: 'bit-connect-stages' },
-  status: { filter: 'statuses', taxonomy: 'bit-connect-statuses' },
-  tag: { filter: 'tags', taxonomy: 'bit-connect-tags' },
-  topic: { filter: 'topic-types', taxonomy: 'bit-connect-topic-types' }
+  stage: { filter: 'stages', follow: '', label: 'Stage', taxonomy: 'bit-connect-stages' },
+  status: { filter: 'statuses', follow: '', label: 'Status', taxonomy: 'bit-connect-statuses' },
+  tag: { filter: 'tags', follow: 'tag', label: 'Tag', taxonomy: 'bit-connect-tags' },
+  topic: { filter: 'topic-types', follow: '', label: 'Topic Type', taxonomy: 'bit-connect-topic-types' }
 }
 
 const config = {

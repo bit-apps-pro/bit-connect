@@ -34,7 +34,13 @@ function capabilityLabel(
 
 const CAP_GROUPS: CapabilityGroup[] = [
   {
-    caps: ['bit_connect_forum_create_post', 'bit_connect_forum_edit_own_post', 'bit_connect_forum_delete_own_post'],
+    caps: [
+      'bit_connect_forum_create_post',
+      'bit_connect_forum_edit_own_post',
+      'bit_connect_forum_delete_own_post',
+      // A tag not in the list, on a topic, pending an admin's approval.
+      'bit_connect_forum_create_tag'
+    ],
     label: __('Posts')
   },
   {

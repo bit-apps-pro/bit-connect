@@ -10,8 +10,12 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Http\Requests\ApproveTermRequest;
 use BitApps\BitConnect\Http\Requests\GetTaxonomiesRequest;
+use BitApps\BitConnect\Http\Requests\MergeTermsRequest;
 use BitApps\BitConnect\Http\Requests\ReorderTermsRequest;
+use BitApps\BitConnect\Services\TagApprovalService;
+use BitApps\BitConnect\Services\TermMergeService;
 use BitApps\BitConnect\Services\TermOrderService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 
@@ -45,6 +49,15 @@ final class TaxonomyController
                 continue;
             }
 
+            // A tag a member suggested is not offered until it is approved.
+            if ($taxonomy->name === Taxonomies::TAGS->value) {
+                $pending = TagApprovalService::pendingIds();
+                $terms = array_values(array_filter(
+                    $terms,
+                    static fn ($term): bool => !\in_array((int) $term->term_id, $pending, true)
+                ));
+            }
+
             // Sorted here rather than in the clients: this payload carries no
             // order meta, and it is the single read path the portal's filters
             // and the topic form all go through.
@@ -67,6 +80,10 @@ final class TaxonomyController
                     'slug'   => $term->slug,
                     'count'  => $term->count,
                     'parent' => $term->parent,
+                    // What the archive page says under the term's name, and
+                    // the same words the server put in that page's meta
+                    // description — see SeoMeta::forArchive().
+                    'description' => wp_strip_all_tags((string) $term->description),
                 ];
 
                 if ($hasIcons) {
@@ -83,6 +100,45 @@ final class TaxonomyController
         }
 
         return Response::success($data);
+    }
+
+    /**
+     * Approve a tag a member suggested — see TagApprovalService.
+     */
+    public function approve(ApproveTermRequest $request)
+    {
+        $validated = $request->validated();
+        $result = TagApprovalService::approve((int) $validated['id']);
+
+        if (is_wp_error($result)) {
+            return Response::error([], 422)->message($result->get_error_message());
+        }
+
+        return Response::success(['id' => (int) $validated['id']]);
+    }
+
+    /**
+     * Fold one tag into another — see TermMergeService.
+     *
+     * Its own route for the same reason ordering has one: core's terms
+     * endpoint can delete a term, but not re-file what was under it first.
+     */
+    public function merge(MergeTermsRequest $request)
+    {
+        $taxonomy = $request->mergeableTaxonomy();
+
+        if ($taxonomy === '') {
+            return Response::error('This taxonomy cannot be merged.', 400);
+        }
+
+        $validated = $request->validated();
+        $result = TermMergeService::merge($taxonomy, (int) $validated['from'], (int) $validated['into']);
+
+        if (is_wp_error($result)) {
+            return Response::error([], 422)->message($result->get_error_message());
+        }
+
+        return Response::success($result);
     }
 
     /**

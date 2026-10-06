@@ -6,6 +6,8 @@ import { useTaxonomiesStoreActions } from '@/store/use-taxonomies-store'
 
 export interface TaxonomyTerm {
   count: number
+  /** What the archive page says under the term's name; '' for none. */
+  description: string
   id: number
   /** Only on the taxonomies that carry icons — stages, statuses, and any added one that does. */
   meta?: ThemedIconMeta

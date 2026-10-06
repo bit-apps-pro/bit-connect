@@ -432,6 +432,7 @@ final class NotificationService
 
             case NotificationTypes::REPORT_FILED:
             case NotificationTypes::TOPIC_POSTED:
+            case NotificationTypes::TAG_SUGGESTED:
                 return NotificationRecipients::moderatorIds();
 
             default:

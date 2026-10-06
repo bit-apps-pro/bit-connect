@@ -8,8 +8,10 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PostingLimits;
+use BitApps\BitConnect\Services\TagResolverService;
 use BitApps\BitConnect\Services\TopicFormFields;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 
@@ -52,8 +54,9 @@ final class CreateTopicRequest extends Request
             // enforced here rather than only in the portal's form, which is
             // just one of the ways a topic gets created.
             'topic-types' => [self::presence('topicType'), 'integer', 'min:1'],
-            'tags'        => ['nullable', 'array'],
-            'tags.*'      => ['nullable', 'integer', 'min:1'],
+            'tags'        => ['nullable', 'array', 'max:' . PostingLimits::TOPIC_TAGS_CEILING],
+            // An id from the list, or a name the member typed — see TagResolverService.
+            'tags.*' => ['nullable', new TagRefRule()],
         ];
 
         // One term each from a taxonomy another plugin files topics under,
@@ -78,8 +81,8 @@ final class CreateTopicRequest extends Request
 
             'topic-types.required' => 'Choose a topic type.',
 
-            'tags.*.integer' => 'Each tag must be a valid ID.',
-            'tags.*.min'     => 'Each tag ID must be at least 1.',
+            'tags.max'       => \sprintf('A topic may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING),
+            'tags.*.integer' => \sprintf('Each tag must be a tag from the list or a name of up to %d characters.', TagResolverService::MAX_NAME_LENGTH),
         ];
 
         foreach (TopicTaxonomies::all() as $param => $entry) {

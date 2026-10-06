@@ -8,6 +8,7 @@ use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
@@ -247,12 +248,28 @@ class BaseView
     }
 
     /**
+     * What one term of a taxonomy is called — "Tag" — translated.
+     */
+    private static function termLabel(string $taxonomy): string
+    {
+        $added = TopicTaxonomies::forTaxonomy($taxonomy);
+
+        if ($added !== null && $added['singular'] !== '') {
+            return $added['singular'];
+        }
+
+        $object = get_taxonomy($taxonomy);
+
+        return $object ? (string) ($object->labels->singular_name ?? $object->label) : '';
+    }
+
+    /**
      * Each archive the portal serves, by the URL segment it answers to.
      *
      * The filter key is the topics endpoint's parameter for that taxonomy:
      * this plugin's own are fixed, and an added one is named by TopicTaxonomies.
      *
-     * @return array<string, array{filter: string, taxonomy: string}>
+     * @return array<string, array{filter: string, taxonomy: string, follow: string, label: string}>
      */
     private static function portalArchives(): array
     {
@@ -271,7 +288,16 @@ class BaseView
 
         foreach (PortalTaxonomies::map() as $segment => $taxonomy) {
             if (isset($filters[$taxonomy])) {
-                $archives[PortalTaxonomies::slugFor($segment)] = ['filter' => $filters[$taxonomy], 'taxonomy' => $taxonomy];
+                $archives[PortalTaxonomies::slugFor($segment)] = [
+                    'filter'   => $filters[$taxonomy],
+                    'taxonomy' => $taxonomy,
+                    // The follow target a term is followed by, or '' for one
+                    // that cannot be. The archive page offers Follow on these.
+                    'follow' => FollowService::targetTypeForTaxonomy($taxonomy),
+                    // What one term is called, so that button can say what it
+                    // follows: "Follow tag". An added taxonomy names itself.
+                    'label' => self::termLabel($taxonomy),
+                ];
             }
         }
 

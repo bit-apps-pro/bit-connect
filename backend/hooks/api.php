@@ -94,6 +94,8 @@ Route::post('notification-settings/test-email', [NotificationSettingsController:
 // two endpoints leaves the member where they started.
 Route::post('follows/toggle', [FollowController::class, 'toggle']);
 Route::get('follows', [FollowController::class, 'mine']);
+// One thing's state, for a page that did not arrive with it (a tag archive).
+Route::get('follows/state', [FollowController::class, 'state']);
 
 // Activity log — who did what to content they did not write. bit_connect_forum_moderate,
 // enforced in GetActivityLogRequest::authorize().
@@ -106,8 +108,12 @@ Route::get('posts/{id}/votes', [VoteController::class, 'getPostVotes']);
 
 Route::get('taxonomies', [TaxonomyController::class, 'getTaxonomies']);
 
-// Term CRUD uses the core terms endpoint; only ordering needs a plugin route.
+// Term CRUD uses the core terms endpoint; only ordering and merging need a
+// plugin route — core can neither sort by meta nor re-file a term's topics.
 Route::post('taxonomies/{taxonomy}/reorder', [TaxonomyController::class, 'reorder']);
+Route::post('taxonomies/{taxonomy}/merge', [TaxonomyController::class, 'merge']);
+// A member-suggested tag, let into the vocabulary. See TagApprovalService.
+Route::post('taxonomies/tags/approve', [TaxonomyController::class, 'approve']);
 
 // Public contribution totals for a topic author's card. Separate from the
 // admin-only user management routes below.

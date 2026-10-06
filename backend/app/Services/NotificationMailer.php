@@ -294,6 +294,15 @@ final class NotificationMailer
             case NotificationTypes::REPORT_FILED:
                 return __('A new report is waiting in the moderation queue', 'bit-connect');
 
+            case NotificationTypes::TAG_SUGGESTED:
+                return \sprintf(
+                    // translators: 1: member name, 2: tag name, 3: topic title
+                    __('%1$s suggested a new tag "%2$s" on %3$s', 'bit-connect'),
+                    $who,
+                    (string) ($context['tag_name'] ?? ''),
+                    $named
+                );
+
             default:
                 return __('Something happened in the forum', 'bit-connect');
         }

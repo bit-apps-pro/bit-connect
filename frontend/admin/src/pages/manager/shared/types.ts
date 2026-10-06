@@ -3,6 +3,7 @@ import { type ResponseType } from '@common/request/types'
 export type ForumCapability =
   | 'bit_connect_forum_create_comment'
   | 'bit_connect_forum_create_post'
+  | 'bit_connect_forum_create_tag'
   | 'bit_connect_forum_delete_any'
   | 'bit_connect_forum_delete_own_comment'
   | 'bit_connect_forum_delete_own_post'
@@ -17,6 +18,7 @@ export type ForumCapability =
 export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
   bit_connect_forum_create_comment: 'Create Comments',
   bit_connect_forum_create_post: 'Create Posts',
+  bit_connect_forum_create_tag: 'Suggest New Tags',
   bit_connect_forum_delete_any: 'Delete Any Content',
   bit_connect_forum_delete_own_comment: 'Delete Own Comments',
   bit_connect_forum_delete_own_post: 'Delete Own Posts',

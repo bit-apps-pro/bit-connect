@@ -17,10 +17,12 @@ import { Form, Input, Radio, Select } from 'antd'
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from 'react'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
+import { useAuthStore } from '@/store/auth.zustand'
 
 import useAddedTermFields from '../data/use-added-term-fields'
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 import useVisibilityOptions from '../data/use-visibility-options'
+import { MAX_TAGS_PER_TOPIC } from '../shared/type'
 import PermalinkField from './permalink-field'
 
 const stripHtml = (html: string) =>
@@ -129,11 +131,20 @@ export default function TopicForm({
     [taxonomies]
   )
 
+  // A member allowed to suggest tags may type one that is not in the list.
+  // It goes on the topic at once and waits for an administrator's approval
+  // before it is offered to anyone else — see TagApprovalService.php. Without
+  // the capability the control is the plain picker, not a picker that refuses.
+  const canSuggestTags = useAuthStore(state => state.can('bit_connect_forum_create_tag'))
+
   const tagOptions = useMemo(
     () =>
+      // Ids as strings: in tags mode antd makes a typed name a value of its own
+      // and insists every value be a string. The server reads a digit string
+      // as an id — see TagResolverService.
       taxonomies?.['bit-connect-tags']?.map(term => ({
         label: term.name,
-        value: term.id
+        value: String(term.id)
       })) || [],
     [taxonomies]
   )
@@ -290,15 +301,27 @@ export default function TopicForm({
         />
       </Form.Item>
 
-      <Form.Item className="bc-mb-4" label={__('Tag')} name="tags">
+      <Form.Item
+        className="bc-mb-4"
+        extra={
+          canSuggestTags
+            ? __('Not in the list? Type a new tag and press Enter. It is reviewed by a moderator before others can pick it.')
+            : undefined
+        }
+        label={__('Tag')}
+        name="tags"
+      >
         {/* Options carry the term id as their value, and antd filters on the
-            value unless told otherwise — typing a tag name would match nothing. */}
+            value unless told otherwise — typing a tag name would match nothing.
+            In tags mode a typed name becomes a value of its own, a string
+            beside the ids, and the server tells the two apart. */}
         <Select
           className="bc-w-full"
-          mode="multiple"
+          maxCount={MAX_TAGS_PER_TOPIC}
+          mode={canSuggestTags ? 'tags' : 'multiple'}
           optionFilterProp="label"
           options={tagOptions}
-          placeholder={__('Select tags..')}
+          placeholder={canSuggestTags ? __('Select or type tags..') : __('Select tags..')}
         />
       </Form.Item>
 

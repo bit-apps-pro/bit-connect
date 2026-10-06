@@ -128,6 +128,15 @@ final class PermissionService
         return WpCapabilities::check(Capabilities::VOTE_POST->value);
     }
 
+    /**
+     * Whether the member may put a tag on a topic that is not in the list yet.
+     * The tag then waits for approval — see TagApprovalService.
+     */
+    public static function canCreateTag(): bool
+    {
+        return WpCapabilities::check(Capabilities::CREATE_TAG->value);
+    }
+
     // -------------------------------------------------------------------------
     // Moderation
     // -------------------------------------------------------------------------

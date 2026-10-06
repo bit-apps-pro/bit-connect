@@ -77,6 +77,10 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, for every topic published anywhere in the forum.')]
     case TOPIC_POSTED = 'topic_posted';
 
+    #[Label('A new tag needs approval')]
+    #[Description('Sent to moderators only, when a member suggests a tag that is not in the list.')]
+    case TAG_SUGGESTED = 'tag_suggested';
+
     /**
      * The label, translated.
      *
@@ -107,6 +111,7 @@ enum NotificationTypes: string
             self::TOPIC_STATUS_CHANGED => __('A topic you follow changes status', 'bit-connect'),
             self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
             self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
+            self::TAG_SUGGESTED        => __('A new tag needs approval', 'bit-connect'),
         };
     }
 
@@ -127,6 +132,7 @@ enum NotificationTypes: string
             self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
             self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
+            self::TAG_SUGGESTED        => __('Sent to moderators only, when a member suggests a tag that is not in the list.', 'bit-connect'),
         };
     }
 
@@ -142,7 +148,7 @@ enum NotificationTypes: string
      */
     public static function isModeratorOnly(NotificationTypes $type): bool
     {
-        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED;
+        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED || $type === self::TAG_SUGGESTED;
     }
 
     /**

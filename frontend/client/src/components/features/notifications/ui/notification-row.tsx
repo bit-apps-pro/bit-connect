@@ -98,6 +98,15 @@ function describe(item: NotificationItem) {
         </>
       )
     }
+    case 'tag_suggested': {
+      return (
+        <>
+          {name} {__('suggested a new tag')}{' '}
+          <span className="bc-font-medium bc-text-ink">{`#${item.context.tag_name ?? ''}`}</span> {__('on')}{' '}
+          {subject}
+        </>
+      )
+    }
     case 'topic_new':
     case 'topic_posted': {
       return (

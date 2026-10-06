@@ -27,7 +27,8 @@ interface TogglePayload {
 export const RESTING_FOLLOW_STATE: FollowState = { following: false, muted: false, source: '' }
 
 /**
- * Follow or unfollow one thing.
+ * Follow or unfollow one thing: a topic, a tag, or whatever else the server
+ * lets a member follow (see FollowService::isValidTargetType).
  *
  * The button is optimistic: following a thread is reversible, instant and
  * unimportant if it fails, so making the member wait on a round trip to see the
@@ -35,14 +36,14 @@ export const RESTING_FOLLOW_STATE: FollowState = { following: false, muted: fals
  * authoritative and replaces the guess — it is re-read from storage rather than
  * inferred, because unfollow mutes rather than deletes.
  */
-export default function useFollowTopic(topicId: number, initial: FollowState) {
+export function useFollowTarget(targetType: string, targetId: number, initial: FollowState) {
   const queryClient = useQueryClient()
   const [state, setState] = useState<FollowState>(initial)
 
   const { isPending, mutateAsync } = useMutation({
     mutationFn: (follow: boolean) =>
       post<TogglePayload, FollowState>('follows/toggle', {
-        body: { follow, target_id: topicId, target_type: 'topic' }
+        body: { follow, target_id: targetId, target_type: targetType }
       }),
     onError: (_error, follow) => {
       // Put the button back. Leaving it showing the state the member asked for
@@ -66,4 +67,9 @@ export default function useFollowTopic(topicId: number, initial: FollowState) {
     isTogglingFollow: isPending,
     toggleFollow: (follow: boolean) => mutateAsync(follow)
   }
+}
+
+/** A topic's follow control — see useFollowTarget. */
+export default function useFollowTopic(topicId: number, initial: FollowState) {
+  return useFollowTarget('topic', topicId, initial)
 }

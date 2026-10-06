@@ -8,6 +8,7 @@ import {
   LuReply,
   LuShieldAlert,
   LuSparkles,
+  LuTag,
   LuTriangleAlert,
   LuTrophy
 } from 'react-icons/lu'
@@ -43,6 +44,8 @@ const APPEARANCE: Record<string, NotificationAppearance> = {
   mention: { bg: 'bc-bg-tone-violet-soft', fg: 'bc-text-tone-violet', Icon: LuAtSign },
   report_filed: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTriangleAlert },
   report_resolved: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuCircleCheck },
+  // Amber like a report: something waiting on a moderator's decision.
+  tag_suggested: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTag },
   topic_new: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
   // The same event as topic_new, sent to moderators, so it looks the same.
   topic_posted: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },

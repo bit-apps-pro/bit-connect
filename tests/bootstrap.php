@@ -1466,6 +1466,10 @@ if (!function_exists('get_terms')) {
                         return false;
                     }
 
+                    if (!empty($args['exclude']) && \in_array((int) $term->term_id, array_map('intval', (array) $args['exclude']), true)) {
+                        return false;
+                    }
+
                     if (isset($args['meta_key'])) {
                         $meta = $GLOBALS['__wp_term_meta'][(int) $term->term_id][$args['meta_key']] ?? '';
 
@@ -1971,11 +1975,77 @@ if (!function_exists('wp_set_post_terms')) {
     {
         $ids = array_map('intval', (array) $terms);
 
+        // Appending never doubles a relationship, as in core.
         $GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] = $append
-            ? array_merge($GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] ?? [], $ids)
+            ? array_values(array_unique(array_merge($GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] ?? [], $ids)))
             : $ids;
 
         return $ids;
+    }
+}
+
+if (!function_exists('get_objects_in_term')) {
+    /**
+     * Posts filed under a term, from the same store wp_set_post_terms() writes.
+     *
+     * @param mixed $termIds
+     * @param mixed $taxonomies
+     *
+     * @return array<int, int>
+     */
+    function get_objects_in_term($termIds, $taxonomies): array
+    {
+        $wanted = array_map('intval', (array) $termIds);
+        $taxonomies = (array) $taxonomies;
+        $found = [];
+
+        foreach ($GLOBALS['__wp_post_terms'] ?? [] as $postId => $byTaxonomy) {
+            foreach ($taxonomies as $taxonomy) {
+                if (array_intersect($wanted, $byTaxonomy[$taxonomy] ?? []) !== []) {
+                    $found[] = (int) $postId;
+                }
+            }
+        }
+
+        return array_values(array_unique($found));
+    }
+}
+
+if (!function_exists('wp_delete_term')) {
+    /**
+     * Drops the term and every relationship to it, as core does; answers true
+     * for a term that existed and false otherwise.
+     *
+     * @param mixed $termId
+     * @param mixed $taxonomy
+     */
+    function wp_delete_term($termId, $taxonomy)
+    {
+        $termId = (int) $termId;
+        $existed = false;
+
+        $GLOBALS['__wp_terms'] = array_values(array_filter(
+            $GLOBALS['__wp_terms'] ?? [],
+            static function ($term) use ($termId, $taxonomy, &$existed) {
+                if ((int) $term->term_id === $termId && $term->taxonomy === $taxonomy) {
+                    $existed = true;
+
+                    return false;
+                }
+
+                return true;
+            }
+        ));
+
+        foreach ($GLOBALS['__wp_post_terms'] ?? [] as $postId => $byTaxonomy) {
+            if (isset($byTaxonomy[$taxonomy])) {
+                $GLOBALS['__wp_post_terms'][$postId][$taxonomy] = array_values(
+                    array_diff($byTaxonomy[$taxonomy], [$termId])
+                );
+            }
+        }
+
+        return $existed;
     }
 }
 

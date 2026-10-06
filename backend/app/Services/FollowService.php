@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
 
 /**
@@ -196,6 +197,97 @@ final class FollowService
     public static function purgeUser(int $userId): void
     {
         Connection::delete(Config::withDBPrefix('follows'), ['user_id' => $userId], ['%d']);
+    }
+
+    /**
+     * The follow target a term of a taxonomy is followed by, or '' when its
+     * terms cannot be followed.
+     *
+     * This plugin's tags, and whichever added taxonomy says so through
+     * TopicTaxonomies. The one answer the archive page, the merge and the
+     * deletion cleanup all read, so a taxonomy cannot be followable in one
+     * place and not another.
+     */
+    public static function targetTypeForTaxonomy(string $taxonomy): string
+    {
+        if ($taxonomy === Taxonomies::TAGS->value) {
+            return Follow::TARGET_TAG;
+        }
+
+        return (string) (TopicTaxonomies::forTaxonomy($taxonomy)['follow'] ?? '');
+    }
+
+    /**
+     * Moves every follow of one target onto another, for a term merged away.
+     *
+     * A member already following the destination keeps the row they have
+     * there — including a mute, which is a decision about that term and
+     * stands — and the row on the source is dropped rather than moved, so no
+     * member ends up with two rows on one thing. Everyone else's row is
+     * re-pointed in place, muted or not.
+     *
+     * @return int rows moved
+     */
+    public static function retarget(string $targetType, int $fromId, int $intoId): int
+    {
+        if ($fromId === $intoId) {
+            return 0;
+        }
+
+        $table = Config::withDBPrefix('follows');
+        $alreadyThere = Follow::userIdsFor($targetType, $intoId);
+
+        foreach (array_intersect(Follow::userIdsFor($targetType, $fromId), $alreadyThere) as $userId) {
+            Connection::delete(
+                $table,
+                ['user_id' => $userId, 'target_type' => $targetType, 'target_id' => $fromId],
+                ['%d', '%s', '%d']
+            );
+        }
+
+        $moved = Connection::update(
+            $table,
+            ['target_id' => $intoId, 'updated_at' => current_time('mysql', true)],
+            ['target_type' => $targetType, 'target_id' => $fromId],
+            ['%d', '%s'],
+            ['%s', '%d']
+        );
+
+        return $moved === false ? 0 : (int) $moved;
+    }
+
+    /**
+     * Every follow of one target, dropped when the target goes.
+     */
+    public static function purgeTarget(string $targetType, int $targetId): void
+    {
+        Connection::delete(
+            Config::withDBPrefix('follows'),
+            ['target_type' => $targetType, 'target_id' => $targetId],
+            ['%s', '%d']
+        );
+    }
+
+    /**
+     * `delete_term`: a deleted tag takes its follows with it.
+     *
+     * Without this a deleted term left rows pointing at a term id that no
+     * longer existed — harmless until the id was reused, when its old
+     * followers would start hearing about a tag they never chose.
+     *
+     * @param mixed $termId
+     * @param mixed $termTaxonomyId
+     * @param mixed $taxonomy
+     */
+    public static function onTermDeleted($termId, $termTaxonomyId, $taxonomy): void // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+    {
+        $targetType = self::targetTypeForTaxonomy((string) $taxonomy);
+
+        if ($targetType === '') {
+            return;
+        }
+
+        self::purgeTarget($targetType, (int) $termId);
     }
 
     public static function isValidTargetType(string $targetType): bool

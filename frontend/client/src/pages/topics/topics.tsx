@@ -24,11 +24,8 @@ import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useAddedViews from '../../components/utilities/sort-filter/use-added-views'
 import useListingSelection from '../Layout/data/use-listing-selection'
+import ArchiveHeader from './archive-header'
 import ListingContext from './listing-context'
-
-/** The taxonomy an archive filter key names — see pages/topics/archive.tsx. */
-const archiveTaxonomy = (filter: string) =>
-  Object.values(config.PORTAL_ARCHIVES).find(archive => archive.filter === filter)?.taxonomy ?? ''
 
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
@@ -117,9 +114,9 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // "Term — Community" for an archive. Left alone until the term's name has
   // loaded, rather than flashing the bare community name first.
   const [archiveKey, archiveSlug] = archiveFilter ? (Object.entries(archiveFilter)[0] ?? []) : []
-  const archiveName = archiveKey
-    ? taxonomies?.[archiveTaxonomy(archiveKey)]?.find(term => term.slug === archiveSlug)?.name
-    : ''
+  const archive = archiveKey ? Object.values(config.PORTAL_ARCHIVES).find(a => a.filter === archiveKey) : undefined
+  const archiveTerm = archive ? taxonomies?.[archive.taxonomy]?.find(term => term.slug === archiveSlug) : undefined
+  const archiveName = archiveKey ? archiveTerm?.name : ''
   usePageTitle(archiveName)
   const { scope: listingScope } = useListingSelection()
 
@@ -350,6 +347,13 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             </button>
           )}
         </div>
+
+        {/* A term archive's own heading, description and Follow. Not for a
+            stage archive, which the sidebar already names, nor the archive the
+            listing is scoped to, which is the sidebar's choice. */}
+        {archive && archiveKey !== 'stages' && listingScope === '' && (
+          <ArchiveHeader archive={archive} term={archiveTerm} />
+        )}
 
         {/* phone: what the list is showing, since the sidebar that says so is
             folded into the drawer there. A stage archive, or the archive the

@@ -99,7 +99,7 @@ export default function TopicEditModal() {
         post_name: decodeSlug(post.post_name ?? ''),
         post_status: post.post_status,
         post_title: post.post_title,
-        tags: post.terms?.tags?.map(tag => tag.term_id) || [],
+        tags: post.terms?.tags?.map(tag => String(tag.term_id)) || [],
         'topic-types': post.terms?.topic_types?.term_id
       })
       const normalized = normalizeAttachments(post.attachments)

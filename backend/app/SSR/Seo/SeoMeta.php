@@ -7,6 +7,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\TagApprovalService;
 use WP_Term;
 
 if (!defined('ABSPATH')) {
@@ -154,7 +155,10 @@ final class SeoMeta
             ? wp_trim_words(wp_strip_all_tags($term->description), 30, '…')
             : self::archiveDescription($termName, $community, $topics);
 
-        $indexable = PortalTaxonomies::isIndexable(PortalTaxonomies::segmentFor($term->taxonomy));
+        // A tag still awaiting review is served, for the topics that carry it,
+        // but not offered to search until an administrator has let it in.
+        $indexable = PortalTaxonomies::isIndexable(PortalTaxonomies::segmentFor($term->taxonomy))
+            && !TagApprovalService::isPending((int) $term->term_id);
 
         self::$meta = [
             'title'       => $title,

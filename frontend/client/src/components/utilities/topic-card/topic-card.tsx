@@ -1,8 +1,11 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { plainText } from '@common/helpers/plain-text'
 import { type Topic } from '@features/topic-modal/shared/type'
+import { CHIP_LINK, chipClass, chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
+import { tagLabel } from '@utilities/tag-filter'
 import UserLink from '@utilities/user-link'
+import { archivePath } from '@utils/listing-path'
 import { Flex, Tag, Typography } from 'antd'
 import { LuCalendar, LuMessageCircle } from 'react-icons/lu'
 import { Link } from 'react-router'
@@ -197,10 +200,16 @@ export default function TopicCard({
               full set. */}
           {tags.length > 0 && (
             <div className="bc-hidden bc-min-w-0 bc-max-w-full bc-flex-wrap bc-gap-x-2 bc-gap-y-1 md:bc-flex">
+              {/* The same pills the topic page uses, so a tag looks like a tag
+                  wherever it appears — as muted text they read as more meta.
+                  Each links to its archive; the meta row sits above the card's
+                  overlay, so they keep their own destination. */}
               {tags.map(tag => (
-                <Typography.Text className="bc-max-w-full bc-truncate" key={tag.term_id} type="secondary">
-                  #{tag.name.replaceAll(' ', '_')}
-                </Typography.Text>
+                <Link className={CHIP_LINK} key={tag.term_id} to={archivePath('tags', tag.slug)}>
+                  <Tag className={chipClass(tag.pending)} title={chipTitle(tag.name, tag.pending)}>
+                    {tagLabel(tag.name)}
+                  </Tag>
+                </Link>
               ))}
             </div>
           )}

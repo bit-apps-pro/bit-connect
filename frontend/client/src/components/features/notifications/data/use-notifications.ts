@@ -36,6 +36,8 @@ export interface NotificationItem {
     decision_label?: string
     excerpt?: string
     note?: string
+    /** The tag a member suggested, on a `tag_suggested` row. */
+    tag_name?: string
     topic_title?: string
     url?: string
   }

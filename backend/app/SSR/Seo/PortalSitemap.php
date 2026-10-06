@@ -5,9 +5,11 @@ namespace BitApps\BitConnect\SSR\Seo;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\StageService;
+use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 use WP_Post_Type;
 use WP_Query;
@@ -926,6 +928,8 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 'taxonomy'   => $taxonomy,
                 'hide_empty' => true,
                 'fields'     => 'slugs',
+                // A tag a member suggested is not advertised until approved.
+                'exclude' => $taxonomy === Taxonomies::TAGS->value ? TagApprovalService::pendingIds() : [],
             ]
         );
 

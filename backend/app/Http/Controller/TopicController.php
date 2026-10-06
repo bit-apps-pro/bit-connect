@@ -28,9 +28,11 @@ use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TagResolverService;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
+use WP_Error;
 
 final class TopicController
 {
@@ -159,6 +161,12 @@ final class TopicController
     {
         $validatedData = $request->validated();
 
+        $resolved = $this->resolveTags($validatedData);
+
+        if (is_wp_error($resolved)) {
+            return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
+        }
+
         // Prepare data for service
         $topicData = [
             'post_title'   => $validatedData['post_title'],
@@ -166,7 +174,7 @@ final class TopicController
             'post_excerpt' => $validatedData['post_content'],
             'post_status'  => $validatedData['post_status'] ?? 'publish',
             'topic_types'  => $validatedData['topic-types'] ?? [],
-            'tags'         => $validatedData['tags'] ?? [],
+            'tags'         => $resolved['ids'],
             'attachments'  => $validatedData['attachments'] ?? [],
         ];
 
@@ -204,6 +212,7 @@ final class TopicController
         }
 
         $this->notifyNewTopic($topic);
+        $this->notifySuggestedTags($topic, $resolved['created']);
 
         return Response::success($topic);
     }
@@ -312,12 +321,26 @@ final class TopicController
                     $updateData[$param] = $validatedData[$param];
                 }
             }
-            if (isset($validatedData['tags'])) {
-                $updateData['tags'] = $validatedData['tags'];
-            }
             if (isset($validatedData['attachments'])) {
                 $updateData['attachments'] = $validatedData['attachments'];
             }
+        }
+
+        // Tags are filing, not words: a moderator who may move a topic between
+        // stages may also file it under the tags it belongs to, and a member
+        // who mis-tagged their own topic may fix it. Everyone this endpoint
+        // admits is one or the other.
+        $suggested = [];
+
+        if (isset($validatedData['tags'])) {
+            $resolved = $this->resolveTags($validatedData);
+
+            if (is_wp_error($resolved)) {
+                return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
+            }
+
+            $updateData['tags'] = $resolved['ids'];
+            $suggested = $resolved['created'];
         }
 
         if (empty($updateData)) {
@@ -337,6 +360,7 @@ final class TopicController
         $this->recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
         $this->notifyMentions($id, $existingTopic, $topic);
         $this->notifyStatusChange($id, $updateData, $existingTopic, $topic);
+        $this->notifySuggestedTags($topic, $suggested);
 
         return Response::success($topic);
     }
@@ -648,10 +672,60 @@ final class TopicController
      * was withdrawn, which left that branch unreachable for a non-author and its
      * before/after snapshot writing nothing. What is recorded here is the pin
      * and lock moves that remain a moderator's.
-     *
-     * @param array<string, mixed> $updateData the fields actually applied
-     * @param array<string, mixed> $after      the refreshed topic
      */
+    /**
+     * Tells moderators a tag is waiting for review, one row per tag.
+     *
+     * Sent after the topic is saved, not when the tag is created: a suggestion
+     * on a topic that then failed to save is nothing to review. The row points
+     * at the topic, where the tag can be seen in use; the decision is made on
+     * the admin's Tags screen.
+     *
+     * @param array<string, mixed>                     $topic     as the service returned it
+     * @param array<int, array{id: int, name: string}> $suggested what TagResolverService created
+     */
+    private function notifySuggestedTags(array $topic, array $suggested): void
+    {
+        $topicId = (int) ($topic['ID'] ?? 0);
+
+        if ($topicId <= 0) {
+            return;
+        }
+
+        foreach ($suggested as $tag) {
+            NotificationService::dispatch(
+                NotificationTypes::TAG_SUGGESTED,
+                NotificationService::TARGET_TOPIC,
+                $topicId,
+                [
+                    'topic_title' => (string) ($topic['post_title'] ?? ''),
+                    'tag_name'    => $tag['name'],
+                    'tag_id'      => $tag['id'],
+                ],
+                $topicId
+            );
+        }
+    }
+
+    /**
+     * The topic's tags as ids, with any name the member typed matched to a
+     * tag or created as a pending one — see TagResolverService.
+     *
+     * @param array<string, mixed> $validatedData
+     *
+     * @return array{ids: array<int, int>, created: array<int, array{id: int, name: string}>}|WP_Error
+     */
+    private function resolveTags(array $validatedData)
+    {
+        $refs = $validatedData['tags'] ?? [];
+
+        return TagResolverService::resolve(
+            \is_array($refs) ? $refs : [],
+            get_current_user_id(),
+            PermissionService::canCreateTag()
+        );
+    }
+
     private function recordTopicActivity(int $id, int $author, array $updateData, array $after): void
     {
         // Pin and lock are recorded in whichever direction they were moved, so

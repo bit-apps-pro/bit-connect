@@ -60,6 +60,24 @@ class Follow
     }
 
     /**
+     * Everyone with a row on this target, muted or not.
+     *
+     * @return array<int, int>
+     */
+    public static function userIdsFor(string $targetType, int $targetId): array
+    {
+        $ids = [];
+
+        foreach (self::rows() as $row) {
+            if (($row['target_type'] ?? '') === $targetType && (int) ($row['target_id'] ?? 0) === $targetId) {
+                $ids[] = (int) $row['user_id'];
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
      * One member's follow of one thing, muted or not.
      *
      * Muted rows are returned on purpose: the caller has to be able to tell

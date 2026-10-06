@@ -52,6 +52,17 @@ final class PostingLimits
     public const TOPIC_HTML_CEILING = 200_000;
 
     /**
+     * How many tags a topic may carry.
+     *
+     * Fixed, not a limit a listener answers: every forum platform worth
+     * copying caps this at about five, because past that a tag stops saying
+     * what a topic is about and the archive behind it stops meaning anything.
+     * Enforced in the topic requests and mirrored by the portal's form
+     * (MAX_TAGS_PER_TOPIC in the topic modal's shared types).
+     */
+    public const TOPIC_TAGS_CEILING = 5;
+
+    /**
      * The limits in force, null where there is none. The file sizes are always
      * numbers: what the server accepts, or less if a listener says so. A kind
      * of file a listener sets no size for takes the general one.

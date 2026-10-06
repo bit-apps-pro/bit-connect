@@ -1,5 +1,7 @@
 import config from '@config/config'
 
+import { routePath } from './route-path'
+
 /**
  * URL segment -> the topics filter a term archive pins.
  *
@@ -12,6 +14,21 @@ import config from '@config/config'
 export const ARCHIVE_SEGMENT_FILTER: Record<string, string> = Object.fromEntries(
   Object.entries(config.PORTAL_ARCHIVES).map(([segment, archive]) => [segment, archive.filter])
 )
+
+/**
+ * Router path of a term's archive, from the topics filter it pins — `/tag/api`
+ * for `('tags', 'api')`.
+ *
+ * The one page the server advertises for the term, so every link to a term
+ * lands there rather than on a filtered listing that canonicalises to it. A
+ * filter no archive serves falls back to that listing, which is the only page
+ * there is for it.
+ */
+export function archivePath(filter: string, slug: string): string {
+  const segment = Object.entries(config.PORTAL_ARCHIVES).find(([, archive]) => archive.filter === filter)?.[0]
+
+  return routePath(segment ? `/${segment}/${slug}` : `/?${filter}=${encodeURIComponent(slug)}`)
+}
 
 /**
  * Whether a router path renders the topic list: the portal root, a deeper page

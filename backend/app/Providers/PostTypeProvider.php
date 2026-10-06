@@ -12,6 +12,7 @@ use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\DefaultTermService;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TermOrderService;
 use WP_Post;
 
@@ -171,6 +172,9 @@ class PostTypeProvider
             _x('Tags', 'Taxonomy General Name', 'bit-connect'),
             false
         );
+
+        // What a member-suggested tag carries while it waits for review.
+        TagApprovalService::register();
 
         // Create default stages after registration
         $this->createDefaultStages();

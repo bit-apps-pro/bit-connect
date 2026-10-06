@@ -88,6 +88,28 @@ class Follow extends Model
     }
 
     /**
+     * Everyone with a row on this target, muted or not.
+     *
+     * For moving follows from one term to another, where a muted row is as
+     * much a decision as a listening one and has to travel with the rest.
+     *
+     * @return array<int, int>
+     */
+    public static function userIdsFor(string $targetType, int $targetId): array
+    {
+        $rows = static::select(['user_id'])
+            ->where('target_type', $targetType)
+            ->where('target_id', $targetId)
+            ->get();
+
+        return array_values(
+            array_unique(
+                array_map(static fn ($row): int => (int) $row->user_id, self::asList($rows))
+            )
+        );
+    }
+
+    /**
      * Whatever get() answered, as a list of rows.
      *
      * A limit-1 result that matched exactly one row comes back as a bare Model

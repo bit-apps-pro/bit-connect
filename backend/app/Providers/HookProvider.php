@@ -11,13 +11,16 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ProfileSlugService;
+use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\UserStatsService;
 use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
@@ -37,6 +40,12 @@ class HookProvider
         new PostTypeProvider();
 
         Hooks::addAction('rest_api_init', [$this, 'loadAppApiHooks']);
+
+        // A deleted tag takes its follows with it — see FollowService.
+        Hooks::addAction('delete_term', [FollowService::class, 'onTermDeleted'], 10, 3);
+
+        // Who suggested a tag, beside it in the admin's list — see TagApprovalService.
+        Hooks::addFilter('rest_prepare_' . Taxonomies::TAGS->value, [TagApprovalService::class, 'restFields'], 10, 2);
 
         // Computes the derived "may open the admin menu" capability. Registered
         // here because this provider runs on init:8, before admin_menu asks.

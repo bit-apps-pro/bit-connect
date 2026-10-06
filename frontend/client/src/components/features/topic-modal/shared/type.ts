@@ -5,6 +5,12 @@ import { type MemberBadge } from '@/types/member-badge'
  * Term meta as the server sends it. The keys the portal reads are typed; the
  * rest is whatever the admin screens have stored against the term.
  */
+/**
+ * How many tags a topic may carry. The server's PostingLimits::TOPIC_TAGS_CEILING,
+ * which the topic requests enforce; this is what lets the picker say so first.
+ */
+export const MAX_TAGS_PER_TOPIC = 5
+
 export interface TermMeta {
   [key: string]: unknown
   color?: string
@@ -20,6 +26,8 @@ export interface Term {
   meta: TermMeta
   name: string
   parent: number
+  /** A tag a member suggested that an administrator has not yet approved. */
+  pending?: boolean
   slug: string
   taxonomy: string
   term_group: number
@@ -82,14 +90,15 @@ export function normalizeAttachments(attachments: unknown): TopicAttachmentInfo[
 
 export interface SaveTopicPayload {
   /** A term of a taxonomy a plugin adds, under its parameter — see TopicTaxonomies.php. */
-  [param: string]: number | number[] | string | undefined
+  [param: string]: number | number[] | string | string[] | undefined
   attachments: number[]
   post_content: string
   /** Optional custom permalink. Blank lets the server derive one from the title. */
   post_name?: string
   post_status?: string
   post_title: string
-  tags?: number[]
+  /** Ids of tags from the list (as digit strings) and names of tags the member typed — see TagResolverService.php. */
+  tags?: string[]
   'topic-types'?: number
   topic_id?: number
 }

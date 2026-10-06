@@ -127,7 +127,7 @@ class NotificationSettingsTest extends TestCase
 
     public function testOnlyTheQueueAlertAndTheEveryTopicAlertAreModeratorOnly(): void
     {
-        $moderatorOnly = [NotificationTypes::REPORT_FILED, NotificationTypes::TOPIC_POSTED];
+        $moderatorOnly = [NotificationTypes::REPORT_FILED, NotificationTypes::TOPIC_POSTED, NotificationTypes::TAG_SUGGESTED];
 
         foreach (NotificationTypes::cases() as $type) {
             $this->assertSame(

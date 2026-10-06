@@ -6,6 +6,7 @@
 export type ForumCapability =
   | 'bit_connect_forum_create_comment'
   | 'bit_connect_forum_create_post'
+  | 'bit_connect_forum_create_tag'
   | 'bit_connect_forum_delete_any'
   | 'bit_connect_forum_delete_own_comment'
   | 'bit_connect_forum_delete_own_post'
