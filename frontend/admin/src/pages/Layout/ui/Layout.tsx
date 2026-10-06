@@ -27,7 +27,10 @@ const fallbackOf = () => {
 export default function Layout() {
   const isDarkTheme = useAtomValue($isDarkTheme)
   const antConfig = useToken()
-  const { key } = useLocation()
+  // Keyed by screen rather than by location: a screen's open tab is part of
+  // its address, and switching tabs must not remount the screen — the forms
+  // would reload and the panel cross-fade be cut short.
+  const screen = useLocation().pathname.split('/')[1] ?? ''
 
   return (
     <ThemeProvider theme={antConfig}>
@@ -52,7 +55,7 @@ export default function Layout() {
             crosses the window height makes it appear, and the whole screen
             jumps sideways by its width. */}
         <Content className="scroller thin" style={{ overflow: 'auto', scrollbarGutter: 'stable' }}>
-          <Suspense fallback={fallbackOf()} key={key}>
+          <Suspense fallback={fallbackOf()} key={screen}>
             <Outlet />
           </Suspense>
         </Content>

@@ -110,16 +110,16 @@ export default function AppRoutes() {
             <Route element={<OnboardingGuard />} path="/">
               <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="activity" />} index />
               <Route element={<Stages />} path="stages" />
-              <Route element={<General />} path="general" />
+              <Route element={<General />} path="general/:tab?" />
               <Route element={<Manager />} path="manager" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
               <Route element={<Notifications />} path="notifications" />
               <Route element={<Seo />} path="seo" />
-              <Route element={<Settings />} path="settings" />
+              <Route element={<Settings />} path="settings/:tab?" />
               {/* Support, the changelog and what the add-on adds. */}
               <Route element={<Support />} path="support" />
-              <Route element={<Tags />} path="tags" />
+              <Route element={<Tags />} path="tags/:tab?" />
               <Route element={<Status />} path="status" />
               <Route element={<TopicTypes />} path="topic-types" />
               {addedPages.map(page => (

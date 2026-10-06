@@ -1,6 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
 import useAutoSave from '@common/hooks/use-auto-save'
+import useRouteTab from '@common/hooks/use-route-tab'
 import useCopyToClipboard from '@common/hooks/useCopyToClipboard'
 import SaveStatus from '@utilities/save-status'
 import { ConfigProvider, Segmented, theme, Typography } from 'antd'
@@ -26,6 +27,8 @@ import { type GeneralSettings, type PortalFilters } from './shared/types'
 
 const { Title } = Typography
 
+const TAB_KEYS = ['branding', 'location', 'access', 'auth'] as const
+
 export default function General() {
   const { generalSettings, isGeneralSettingsPending } = useGeneralSettings()
   const { updateGeneralSettings } = useUpdateGeneralSettings()
@@ -39,7 +42,8 @@ export default function General() {
   const [form, setForm] = useState<GeneralSettings>(generalSettings)
   const [authForm, setAuthForm] = useState<AuthSettings>(authSettings)
   const [slugInput, setSlugInput] = useState('')
-  const [activeTab, setActiveTab] = useState('branding')
+  // In the address, so a refresh keeps the open tab and a tab can be linked to.
+  const { activeTab, setActiveTab } = useRouteTab('/general', TAB_KEYS)
 
   // Cards whose values live behind another endpoint save themselves and report
   // here, so the one status line covers them too.
@@ -250,7 +254,7 @@ export default function General() {
               // the thumb is still sliding. A 4px gap between items keeps a
               // hovered tab's fill from running into the open one.
               className="bc-max-w-full bc-overflow-x-auto bc-border bc-border-solid bc-border-line [&_.ant-segmented-item-label]:bc-flex [&_.ant-segmented-item-label]:bc-items-center [&_.ant-segmented-item-selected]:bc-font-semibold [&_.ant-segmented-group]:bc-gap-1"
-              onChange={value => setActiveTab(value)}
+              onChange={setActiveTab}
               options={tabOptions}
               value={activeTab}
             />

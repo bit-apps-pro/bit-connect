@@ -1,5 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useAutoSave from '@common/hooks/use-auto-save'
+import useRouteTab from '@common/hooks/use-route-tab'
 import PageTabs, { type PageTab } from '@utilities/page-tabs'
 import SaveStatus from '@utilities/save-status'
 import { Typography } from 'antd'
@@ -23,12 +24,15 @@ import {
 
 const { Title } = Typography
 
+const TAB_KEYS = ['topics', 'moderation', 'limits', 'data'] as const
+
 export default function Settings() {
   const { isSettingsPending, settings } = useSettings()
   const { updateSettings } = useUpdateSettings()
 
   const [form, setForm] = useState<SettingsFormData>()
-  const [activeTab, setActiveTab] = useState('topics')
+  // In the address, so a refresh keeps the open tab and a tab can be linked to.
+  const { activeTab, setActiveTab } = useRouteTab('/settings', TAB_KEYS)
 
   // Saved as it changes: each switch here is a whole setting on its own. A
   // short delay, since there is nothing to type — only a quick run of flips
