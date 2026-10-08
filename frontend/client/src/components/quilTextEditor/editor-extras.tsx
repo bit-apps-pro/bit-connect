@@ -13,10 +13,19 @@ export interface EditorExtras {
   onUpdate?: (quill: Quill) => void
   /** Drawn over the editor, inside its frame. */
   overlay?: ReactNode
-  /** Controls placed on the toolbar after the link button. */
+  /** Controls placed on the toolbar after the image button. */
   toolbar?: ReactNode
   /** A class for the editor's frame. */
   wrapperClassName?: string
+}
+
+/** What the editor lends its further tools. */
+export interface EditorTools {
+  /**
+   * Opens the file picker and uploads the chosen video into the text at the
+   * caret. Present only where the form takes video uploads.
+   */
+  pickVideo?: () => void
 }
 
 const NONE: EditorExtras = {}
@@ -25,6 +34,7 @@ const NONE: EditorExtras = {}
  * The editor's further tools: none. Its own toolbar is the whole of what this
  * plugin's editor offers.
  */
-export default function useEditorExtras(): EditorExtras {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- the contract a further tool is handed
+export default function useEditorExtras(_tools: EditorTools): EditorExtras {
   return NONE
 }

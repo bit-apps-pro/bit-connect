@@ -1,23 +1,8 @@
-import {
-  BoldOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  CodeOutlined,
-  EllipsisOutlined,
-  ItalicOutlined,
-  LinkOutlined,
-  OrderedListOutlined,
-  PaperClipOutlined,
-  PictureOutlined,
-  UnderlineOutlined,
-  UnorderedListOutlined,
-  VideoCameraAddOutlined,
-  WarningOutlined
-} from '@ant-design/icons'
+import { WarningOutlined } from '@ant-design/icons'
 import { __ } from '@common/helpers/i18nWrap'
 import { extractUploadError } from '@common/helpers/request'
 import { acceptMimeTypes } from '@features/file-uploader/attachment-validation'
-import { theme as antdTheme, Button, Flex, Input, Popover, Select, Tooltip, Typography } from 'antd'
+import { theme as antdTheme, Button, Flex, Input, type InputRef, Popover, Select, Tooltip, Typography } from 'antd'
 import Quill from 'quill'
 import {
   memo,
@@ -30,6 +15,20 @@ import {
   useRef,
   useState
 } from 'react'
+import {
+  LuBold,
+  LuCheck,
+  LuEllipsis,
+  LuImage,
+  LuItalic,
+  LuLink,
+  LuList,
+  LuListOrdered,
+  LuPaperclip,
+  LuSquareTerminal,
+  LuUnderline,
+  LuX
+} from 'react-icons/lu'
 import 'quill/dist/quill.snow.css'
 
 // Side-effect imports: register custom Quill modules/blots
@@ -257,7 +256,7 @@ interface QuillEditorProps {
   /** Most characters the text may hold, checked on submit. Unset is no limit. */
   maxLength?: number
   /** Most videos the text may hold. Unset is no limit; to allow none, leave
-   *  out `onVideoInsert` instead, which removes the control. */
+   *  out `onVideoInsert` instead, which withholds the video picker. */
   maxVideos?: number
   /** Opt-out: typing "@" offers the member list. On everywhere the portal
    *  composes forum content, because a mention is how you bring a colleague
@@ -270,7 +269,8 @@ interface QuillEditorProps {
   onImagePaste?: MediaHandler
   onSubmit?: (html: string) => void
   /** Uploads a video to play where it is placed in the text, as a picture
-   *  is placed. Given only where the forum takes video files at all. */
+   *  is placed. Given only where the forum takes video files at all; the
+   *  editor hands its picker to the further tools (see editor-extras). */
   onVideoInsert?: MediaHandler
   placeholder?: string
   /** Opt-in: adds the paragraph/heading select to the toolbar. Off by default
@@ -349,8 +349,13 @@ function QuillEditorInner({
   const linkInputRef = useRef('')
   const linkButtonRef = useRef<HTMLButtonElement>(null)
   const linkPopoverRef = useRef<HTMLDivElement>(null)
+  const linkFieldRef = useRef<InputRef>(null)
   const linkPopoverParts = useMemo(() => [linkButtonRef, linkPopoverRef], [])
-  const extras = useEditorExtras()
+  // Bound to the latest pickMedia, which is declared further down and rebuilt
+  // every render, so the tools are handed one stable function.
+  const pickMediaRef = useRef<((kind: MediaKind) => void) | undefined>(undefined)
+  const pickVideo = useCallback(() => pickMediaRef.current?.('video'), [])
+  const extras = useEditorExtras({ pickVideo: onVideoInsert ? pickVideo : undefined })
   // Read from inside Quill's listeners, which are bound once at mount.
   const extrasRef = useRef(extras)
   const [formatState, setFormatState] = useState<FormatState>({
@@ -914,6 +919,7 @@ function QuillEditorInner({
     })
     input.click()
   }
+  pickMediaRef.current = pickMedia
 
   const clearContent = () => {
     if (editorRef.current) {
@@ -986,19 +992,19 @@ function QuillEditorInner({
   const blockControls = [
     {
       active: formatState.list === 'bullet',
-      icon: <UnorderedListOutlined />,
+      icon: <LuList size={16} />,
       label: __('Bulleted list'),
       run: () => handleBlockFormat('list', 'bullet')
     },
     {
       active: formatState.list === 'ordered',
-      icon: <OrderedListOutlined />,
+      icon: <LuListOrdered size={16} />,
       label: __('Numbered list'),
       run: () => handleBlockFormat('list', 'ordered')
     },
     {
       active: formatState.codeBlock,
-      icon: <CodeOutlined />,
+      icon: <LuSquareTerminal size={16} />,
       label: __('Code block'),
       run: () => handleBlockFormat('code-block', true)
     }
@@ -1034,7 +1040,7 @@ function QuillEditorInner({
       {onAttachment && (
         <Button
           block
-          icon={<PaperClipOutlined />}
+          icon={<LuPaperclip size={16} />}
           onClick={() => {
             handleAttachment()
             setMoreOpen(false)
@@ -1098,7 +1104,7 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Bold')}
                 aria-pressed={formatState.bold}
-                icon={<BoldOutlined />}
+                icon={<LuBold size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('bold'))}
                 size="small"
                 title={__('Bold')}
@@ -1107,7 +1113,7 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Italic')}
                 aria-pressed={formatState.italic}
-                icon={<ItalicOutlined />}
+                icon={<LuItalic size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('italic'))}
                 size="small"
                 title={__('Italic')}
@@ -1116,13 +1122,17 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Underline')}
                 aria-pressed={formatState.underline}
-                icon={<UnderlineOutlined />}
+                icon={<LuUnderline size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('underline'))}
                 size="small"
                 title={__('Underline')}
                 type={formatState.underline ? 'primary' : 'text'}
               />
               <Popover
+                // Focused once open, so typing the address is the next keystroke.
+                afterOpenChange={isOpen => {
+                  if (isOpen) linkFieldRef.current?.focus()
+                }}
                 arrow={false}
                 content={
                   <div className={styles.linkPopoverContent} ref={linkPopoverRef}>
@@ -1136,27 +1146,31 @@ function QuillEditorInner({
                         if (e.key === 'Escape') closeLinkPopover()
                       }}
                       placeholder="Search or type URL"
+                      ref={linkFieldRef}
                       size="middle"
+                      // Plain icons inside the field, as the permalink's inline
+                      // edit has them: cancel first, confirm in the accent colour.
                       suffix={
-                        <Flex gap={4}>
-                          <Button
-                            aria-label={__('Apply link')}
-                            className={styles.linkSubmitBtn}
-                            icon={<CheckOutlined />}
-                            onClick={applyLink}
-                            size="small"
-                            title={__('Apply link')}
-                            type="primary"
-                          />
+                        <span className="bc-flex bc-items-center bc-gap-0.5">
                           <Button
                             aria-label={__('Cancel link')}
-                            className={styles.linkSubmitBtn}
-                            icon={<CloseOutlined />}
+                            className="bc-h-6 bc-w-6 bc-min-w-0 bc-p-0 bc-text-ink-muted"
+                            icon={<LuX size={15} />}
                             onClick={closeLinkPopover}
                             size="small"
                             title={__('Cancel link')}
+                            type="text"
                           />
-                        </Flex>
+                          <Button
+                            aria-label={__('Apply link')}
+                            className="bc-h-6 bc-w-6 bc-min-w-0 bc-p-0 bc-text-primary"
+                            icon={<LuCheck size={15} />}
+                            onClick={applyLink}
+                            size="small"
+                            title={__('Apply link')}
+                            type="text"
+                          />
+                        </span>
                       }
                       value={linkInputValue}
                       variant="outlined"
@@ -1175,7 +1189,7 @@ function QuillEditorInner({
                 <Button
                   aria-label={__('Insert link')}
                   aria-pressed={formatState.link}
-                  icon={<LinkOutlined />}
+                  icon={<LuLink size={16} />}
                   onMouseDown={handleLinkButtonClick}
                   ref={linkButtonRef}
                   size="small"
@@ -1183,7 +1197,6 @@ function QuillEditorInner({
                   type={formatState.link ? 'primary' : 'text'}
                 />
               </Popover>
-              {extras.toolbar}
             </div>
             <div className="bc-hidden bc-items-center bc-gap-1 md:bc-flex">
               {blockControls.map(control => (
@@ -1199,35 +1212,26 @@ function QuillEditorInner({
                 />
               ))}
             </div>
-            {(onImageInsert || onVideoInsert) && (
+            {(onImageInsert || extras.toolbar) && (
               <div className="bc-flex bc-items-center bc-gap-1">
                 {onImageInsert && (
                   <Button
                     aria-label={__('Insert image')}
-                    icon={<PictureOutlined />}
+                    icon={<LuImage size={16} />}
                     onClick={() => pickMedia('image')}
                     size="small"
                     title={__('Insert image')}
                     type="text"
                   />
                 )}
-                {onVideoInsert && (
-                  <Button
-                    aria-label={__('Upload video')}
-                    icon={<VideoCameraAddOutlined />}
-                    onClick={() => pickMedia('video')}
-                    size="small"
-                    title={__('Upload video')}
-                    type="text"
-                  />
-                )}
+                {extras.toolbar}
               </div>
             )}
             {onAttachment && (
               <div className="bc-hidden bc-items-center bc-gap-1 md:bc-flex">
                 <Button
                   aria-label={__('Attach file')}
-                  icon={<PaperClipOutlined />}
+                  icon={<LuPaperclip size={16} />}
                   onClick={handleAttachment}
                   size="small"
                   title={__('Attach file')}
@@ -1250,7 +1254,7 @@ function QuillEditorInner({
                 <Button
                   aria-expanded={moreOpen}
                   aria-label={__('More formatting')}
-                  icon={<EllipsisOutlined />}
+                  icon={<LuEllipsis size={16} />}
                   onMouseDown={rememberSelection}
                   size="small"
                   title={__('More formatting')}
