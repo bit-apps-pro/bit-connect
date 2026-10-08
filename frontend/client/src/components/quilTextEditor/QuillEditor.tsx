@@ -19,6 +19,7 @@ import Quill from 'quill'
 import {
   memo,
   type ReactNode,
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -38,6 +39,7 @@ import { setImageLoadingProgress } from './quill-image-loading-blot'
 import { countCharacters, validateContent, type ValidationResult } from './quill-validation'
 import { formatForWordPress } from './quill-wp-formatter'
 import styles from './QuillEditor.module.css'
+import useOutsideDismiss from './use-outside-dismiss'
 
 /**
  * Uploads `file` and calls `insertImage` with the resulting URL. `onProgress`
@@ -288,6 +290,9 @@ function QuillEditorInner({
   const menuHeadingSelectId = useId()
   const [linkInputValue, setLinkInputValue] = useState('')
   const linkInputRef = useRef('')
+  const linkButtonRef = useRef<HTMLButtonElement>(null)
+  const linkPopoverRef = useRef<HTMLDivElement>(null)
+  const linkPopoverParts = useMemo(() => [linkButtonRef, linkPopoverRef], [])
   const extras = useEditorExtras()
   // Read from inside Quill's listeners, which are bound once at mount.
   const extrasRef = useRef(extras)
@@ -718,6 +723,13 @@ function QuillEditorInner({
     setFormatState(prev => ({ ...prev, link: true }))
   }
 
+  const closeLinkPopover = useCallback(() => {
+    setLinkPopoverOpen(false)
+    setFormatState(prev => ({ ...prev, link: false }))
+  }, [])
+
+  useOutsideDismiss(linkPopoverOpen, linkPopoverParts, closeLinkPopover)
+
   const applyLink = () => {
     const quill = editorRef.current
     if (!quill) return
@@ -983,7 +995,7 @@ function QuillEditorInner({
               <Popover
                 arrow={false}
                 content={
-                  <div className={styles.linkPopoverContent}>
+                  <div className={styles.linkPopoverContent} ref={linkPopoverRef}>
                     <Input
                       onChange={e => {
                         linkInputRef.current = e.target.value
@@ -991,7 +1003,7 @@ function QuillEditorInner({
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') applyLink()
-                        if (e.key === 'Escape') setLinkPopoverOpen(false)
+                        if (e.key === 'Escape') closeLinkPopover()
                       }}
                       placeholder="Search or type URL"
                       size="middle"
@@ -1010,7 +1022,7 @@ function QuillEditorInner({
                             aria-label={__('Cancel link')}
                             className={styles.linkSubmitBtn}
                             icon={<CloseOutlined />}
-                            onClick={() => setLinkPopoverOpen(false)}
+                            onClick={closeLinkPopover}
                             size="small"
                             title={__('Cancel link')}
                           />
@@ -1022,10 +1034,7 @@ function QuillEditorInner({
                   </div>
                 }
                 onOpenChange={open => {
-                  if (!open) {
-                    setLinkPopoverOpen(false)
-                    setFormatState(prev => ({ ...prev, link: false }))
-                  }
+                  if (!open) closeLinkPopover()
                 }}
                 open={linkPopoverOpen}
                 overlayStyle={{ boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
@@ -1038,6 +1047,7 @@ function QuillEditorInner({
                   aria-pressed={formatState.link}
                   icon={<LinkOutlined />}
                   onMouseDown={handleLinkButtonClick}
+                  ref={linkButtonRef}
                   size="small"
                   title={__('Insert link')}
                   type={formatState.link ? 'primary' : 'text'}
