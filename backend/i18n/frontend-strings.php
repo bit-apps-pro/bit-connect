@@ -1371,6 +1371,14 @@ return [
 
     'Please enter a description or add an image' => __('Please enter a description or add an image', 'bit-connect'),
 
+    'Please enter a description, or add an image or a video' => __('Please enter a description, or add an image or a video', 'bit-connect'),
+
+    'Please enter a description or add a video' => __('Please enter a description or add a video', 'bit-connect'),
+
+    'Please enter a description' => __('Please enter a description', 'bit-connect'),
+
+    'Please wait for the upload to finish' => __('Please wait for the upload to finish', 'bit-connect'),
+
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     'Description cannot exceed %s characters' => __('Description cannot exceed %s characters', 'bit-connect'),
 

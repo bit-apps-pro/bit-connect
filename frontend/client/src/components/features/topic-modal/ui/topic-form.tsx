@@ -6,7 +6,6 @@ import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { acceptsVideo, validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
-import { countCharacters } from '@components/quilTextEditor/quill-validation'
 import config from '@config/config'
 import FileUploader from '@features/file-uploader'
 import useFileStore, { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
@@ -23,14 +22,9 @@ import { useAuthStore } from '@/store/auth.zustand'
 import useAddedTermFields from '../data/use-added-term-fields'
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 import useVisibilityOptions from '../data/use-visibility-options'
+import { descriptionProblem } from '../shared/description-problem'
 import { MAX_TAGS_PER_TOPIC } from '../shared/type'
 import PermalinkField from './permalink-field'
-
-const stripHtml = (html: string) =>
-  html
-    .replaceAll(/<[^>]*>/g, '')
-    .replaceAll(/&nbsp;/gi, ' ')
-    .trim()
 
 export default function TopicForm({
   form,
@@ -67,8 +61,10 @@ export default function TopicForm({
     images: maxImages,
     videos: maxVideos
   } = config.POSTING_LIMITS.topic
+  const canAddImage = maxImages > 0
+  const canAddVideo = maxVideos > 0 && acceptsVideo()
   // Videos are counted apart from other files, so either may keep the control.
-  const canAttach = maxAttachments > 0 || (maxVideos > 0 && acceptsVideo())
+  const canAttach = maxAttachments > 0 || canAddVideo
 
   // Both modals mount this form only while they are open, so the flag starts
   // false on every open without needing to watch the modal itself.
@@ -308,21 +304,8 @@ export default function TopicForm({
         rules={[
           {
             validator: (_, value = '') => {
-              const html = value
-              const text = stripHtml(html)
-              // An image on its own is a valid description — a screenshot often
-              // says more than the paragraph describing it.
-              if (!text && !/<img\b/i.test(html)) {
-                return Promise.reject(new Error(__('Please enter a description or add an image')))
-              }
-              if (countCharacters(html) > maxLength) {
-                return Promise.reject(
-                  new Error(
-                    __('Description cannot exceed %s characters').replace('%s', maxLength.toLocaleString())
-                  )
-                )
-              }
-              return Promise.resolve()
+              const problem = descriptionProblem(value, { canAddImage, canAddVideo, maxLength })
+              return problem ? Promise.reject(new Error(problem)) : Promise.resolve()
             }
           }
         ]}
@@ -332,11 +315,11 @@ export default function TopicForm({
           maxLength={maxLength}
           maxVideos={maxVideos}
           onChange={handleContentChange}
-          onImageInsert={maxImages > 0 ? handleImageInsert : undefined}
-          onImagePaste={maxImages > 0 ? handleImageInsert : undefined}
+          onImageInsert={canAddImage ? handleImageInsert : undefined}
+          onImagePaste={canAddImage ? handleImageInsert : undefined}
           // Only where the forum takes video files at all: the control would
           // otherwise open a picker that refuses everything.
-          onVideoInsert={maxVideos > 0 && acceptsVideo() ? handleVideoInsert : undefined}
+          onVideoInsert={canAddVideo ? handleVideoInsert : undefined}
           placeholder={__('Write your topic description...')}
           showHeadings={true}
           showToolbar={true}
