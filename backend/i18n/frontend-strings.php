@@ -39,6 +39,8 @@ return [
 
     'Preview' => __('Preview', 'bit-connect'),
 
+    'Play' => __('Play', 'bit-connect'),
+
     'Sample' => __('Sample', 'bit-connect'),
 
     'Icon Preview' => __('Icon Preview', 'bit-connect'),

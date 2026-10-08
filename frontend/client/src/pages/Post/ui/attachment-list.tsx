@@ -1,7 +1,7 @@
 import { DownloadOutlined } from '@ant-design/icons'
 import { __ } from '@common/helpers/i18nWrap'
 import { type TopicAttachmentInfo } from '@features/topic-modal/shared/type'
-import { Button, Image, Tooltip } from 'antd'
+import { Button, Image, Modal, Tooltip } from 'antd'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -61,36 +61,15 @@ export default function AttachmentList({
 }) {
   const [expanded, setExpanded] = useState(false)
   const [previewAt, setPreviewAt] = useState(CLOSED)
+  const [playing, setPlaying] = useState<TopicAttachmentInfo>()
 
-  // A video is watched where it was posted, so it leaves the chips for a player
-  // of its own. The rest stay one list, whatever they are.
-  const videos = attachments.filter(element => isVideo(element))
-  const files = attachments.filter(element => !isVideo(element))
-  const images = files.filter(element => isImage(element))
-  const hiddenCount = files.length - VISIBLE_LIMIT
-  const visible = expanded ? files : files.slice(0, VISIBLE_LIMIT)
+  const images = attachments.filter(element => isImage(element))
+  const hiddenCount = attachments.length - VISIBLE_LIMIT
+  const visible = expanded ? attachments : attachments.slice(0, VISIBLE_LIMIT)
   const shell = `${CHIP_SHELL} ${chipFill(variant)}`
 
   return (
     <div className={className}>
-      {/* The browser's own player, served from the site's own uploads — no
-          third party involved, unlike a linked video. `metadata` fetches enough
-          to show the length and first frame without downloading the file before
-          anyone presses play. A format the browser cannot play still has its
-          chip underneath, so the file is never out of reach. */}
-      {videos.map(video => (
-        <div className="bc-mb-2 bc-flex bc-max-w-[560px] bc-flex-col bc-gap-1" key={video.id}>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- a member's upload carries no caption track to offer */}
-          <video
-            aria-label={video.filename}
-            className="bc-block bc-aspect-video bc-w-full bc-rounded-lg bc-bg-black"
-            controls
-            preload="metadata"
-            src={video.url}
-          />
-          <AttachmentDownloadButton attachment={video} variant={variant} />
-        </div>
-      ))}
 
       {/* Equal cells rather than pills each as wide as its own filename: a
           column of chips that all end in a different place reads as a ragged
@@ -130,6 +109,39 @@ export default function AttachmentList({
                       className="bc-h-5 bc-w-5 bc-shrink-0 bc-rounded bc-object-cover"
                       src={attachment.url}
                     />
+                    <AttachmentLabel attachment={attachment} />
+                  </button>
+                </Tooltip>
+                <Tooltip title={__('Download')}>
+                  <a
+                    aria-label={`${__('Download')} ${attachment.filename}`}
+                    className={CHIP_ACTION}
+                    download={attachment.filename}
+                    href={attachment.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <DownloadOutlined />
+                  </a>
+                </Tooltip>
+              </div>
+            )
+          }
+
+          // A video: a chip like a picture, its name opening a player over the
+          // page. A full player inline cost a 16:9 block per clip under a post
+          // whose text may already show one, and a video placed in the text
+          // is the way to show it inline.
+          if (isVideo(attachment)) {
+            return (
+              <div className={shell} key={attachment.id}>
+                <Tooltip title={`${__('Play')} ${attachment.filename}`}>
+                  <button
+                    className={`${CHIP_BODY} bc-cursor-pointer bc-border-0 bc-bg-transparent bc-p-0 bc-[font:inherit] hover:bc-text-primary`}
+                    onClick={() => setPlaying(attachment)}
+                    type="button"
+                  >
+                    {fileIconOf(attachment)}
                     <AttachmentLabel attachment={attachment} />
                   </button>
                 </Tooltip>
@@ -200,6 +212,35 @@ export default function AttachmentList({
           {expanded ? __('Show less') : `+${hiddenCount} ${__('more')}`}
         </Button>
       )}
+
+      {/* The browser's own player, served from the site's own uploads with no
+          third party involved. Destroyed on close so the clip stops: antd does
+          not re-render a closing modal's content, so emptying `playing` alone
+          left the video playing behind the page. A format the browser cannot
+          play keeps its download arrow. */}
+      <Modal
+        centered
+        destroyOnClose
+        // antd reads `null` as "no footer"; `undefined` brings back OK/Cancel.
+        // eslint-disable-next-line unicorn/no-null
+        footer={null}
+        onCancel={() => setPlaying(undefined)}
+        open={!!playing}
+        title={playing?.filename}
+        width={800}
+      >
+        {playing && (
+          // eslint-disable-next-line jsx-a11y/media-has-caption -- a member's upload carries no caption track to offer
+          <video
+            aria-label={playing.filename}
+            autoPlay
+            className="bc-block bc-max-h-[75vh] bc-w-full bc-rounded-lg bc-bg-black"
+            controls
+            playsInline
+            src={playing.url}
+          />
+        )}
+      </Modal>
 
       {/* The viewer with no thumbnails of its own: `items` gives the group its
           pictures, and the chips above say which one to open. Every picture is
