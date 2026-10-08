@@ -34,6 +34,7 @@ use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\UploadClaims;
 use BitApps\BitConnect\Services\UserBadgeService;
 use InvalidArgumentException;
 use WP_Comment;
@@ -232,6 +233,10 @@ final class CommentController
             update_comment_meta($commentId, '_bit_connect_comment_attachments', $attachments);
         }
 
+        // The files attached to the reply and the pictures placed in it are in
+        // use now, so the cleanup of unused uploads leaves them alone.
+        UploadClaims::claim(array_merge((array) $attachments, UploadClaims::idsInContent($content)));
+
         $comment = get_comment($commentId);
         if (!$comment) {
             return Response::error('Comment created but could not be retrieved', 500);
@@ -331,6 +336,8 @@ final class CommentController
                 delete_comment_meta($commentId, '_bit_connect_comment_attachments');
             }
         }
+
+        UploadClaims::claim(array_merge($newAttachmentIds ?? [], UploadClaims::idsInContent($content)));
 
         $updatedComment = get_comment($commentId);
         if (!$updatedComment) {

@@ -38,7 +38,8 @@ const WP = {
   LIST_ITEM: '',
   QUOTE: 'wp-block-quote',
   SEPARATOR: 'wp-block-separator',
-  TABLE: 'wp-block-table'
+  TABLE: 'wp-block-table',
+  VIDEO: 'wp-block-video'
 } as const
 
 // ---------------------------------------------------------------------------
@@ -163,6 +164,10 @@ function transformElement(element: HTMLElement, parent: Element): void {
       transformList(element)
       break
     }
+    case 'video': {
+      transformVideo(element, parent)
+      break
+    }
     default: {
       stripQuillClasses(element)
       stripInlineStyle(element)
@@ -282,6 +287,29 @@ function transformImage(element: HTMLElement, parent: Element): void {
   const clone = element.cloneNode(true) as HTMLElement
   figure.append(clone)
 
+  element.replaceWith(figure)
+}
+
+/** What a stored video carries: its file, and how the browser should offer it. */
+const VIDEO_ATTRIBUTES = new Set(['controls', 'playsinline', 'preload', 'src'])
+
+/**
+ * Promote an uploaded video to Gutenberg's video block, as an image is: the
+ * editor's own attributes (contenteditable, ql- classes) go, and the player
+ * is wrapped in <figure class="wp-block-video"> unless it already sits in one.
+ */
+function transformVideo(element: HTMLElement, parent: Element): void {
+  for (const name of element.getAttributeNames()) {
+    if (!VIDEO_ATTRIBUTES.has(name)) element.removeAttribute(name)
+  }
+  element.setAttribute('controls', '')
+  if (!element.hasAttribute('preload')) element.setAttribute('preload', 'metadata')
+
+  if (parent.tagName.toLowerCase() === 'figure') return
+
+  const figure = element.ownerDocument.createElement('figure')
+  figure.className = WP.VIDEO
+  figure.append(element.cloneNode(true))
   element.replaceWith(figure)
 }
 

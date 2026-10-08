@@ -145,21 +145,24 @@ final class PostingLimits
             throw new InvalidArgumentException(esc_html(self::imagesMessage($context, $limits['images'])));
         }
 
-        if ($attachments === null) {
-            return;
-        }
+        // A video is counted against the videos limit wherever it is — placed
+        // in the text or attached below it — and every other file against the
+        // files limit, so allowing a few videos does not quietly mean allowing
+        // as many videos as files.
+        $videos = $content !== null ? self::countVideos($content) : 0;
+        $files = 0;
 
-        // A video is counted against the videos limit and every other file
-        // against the files limit, so allowing a few videos does not quietly
-        // mean allowing as many videos as files.
-        $videos = \count(array_filter($attachments, fn ($id) => self::isVideo((int) $id)));
-        $files = \count($attachments) - $videos;
+        if ($attachments !== null) {
+            $attached = \count(array_filter($attachments, fn ($id) => self::isVideo((int) $id)));
+            $videos += $attached;
+            $files = \count($attachments) - $attached;
+        }
 
         if ($limits['videos'] !== null && $videos > $limits['videos']) {
             throw new InvalidArgumentException(esc_html(self::videosMessage($context, $limits['videos'])));
         }
 
-        if ($limits['attachments'] !== null && $files > $limits['attachments']) {
+        if ($attachments !== null && $limits['attachments'] !== null && $files > $limits['attachments']) {
             throw new InvalidArgumentException(esc_html(self::filesMessage($context, $limits['attachments'])));
         }
     }
@@ -178,6 +181,12 @@ final class PostingLimits
     public static function countImages(string $content): int
     {
         return (int) preg_match_all('/<img\b/i', $content);
+    }
+
+    /** Videos uploaded into the text; a linked YouTube address is a link, not one of these. */
+    public static function countVideos(string $content): int
+    {
+        return (int) preg_match_all('/<video\b/i', $content);
     }
 
     /**

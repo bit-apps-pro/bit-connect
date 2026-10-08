@@ -19,6 +19,8 @@ class ImageLoadingBlot extends EmbedBase {
     node.dataset.loadingId = id
     node.setAttribute('contenteditable', 'false')
     node.setAttribute('aria-label', 'Uploading image…')
+    // A click cancels the upload (QuillEditor); the tooltip says so.
+    node.setAttribute('title', 'Click to cancel the upload')
     // Announce progress to assistive tech as it changes, and give the CSS a
     // value to render beside the spinner.
     node.setAttribute('role', 'progressbar')
@@ -30,6 +32,16 @@ class ImageLoadingBlot extends EmbedBase {
   static value(node: HTMLElement): string {
     return node.dataset.loadingId ?? ''
   }
+}
+
+/**
+ * Names what the placeholder is waiting for. The blot is created with a
+ * picture's label; an uploading video says so instead, to assistive tech and
+ * to anyone hovering it.
+ */
+export function setUploadLabel(root: HTMLElement, id: string, label: string): void {
+  const node = root.querySelector<HTMLElement>(`[data-loading-id="${CSS.escape(id)}"]`)
+  node?.setAttribute('aria-label', label)
 }
 
 /**

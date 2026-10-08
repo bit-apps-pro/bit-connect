@@ -693,6 +693,40 @@ if (!function_exists('home_url')) {
     }
 }
 
+if (!function_exists('wp_upload_dir')) {
+    function wp_upload_dir()
+    {
+        return [
+            'baseurl' => $GLOBALS['__wp_upload_baseurl'] ?? home_url('/wp-content/uploads'),
+            'basedir' => $GLOBALS['__wp_upload_basedir'] ?? sys_get_temp_dir() . '/bit-connect-test-uploads',
+        ];
+    }
+}
+
+if (!function_exists('attachment_url_to_postid')) {
+    // Tests map an upload's address to its attachment in __wp_attachment_urls.
+    function attachment_url_to_postid($url)
+    {
+        return (int) ($GLOBALS['__wp_attachment_urls'][$url] ?? 0);
+    }
+}
+
+if (!function_exists('wp_mkdir_p')) {
+    function wp_mkdir_p($target)
+    {
+        return is_dir($target) || mkdir($target, 0777, true);
+    }
+}
+
+if (!function_exists('wp_delete_file')) {
+    function wp_delete_file($file)
+    {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+}
+
 if (!function_exists('get_bloginfo')) {
     function get_bloginfo($show = '')
     {

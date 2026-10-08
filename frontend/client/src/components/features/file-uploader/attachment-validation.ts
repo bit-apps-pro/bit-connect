@@ -225,12 +225,15 @@ export function validateAttachment(file: File): AttachmentValidationResult {
 /**
  * Antd Upload `accept` prop value — a comma-separated list of MIME types.
  */
-export function acceptMimeTypes(): string {
+export function acceptMimeTypes(kind?: FileKind): string {
   // Extensions as well as MIME types: a picker filtering on MIME alone hides
   // files the OS has no type registered for, which is common outside the
   // everyday image and document formats.
   const accepted = new Set<string>()
   for (const extension of Object.keys(allowedTypes())) {
+    // Only one kind, when asked for one: the picker behind "Upload video"
+    // should offer the video formats the forum takes and nothing else.
+    if (kind && fileKindOf(`x.${extension}`) !== kind) continue
     accepted.add(`.${extension}`)
     for (const mime of reportedMimesOf(extension)) accepted.add(mime)
   }

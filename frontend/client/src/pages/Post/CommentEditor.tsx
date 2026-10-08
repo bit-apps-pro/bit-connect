@@ -8,7 +8,8 @@ import {
 } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
-import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers/request'
+import queryRequest, { extractUploadError } from '@common/helpers/request'
+import uploadAttachment from '@common/helpers/upload-attachment'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import {
   acceptsVideo,
@@ -176,10 +177,7 @@ export default function CommentEditor({
     )
 
     try {
-      const formData = new FormData()
-      formData.append('file', fileItem.file)
-
-      const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
+      const response = await uploadAttachment<WPAttachmentData>(fileItem.file, {
         onProgress: percent =>
           setFiles(prev =>
             prev.map(f => (f.fileId === fileItem.fileId ? { ...f, progress: percent } : f))
@@ -213,7 +211,12 @@ export default function CommentEditor({
   }, [])
 
   const handleImagePaste = useCallback(
-    async (file: File, insertImage: (url: string) => void, onProgress?: (n: number) => void) => {
+    async (
+      file: File,
+      insertImage: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
       try {
         // Same gate the attach button uses. Without it a logged-out visitor
         // picks a file, the upload 400s on the nonce check, and the image just
@@ -234,21 +237,20 @@ export default function CommentEditor({
         const validation = validateAttachment(resized)
         if (!validation.valid) throw new Error(validation.error)
 
-        const formData = new FormData()
-        formData.append('file', resized)
-        const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
-          onProgress
-        })
+        const response = await uploadAttachment<WPAttachmentData>(resized, { onProgress, signal })
         insertImage(response.data.url)
       } catch (error_) {
         // The editor's own message is a tooltip on the submit button that clears
         // on the next keystroke, so a failed image could go unnoticed. Report it
-        // the way every other failure in the app is reported, then rethrow so the
-        // editor still removes its loading placeholder.
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to upload image'),
-          ...notificationOptions('error')
-        })
+        // the way every other failure in the app is reported — in the server's
+        // own words when it gave any — then rethrow so the editor still removes
+        // its loading placeholder. A cancelled upload is not a failure.
+        if (!signal?.aborted) {
+          notificationApi?.error({
+            message: extractUploadError(error_),
+            ...notificationOptions('error')
+          })
+        }
         throw error_
       }
     },

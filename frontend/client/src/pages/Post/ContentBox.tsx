@@ -204,6 +204,24 @@ const COMPACT_HEADING_CLASSES = [
   '[&_:is(h1,h2,h3,h4,h5,h6)]:bc-my-0'
 ].join(' ')
 
+/**
+ * A video uploaded into the body plays where it was placed, with the browser's
+ * own controls — the site's own file, so no third party is involved, unlike a
+ * linked video. The column is a ceiling; a clip keeps its 16:9 box until its
+ * metadata says otherwise, so the page does not jump when it arrives. The
+ * figure Gutenberg's video block wraps it in carries no margin of its own.
+ */
+const VIDEO_CLASSES = [
+  '[&_video]:bc-block',
+  '[&_video]:bc-w-full',
+  '[&_video]:bc-max-w-[560px]',
+  '[&_video]:bc-aspect-video',
+  '[&_video]:bc-rounded-lg',
+  '[&_video]:bc-bg-black',
+  '[&_video]:bc-my-2',
+  '[&_figure]:bc-m-0'
+].join(' ')
+
 /** Visible text of a fragment of HTML, without a DOM parse — SSR safe. */
 const plainTextOf = (html: string) =>
   html
@@ -369,8 +387,7 @@ export default function ContentBox({
           what kept long content inside the card. */}
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
-        // eslint-disable-next-line max-len -- long Tailwind utility string
-        className={`${styles.body} ${emojiOnly ? styles.emojiOnly : ''} bc-mb-4 bc-w-full bc-break-words bc-text-[15px] bc-leading-[1.6] [&_strong]:bc-font-bold [&_em]:bc-italic [&_u]:bc-underline [&_a]:bc-text-blue-500 [&_a]:hover:bc-text-blue-600 [&_a]:hover:bc-underline [&_a]:bc-underline-offset-2 ${compact ? `[&_p]:bc-mb-0 [&_p]:bc-mt-0 [&_img]:bc-hidden ${COMPACT_HEADING_CLASSES}` : `${imageClasses} ${HEADING_CLASSES}`} ${className || ''}`}
+        className={`${styles.body} ${emojiOnly ? styles.emojiOnly : ''} bc-mb-4 bc-w-full bc-break-words bc-text-[15px] bc-leading-[1.6] [&_strong]:bc-font-bold [&_em]:bc-italic [&_u]:bc-underline [&_a]:bc-text-blue-500 [&_a]:hover:bc-text-blue-600 [&_a]:hover:bc-underline [&_a]:bc-underline-offset-2 ${compact ? `[&_p]:bc-mb-0 [&_p]:bc-mt-0 [&_img]:bc-hidden [&_video]:bc-hidden ${COMPACT_HEADING_CLASSES}` : `${imageClasses} ${VIDEO_CLASSES} ${HEADING_CLASSES}`} ${className || ''}`}
         dangerouslySetInnerHTML={{ __html: safeContent }}
         onClick={handleClick}
         onKeyDown={handleKeyDown}

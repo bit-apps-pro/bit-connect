@@ -140,6 +140,43 @@ export async function proxyRequest<T>(data: EndpointType): Promise<Response<T>> 
 const transportFailure = <T>(message: string): Response<T> =>
   ({ code: 'ERROR', data: message, status: 'error' }) as Response<T>
 
+/**
+ * Statuses that say the request did not get through rather than that it was
+ * refused: a proxy or the server gave up, or was busy. Sending the same thing
+ * again may work. 524 and 522 are Cloudflare's own timeouts.
+ */
+const TRANSIENT_STATUSES = new Set([408, 429, 500, 502, 503, 504, 522, 524])
+
+/**
+ * Marks a failure as worth trying again, without adding a field to the
+ * envelope callers compare and read.
+ */
+function retryable<T>(failure: T): T {
+  if (failure && typeof failure === 'object') {
+    Object.defineProperty(failure, 'retryable', { enumerable: false, value: true })
+  }
+  return failure
+}
+
+/** Whether an upload failure was the connection or a busy server, not a refusal. */
+export const isRetryableFailure = (error: unknown): boolean =>
+  Boolean(error && typeof error === 'object' && (error as { retryable?: boolean }).retryable)
+
+/**
+ * What to tell a member when the server answered with a page rather than the
+ * plugin's JSON — which is what a web server, a proxy or PHP itself sends when
+ * it stops an upload before WordPress sees it.
+ */
+function uploadStatusMessage(status: number): string {
+  if (status === 413) {
+    return 'This file is larger than the server accepts. Try a smaller file.'
+  }
+  if (TRANSIENT_STATUSES.has(status)) {
+    return 'The server took too long to receive the upload. Try again, or use a smaller file or a faster connection.'
+  }
+  return status >= 400 ? `The server could not accept the upload (error ${status}).` : 'Unexpected response from the server.'
+}
+
 export interface UploadOptions {
   /** Receives 0–100 as the request body is sent. Only fires when the browser can measure the total. */
   onProgress?: (percent: number) => void
@@ -175,16 +212,19 @@ export function uploadRequest<T>(
     }
 
     xhr.addEventListener('load', () => {
+      const transient = TRANSIENT_STATUSES.has(xhr.status)
+
       let parsed: unknown
       try {
         parsed = JSON.parse(xhr.responseText)
       } catch {
-        reject(transportFailure<T>('Unexpected response from the server.'))
+        const failure = transportFailure<T>(uploadStatusMessage(xhr.status))
+        reject(transient ? retryable(failure) : failure)
         return
       }
 
       if (xhr.status < 200 || xhr.status >= 300) {
-        reject(parsed)
+        reject(transient ? retryable(parsed) : parsed)
         return
       }
 
@@ -194,8 +234,10 @@ export function uploadRequest<T>(
       resolve(parsed as Response<T>)
     })
 
-    xhr.addEventListener('error', () => reject(transportFailure<T>('Network error while uploading.')))
-    xhr.addEventListener('timeout', () => reject(transportFailure<T>('The upload timed out.')))
+    xhr.addEventListener('error', () =>
+      reject(retryable(transportFailure<T>('The connection dropped while uploading. Check your connection and try again.')))
+    )
+    xhr.addEventListener('timeout', () => reject(retryable(transportFailure<T>('The upload timed out.'))))
     xhr.addEventListener('abort', () => reject(transportFailure<T>('Upload cancelled.')))
 
     if (signal) {

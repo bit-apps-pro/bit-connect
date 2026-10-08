@@ -187,6 +187,28 @@ final class PostingLimitsTest extends TestCase
         PostingLimits::assertWithin('comment', null, [1, 2, 4]);
     }
 
+    public function testAVideoPlacedInTheTextCountsWithTheAttachedOnes(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['videos' => 2]];
+        $GLOBALS['__wp_mime_types'] = [1 => 'video/mp4', 2 => 'application/pdf'];
+
+        $inline = '<p>Watch</p><figure class="wp-block-video"><video src="a.mp4" controls></video></figure>';
+
+        // One in the text and one attached: two, within the limit.
+        PostingLimits::assertWithin('topic', $inline, [1, 2]);
+
+        $this->expectExceptionMessage('You can add up to 2 videos to a topic.');
+        PostingLimits::assertWithin('topic', $inline . '<VIDEO src="b.mp4"></VIDEO>', [1, 2]);
+    }
+
+    public function testAVideoInTheTextIsCountedEvenWhenNoAttachmentsAreSent(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['comment' => ['videos' => 0]];
+
+        $this->expectExceptionMessage('Videos cannot be added to a comment.');
+        PostingLimits::assertWithin('comment', '<video src="a.mp4"></video>', null);
+    }
+
     public function testAZeroVideoLimitRefusesAnyVideo(): void
     {
         $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['videos' => 0]];

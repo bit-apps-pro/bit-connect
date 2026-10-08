@@ -4,6 +4,7 @@ namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\UploadClaims;
 use PHPUnit\Framework\TestCase;
 use WP_Comment;
 use WP_Post;
@@ -328,6 +329,71 @@ final class TopicServiceWriteTest extends TestCase
         $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
     }
 
+    /**
+     * A picture or video placed in the text belongs to the topic as much as a
+     * file below it does: linked to it, so it goes when the topic goes, and
+     * no longer waiting for the cleanup of unused uploads.
+     */
+    public function testAnUploadPlacedInTheTextIsLinkedToTheTopicAndClaimed(): void
+    {
+        $this->seedTopic(20, []);
+        $this->seedAttachment(90, 0, self::AUTHOR);
+        UploadClaims::recordUpload(90);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+
+        $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
+        $this->assertSame('', get_post_meta(90, UploadClaims::PENDING_META, true));
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** Linking another member's upload would let a topic take it over. */
+    public function testAnotherMembersUploadInTheTextIsNotTaken(): void
+    {
+        $this->seedTopic(20, []);
+        $this->seedAttachment(90, 0, self::EDITOR);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+
+        $this->assertSame(0, $GLOBALS['__wp_posts'][90]->post_parent);
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** Saving the file list must not unlink what the text still shows. */
+    public function testAnUploadStillInTheTextStaysLinkedWhenTheFileListIsSaved(): void
+    {
+        $this->seedTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+        $this->seedAttachment(90, 20, self::AUTHOR);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['attachments' => []]);
+
+        $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** One taken out of the text goes back to the cleanup, as a removed file does. */
+    public function testAnUploadTakenOutOfTheTextIsHandedToTheCleanup(): void
+    {
+        $this->seedTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+        $this->seedAttachment(90, 20, self::AUTHOR);
+        UploadClaims::recordUpload(90);
+        UploadClaims::claim([90]);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<p>No video after all</p>']);
+
+        $this->assertSame(0, $GLOBALS['__wp_posts'][90]->post_parent);
+        $this->assertNotSame('', get_post_meta(90, UploadClaims::PENDING_META, true));
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
     public function testAnUpdateThatSaysNothingAboutFilesLeavesThemAlone(): void
     {
         $this->seedTopic(20, []);
@@ -468,11 +534,12 @@ final class TopicServiceWriteTest extends TestCase
         $GLOBALS['__wp_posts'][$postId] = $post;
     }
 
-    private function seedAttachment(int $attachmentId, int $parentId = 0): void
+    private function seedAttachment(int $attachmentId, int $parentId = 0, int $authorId = 0): void
     {
         $attachment = new WP_Post();
         $attachment->ID = $attachmentId;
         $attachment->post_type = 'attachment';
+        $attachment->post_author = $authorId;
         $attachment->post_parent = $parentId;
         $attachment->post_mime_type = 'image/png';
         $attachment->guid = 'https://example.com/uploads/' . $attachmentId . '.png';

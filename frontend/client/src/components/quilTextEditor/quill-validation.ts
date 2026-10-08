@@ -29,6 +29,8 @@ export const CONTENT_LIMITS = {
 export interface ContentValidationLimits {
   maxImages?: number
   maxTextLength?: number
+  /** Videos placed in the text; the server counts attached ones with them. */
+  maxVideos?: number
 }
 
 /**
@@ -69,7 +71,11 @@ export const ALLOWED_TAGS = new Set([
   'thead',
   'tr',
   'u',
-  'ul'
+  'ul',
+  // A video the member uploaded and placed in the text (quill-video-file.ts).
+  // Its `src` is held to the same URL rules as a picture's here; the server
+  // further refuses one not served from the site's own uploads.
+  'video'
 ])
 
 /** Attributes allowed per tag. '*' means any allowed tag. */
@@ -78,7 +84,8 @@ const ALLOWED_ATTRIBUTES: Record<string, Set<string>> = {
   a: new Set(['href', 'rel', 'target', 'title']),
   img: new Set(['alt', 'height', 'src', 'title', 'width']),
   td: new Set(['colspan', 'rowspan']),
-  th: new Set(['colspan', 'rowspan', 'scope'])
+  th: new Set(['colspan', 'rowspan', 'scope']),
+  video: new Set(['controls', 'playsinline', 'preload', 'src'])
 }
 
 /**
@@ -116,8 +123,7 @@ const DROP_WITH_CONTENT = new Set([
   'template',
   'textarea',
   'title',
-  'track',
-  'video'
+  'track'
 ])
 
 /**
@@ -302,8 +308,10 @@ export function sanitizeNode(node: Node, depth = 0): void {
   }
 
   // Remove img elements whose src was stripped — a srcless img is broken and
-  // likely had a data: URI that isSafeUrl rejected above.
-  if (tag === 'img' && !element.getAttribute('src')) {
+  // likely had a data: URI that isSafeUrl rejected above. A video is the same,
+  // and one that named its file only through <source> children lost them
+  // above (DROP_WITH_CONTENT), so it has nothing to play either.
+  if ((tag === 'img' || tag === 'video') && !element.getAttribute('src')) {
     (node as ChildNode).remove()
     return
   }
@@ -421,6 +429,11 @@ export function validateContent(html: string, limits: ContentValidationLimits = 
     errors.push(`Too many images (${imageCount}). Maximum is ${limits.maxImages}.`)
   }
 
+  const videoCount = doc.querySelectorAll('video').length
+  if (limits.maxVideos !== undefined && videoCount > limits.maxVideos) {
+    errors.push(`Too many videos (${videoCount}). Maximum is ${limits.maxVideos}.`)
+  }
+
   const linkCount = doc.querySelectorAll('a').length
   if (linkCount > CONTENT_LIMITS.MAX_LINKS) {
     errors.push(`Too many links (${linkCount}). Maximum is ${CONTENT_LIMITS.MAX_LINKS}.`)
@@ -452,7 +465,7 @@ export function validateContent(html: string, limits: ContentValidationLimits = 
   }
 
   // Validate all href / src URLs
-  const links = doc.querySelectorAll('a[href], img[src]')
+  const links = doc.querySelectorAll('a[href], img[src], video[src]')
   for (const element of links) {
     const url = element.getAttribute('href') || element.getAttribute('src') || ''
     if (url && !isSafeUrl(url)) {
@@ -463,9 +476,9 @@ export function validateContent(html: string, limits: ContentValidationLimits = 
     }
   }
 
-  // Catch base64-embedded images that bypassed sanitization (e.g. programmatic insertion)
-  for (const img of doc.querySelectorAll('img')) {
-    if (/^data:/i.test(img.getAttribute('src') || '')) {
+  // Catch base64-embedded media that bypassed sanitization (e.g. programmatic insertion)
+  for (const media of doc.querySelectorAll('img, video')) {
+    if (/^data:/i.test(media.getAttribute('src') || '')) {
       errors.push(
         'Embedded base64 images are not allowed. Please upload images using the attachment button.'
       )

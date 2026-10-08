@@ -309,17 +309,23 @@ class TopicService
             wp_set_post_terms($postId, $data['tags'], Taxonomies::TAGS->value);
         }
 
-        // Link attachments to the topic via post_parent
-        if (!empty($data['attachments']) && \is_array($data['attachments'])) {
-            foreach ($data['attachments'] as $attachmentId) {
-                wp_update_post(
-                    [
-                        'ID'          => (int) $attachmentId,
-                        'post_parent' => $postId,
-                    ]
-                );
-            }
+        // Link attachments to the topic via post_parent: the files attached
+        // below it, and the pictures and videos placed in its text.
+        $attached = !empty($data['attachments']) && \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+        $created = get_post($postId);
+        $authorId = $created instanceof WP_Post ? (int) $created->post_author : 0;
+        $linked = array_merge($attached, $this->inlineUploads((string) ($data['post_content'] ?? ''), $authorId, $postId));
+
+        foreach (array_unique($linked) as $attachmentId) {
+            wp_update_post(
+                [
+                    'ID'          => (int) $attachmentId,
+                    'post_parent' => $postId,
+                ]
+            );
         }
+
+        UploadClaims::claim($linked);
 
         $post = get_post($postId);
 
@@ -437,13 +443,29 @@ class TopicService
             wp_set_post_terms($id, $data['tags'], Taxonomies::TAGS->value);
         }
 
-        // Update attachments: unlink old, link new
-        if (isset($data['attachments'])) {
-            $newAttachmentIds = \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+        // Update attachments: unlink old, link new. The pictures and videos in
+        // the text count as the topic's too — read from the text this edit
+        // sends, or the text it keeps when it sends none.
+        if (isset($data['attachments']) || isset($data['post_content'])) {
+            $content = (string) ($data['post_content'] ?? $existingPost->post_content);
+            $inline = $this->inlineUploads($content, (int) $existingPost->post_author, $id);
 
-            // Unlink existing attachments that are not in the new list
-            $existingAttachments = get_attached_media('', $id);
-            foreach ($existingAttachments as $existing) {
+            if (isset($data['attachments'])) {
+                $attached = \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+            } else {
+                // Only the text changed: the files below it stay as they were.
+                $attached = array_map(
+                    'intval',
+                    array_diff(array_keys(get_attached_media('', $id)), $this->inlineUploads((string) $existingPost->post_content, (int) $existingPost->post_author, $id))
+                );
+            }
+
+            $newAttachmentIds = array_values(array_unique(array_merge($attached, $inline)));
+
+            // Unlink existing attachments that are not in the new list, and
+            // hand the portal's own uploads among them to the daily cleanup.
+            $removed = [];
+            foreach (get_attached_media('', $id) as $existing) {
                 if (!\in_array($existing->ID, $newAttachmentIds, true)) {
                     wp_update_post(
                         [
@@ -451,8 +473,10 @@ class TopicService
                             'post_parent' => 0,
                         ]
                     );
+                    $removed[] = $existing->ID;
                 }
             }
+            UploadClaims::release($removed);
 
             // Link new attachments to the topic
             foreach ($newAttachmentIds as $attachmentId) {
@@ -463,6 +487,7 @@ class TopicService
                     ]
                 );
             }
+            UploadClaims::claim($newAttachmentIds);
         }
 
         $post = get_post($result);
@@ -486,7 +511,16 @@ class TopicService
         // data against a reply cleans up on that hook rather than here.
         (new VoteService())->deletePostVotes($id);
 
+        // WordPress does not delete a post's media with it: it moves them to
+        // the post's parent, which for a topic is nothing. The members' own
+        // uploads go to the daily cleanup instead of staying behind forever.
+        $media = array_keys(get_attached_media('', $id));
+
         $result = wp_delete_post($id, true);
+
+        if ($result instanceof WP_Post) {
+            UploadClaims::release($media);
+        }
 
         return $result instanceof WP_Post;
     }
@@ -647,6 +681,28 @@ class TopicService
             'slug'      => $resolved,
             'available' => $resolved === $sanitized,
         ];
+    }
+
+    /**
+     * The topic author's own uploads shown in the text — never another
+     * member's upload a topic happens to link to, and never one attached to
+     * some other post.
+     *
+     * @return int[]
+     */
+    private function inlineUploads(string $content, int $authorId, int $topicId): array
+    {
+        return array_values(array_filter(
+            UploadClaims::idsInContent($content),
+            static function (int $attachmentId) use ($authorId, $topicId): bool {
+                $attachment = get_post($attachmentId);
+
+                return $attachment instanceof WP_Post
+                    && $attachment->post_type === 'attachment'
+                    && (int) $attachment->post_author === $authorId
+                    && \in_array((int) $attachment->post_parent, [0, $topicId], true);
+            }
+        ));
     }
 
     /**

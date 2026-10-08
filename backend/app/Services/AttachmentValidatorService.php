@@ -127,18 +127,25 @@ final class AttachmentValidatorService
      *
      * @param array                        $file    A single entry from $_FILES (e.g. $_FILES['file']).
      * @param null|int                     $maxSize bytes allowed; the media limit when left out
-     * @param null|array<string, string[]> $allowed extension → MIME types accepted; ALLOWED when left out
+     * @param null|array<string, string[]> $allowed   extension → MIME types accepted; ALLOWED when left out
+     * @param bool                         $assembled the file was put together from pieces by ChunkedUpload,
+     *                                                not handed over by PHP as one upload
      *
      * @throws InvalidArgumentException when the file fails any validation rule
      *
      * @return array the validated file array (same structure as $file input)
      */
-    public function validate(array $file, ?int $maxSize = null, ?array $allowed = null): array
+    public function validate(array $file, ?int $maxSize = null, ?array $allowed = null, bool $assembled = false): array
     {
         $allowed ??= self::ALLOWED;
 
-        // 1. Presence
-        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        // 1. Presence — and, for a file put together from pieces, that it is
+        //    one ChunkedUpload wrote, never a path the request could name.
+        $present = !empty($file['tmp_name']) && ($assembled
+            ? ChunkedUpload::owns($file['tmp_name'])
+            : is_uploaded_file($file['tmp_name']));
+
+        if (!$present) {
             throw new InvalidArgumentException('No valid file was uploaded.');
         }
 

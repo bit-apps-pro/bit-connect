@@ -1,6 +1,7 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
-import { uploadRequest } from '@common/helpers/request'
+import { extractUploadError } from '@common/helpers/request'
+import uploadAttachment from '@common/helpers/upload-attachment'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
 import { acceptsVideo, validateAttachment } from '@components/features/file-uploader/attachment-validation'
 import QuillEditor from '@components/quilTextEditor'
@@ -91,8 +92,28 @@ export default function TopicForm({
     [form]
   )
 
+  // Surface the reason instead of leaving the upload to vanish silently — the
+  // server's own words when it gave any — then rethrow so the editor clears
+  // its loading placeholder. A cancelled upload is what the member asked for
+  // and is not reported.
+  const reportUploadFailure = useCallback(
+    (error_: unknown, signal?: AbortSignal) => {
+      if (signal?.aborted) return
+      notificationApi?.error({
+        message: extractUploadError(error_),
+        ...notificationOptions('error')
+      })
+    },
+    [notificationApi]
+  )
+
   const handleImageInsert = useCallback(
-    async (file: File, insertImage: (url: string) => void, onProgress?: (n: number) => void) => {
+    async (
+      file: File,
+      insertImage: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
       try {
         const { error, file: resized } = await resizeImageIfNeeded(file)
         if (error) throw new Error(error)
@@ -103,23 +124,40 @@ export default function TopicForm({
         const validation = validateAttachment(resized)
         if (!validation.valid) throw new Error(validation.error)
 
-        const formData = new FormData()
-        formData.append('file', resized)
-        const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
-          onProgress
-        })
+        const response = await uploadAttachment<WPAttachmentData>(resized, { onProgress, signal })
         if (response.data.url) insertImage(response.data.url)
       } catch (error_) {
-        // Surface the reason instead of leaving the image to vanish silently,
-        // then rethrow so the editor clears its loading placeholder.
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to upload image'),
-          ...notificationOptions('error')
-        })
+        reportUploadFailure(error_, signal)
         throw error_
       }
     },
-    [notificationApi]
+    [reportUploadFailure]
+  )
+
+  // A video goes up as it is — there is no resizing a clip in the browser —
+  // and is placed in the text where the caret was, like a picture. It counts
+  // against the same videos limit as one attached below the post. A large one
+  // is sent in pieces (uploadAttachment), so a slow connection or a proxy's
+  // time limit does not lose the whole file.
+  const handleVideoInsert = useCallback(
+    async (
+      file: File,
+      insertVideo: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
+      try {
+        const validation = validateAttachment(file)
+        if (!validation.valid) throw new Error(validation.error)
+
+        const response = await uploadAttachment<WPAttachmentData>(file, { onProgress, signal })
+        if (response.data.url) insertVideo(response.data.url)
+      } catch (error_) {
+        reportUploadFailure(error_, signal)
+        throw error_
+      }
+    },
+    [reportUploadFailure]
   )
 
   const topicTypeOptions = useMemo(
@@ -292,9 +330,13 @@ export default function TopicForm({
         <QuillEditor
           maxImages={maxImages}
           maxLength={maxLength}
+          maxVideos={maxVideos}
           onChange={handleContentChange}
           onImageInsert={maxImages > 0 ? handleImageInsert : undefined}
           onImagePaste={maxImages > 0 ? handleImageInsert : undefined}
+          // Only where the forum takes video files at all: the control would
+          // otherwise open a picker that refuses everything.
+          onVideoInsert={maxVideos > 0 && acceptsVideo() ? handleVideoInsert : undefined}
           placeholder={__('Write your topic description...')}
           showHeadings={true}
           showToolbar={true}

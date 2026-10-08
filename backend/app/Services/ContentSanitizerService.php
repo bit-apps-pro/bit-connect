@@ -64,10 +64,13 @@ final class ContentSanitizerService
             throw new InvalidArgumentException(esc_html(\sprintf('Content exceeds maximum allowed length of %d characters.', self::MAX_HTML_BYTES)));
         }
 
-        // 5. Validate URLs inside <a href> and <img src> tags.
+        // 5. Validate URLs inside <a href>, <img src> and <video src> tags.
         $sanitized = $this->sanitizeUrls($sanitized);
 
-        // 6. Normalise to WordPress/Gutenberg-compatible HTML structure.
+        // 6. A video plays only from this site's own uploads.
+        $sanitized = $this->restrictVideoSources($sanitized);
+
+        // 7. Normalise to WordPress/Gutenberg-compatible HTML structure.
         //    Runs after kses so the formatter only sees clean, safe HTML.
         $formatter = new WpContentFormatterService();
 
@@ -170,6 +173,19 @@ final class ContentSanitizerService
                 'class'  => true,
             ],
 
+            // ---- Videos ----------------------------------------------------
+            // A video the member uploaded, placed in the text as a picture is
+            // (quill-video-file.ts). Only the site's own uploads may be its
+            // source — see restrictVideoSources() — and it never autoplays:
+            // the attributes kept are the file and the browser's own controls.
+            'video' => [
+                'src'         => true,
+                'controls'    => true,
+                'preload'     => true,
+                'playsinline' => true,
+                'class'       => true,
+            ],
+
             // ---- Tables ----------------------------------------------------
             'table'    => $blockAttribs,
             'thead'    => $blockAttribs,
@@ -225,5 +241,42 @@ final class ContentSanitizerService
         );
 
         return $html ?? '';
+    }
+
+    /**
+     * Drop any <video> whose file is not served by this site.
+     *
+     * The portal contacts no third party on a reader's behalf — it ships its
+     * own font for that reason — and a player pointed at another host would
+     * tell that host who read the post. A linked YouTube or Vimeo address is
+     * different: it stays a link until the reader presses play (video-link.ts).
+     * The site's uploads may live on another host when media is offloaded, so
+     * that host is allowed beside the site's own.
+     */
+    private function restrictVideoSources(string $html): string
+    {
+        $hosts = array_filter([
+            self::hostOf(home_url()),
+            self::hostOf(wp_upload_dir()['baseurl'] ?? ''),
+        ]);
+
+        return preg_replace_callback(
+            '/<video\b[^>]*>.*?<\/video>|<video\b[^>]*\/?>/is',
+            static function (array $m) use ($hosts): string {
+                if (!preg_match('/\ssrc\s*=\s*(["\'])([^"\']*)\1/i', $m[0], $src)) {
+                    return '';
+                }
+
+                return \in_array(self::hostOf($src[2]), $hosts, true) ? $m[0] : '';
+            },
+            $html
+        ) ?? $html;
+    }
+
+    private static function hostOf(string $url): string
+    {
+        $host = wp_parse_url($url, \PHP_URL_HOST);
+
+        return \is_string($host) ? strtolower($host) : '';
     }
 }

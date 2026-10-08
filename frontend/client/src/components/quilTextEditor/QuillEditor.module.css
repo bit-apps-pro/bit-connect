@@ -81,7 +81,9 @@
   border-radius: 8px;
   vertical-align: middle;
   margin: 8px 0;
-  cursor: default;
+
+  /* A click cancels the upload — see the hover rule below. */
+  cursor: pointer;
 
   /* stylelint-disable-next-line property-no-vendor-prefix -- Safari still needs the prefix */
   -webkit-user-select: none;
@@ -96,6 +98,22 @@
   border-top-color: var(--bc-brand);
   border-radius: 50%;
   animation: ql-image-spin 0.8s linear infinite;
+}
+
+/* The placeholder cancels its upload when clicked: on hover the spinner turns
+   into the cross that says so. */
+.quillEditorContainer :global(.ql-image-loading:hover::after) {
+  content: '\00d7';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--bc-line-strong);
+  color: var(--bc-surface-sunken);
+  font-size: 22px;
+  line-height: 1;
+  animation: none;
 }
 
 @keyframes ql-image-spin {
@@ -297,4 +315,25 @@
   border-top: 1px solid var(--bc-line);
   background: var(--bc-negative-soft);
   list-style: disc;
+}
+
+/* An uploaded video sits on a line of its own, bounded like a picture is: the
+   column is a ceiling, and the box keeps a 16:9 shape until the file's own
+   metadata says otherwise. Black behind it, because a player's letterbox is. */
+.quillEditorContainer :global(.ql-editor video) {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  max-height: 360px;
+  aspect-ratio: 16 / 9;
+  margin: 8px 0;
+  background: #000;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+@media (width < 768px) {
+  .quillEditorContainer :global(.ql-editor video) {
+    max-height: 240px;
+  }
 }
