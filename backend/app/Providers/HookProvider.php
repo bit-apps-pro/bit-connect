@@ -16,6 +16,7 @@ use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
 use BitApps\BitConnect\Services\FollowService;
+use BitApps\BitConnect\Services\ForumUploadsInLibrary;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
@@ -68,6 +69,10 @@ class HookProvider
         // A members-only forum stays closed on the routes core serves topics
         // through by itself — REST, feeds, search, taxonomy archives, oEmbed.
         MembersOnlyGuard::register();
+
+        // What members upload in the forum stays out of the Media Library and
+        // the media picker, under a "Forum uploads" view of its own.
+        ForumUploadsInLibrary::register();
 
         // Same correction for links to a single comment, which core builds from
         // the CPT permalink the sitemap just excluded. Global rather than on the

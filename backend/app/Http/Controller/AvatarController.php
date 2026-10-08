@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\DeleteAvatarRequest;
 use BitApps\BitConnect\Http\Requests\UploadAvatarRequest;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\UploadClaims;
 
 /**
  * Profile picture upload and removal.
@@ -81,6 +82,7 @@ final class AvatarController
             wp_generate_attachment_metadata($attachmentId, $uploaded['file'])
         );
 
+        UploadClaims::markPortal((int) $attachmentId);
         AvatarService::setAvatar($userId, $attachmentId);
 
         return Response::success(

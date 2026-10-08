@@ -80,8 +80,21 @@ final class UploadClaims
             return;
         }
 
-        update_post_meta($attachmentId, self::PORTAL_META, 1);
+        self::markPortal($attachmentId);
         self::markPending($attachmentId);
+    }
+
+    /**
+     * Mark an attachment as the portal's own, without the pending mark: for
+     * a profile picture or cover, which is used the moment it is uploaded and
+     * is never waiting on a post. The mark keeps it out of the Media Library
+     * (ForumUploadsInLibrary).
+     */
+    public static function markPortal(int $attachmentId): void
+    {
+        if ($attachmentId > 0) {
+            update_post_meta($attachmentId, self::PORTAL_META, 1);
+        }
     }
 
     /**

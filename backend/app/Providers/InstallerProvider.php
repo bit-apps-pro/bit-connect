@@ -129,6 +129,9 @@ final class InstallerProvider
             'Bit_Connect_Reports',
             'Bit_Connect_Follows',
             'Bit_Connect_Notifications',
+            // Data only: marks earlier forum uploads so the Media Library
+            // leaves them out (ForumUploadsInLibrary).
+            'Bit_Connect_MarkPortalUploads',
         ];
 
         return [
