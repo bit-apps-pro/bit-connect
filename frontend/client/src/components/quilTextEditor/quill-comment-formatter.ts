@@ -14,6 +14,8 @@
  *  - No Gutenberg block classes (wp-block-*) — comments are not blocks.
  *  - No headings — comments are prose, not documents.
  *  - Images are allowed (uploaded to WP media library, https:// src only).
+ *  - Uploaded videos are allowed, bare — no figure, since comments are not
+ *    blocks — keeping their file and the browser's own controls.
  *  - No tables — not part of WordPress's comment allowed tag set.
  *  - Inline styles are always removed.
  *  - All ql-* Quill artefacts must be stripped before storage.
@@ -64,8 +66,12 @@ const COMMENT_ALLOWED_TAGS = new Set([
   's',
   'strong',
   'u',
-  'ul'
+  'ul',
+  'video'
 ])
+
+/** What a stored video carries: its file, and how the browser should offer it. */
+const VIDEO_ATTRIBUTES = new Set(['controls', 'playsinline', 'preload', 'src'])
 
 const QUILL_CLASS_PATTERN = /\bql-[\w-]+\b/g
 
@@ -189,6 +195,10 @@ function transformElement(element: HTMLElement, parent: Element): void {
     }
     case 'span': {
       flattenSpan(element, parent)
+      break
+    }
+    case 'video': {
+      transformVideo(element)
       break
     }
     default: {
@@ -332,6 +342,16 @@ function transformImage(element: HTMLElement): void {
   ;[...element.attributes].forEach(a => element.removeAttribute(a.name))
   element.setAttribute('src', source)
   if (alt) element.setAttribute('alt', alt)
+}
+
+function transformVideo(element: HTMLElement): void {
+  if (!/^https?:\/\//i.test(element.getAttribute('src') || '')) {
+    element.remove()
+    return
+  }
+  for (const name of element.getAttributeNames()) {
+    if (!VIDEO_ATTRIBUTES.has(name)) element.removeAttribute(name)
+  }
 }
 
 function unwrapElement(element: Element, parent: Element): void {

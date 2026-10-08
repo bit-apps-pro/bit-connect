@@ -25,6 +25,39 @@ class CommentSanitizerServiceTest extends TestCase
         }
     }
 
+    public function testVideoTagAllowsItsFileAndControlsButNeverAutoplay(): void
+    {
+        $allowed = (new CommentSanitizerService())->getAllowedHtml();
+
+        $this->assertArrayHasKey('src', $allowed['video']);
+        $this->assertArrayHasKey('controls', $allowed['video']);
+        $this->assertArrayNotHasKey('autoplay', $allowed['video']);
+        $this->assertArrayNotHasKey('onerror', $allowed['video']);
+    }
+
+    public function testAVideoFromTheSitesOwnUploadsIsKept(): void
+    {
+        $GLOBALS['__wp_home_url'] = 'https://forum.example';
+        unset($GLOBALS['__wp_upload_baseurl']);
+
+        $html = '<p>Watch</p><video src="https://forum.example/wp-content/uploads/clip.mp4" controls></video>';
+
+        $this->assertStringContainsString(
+            '<video src="https://forum.example/wp-content/uploads/clip.mp4" controls></video>',
+            (new CommentSanitizerService())->sanitize($html)
+        );
+    }
+
+    public function testAVideoFromAnotherHostIsDropped(): void
+    {
+        $GLOBALS['__wp_home_url'] = 'https://forum.example';
+        unset($GLOBALS['__wp_upload_baseurl']);
+
+        $html = '<p>Watch</p><video src="https://tracker.example/clip.mp4" controls></video><p>After</p>';
+
+        $this->assertSame("<p>Watch</p>\n<p>After</p>", (new CommentSanitizerService())->sanitize($html));
+    }
+
     public function testLinkTagDoesNotAllowEventHandlers(): void
     {
         $allowed = (new CommentSanitizerService())->getAllowedHtml();

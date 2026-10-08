@@ -257,6 +257,40 @@ export default function CommentEditor({
     [isLoggedIn, notificationApi, openLoginWarning]
   )
 
+  // A video goes up as it is and is placed in the text where the caret was,
+  // like a picture. It counts against the same videos limit as one attached
+  // below the comment, and a large one is sent in pieces (uploadAttachment).
+  const handleVideoInsert = useCallback(
+    async (
+      file: File,
+      insertVideo: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
+      try {
+        if (!isLoggedIn) {
+          openLoginWarning()
+          throw new Error(__('Please log in to upload videos.'))
+        }
+
+        const validation = validateAttachment(file)
+        if (!validation.valid) throw new Error(validation.error)
+
+        const response = await uploadAttachment<WPAttachmentData>(file, { onProgress, signal })
+        if (response.data.url) insertVideo(response.data.url)
+      } catch (error_) {
+        if (!signal?.aborted) {
+          notificationApi?.error({
+            message: extractUploadError(error_),
+            ...notificationOptions('error')
+          })
+        }
+        throw error_
+      }
+    },
+    [isLoggedIn, notificationApi, openLoginWarning]
+  )
+
   const handleAttachment = useCallback(
     (file: File) => {
       if (!isLoggedIn) {
@@ -418,12 +452,14 @@ export default function CommentEditor({
           defaultValue={initialContent}
           maxImages={maxImages}
           maxLength={maxLength}
+          maxVideos={maxVideos}
           // A limit of zero takes the control away rather than leaving one
           // that only ever refuses. The server enforces the same numbers.
           onAttachment={maxAttachments > 0 || (maxVideos > 0 && acceptsVideo()) ? handleAttachment : undefined}
           onImageInsert={maxImages > 0 ? handleImagePaste : undefined}
           onImagePaste={maxImages > 0 ? handleImagePaste : undefined}
           onSubmit={handleSubmit}
+          onVideoInsert={maxVideos > 0 && acceptsVideo() ? handleVideoInsert : undefined}
           placeholder={placeholder}
           showToolbar={true}
           submitButtonText={isUploading ? 'Uploading...' : (submitButtonText ?? 'Comment')}

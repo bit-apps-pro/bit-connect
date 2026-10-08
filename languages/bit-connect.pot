@@ -4299,6 +4299,10 @@ msgstr ""
 msgid "Please log in to upload images."
 msgstr ""
 
+#: backend/i18n/frontend-strings.php:1589
+msgid "Please log in to upload videos."
+msgstr ""
+
 #. translators: %d are value(s) inserted by the plugin. Keep them in the translation.
 #: backend/i18n/frontend-strings.php:1591
 #, php-format

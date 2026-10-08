@@ -68,7 +68,7 @@ final class ContentSanitizerService
         $sanitized = $this->sanitizeUrls($sanitized);
 
         // 6. A video plays only from this site's own uploads.
-        $sanitized = $this->restrictVideoSources($sanitized);
+        $sanitized = self::restrictVideoSources($sanitized);
 
         // 7. Normalise to WordPress/Gutenberg-compatible HTML structure.
         //    Runs after kses so the formatter only sees clean, safe HTML.
@@ -205,6 +205,37 @@ final class ContentSanitizerService
         ];
     }
 
+    /**
+     * Drop any <video> whose file is not served by this site.
+     *
+     * The portal contacts no third party on a reader's behalf — it ships its
+     * own font for that reason — and a player pointed at another host would
+     * tell that host who read the post. A linked YouTube or Vimeo address is
+     * different: it stays a link until the reader presses play (video-link.ts).
+     * The site's uploads may live on another host when media is offloaded, so
+     * that host is allowed beside the site's own. Comments apply the same rule
+     * (CommentSanitizerService).
+     */
+    public static function restrictVideoSources(string $html): string
+    {
+        $hosts = array_filter([
+            self::hostOf(home_url()),
+            self::hostOf(wp_upload_dir()['baseurl'] ?? ''),
+        ]);
+
+        return preg_replace_callback(
+            '/<video\b[^>]*>.*?<\/video>|<video\b[^>]*\/?>/is',
+            static function (array $m) use ($hosts): string {
+                if (!preg_match('/\ssrc\s*=\s*(["\'])([^"\']*)\1/i', $m[0], $src)) {
+                    return '';
+                }
+
+                return \in_array(self::hostOf($src[2]), $hosts, true) ? $m[0] : '';
+            },
+            $html
+        ) ?? $html;
+    }
+
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
@@ -241,36 +272,6 @@ final class ContentSanitizerService
         );
 
         return $html ?? '';
-    }
-
-    /**
-     * Drop any <video> whose file is not served by this site.
-     *
-     * The portal contacts no third party on a reader's behalf — it ships its
-     * own font for that reason — and a player pointed at another host would
-     * tell that host who read the post. A linked YouTube or Vimeo address is
-     * different: it stays a link until the reader presses play (video-link.ts).
-     * The site's uploads may live on another host when media is offloaded, so
-     * that host is allowed beside the site's own.
-     */
-    private function restrictVideoSources(string $html): string
-    {
-        $hosts = array_filter([
-            self::hostOf(home_url()),
-            self::hostOf(wp_upload_dir()['baseurl'] ?? ''),
-        ]);
-
-        return preg_replace_callback(
-            '/<video\b[^>]*>.*?<\/video>|<video\b[^>]*\/?>/is',
-            static function (array $m) use ($hosts): string {
-                if (!preg_match('/\ssrc\s*=\s*(["\'])([^"\']*)\1/i', $m[0], $src)) {
-                    return '';
-                }
-
-                return \in_array(self::hostOf($src[2]), $hosts, true) ? $m[0] : '';
-            },
-            $html
-        ) ?? $html;
     }
 
     private static function hostOf(string $url): string

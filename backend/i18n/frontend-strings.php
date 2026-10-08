@@ -1596,6 +1596,7 @@ return [
     'That is everything.' => __('That is everything.', 'bit-connect'),
 
     'Please log in to upload images.' => __('Please log in to upload images.', 'bit-connect'),
+    'Please log in to upload videos.' => __('Please log in to upload videos.', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     'Attachment limit reached (maximum %d files).' => __('Attachment limit reached (maximum %d files).', 'bit-connect'),

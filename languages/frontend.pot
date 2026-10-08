@@ -3531,6 +3531,10 @@ msgstr ""
 msgid "Please log in to upload images."
 msgstr ""
 
+#: frontend/client/src/pages/Post/CommentEditor.tsx:273
+msgid "Please log in to upload videos."
+msgstr ""
+
 #: frontend/client/src/pages/Post/CommentEditor.tsx:270
 msgid "Attachment limit reached (maximum %d files)."
 msgstr ""

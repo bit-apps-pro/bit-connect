@@ -20,7 +20,8 @@ if (!defined('ABSPATH')) {
  *    strong, code, blockquote, etc.). We use a slightly extended but still
  *    conservative whitelist that matches what Quill's snow theme can produce.
  *  - No Gutenberg block classes — comments are not blocks.
- *  - No headings, tables, or images in the default flow.
+ *  - No headings or tables. Pictures and videos the member uploaded are
+ *    kept, a video only when this site serves its file.
  *  - The MySQL comment_content column is TEXT = 65,535 bytes.
  *  - Links in comments get rel="nofollow ugc" to match WordPress convention.
  *
@@ -31,6 +32,7 @@ if (!defined('ABSPATH')) {
  *     → wp_kses() with comment whitelist
  *     → size check (post-sanitization)
  *     → URL validation
+ *     → video sources limited to this site's uploads
  *     → wpautop-compatibility normalisation
  */
 final class CommentSanitizerService
@@ -94,7 +96,10 @@ final class CommentSanitizerService
         // 6. Validate and normalise URLs in href attributes.
         $sanitized = $this->sanitizeUrls($sanitized);
 
-        // 7. Normalise for wpautop compatibility.
+        // 7. A video plays only from this site's own uploads, as in a topic.
+        $sanitized = ContentSanitizerService::restrictVideoSources($sanitized);
+
+        // 8. Normalise for wpautop compatibility.
         return $this->normalize($sanitized);
     }
 
@@ -162,6 +167,18 @@ final class CommentSanitizerService
                 'alt'    => true,
                 'width'  => true,
                 'height' => true,
+            ],
+
+            // ---- Videos ----------------------------------------------------
+            // A video the member uploaded, placed in the text as a picture is
+            // (quill-video-file.ts). The attributes kept are the file and the
+            // browser's own controls — it never autoplays — and its file must be
+            // one this site serves (ContentSanitizerService::restrictVideoSources).
+            'video' => [
+                'src'         => true,
+                'controls'    => true,
+                'preload'     => true,
+                'playsinline' => true,
             ],
         ];
     }
@@ -242,7 +259,7 @@ final class CommentSanitizerService
         $html = preg_replace('/<p>(?:\s|&nbsp;)*<\/p>/i', '', $html) ?? $html;
 
         // Ensure block-level elements are on their own lines (wpautop expects this)
-        $blockTags = 'p|ul|ol|li|blockquote|pre';
+        $blockTags = 'p|ul|ol|li|blockquote|pre|video';
         $html = preg_replace("/(<\\/(?:{$blockTags})>)(?!\n)/i", "$1\n", $html) ?? $html;
         $html = preg_replace("/(?<!\n)(<(?:{$blockTags})[^>]*>)/i", "\n$1", $html) ?? $html;
 
