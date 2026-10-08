@@ -94,16 +94,31 @@ final class UploadClaims
      */
     public static function idsInContent(string $html): array
     {
+        $ids = [];
+        foreach (self::sourcesInContent($html) as $url) {
+            $ids[] = (int) attachment_url_to_postid($url);
+        }
+
+        return self::ids($ids);
+    }
+
+    /**
+     * The address of each picture and video placed in a post's HTML, decoded
+     * as the browser reads it. No lookup: for checking a known upload against
+     * the text, where idsInContent() would cost a query per address.
+     *
+     * @return string[]
+     */
+    public static function sourcesInContent(string $html): array
+    {
         if (!preg_match_all('/<(?:img|video)\b[^>]*?\ssrc\s*=\s*(["\'])([^"\']+)\1/i', $html, $matches)) {
             return [];
         }
 
-        $ids = [];
-        foreach (array_unique($matches[2]) as $url) {
-            $ids[] = (int) attachment_url_to_postid(html_entity_decode($url, \ENT_QUOTES));
-        }
-
-        return self::ids($ids);
+        return array_values(array_unique(array_map(
+            static fn (string $url): string => html_entity_decode($url, \ENT_QUOTES),
+            $matches[2]
+        )));
     }
 
     /**

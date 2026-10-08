@@ -770,7 +770,7 @@ class TopicService
             'comments_count' => get_comments_number($post->ID),
             'vote'           => self::getPostVoteStatus($post->ID),
             'terms'          => $this->getTopicTerms($post->ID),
-            'attachments'    => $this->formatAttachments($post->ID),
+            'attachments'    => $this->formatAttachments($post->ID, (string) $post->post_content),
         ];
 
         if ($includeComments) {
@@ -803,19 +803,31 @@ class TopicService
      *
      * @return array<int, array{id: int, filename: string, filesize: int, type: string, url: string}>
      */
-    private function formatAttachments(int $postId): array
+    private function formatAttachments(int $postId, string $content): array
     {
         $attachments = get_attached_media('', $postId);
         $formatted = [];
 
+        // The pictures and videos placed in the text are attached to the topic
+        // too, so they are claimed and outlive the upload cleanup, but the
+        // reader already sees them there. Listing them again under the post
+        // would show every one twice. Compared decoded, as a filename with an
+        // emoji or a space may be stored either way.
+        $inText = array_map('rawurldecode', UploadClaims::sourcesInContent($content));
+
         foreach ($attachments as $attachment) {
+            $url = wp_get_attachment_url($attachment->ID);
+            if ($url && \in_array(rawurldecode($url), $inText, true)) {
+                continue;
+            }
+
             $filePath = get_attached_file($attachment->ID);
             $formatted[] = [
                 'id'       => $attachment->ID,
                 'filename' => basename($filePath ?: $attachment->guid),
                 'filesize' => $filePath && file_exists($filePath) ? filesize($filePath) : 0,
                 'type'     => $attachment->post_mime_type,
-                'url'      => wp_get_attachment_url($attachment->ID),
+                'url'      => $url,
             ];
         }
 
