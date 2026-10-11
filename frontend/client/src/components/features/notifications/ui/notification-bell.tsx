@@ -170,7 +170,7 @@ export default function NotificationBell() {
         overflowCount={99}
         size="small"
       >
-        <LuBell size={18} />
+        <LuBell size={22} />
       </Badge>
     </Button>
   )

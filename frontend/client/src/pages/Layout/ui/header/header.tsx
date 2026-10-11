@@ -186,21 +186,21 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
         ])}
       >
         <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
-          <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-3">
+          <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2">
             {isMobile && (
               <Button
                 aria-label={__('Open menu')}
                 // Pulled out by its own padding, like the Back button below, so
                 // the glyph lines up with the page gutter rather than 8px in.
                 className="bc--ml-2 bc-shrink-0"
-                // Lucide draws the same 2px stroke at every size, so scaling an
-                // icon up thins it out relative to its own box: at 22 this was
-                // the largest glyph in the bar and the lightest, three hairlines
-                // beside the 16px icons to its right. Smaller with a heavier
-                // stroke reads at the weight of its neighbours. Round caps
-                // because every other icon in the bar has them — Lucide's
-                // default — and square ends on the one hand-tuned icon showed.
-                icon={<LuMenu size={20} strokeLinecap="round" strokeWidth={2.5} />}
+                // Sized with the bell at the other end of the bar, so the two
+                // icons that frame it read at one size. A touch heavier than
+                // Lucide's 2px: three bare lines carry less ink than the bell's
+                // outline, and at the same stroke looked the lighter of the
+                // two. Round caps because every other icon in the bar has them
+                // — Lucide's default — and square ends on the one hand-tuned
+                // icon showed.
+                icon={<LuMenu size={24} strokeLinecap="round" strokeWidth={2.25} />}
                 onClick={onMenuOpen}
                 type="text"
               />
@@ -289,15 +289,16 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               >
                 <Button
                   aria-label={__('Account menu')}
-                  className="bc-flex bc-items-center bc-gap-0.5 bc-px-2"
+                  className="bc-flex bc-items-center bc-gap-0.5 bc-px-1 md:bc-px-2"
                   type="text"
                 >
                   <Avatar
                     alt={user?.display_name || user?.username || 'User'}
                     icon={user?.avatar ? undefined : <LuUser />}
+                    size={34}
                     src={user?.avatar}
                   />
-                  <LuChevronDown style={{ fontSize: 16 }} />
+                  <LuChevronDown size={18} strokeLinecap="round" strokeWidth={2.5} />
                 </Button>
               </Dropdown>
             ) : (
