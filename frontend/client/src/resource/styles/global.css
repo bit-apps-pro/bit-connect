@@ -72,9 +72,18 @@ body:has(#bit-connect-portal) {
    Twenty-Four sets Cardo on h1–h6), which beats inheritance from the root —
    and antd's Typography headings set no family of their own. Hand headings
    back to the portal's font, including those inside antd overlays, which
-   mount on <body> outside the root. */
+   mount on <body> outside the root.
+
+   Colour too: block themes' Global Styles print an unlayered
+   `h1, h2, h3, h4, h5, h6 { color: var(--wp--preset--color--contrast) }` — #111
+   whatever the portal's theme — which outranks antd's Typography colour in
+   @layer antd and left every title black on black in dark mode. The token
+   rather than `inherit`: a title often sits in a link, and themes colour
+   links the same theme-blind way. A Tailwind colour class still wins, being
+   !important. */
 :is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
   :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--bc-ink);
   font-family: inherit;
 }
 

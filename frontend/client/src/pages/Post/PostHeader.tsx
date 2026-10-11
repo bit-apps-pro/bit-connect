@@ -549,7 +549,10 @@ export default function PostHeader({
                 avatarSize={24}
                 badge={post.author_badge}
                 name={post.author_name}
-                nameClassName="bc-whitespace-nowrap"
+                // Its own colour, as on the topic card: left to inherit, the
+                // name took the theme's link colour — #111 in a block theme,
+                // invisible in dark mode.
+                nameClassName="bc-whitespace-nowrap bc-text-sm bc-text-ink-muted"
                 slug={post.author_slug}
               />
               <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap={'small'}>
