@@ -26,6 +26,7 @@ import useAddedViews from '../../components/utilities/sort-filter/use-added-view
 import useListingSelection from '../Layout/data/use-listing-selection'
 import ArchiveHeader from './archive-header'
 import ListingContext from './listing-context'
+import TopicListBanners from './topic-list-banners'
 
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
@@ -360,6 +361,8 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             </button>
           )}
         </div>
+
+        {TopicListBanners && <TopicListBanners />}
 
         {/* A term archive's own heading, description and Follow. Not for a
             stage archive, which the sidebar already names, nor the archive the
