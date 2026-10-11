@@ -8,6 +8,8 @@ export interface DescriptionAllowance {
   canAddVideo: boolean
   /** Most characters the text may hold. */
   maxLength: number
+  /** The topic says what it is about some other way, so it may be posted with no description. */
+  optional?: boolean
 }
 
 /**
@@ -23,7 +25,7 @@ export interface DescriptionAllowance {
  */
 export const descriptionProblem = (
   html: string,
-  { canAddImage, canAddVideo, maxLength }: DescriptionAllowance
+  { canAddImage, canAddVideo, maxLength, optional = false }: DescriptionAllowance
 ): string | undefined => {
   const doc = new DOMParser().parseFromString(html, 'text/html')
 
@@ -35,7 +37,7 @@ export const descriptionProblem = (
 
   const characters = countCharacters(html)
 
-  if (characters === 0 && !doc.querySelector('img, video')) {
+  if (characters === 0 && !doc.querySelector('img, video') && !optional) {
     if (canAddImage && canAddVideo) return __('Please enter a description, or add an image or a video')
     if (canAddImage) return __('Please enter a description or add an image')
     if (canAddVideo) return __('Please enter a description or add a video')

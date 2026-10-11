@@ -29,6 +29,7 @@ import ContentBox from './ContentBox'
 import { formattedDate } from './PostDetailsPage'
 import HiddenTopicNotice from './ui/hidden-topic-notice'
 import TagChips from './ui/tag-chips'
+import TopicBodyExtras from './ui/topic-body-extras'
 
 const STATUS_MENU_WIDTH = 180
 
@@ -527,6 +528,8 @@ export default function PostHeader({
               characters per line on a desktop card — twice the span the eye can
               track back to the start of the next line. */}
           <ContentBox className="bc-max-w-[54ch]" content={post.post_content} />
+
+          <TopicBodyExtras post={post} />
 
           {/* <Paragraph className="bc-mb-4 bc-text-[15px] bc-leading-[1.6]">{post.description}</Paragraph> */}
 

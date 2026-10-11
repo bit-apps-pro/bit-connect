@@ -19,7 +19,7 @@ use BitApps\BitConnect\Services\TopicTaxonomies;
  * Provides validation for creating a topic.
  *
  * @property string $post_title
- * @property string $post_content
+ * @property null|string $post_content
  * @property null|string $post_name
  * @property null|string $post_status
  * @property null|array $attachments
@@ -39,7 +39,10 @@ final class CreateTopicRequest extends Request
     {
         $rules = [
             'post_title'   => ['required', 'string', 'sanitize:text', 'max:200'],
-            'post_content' => ['required', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
+            // Optional here, as it already is on edit. The form decides when a
+            // topic needs words: an empty editor posts markup of its own, so
+            // requiring the field never kept a wordless topic out anyway.
+            'post_content' => ['nullable', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
             // `sanitize:title` is WordPress' own `sanitize_title()`, so whatever
             // reaches the service is already a valid slug. Left blank, the
             // service derives one from the title the way core does.
@@ -75,7 +78,6 @@ final class CreateTopicRequest extends Request
             'post_title.max'        => 'The topic title cannot exceed 200 characters.',
             'post_name.string'      => 'The topic slug must be a string.',
             'post_name.max'         => 'The topic slug cannot exceed 200 characters.',
-            'post_content.required' => 'The topic description is required.',
             'post_content.max'      => 'The topic description is too long.',
             'topic-type'            => 'Each topic type must be a valid ID.',
 

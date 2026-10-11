@@ -19,12 +19,14 @@ import { type ChangeEvent, useCallback, useContext, useMemo, useState } from 're
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
 
+import descriptionOptional from '../data/description-optional'
 import useAddedTermFields from '../data/use-added-term-fields'
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 import useVisibilityOptions from '../data/use-visibility-options'
 import { descriptionProblem } from '../shared/description-problem'
 import { MAX_TAGS_PER_TOPIC } from '../shared/type'
 import PermalinkField from './permalink-field'
+import TopicFormExtras from './topic-form-extras'
 
 export default function TopicForm({
   form,
@@ -304,7 +306,12 @@ export default function TopicForm({
         rules={[
           {
             validator: (_, value = '') => {
-              const problem = descriptionProblem(value, { canAddImage, canAddVideo, maxLength })
+              const problem = descriptionProblem(value, {
+                canAddImage,
+                canAddVideo,
+                maxLength,
+                optional: descriptionOptional(form)
+              })
               return problem ? Promise.reject(new Error(problem)) : Promise.resolve()
             }
           }
@@ -325,6 +332,8 @@ export default function TopicForm({
           showToolbar={true}
         />
       </Form.Item>
+
+      <TopicFormExtras form={form} isEditMode={!!isEditMode} topicId={topicId} />
 
       <Form.Item
         className="bc-mb-4"

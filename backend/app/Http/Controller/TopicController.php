@@ -170,8 +170,8 @@ final class TopicController
         // Prepare data for service
         $topicData = [
             'post_title'   => $validatedData['post_title'],
-            'post_content' => $validatedData['post_content'],
-            'post_excerpt' => $validatedData['post_content'],
+            'post_content' => $validatedData['post_content'] ?? '',
+            'post_excerpt' => $validatedData['post_content'] ?? '',
             'post_status'  => $validatedData['post_status'] ?? 'publish',
             'topic_types'  => $validatedData['topic-types'] ?? [],
             'tags'         => $resolved['ids'],

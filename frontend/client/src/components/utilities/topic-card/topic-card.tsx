@@ -18,6 +18,7 @@ import useChipProps from '@/utils/use-chip-props'
 import { relativeTime } from '@/utils/utils'
 
 import TopicCardState from './topic-card-state'
+import TopicCardSummary from './topic-card-summary'
 import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
 
@@ -59,6 +60,7 @@ export default function TopicCard({
     terms: { statuses, tags, topic_types: topicTypes },
     vote: { hasVoted, total }
   } = topic
+  const excerpt = excerptOf(postContent)
 
   const postDate = new Date(postDateGmt.replace(' ', 'T') + 'Z')
   const relativeDate = relativeTime(postDateGmt)
@@ -126,9 +128,15 @@ export default function TopicCard({
               the count cannot know the card's width, so it under-filled a wide
               card and overflowed to four lines on a phone. Every row in the
               list now has the same height whatever the viewport. */}
-          <p className="topic-card__excerpt bc-mb-0 bc-mt-1 bc-text-[14px] bc-leading-[1.6] bc-text-ink-muted">
-            {excerptOf(postContent)}
-          </p>
+          {/* Left out for a topic with no words, rather than kept as an empty
+              line that pushes the meta row down for nothing. */}
+          {excerpt && (
+            <p className="topic-card__excerpt bc-mb-0 bc-mt-1 bc-text-[14px] bc-leading-[1.6] bc-text-ink-muted">
+              {excerpt}
+            </p>
+          )}
+
+          <TopicCardSummary topic={topic} />
         </Link>
 
         {/* One meta row — author, date, comments, type, then tags. On a phone
