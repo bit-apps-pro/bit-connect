@@ -8,9 +8,11 @@ import {
   SortableTable,
   useSortableRows
 } from '@utilities/term-order'
-import { Button, Form, Popconfirm, Space, Table, Typography } from 'antd'
+import { Button, Form, Popconfirm, Space, Table, Tag, Typography } from 'antd'
 import { useState } from 'react'
 import { LuPenLine, LuPlus, LuTrash2 } from 'react-icons/lu'
+
+import useChipProps from '@/utils/use-chip-props'
 
 import useDeleteStage from './data/use-delete-stage'
 import { type ErrorResponse } from './data/use-save-stage'
@@ -36,6 +38,7 @@ export default function Stages() {
   const [editingStage, setEditingStage] = useState<Stage>()
   const [modalOpen, setModalOpen] = useState(false)
   const { isStagesPending, stages } = useStages()
+  const { chipTagProps } = useChipProps()
   const { error, isError, isSavingStage, saveStage } = useSaveStage()
   const { error: updateError, isError: isUpdateError, isUpdatingStage, updateStage } = useUpdateStage()
   const { deleteStage, isDeletingStage } = useDeleteStage()
@@ -50,6 +53,7 @@ export default function Stages() {
   const handleEdit = (stage: Stage) => {
     setEditingStage(stage)
     form.setFieldsValue({
+      color: stage.meta?.bit_connect_color,
       description: stage.description,
       icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
       icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
@@ -75,6 +79,8 @@ export default function Stages() {
           // as null but ignores one that never arrives, and `wpApi` serialises
           // undefined to null — so an omitted key would leave a removed icon
           // in place.
+          // An empty string, not null, clears a removed colour the same way.
+          bit_connect_color: data.color || '',
           bit_connect_icon_dark_id: data.icon_dark_id || 0,
           bit_connect_icon_dark_url: data.icon_dark_url,
           bit_connect_icon_id: data.icon_id || 0,
@@ -113,6 +119,18 @@ export default function Stages() {
       key: 'description',
       render: (text: string) => text || <Text type="secondary">{__('No description')}</Text>,
       title: __('Description')
+    },
+    {
+      key: 'color',
+      render: (_: unknown, record: Stage) =>
+        record.meta?.bit_connect_color ? (
+          <Tag className="bc-m-0" {...chipTagProps(record.meta.bit_connect_color)}>
+            {record.name}
+          </Tag>
+        ) : (
+          <Text type="secondary">{__('No color')}</Text>
+        ),
+      title: __('Color')
     },
     {
       key: 'icon',

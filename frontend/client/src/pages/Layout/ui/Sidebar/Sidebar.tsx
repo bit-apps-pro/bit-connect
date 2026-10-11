@@ -1,21 +1,19 @@
 import config from '@config/config'
 import Promo from '@features/promo'
 import { useStagesStore } from '@pages/Layout/data/use-stages'
+import { ROADMAP_PATH } from '@pages/roadmap/roadmap-path'
 import logo from '@resource/img/logo.svg'
-import { pickThemedIcon } from '@shared/theme/themed-icon'
-import Loop from '@utilities/Loop'
+import { isListingPath } from '@utils/listing-path'
+import { routePath } from '@utils/route-path'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
 import { useEffect } from 'react'
-import { LuX } from 'react-icons/lu'
-
-import { navItemsStore } from '@/store/ssr/nav-items'
+import { LuKanban, LuLayoutList, LuX } from 'react-icons/lu'
+import { matchPath, useLocation } from 'react-router'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
-import useListingSelection from '../../data/use-listing-selection'
-import NavSection from './nav-section'
 import SidebarSections from './sidebar-sections'
 import SidebarNavItem from './SidebarNavItem'
 
@@ -26,39 +24,47 @@ interface SidebarProps {
   onClose?: () => void
 }
 
-interface NavItem {
-  icon?: string
-  label: string
-  path: string
-  scope?: string
-}
+/**
+ * The places a reader can go: the topic listing and, once there are stages to
+ * lay out, the roadmap. Places only — which stage or archive the listing shows
+ * is the listing's own picker, so nothing here doubles as a filter.
+ *
+ * Further sections (an add-on's own places) follow under their own headings.
+ */
+function NavList({ className, showRoadmap }: { className?: string; showRoadmap: boolean }) {
+  const { pathname } = useLocation()
 
-function NavList({
-  className,
-  navItems,
-  reserveIconSlot
-}: {
-  className?: string
-  navItems: NavItem[]
-  reserveIconSlot?: boolean
-}) {
-  const stageLinks = (
-    <Loop data={navItems} each="navItems" store={navItemsStore}>
-      {(link, key) => <SidebarNavItem key={key} props={{ ...link, reserveIconSlot }} />}
-    </Loop>
+  const places = (
+    <div className="bc-flex bc-flex-col bc-space-y-1">
+      <SidebarNavItem
+        props={{
+          glyph: <LuLayoutList size={18} />,
+          isActive: isListingPath(pathname),
+          label: __('Topics'),
+          path: '',
+          reserveIconSlot: true,
+          to: '/'
+        }}
+      />
+      {showRoadmap && (
+        <SidebarNavItem
+          props={{
+            glyph: <LuKanban size={18} />,
+            isActive: matchPath(ROADMAP_PATH, pathname) !== null,
+            label: __('Roadmap'),
+            path: ROADMAP_PATH,
+            reserveIconSlot: true,
+            to: routePath(ROADMAP_PATH)
+          }}
+        />
+      )}
+    </div>
   )
-
-  // The stages alone are the whole nav, so they need no heading to tell them
-  // from anything and nothing to fold away: a plain list. Titled, collapsible
-  // groups only when another section joins them.
-  if (!SidebarSections) {
-    return <nav className={cn(['bc-flex bc-w-full bc-flex-col bc-space-y-1', className])}>{stageLinks}</nav>
-  }
 
   return (
     <nav className={cn(['bc-flex bc-w-full bc-flex-col', className])}>
-      <NavSection title={__('Stages')}>{stageLinks}</NavSection>
-      <SidebarSections />
+      {places}
+      {SidebarSections && <SidebarSections />}
     </nav>
   )
 }
@@ -87,20 +93,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isMobile, isOpen, onClose])
 
-  // A stage link keeps the archive the listing is scoped to, if a choice made
-  // beside the stages narrowed it to one. See listing-link.ts for the URLs.
-  const { scope } = useListingSelection()
-
-  // Already in the admin-defined order when the store loads them.
-  const navItems = stages.map(stage => ({
-    icon: pickThemedIcon(stage.meta, isDarkTheme),
-    label: stage.name,
-    path: stage.slug,
-    scope
-  }))
-  // All-or-nothing per list: align the labels once any stage has an icon, and
-  // leave the unindented layout untouched for portals that set none.
-  const reserveIconSlot = navItems.some(item => !!item.icon)
+  // The roadmap lays out the stages past the one new topics land in, so it
+  // waits until the portal has one.
+  const showRoadmap = stages.some(stage => stage.slug !== config.DEFAULT_STAGE_SLUG)
 
   return (
     <>
@@ -137,8 +132,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               whole column. */}
           <NavList
             className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-pr-3"
-            navItems={navItems}
-            reserveIconSlot={reserveIconSlot}
+            showRoadmap={showRoadmap}
           />
 
           {config.PROMO.enabled && (
@@ -235,7 +229,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
           <div className="bc-mx-4 bc-shrink-0 bc-border-0 bc-border-b bc-border-solid bc-border-line" />
           <div className="bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-px-3 bc-py-3">
-            <NavList navItems={navItems} reserveIconSlot={reserveIconSlot} />
+            <NavList showRoadmap={showRoadmap} />
           </div>
 
           {config.PROMO.enabled && (

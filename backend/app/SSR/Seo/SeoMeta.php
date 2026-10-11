@@ -262,6 +262,34 @@ final class SeoMeta
     }
 
     /**
+     * Describe the roadmap route.
+     *
+     * `noindex,follow` for now: the board is drawn client-side, so a crawler
+     * would find an empty shell, while every topic on it is linked from the
+     * listing and the stage archives, which are indexed. The links stay
+     * followable all the same.
+     */
+    public static function forRoadmap(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title' => \sprintf(
+                // translators: %s: community name.
+                __('Roadmap | %s', 'bit-connect'),
+                $community
+            ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,follow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
      * Describe a portal URL that matched nothing.
      *
      * The status is already 404; this is what makes the head agree. Without a

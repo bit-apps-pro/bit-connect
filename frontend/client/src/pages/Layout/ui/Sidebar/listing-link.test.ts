@@ -1,7 +1,7 @@
 import config from '@config/config'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { listingLink } from './listing-link'
+import { ALL_STAGES, listingLink } from './listing-link'
 
 const original = {
   DEFAULT_STAGE_SLUG: config.DEFAULT_STAGE_SLUG,
@@ -37,6 +37,13 @@ describe('listingLink', () => {
   // put the same listing behind a second URL.
   it('opens the scoped archive itself for the default stage', () => {
     expect(listingLink({ scope: '/team/platform', stage: 'questions' })).toBe('/team/platform/')
+  })
+
+  // No archive answers every stage at once, so it stays a query string on
+  // whichever listing it narrows.
+  it('lists every stage as a query on the root or the scoped archive', () => {
+    expect(listingLink({ stage: ALL_STAGES })).toBe('/?stage=all')
+    expect(listingLink({ scope: '/team/platform', stage: ALL_STAGES })).toBe('/team/platform/?stage=all')
   })
 
   it("follows the site's permalink form", () => {

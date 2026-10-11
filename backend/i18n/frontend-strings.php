@@ -1945,6 +1945,23 @@ return [
 
     'Profile sections' => __('Profile sections', 'bit-connect'),
 
-    'Period' => __('Period', 'bit-connect')
+    'Period' => __('Period', 'bit-connect'),
+
+    'Used for the stage badge on topic cards and its column on the roadmap.' => __('Used for the stage badge on topic cards and its column on the roadmap.', 'bit-connect'),
+
+    'Roadmap' => __('Roadmap', 'bit-connect'),
+
+    'Clear all' => __('Clear all', 'bit-connect'),
+
+    'What is planned, being worked on and done. Open a topic to vote or comment on it.' => __('What is planned, being worked on and done. Open a topic to vote or comment on it.', 'bit-connect'),
+
+    'Nothing is on the roadmap yet.' => __('Nothing is on the roadmap yet.', 'bit-connect'),
+
+    'Failed to load topics' => __('Failed to load topics', 'bit-connect'),
+
+    'No topics yet' => __('No topics yet', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    'See all %d' => __('See all %d', 'bit-connect')
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

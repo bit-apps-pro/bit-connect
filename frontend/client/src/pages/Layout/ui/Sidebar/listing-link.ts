@@ -1,6 +1,9 @@
 import config from '@config/config'
 import { routePath } from '@utils/route-path'
 
+/** `?stage=` value that lists every stage together, each card badged with its own. */
+export const ALL_STAGES = 'all'
+
 /**
  * Where the sidebar sends a reader for a stage, within the listing's scope.
  *
@@ -17,6 +20,10 @@ import { routePath } from '@utils/route-path'
  * @param stage slug of the stage the reader named, or '' for none
  */
 export function listingLink({ scope = '', stage = '' }: { scope?: string; stage?: string }) {
+  // Every stage at once is a view of the listing, not a page of its own: no
+  // archive answers it, so it stays a query string on the listing it narrows.
+  if (stage === ALL_STAGES) return routePath(`${scope || '/'}?stage=${ALL_STAGES}`)
+
   const isDefaultStage = stage === '' || stage === config.DEFAULT_STAGE_SLUG
 
   if (scope !== '') {

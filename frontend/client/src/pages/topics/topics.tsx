@@ -1,7 +1,6 @@
 import './topics.css'
 
 import NotifyContext from '@common/context/NotifyContext'
-import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
@@ -25,6 +24,7 @@ import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useAddedViews from '../../components/utilities/sort-filter/use-added-views'
 import useListingSelection from '../Layout/data/use-listing-selection'
+import { ALL_STAGES } from '../Layout/ui/Sidebar/listing-link'
 import ArchiveHeader from './archive-header'
 import ListingContext from './listing-context'
 import TopicListBanners from './topic-list-banners'
@@ -93,7 +93,11 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const stageParam = isSearching ? '' : searchParams.get('stage') || ''
   const spansAllStages =
     isSearching || tags !== '' || view !== '' || (scopeFilter !== undefined && listingScope === '')
-  const stages = stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
+  const stages =
+    stageParam === ALL_STAGES ? '' : stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
+  // Cards name their stage only where the list mixes them; under one stage the
+  // picker already says which.
+  const showsStageBadges = stages === ''
 
   // Each filter control can be switched off per-site (admin → General → Portal
   // Filters). Hiding one removes its control, its chip and its share of the
@@ -338,6 +342,62 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     }
   }
 
+  // Where the list is: the stage picker (and any choice added beside it), or the
+  // term a tag, type or status archive is listing, which spans every stage.
+  const listingContext = (
+    <ListingContext
+      archiveName={
+        !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === ''
+          ? (archiveName ?? archiveSlug)
+          : ''
+      }
+    />
+  )
+
+  // Active (non-default) filters as removable chips, in the type strip's
+  // selected style — each one is a filter the reader switched on. Each chip
+  // pops in and out.
+  const filterChips = (
+    <AnimatePresence initial={false}>
+      {activeChips.length > 0 && (
+        <m.div
+          animate={{ opacity: 1 }}
+          className="bc-flex bc-shrink-0 bc-flex-wrap bc-items-center bc-gap-2 max-lg:bc-flex-nowrap"
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          key="filter-chips"
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          <AnimatePresence initial={false} mode="popLayout">
+            {activeChips.map(chip => (
+              <m.span
+                animate={{ opacity: 1, scale: 1 }}
+                className="bc-inline-flex bc-h-8 bc-shrink-0 bc-items-center bc-gap-1 bc-whitespace-nowrap bc-rounded-md bc-border bc-border-solid bc-border-primary/30 bc-bg-primary/10 bc-pl-3 bc-pr-1 bc-text-sm bc-font-medium bc-text-primary"
+                exit={{ opacity: 0, scale: 0.85 }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                key={chip.key}
+                layout
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+              >
+                {chip.label}
+                {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
+                    button is easy to miss with a thumb. */}
+                <button
+                  aria-label={__('Remove filter')}
+                  className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded bc-border-none bc-bg-transparent bc-text-primary bc-transition-colors hover:bc-bg-primary/15"
+                  onClick={chip.onRemove}
+                  type="button"
+                >
+                  <LuX size={14} />
+                </button>
+              </m.span>
+            ))}
+          </AnimatePresence>
+        </m.div>
+      )}
+    </AnimatePresence>
+  )
+
   return (
     // 16px on phones, matching the topic page's gutter at the same width: the
     // two are the same journey, and at 12 here the card edges sat 4px inside
@@ -366,83 +426,30 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         {TopicListBanners && <TopicListBanners />}
 
         {/* A term archive's own heading, description and Follow. Not for a
-            stage archive, which the sidebar already names, nor the archive the
-            listing is scoped to, which is the sidebar's choice. */}
+            stage archive, which the stage picker already names, nor the archive
+            the listing is scoped to, which is the picker beside it. */}
         {!isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
           <ArchiveHeader archive={archive} term={archiveTerm} />
         )}
 
-        {/* phone: what the list is showing, since the sidebar that says so is
-            folded into the drawer there. A stage archive, or the archive the
-            listing is scoped to, is a choice the chips themselves offer. */}
-        {/* phone: where the list is and what narrows it, on one line. The place
-            chips truncate before the filters do, since a filter's name is what
-            its remove button acts on; past that the row scrolls sideways. From
-            md the place chips give way to the sidebar, so with no filters the
-            row would be empty space. */}
+        {/* below lg: where the list is and what narrows it, on one line. The
+            place chips truncate before the filters do, since a filter's name is
+            what its remove button acts on; past that the row scrolls sideways. */}
         <div
-          className={cn([
-            'bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden',
-            activeChips.length === 0 && 'md:bc-hidden'
-          ])}
+          className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden"
           style={{ scrollbarWidth: 'none' }}
         >
-          <ListingContext
-            archiveName={
-              !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === ''
-                ? (archiveName ?? archiveSlug)
-                : ''
-            }
-          />
-
-          {/* mobile: active (non-default) filters as removable chips, in the
-              type strip's selected style — each one is a filter the reader
-              switched on. Each chip pops in and out. */}
-          <AnimatePresence initial={false}>
-            {activeChips.length > 0 && (
-              <m.div
-                animate={{ opacity: 1 }}
-                className="bc-flex bc-shrink-0 bc-items-center bc-gap-2"
-                exit={{ opacity: 0 }}
-                initial={{ opacity: 0 }}
-                key="filter-chips"
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-              >
-                <AnimatePresence initial={false} mode="popLayout">
-                  {activeChips.map(chip => (
-                    <m.span
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bc-inline-flex bc-h-8 bc-shrink-0 bc-items-center bc-gap-1 bc-whitespace-nowrap bc-rounded-md bc-border bc-border-solid bc-border-primary/30 bc-bg-primary/10 bc-pl-3 bc-pr-1 bc-text-sm bc-font-medium bc-text-primary"
-                      exit={{ opacity: 0, scale: 0.85 }}
-                      initial={{ opacity: 0, scale: 0.85 }}
-                      key={chip.key}
-                      layout
-                      transition={{ duration: 0.18, ease: 'easeOut' }}
-                    >
-                      {chip.label}
-                      {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
-                          button is easy to miss with a thumb. */}
-                      <button
-                        aria-label={__('Remove filter')}
-                        className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded bc-border-none bc-bg-transparent bc-text-primary bc-transition-colors hover:bc-bg-primary/15"
-                        onClick={chip.onRemove}
-                        type="button"
-                      >
-                        <LuX size={14} />
-                      </button>
-                    </m.span>
-                  ))}
-                </AnimatePresence>
-              </m.div>
-            )}
-          </AnimatePresence>
+          {listingContext}
+          {filterChips}
         </div>
 
-        {/* desktop toolbar: search and Create, then the type chips opposite
-            the pickers. Create lives here rather than in the header on the
-            list — the header hides its own from lg on listing routes. */}
-        <div className="bc-hidden bc-flex-col bc-gap-4 lg:bc-flex">
-          <div className="bc-flex bc-items-center bc-justify-between bc-gap-6">
+        {/* desktop toolbar: search and Create, then the type chips, then the
+            pickers for where the list is (stage, and any added choice) opposite
+            the ones that sort and narrow it. Create lives here rather than in
+            the header on the list — the header hides its own from lg on
+            listing routes. */}
+        <div className="bc-hidden bc-flex-col bc-gap-3 lg:bc-flex">
+          <div className="bc-mb-1 bc-flex bc-items-center bc-justify-between bc-gap-6">
             <SearchInput className="bc-min-w-48 bc-max-w-[600px]" />
             {isLoggedIn && canCreatePost && (
               <Button
@@ -457,17 +464,24 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
               </Button>
             )}
           </div>
-          {(showTypeChips || showAnyFilter) && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
-              {showTypeChips && <TopicTypeFilter layout="strip" />}
-              {/* ml-auto, not the row's justify-between: with no topic types
-                  the chip row renders nothing, and the pickers would slide left. */}
-              {showAnyFilter && (
-                <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-3">
-                  {showSortFilter && <SortFilter />}
-                  {showTagFilter && <TagFilter />}
-                </div>
-              )}
+          {showTypeChips && <TopicTypeFilter layout="strip" />}
+          <div className="bc-flex bc-items-center bc-gap-3">
+            {listingContext}
+            {/* ml-auto: with no stage picker the sort and tag pickers still
+                hold the right edge. */}
+            {showAnyFilter && (
+              <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-3">
+                {showSortFilter && <SortFilter />}
+                {showTagFilter && <TagFilter />}
+              </div>
+            )}
+          </div>
+          {activeChips.length > 0 && (
+            <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
+              {filterChips}
+              <Button onClick={resetFilters} size="small" type="link">
+                {__('Clear all')}
+              </Button>
             </div>
           )}
         </div>
@@ -527,7 +541,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         <div className="bc-flex bc-flex-col bc-gap-4" key={filtersKey}>
           {posts.map((topic, index) => (
             <m.div key={topic.ID} {...cardMotion(index)}>
-              <TopicCard onVote={handlePostVote} topic={topic} />
+              <TopicCard onVote={handlePostVote} showStage={showsStageBadges} topic={topic} />
             </m.div>
           ))}
 

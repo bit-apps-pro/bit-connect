@@ -14,6 +14,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
+use BitApps\BitConnect\Http\Controller\RoadmapPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
 use BitApps\BitConnect\Http\Controller\TopicsController;
@@ -160,6 +161,14 @@ final class RootRouter
         // own email.
         if ($path === 'notifications') {
             $this->claim($portal, static fn () => (new NotificationsPageController())->show(new Request()));
+
+            return;
+        }
+
+        // The stages as a board. Claimed outright like the notifications page:
+        // it exists on every portal, with nothing to resolve against.
+        if ($path === 'roadmap') {
+            $this->claim($portal, static fn () => (new RoadmapPageController())->show(new Request()));
 
             return;
         }

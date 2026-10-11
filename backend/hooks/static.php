@@ -4,6 +4,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Route;
 use BitApps\BitConnect\Http\Controller\AuthPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
+use BitApps\BitConnect\Http\Controller\RoadmapPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
 use BitApps\BitConnect\Http\Controller\TopicsController;
@@ -30,6 +31,10 @@ Route::get('/page/{page}', [new TopicsController(), 'index']);
 // otherwise take it and look for a topic by that name. Static beats dynamic
 // here only because this is declared first; the router matches in order.
 Route::get('/notifications', [new NotificationsPageController(), 'show']);
+
+// The stages as a board - matches frontend route '/roadmap'. Before '/{slug}'
+// for the same reason as '/notifications'.
+Route::get('/roadmap', [new RoadmapPageController(), 'show']);
 
 // Auth screens - match the frontend routes '/login', '/register',
 // '/verify-email' and '/forgot-password'. Declared before '/{slug}' for the same

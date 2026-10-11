@@ -1158,6 +1158,12 @@ msgid "Notifications | %s"
 msgstr ""
 
 #. translators: %s: community name.
+#: backend/app/SSR/Seo/SeoMeta.php:275
+#, php-format
+msgid "Roadmap | %s"
+msgstr ""
+
+#. translators: %s: community name.
 #: backend/app/SSR/Seo/SeoMeta.php:276
 #, php-format
 msgid "Page not found | %s"

@@ -3,6 +3,8 @@ export interface Stage {
   iconFileName?: string
   id: number
   meta?: {
+    /** The stage's badge on the portal's topic cards and roadmap. */
+    bit_connect_color?: string
     /** Optional dark-mode override; the portal falls back to `icon_url`. */
     bit_connect_icon_dark_id?: number
     bit_connect_icon_dark_url?: string
@@ -18,6 +20,7 @@ export interface Stage {
 }
 
 export interface StageFormData {
+  color?: string
   description?: string
   icon_dark_id?: number
   icon_dark_url?: string

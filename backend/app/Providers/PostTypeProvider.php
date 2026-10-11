@@ -261,6 +261,18 @@ class PostTypeProvider
             ]
         );
 
+        // The stage's badge on a topic card and its column on the roadmap.
+        register_term_meta(
+            Taxonomies::STAGES->value,
+            'bit_connect_color',
+            [
+                'show_in_rest'      => true,
+                'single'            => true,
+                'sanitize_callback' => 'sanitize_text_field',
+                'type'              => 'string',
+            ]
+        );
+
         register_term_meta(
             Taxonomies::STAGES->value,
             'bit_connect_icon_url',

@@ -45,9 +45,12 @@ const excerptOf = (html: string) => {
 
 export default function TopicCard({
   onVote,
+  showStage = false,
   topic
 }: {
   onVote: (postId: number) => Promise<void>
+  /** Badge the topic with its stage, for a list that mixes stages. */
+  showStage?: boolean
   topic: Topic
 }) {
   const {
@@ -58,7 +61,7 @@ export default function TopicCard({
     post_content: postContent,
     post_date_gmt: postDateGmt,
     post_title: postTitle,
-    terms: { statuses, tags, topic_types: topicTypes },
+    terms: { stages, statuses, tags, topic_types: topicTypes },
     vote: { hasVoted, total }
   } = topic
   const excerpt = excerptOf(postContent)
@@ -152,6 +155,18 @@ export default function TopicCard({
             The author and tag links sit above the card overlay, so they keep
             their own destinations. */}
         <div className="topic-card__meta bc-mt-3 bc-flex bc-min-w-0 bc-items-center bc-gap-x-3 bc-gap-y-2 max-[359px]:bc-flex-wrap sm:bc-flex-wrap md:bc-gap-x-4">
+          {/* First on the line, in the stage's own colour: in a list that
+              mixes stages, how far along a topic is reads before who wrote it.
+              From sm, where the line has room to wrap. */}
+          {showStage && stages && (
+            <Tag
+              className="bc-m-0 bc-hidden bc-max-w-full bc-shrink-0 bc-truncate bc-font-medium sm:bc-inline-block"
+              title={stages.name}
+              {...chipTagProps(stages.meta.color)}
+            >
+              {stages.name}
+            </Tag>
+          )}
           <TopicCardState topic={topic} />
           <UserLink
             avatar={authorAvatar}

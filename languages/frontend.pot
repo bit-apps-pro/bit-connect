@@ -4249,3 +4249,36 @@ msgstr ""
 #: frontend/client/src/pages/User/UserProfilePage.tsx:344
 msgid "Period"
 msgstr ""
+#: frontend/admin/src/pages/stages/internal/stage-modal.tsx:115
+msgid "Used for the stage badge on topic cards and its column on the roadmap."
+msgstr ""
+
+#: frontend/client/src/pages/Layout/ui/Sidebar/Sidebar.tsx:55
+#: frontend/client/src/pages/roadmap/roadmap.tsx:33
+msgid "Roadmap"
+msgstr ""
+
+#: frontend/client/src/pages/topics/topics.tsx:478
+msgid "Clear all"
+msgstr ""
+
+#: frontend/client/src/pages/roadmap/roadmap.tsx:41
+msgid "What is planned, being worked on and done. Open a topic to vote or comment on it."
+msgstr ""
+
+#: frontend/client/src/pages/roadmap/roadmap.tsx:46
+msgid "Nothing is on the roadmap yet."
+msgstr ""
+
+#: frontend/client/src/pages/roadmap/roadmap.tsx:91
+msgid "Failed to load topics"
+msgstr ""
+
+#: frontend/client/src/pages/roadmap/roadmap.tsx:93
+msgid "No topics yet"
+msgstr ""
+
+#. translators: %d: how many topics the stage holds.
+#: frontend/client/src/pages/roadmap/roadmap.tsx:103
+msgid "See all %d"
+msgstr ""

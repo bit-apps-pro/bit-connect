@@ -2,11 +2,13 @@ import { wpApi } from '@utils/request/wp-api'
 import sortByOrder from '@utils/sort-by-order'
 import { create } from 'zustand'
 
-interface Stage {
+export interface Stage {
   description?: string
   iconFileName?: string
   id: number
   meta?: {
+    /** The stage's badge on topic cards and its column on the roadmap. */
+    bit_connect_color?: string
     /** Optional dark-mode override; falls back to `icon_url`. */
     bit_connect_icon_dark_id?: number
     bit_connect_icon_dark_url?: string

@@ -3,7 +3,7 @@ import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
 import { theme } from 'antd'
 import { m } from 'framer-motion'
-import { memo, useState } from 'react'
+import { memo, type ReactNode, useState } from 'react'
 import { NavLink } from 'react-router'
 
 import { listingLink } from './listing-link'
@@ -11,6 +11,8 @@ import { navItemStyle } from './SidebarNavItem.style'
 
 interface SidebarNavProps {
   props: {
+    /** A built-in icon, for rows that are the portal's own pages rather than terms. */
+    glyph?: ReactNode
     icon?: string
     /** Overrides the stage match below, for rows that are not stages. */
     isActive?: boolean
@@ -31,7 +33,7 @@ interface SidebarNavProps {
 }
 export default memo(SidebarNavItem)
 function SidebarNavItem({
-  props: { icon, isActive: isActiveOverride, label, path, reserveIconSlot, scope, to: toOverride }
+  props: { glyph, icon, isActive: isActiveOverride, label, path, reserveIconSlot, scope, to: toOverride }
 }: SidebarNavProps) {
   const { token } = theme.useToken()
   // The URL of an icon that failed to load, so a stage whose attachment was
@@ -69,7 +71,11 @@ function SidebarNavItem({
       style={navItemStyle({ isActive, token })}
       to={to}
     >
-      {icon && brokenIcon !== icon ? (
+      {glyph ? (
+        <span aria-hidden className="bc-flex bc-h-5 bc-w-5 bc-shrink-0 bc-items-center bc-justify-center">
+          {glyph}
+        </span>
+      ) : icon && brokenIcon !== icon ? (
         <img
           alt=""
           // Rendered as uploaded, no filter. A dark glyph that would disappear
