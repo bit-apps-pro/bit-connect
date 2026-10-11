@@ -6,7 +6,7 @@ const DEFAULT_STAGE = 'questions'
 
 const resolve = (
   pathname: string,
-  options: { isScopedListing?: boolean; spansAllStages?: boolean; stageParam?: string } = {}
+  options: { isScopedListing?: boolean; isSearching?: boolean; spansAllStages?: boolean; stageParam?: string } = {}
 ) => resolveActiveStage({ defaultStage: DEFAULT_STAGE, pathname, ...options })
 
 describe('resolveActiveStage', () => {
@@ -39,10 +39,18 @@ describe('resolveActiveStage', () => {
     expect(resolve('/')).toBe(DEFAULT_STAGE)
   })
 
-  // The archive pins its filter from the path, so the list really is that one
-  // stage even though the page is also running a search across the forum.
-  it('keeps a stage archive marked while it is also searching', () => {
+  // The archive pins its filter from the path, so a tag filter on top of it
+  // still lists that one stage.
+  it('keeps a stage archive marked while it is also filtering by tag', () => {
     expect(resolve('/stage/planned', { spansAllStages: true })).toBe('planned')
+  })
+
+  // A search is the forum's, not the page's: it drops the archive and any
+  // stage the URL names, so no stage is the listing the reader is in.
+  it('marks nothing while searching, whatever the page names', () => {
+    expect(resolve('/stage/planned', { isSearching: true })).toBeUndefined()
+    expect(resolve('/', { isSearching: true, stageParam: 'publish' })).toBeUndefined()
+    expect(resolve('/team/platform', { isScopedListing: true, isSearching: true })).toBeUndefined()
   })
 
   // -------------------------------------------------------------------------
@@ -71,11 +79,12 @@ describe('resolveActiveStage', () => {
   })
 
   it('marks nothing while the listing is searching or filtering by tag', () => {
+    expect(resolve('/', { isSearching: true })).toBeUndefined()
     expect(resolve('/', { spansAllStages: true })).toBeUndefined()
     expect(resolve('/page/2', { spansAllStages: true })).toBeUndefined()
   })
 
-  it('prefers an explicit stage filter over a search', () => {
+  it('prefers an explicit stage filter over a tag filter', () => {
     expect(resolve('/', { spansAllStages: true, stageParam: 'publish' })).toBe('publish')
   })
 

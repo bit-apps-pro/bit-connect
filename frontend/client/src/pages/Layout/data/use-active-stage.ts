@@ -23,6 +23,7 @@ import useListingSelection from './use-listing-selection'
 export function resolveActiveStage({
   defaultStage,
   isScopedListing = false,
+  isSearching = false,
   pathname,
   spansAllStages = false,
   stageParam
@@ -34,6 +35,11 @@ export function resolveActiveStage({
    * until one is named.
    */
   isScopedListing?: boolean
+  /**
+   * The listing is running a search, which covers the whole forum whatever
+   * the page was showing — so no stage is the one being listed.
+   */
+  isSearching?: boolean
   pathname: string
   /**
    * The listing is answering a search or a tag filter, which the topics page
@@ -47,7 +53,8 @@ export function resolveActiveStage({
   // archives below — but it stays the most explicit answer available: it is
   // what links shared before the change carry, and what the listing route uses
   // when a reader names a stage on a page that is not an archive. So it still
-  // wins wherever it appears.
+  // wins wherever it appears — except under a search, which drops it.
+  if (isSearching) return undefined
   if (stageParam) return stageParam
 
   // A stage archive (`/stage/planned`) is that stage, stated in the path. This
@@ -85,9 +92,10 @@ export default function useActiveStage(): string | undefined {
   return resolveActiveStage({
     defaultStage: config.DEFAULT_STAGE_SLUG,
     isScopedListing: scope !== '',
+    // Both mirror the rules in pages/topics/topics.tsx.
+    isSearching: Boolean(searchParams.get('search')),
     pathname,
-    // Mirrors the rule in pages/topics/topics.tsx.
-    spansAllStages: Boolean(searchParams.get('search') || searchParams.get('tags')),
+    spansAllStages: Boolean(searchParams.get('tags')),
     stageParam: searchParams.get('stage')
   })
 }

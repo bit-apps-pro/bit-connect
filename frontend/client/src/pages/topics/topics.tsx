@@ -79,10 +79,18 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // The archive the listing is scoped to is the exception among archives: the
   // sidebar's stages stay beside it and narrow it, so it is the forum's own
   // listing over fewer topics, and opens on the default stage as the root does.
-  const { scope: listingScope } = useListingSelection()
-  const stageParam = searchParams.get('stage') || ''
+  //
+  // A search goes further: it is the forum's search box, not the page's, so it
+  // drops the archive, the scope and any stage — even one the URL names — and
+  // runs over every topic. The refinements the reader picked here (sort, type,
+  // tags) still apply, since their chips stay on screen beside the results.
+  const { scope: pageScope } = useListingSelection()
+  const isSearching = search !== ''
+  const scopeFilter = isSearching ? undefined : archiveFilter
+  const listingScope = isSearching ? '' : pageScope
+  const stageParam = isSearching ? '' : searchParams.get('stage') || ''
   const spansAllStages =
-    search !== '' || tags !== '' || view !== '' || (archiveFilter !== undefined && listingScope === '')
+    isSearching || tags !== '' || view !== '' || (scopeFilter !== undefined && listingScope === '')
   const stages = stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
 
   // Each filter control can be switched off per-site (admin → General → Portal
@@ -94,7 +102,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // The type chips ride the sort filter's switch, which is where the type
   // choice lived before it had a row of its own. A type archive (`/topic/bug`)
   // has already chosen, and a chip there could not override the path anyway.
-  const showTypeChips = showSortFilter && !archiveFilter?.['topic-types']
+  const showTypeChips = showSortFilter && !scopeFilter?.['topic-types']
 
   const { setCreateModalOpen } = useTopicModalStore()
   const { can, isLoggedIn } = useAuthStore()
@@ -214,9 +222,9 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       'topic-types': topicType,
       view,
       visibility,
-      ...archiveFilter
+      ...scopeFilter
     }),
-    [myTopics, search, sortBy, stages, tags, topicType, view, visibility, archiveFilter]
+    [myTopics, search, sortBy, stages, tags, topicType, view, visibility, scopeFilter]
   )
 
   const { fetchAllPosts, fetchMorePosts, hasMore, isLoading, isLoadingMore, posts, toggleVote } =
@@ -356,7 +364,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         {/* A term archive's own heading, description and Follow. Not for a
             stage archive, which the sidebar already names, nor the archive the
             listing is scoped to, which is the sidebar's choice. */}
-        {archive && archiveKey !== 'stages' && listingScope === '' && (
+        {!isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
           <ArchiveHeader archive={archive} term={archiveTerm} />
         )}
 
@@ -365,7 +373,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             listing is scoped to, is a choice the chips themselves offer. */}
         <ListingContext
           archiveName={
-            archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
+            !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
           }
         />
 
