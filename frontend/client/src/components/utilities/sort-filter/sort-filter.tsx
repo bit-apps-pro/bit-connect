@@ -1,6 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useHasPrivateTopics from '@features/topic-modal/data/use-private-topics-available'
-import { Grid, Select } from 'antd'
+import { Select } from 'antd'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
 
@@ -15,7 +15,17 @@ const FILTER_KEYS = ['sort', 'visibility', 'my_topics', 'view'] as const
 /** A named list's option value, kept apart from the orderings' own values. */
 const VIEW_PREFIX = 'view:'
 
-export default function SortFilter({ loading = false }: { loading?: boolean }) {
+/**
+ * @param block a full-width field, for a control given a row of its own — the
+ *              phone filter sheet — rather than a slot in the desktop toolbar.
+ */
+export default function SortFilter({
+  block = false,
+  loading = false
+}: {
+  block?: boolean
+  loading?: boolean
+}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useAuthStore()
   const hasPrivateTopics = useHasPrivateTopics()
@@ -73,22 +83,19 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
     [isLoggedIn, hasPrivateTopics, currentValue, views]
   )
 
-  const screens = Grid.useBreakpoint()
-  const isMobile = !screens.sm
-
   return (
     <Select
-      className="field-sizing-content topics-filter-select"
-      labelRender={({ label }) => (
-        <span className={isMobile ? 'bc-font-semibold bc-text-primary' : ''}>{label}</span>
-      )}
+      className={
+        block
+          ? 'topics-filter-select topics-field-select bc-w-full'
+          : 'field-sizing-content topics-filter-select'
+      }
       loading={loading}
       onChange={handleChange}
       options={options}
-      popupMatchSelectWidth={false}
-      size={isMobile ? 'middle' : 'large'}
+      popupMatchSelectWidth={block}
+      size="large"
       value={currentValue}
-      variant={isMobile ? 'borderless' : 'outlined'}
     />
   )
 }

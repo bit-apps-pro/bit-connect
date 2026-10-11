@@ -69,12 +69,26 @@
   }
 }
 
+/* A filter as a full-width field (the phone filter sheet): the search box's
+   treatment — light fill, hairline rule, 8px corners — with the brand border
+   on hover and focus that antd's own outlined state would give. */
+.topics-field-select .ant-select-selector {
+  background: var(--bc-surface-hover) !important;
+  border-color: var(--bc-line) !important;
+  border-radius: 8px !important;
+}
+
+.topics-field-select:hover .ant-select-selector,
+.topics-field-select.ant-select-focused .ant-select-selector {
+  border-color: var(--bc-brand) !important;
+}
+
 /* Desktop sort/product filter dropdowns (Sort + Product). These sit on the same
    row as the search field, so they take its treatment — pill radius, no border,
    same tint (the `filled` variant supplies the tint) — and read as one control
    bar rather than three different shapes. Focus still gets a primary-blue
-   (#3266ea) ring. Scoped to .ant-select-filled so the mobile borderless variant
-   inside the filter drawer is untouched. */
+   (#3266ea) ring. Scoped to .ant-select-filled so the full-width fields in the
+   phone filter sheet are untouched. */
 .topics-filter-select.ant-select-filled .ant-select-selector {
   border-radius: 999px;
   transition: box-shadow 0.2s ease;
@@ -111,8 +125,7 @@
   background: var(--bc-surface);
 }
 
-/* Borderless (mobile drawer): no control tint to sit on, so the chip supplies
-   its own. */
-.topics-tag-select.ant-select-borderless .ant-select-selection-overflow-item .ant-select-selection-item {
-  background: var(--bc-surface-hover);
+/* Full-width field (phone filter sheet): white on its light fill, as above. */
+.topics-tag-select.topics-field-select .ant-select-selection-overflow-item .ant-select-selection-item {
+  background: var(--bc-surface);
 }

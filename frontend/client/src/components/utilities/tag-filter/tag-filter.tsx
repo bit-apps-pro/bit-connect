@@ -1,5 +1,6 @@
+import { cn } from '@common/helpers/globalHelpers'
 import { __, sprintf } from '@common/helpers/i18nWrap'
-import { Button, Divider, Grid, Select } from 'antd'
+import { Button, Divider, Select } from 'antd'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
 
@@ -48,8 +49,16 @@ interface TagOption {
  * pill treatment so the toolbar still reads as one control bar, and collapses
  * selections to "+N" instead of growing, which would push the row around every
  * time a tag is picked.
+ *
+ * @param block a full-width field — see SortFilter.
  */
-export default function TagFilter({ loading = false }: { loading?: boolean }) {
+export default function TagFilter({
+  block = false,
+  loading = false
+}: {
+  block?: boolean
+  loading?: boolean
+}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const selected = useMemo(() => parseTagParam(searchParams.get(TAGS_PARAM)), [searchParams])
 
@@ -97,14 +106,11 @@ export default function TagFilter({ loading = false }: { loading?: boolean }) {
     return [...known, ...orphans]
   }, [taxonomies, selected])
 
-  const screens = Grid.useBreakpoint()
-  const isMobile = !screens.sm
-
   return (
     <Select<string[], TagOption>
       allowClear
       aria-label={__('Filter by tag')}
-      className="topics-filter-select topics-tag-select"
+      className={cn(['topics-filter-select topics-tag-select', block && 'topics-field-select'])}
       dropdownRender={menu => (
         <>
           {menu}
@@ -147,11 +153,10 @@ export default function TagFilter({ loading = false }: { loading?: boolean }) {
       )}
       options={options}
       placeholder={__('Tags')}
-      popupMatchSelectWidth={240}
-      size={isMobile ? 'middle' : 'large'}
-      style={{ width: isMobile ? 190 : 200 }}
+      popupMatchSelectWidth={block || 240}
+      size="large"
+      style={{ width: block ? '100%' : 200 }}
       value={selected}
-      variant={isMobile ? 'borderless' : 'outlined'}
     />
   )
 }

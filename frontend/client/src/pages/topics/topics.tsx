@@ -488,23 +488,26 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         styles={{ content: { borderTopLeftRadius: 16, borderTopRightRadius: 16 } }}
         title={__('Filters')}
       >
-        <div className="bc-flex bc-flex-col bc-gap-3 bc-pb-2">
+        {/* Label over control, no tinted panels: the sheet takes the toolbar's
+            white surface and its fields take the search box's treatment, so
+            opening it does not change the page's visual language. */}
+        <div className="bc-flex bc-flex-col bc-gap-5 bc-pb-2">
           {showTypeChips && (
-            <div className="bc-flex bc-flex-col bc-gap-2 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-3">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Topic type')}</span>
+            <div className="bc-flex bc-flex-col bc-gap-2">
+              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Topic type')}</span>
               <TopicTypeFilter />
             </div>
           )}
           {showSortFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Sort by')}</span>
-              <SortFilter />
+            <div className="bc-flex bc-flex-col bc-gap-2">
+              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Sort by')}</span>
+              <SortFilter block />
             </div>
           )}
           {showTagFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Tags')}</span>
-              <TagFilter />
+            <div className="bc-flex bc-flex-col bc-gap-2">
+              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Tags')}</span>
+              <TagFilter block />
             </div>
           )}
         </div>
