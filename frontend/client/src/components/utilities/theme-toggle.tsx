@@ -2,7 +2,7 @@ import { __ } from '@common/helpers/i18nWrap'
 import { resolveIsDark, type ThemeMode } from '@shared/theme/theme-mode'
 import useThemeSwitchRipple, { originFromEvent } from '@shared/theme/use-theme-switch-ripple'
 import { Dropdown, Tooltip } from 'antd'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { useAtom, useAtomValue } from 'jotai'
 import { useRef } from 'react'
 import { LuMonitor, LuMoon, LuSun } from 'react-icons/lu'
@@ -137,7 +137,7 @@ export default function ThemeToggle({
             type="button"
           >
             <AnimatePresence initial={false} mode="wait">
-              <motion.span
+              <m.span
                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                 className="bc-flex"
                 exit={{ opacity: 0, rotate: 45, scale: 0.5 }}
@@ -146,7 +146,7 @@ export default function ThemeToggle({
                 transition={{ duration: 0.15, ease: 'easeOut' }}
               >
                 {active.icon}
-              </motion.span>
+              </m.span>
             </AnimatePresence>
           </button>
         </Dropdown>
@@ -163,7 +163,7 @@ export default function ThemeToggle({
         {OPTIONS.map(({ icon, label, value }, index) => {
           const isActive = index === activeIndex
           const segment = (
-            <motion.button
+            <m.button
               aria-checked={isActive}
               aria-label={label}
               className={cn([
@@ -187,7 +187,7 @@ export default function ThemeToggle({
               type="button"
             >
               {isActive && (
-                <motion.span
+                <m.span
                   className={cn([
                     // Elevation, not a border: white lifts off the sunken
                     // track in light; on dark the two blacks are a step apart,
@@ -201,16 +201,16 @@ export default function ThemeToggle({
               )}
               <span className="bc-relative bc-flex">{icon}</span>
               {isActive && (
-                <motion.span
+                <m.span
                   animate={{ opacity: 1 }}
                   className="bc-relative bc-overflow-hidden bc-whitespace-nowrap bc-text-xs bc-font-semibold"
                   initial={{ opacity: 0 }}
                   transition={{ delay: 0.1, duration: 0.2 }}
                 >
                   {label}
-                </motion.span>
+                </m.span>
               )}
-            </motion.button>
+            </m.button>
           )
           // The active segment already says its name; a tooltip repeating it
           // would just chase the thumb around.

@@ -12,7 +12,7 @@ import TopicCard from '@utilities/topic-card'
 import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Button, Drawer } from 'antd'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowUp, LuPlus, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useSearchParams } from 'react-router'
@@ -381,7 +381,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             collapses/expands as chips come and go; each chip pops in and out. */}
         <AnimatePresence initial={false}>
           {activeChips.length > 0 && (
-            <motion.div
+            <m.div
               animate={{ height: 'auto', opacity: 1 }}
               className="bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-overflow-hidden lg:bc-hidden"
               exit={{ height: 0, opacity: 0 }}
@@ -391,7 +391,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
             >
               <AnimatePresence initial={false} mode="popLayout">
                 {activeChips.map(chip => (
-                  <motion.span
+                  <m.span
                     animate={{ opacity: 1, scale: 1 }}
                     className="bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-raised bc-py-1 bc-pl-3 bc-pr-1.5 bc-text-xs bc-font-medium bc-text-ink-muted"
                     exit={{ opacity: 0, scale: 0.85 }}
@@ -411,10 +411,10 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
                     >
                       <LuX size={14} />
                     </button>
-                  </motion.span>
+                  </m.span>
                 ))}
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -503,9 +503,9 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
       {!isLoading && posts.length > 0 && (
         <div className="bc-flex bc-flex-col bc-gap-4" key={filtersKey}>
           {posts.map((topic, index) => (
-            <motion.div key={topic.ID} {...cardMotion(index)}>
+            <m.div key={topic.ID} {...cardMotion(index)}>
               <TopicCard onVote={handlePostVote} topic={topic} />
-            </motion.div>
+            </m.div>
           ))}
 
           {/* Sentinel: observed to trigger loading the next page */}

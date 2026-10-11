@@ -5,7 +5,7 @@ import LoginWarningModal from '@features/login-warning-modal/ui/login-warning-mo
 import useTaxonomies from '@features/topic-modal/data/use-taxonomies'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Layout as AntLayout, Space, theme } from 'antd'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
@@ -109,7 +109,7 @@ export default function Layout() {
               outgoing page requires snapshotting the outlet and doubles the
               transition time; an enter fade gives the perceived smoothness
               without either cost. */}
-          <motion.div
+          <m.div
             animate={{ opacity: 1, y: 0 }}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             key={pathname}
@@ -118,7 +118,7 @@ export default function Layout() {
             <Suspense fallback={fallbackOf()} key={suspenseKey}>
               <Outlet />
             </Suspense>
-          </motion.div>
+          </m.div>
         </Content>
       </AntLayout>
     </ThemeProvider>

@@ -4,8 +4,7 @@ import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import config from '@config/config'
 import { NotificationBell } from '@features/notifications'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
-import TopicCreateModal from '@features/topic-modal/ui/topic-create-modal'
-import TopicEditModal from '@features/topic-modal/ui/topic-edit-modal'
+import TopicModals from '@features/topic-modal/ui/topic-modals'
 import logo from '@resource/img/logo.svg'
 import ThemeToggle from '@utilities/theme-toggle'
 import { userProfilePath } from '@utilities/user-link'
@@ -337,8 +336,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
           </div>
         </div>
       </header>
-      <TopicCreateModal />
-      <TopicEditModal />
+      <TopicModals />
     </>
   )
 }

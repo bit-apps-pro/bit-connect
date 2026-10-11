@@ -8,7 +8,7 @@ import EditedNote from '@utilities/edited-note'
 import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
 import { App as AntApp, Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { type ReactNode, useEffect, useState } from 'react'
 import { LuEyeOff, LuPin } from 'react-icons/lu'
 import { Link } from 'react-router'
@@ -437,7 +437,7 @@ export default function CommentItem({
               {/* Reply editor */}
               <AnimatePresence initial={false}>
                 {showReplyEditor && (
-                  <motion.div
+                  <m.div
                     animate={{ height: 'auto', opacity: 1, transitionEnd: { overflow: 'visible' } }}
                     className={`${styles.editorBreakout} bc-mt-2`}
                     data-depth={visualDepth}
@@ -457,7 +457,7 @@ export default function CommentItem({
                       // smaller of the two type sizes.
                       replyTo={replyMention ? undefined : comment.user}
                     />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </>
@@ -473,7 +473,7 @@ export default function CommentItem({
             const replies = childrenAtMaxDepth ? flattenReplies(comment.replies) : comment.replies
 
             return (
-              <motion.ul
+              <m.ul
                 animate={{ height: 'auto', opacity: 1, transitionEnd: { overflow: 'visible' } }}
                 className={styles.replies}
                 exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
@@ -499,7 +499,7 @@ export default function CommentItem({
                     />
                   </li>
                 ))}
-              </motion.ul>
+              </m.ul>
             )
           })()}
       </AnimatePresence>

@@ -6,7 +6,7 @@ import TabNav, { type TabItem } from '@utilities/tab-nav'
 import TopicCard from '@utilities/topic-card'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Empty, Pagination, Select, Skeleton } from 'antd'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowLeft, LuCalendar } from 'react-icons/lu'
 import { Link, useParams, useSearchParams } from 'react-router'
@@ -248,7 +248,7 @@ export default function UserProfilePage() {
     })()
 
     return (
-      <motion.div
+      <m.div
         // Fade the list on tab/page change so the swap reads as a transition
         // rather than a flash of new content.
         animate={{ opacity: 1, y: 0 }}
@@ -257,7 +257,7 @@ export default function UserProfilePage() {
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
         {body}
-      </motion.div>
+      </m.div>
     )
   }
 

@@ -247,7 +247,7 @@ const HEADING_SELECT_WIDTH = 'bc-w-[124px]'
 /** In the overflow menu it spans the row, like every other item there. */
 const HEADING_SELECT_MENU_WIDTH = 'bc-w-full'
 
-interface QuillEditorProps {
+export interface QuillEditorProps {
   className?: string
   defaultValue?: string
   /** Most images the text may hold. Unset is no limit; to allow none, leave

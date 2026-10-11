@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 
 import styles from './VoteBox.module.css'
 
@@ -38,7 +38,7 @@ export default function VoteBox({ isVote = false, onVote, votes }: VoteBoxProps)
           number scales out as the new one scales in. Instant feedback that the
           vote registered. */}
       <AnimatePresence initial={false} mode="popLayout">
-        <motion.span
+        <m.span
           animate={{ opacity: 1, scale: 1, y: 0 }}
           className={styles.count}
           exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, y: 6 }}
@@ -47,7 +47,7 @@ export default function VoteBox({ isVote = false, onVote, votes }: VoteBoxProps)
           transition={{ duration: 0.18, ease: 'easeOut' }}
         >
           {votes || 0}
-        </motion.span>
+        </m.span>
       </AnimatePresence>
     </button>
   )

@@ -2,7 +2,7 @@ import { cn } from '@common/helpers/globalHelpers'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
 import { theme } from 'antd'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { memo, useState } from 'react'
 import { NavLink } from 'react-router'
 
@@ -87,7 +87,7 @@ function SidebarNavItem({
       <span className="bc-min-w-0 bc-truncate">{label}</span>
 
       <If conditions={isActive}>
-        <motion.span
+        <m.span
           className="bc-absolute bc-inset-0 bc--z-10 bc-h-full bc-w-full bc-rounded-md bc-bg-primary/10 bc-border bc-border-solid bc-border-primary/30"
           // One pill per section: a stage and a row of another section can
           // both be current, and a shared id would fling one pill between them.

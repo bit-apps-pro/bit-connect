@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import debounce from 'lodash/debounce'
 import { useEffect, useMemo, useRef } from 'react'
 
 const useDebounce = <T extends unknown[], S>(callback: (...arguments_: T) => S, delay = 400) => {
@@ -12,7 +12,7 @@ const useDebounce = <T extends unknown[], S>(callback: (...arguments_: T) => S, 
     // pass arguments to callback function
     const function_ = (...argument: T) => reference.current(...argument)
 
-    return _.debounce(function_, delay)
+    return debounce(function_, delay)
   }, [delay])
 
   return debouncedCallback

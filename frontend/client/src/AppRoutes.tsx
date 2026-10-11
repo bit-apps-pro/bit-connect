@@ -2,13 +2,14 @@ import { StyleProvider } from '@ant-design/cssinjs'
 import Topics from '@pages/topics'
 import TopicArchive from '@pages/topics/archive'
 import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
+import MotionProvider from '@shared/motion/motion-provider'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { externalLoginUrl } from '@utils/auth-urls'
 import { routePath } from '@utils/route-path'
 import { createAntDesignStyleContainer } from '@utils/themeUtils'
 import { App as AntApp, ConfigProvider, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
-import { useEffect, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import NotifyContext from './common/context/NotifyContext'
@@ -17,15 +18,21 @@ import $navigate from './common/globalStates/$navigate'
 import { useNotificationConfig, useResponsiveNotification } from './common/hooks/useNotificationConfig'
 import config from './config/config'
 import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
-import { ForgotPassword, Login, Register as Signup, VerifyEmail } from './pages/Auth'
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
-import NotificationsPage from './pages/Notifications'
-import PostDetailsPage from './pages/Post/PostDetailsPage'
-import UserProfilePage from './pages/User'
 
-// const Root = lazy(() => import('./pages/root/Root'))
-// const Root = lazy(() => startTransition(import('./pages/root/Root')))
+// The topic list is the portal's front door and loads with the app. Every other
+// page is its own chunk, fetched on first visit, so a reader landing on the
+// list does not also download the topic page, profile, notifications and the
+// sign-in screens. Layout's <Suspense> covers the pages inside it; the auth
+// pages sit outside it and get their own below.
+const PostDetailsPage = lazy(() => import('./pages/Post/PostDetailsPage'))
+const UserProfilePage = lazy(() => import('./pages/User'))
+const NotificationsPage = lazy(() => import('./pages/Notifications'))
+const Login = lazy(() => import('./pages/Auth/LoginPage'))
+const Signup = lazy(() => import('./pages/Auth/RegisterPage'))
+const VerifyEmail = lazy(() => import('./pages/Auth/VerifyEmailPage'))
+const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
 
 const { darkAlgorithm, defaultAlgorithm } = theme
 
@@ -197,15 +204,16 @@ export default function AppRoutes() {
             ConfigProvider and warns about it. component={false} so no wrapper
             element lands between StyleProvider and the routes. */}
         <AntApp component={false}>
+        <MotionProvider>
         <NotifyContext.Provider value={notifyContextValue}>
           {contextHolderNotification}
           <VerifyEmailRedirect />
           <Routes>
             {/* Auth routes (outside layout) */}
-            <Route element={<Login />} path="/login" />
-            <Route element={<Signup />} path="/register" />
-            <Route element={<VerifyEmail />} path="/verify-email" />
-            <Route element={<ForgotPassword />} path="/forgot-password" />
+            <Route element={<Suspense><Login /></Suspense>} path="/login" />
+            <Route element={<Suspense><Signup /></Suspense>} path="/register" />
+            <Route element={<Suspense><VerifyEmail /></Suspense>} path="/verify-email" />
+            <Route element={<Suspense><ForgotPassword /></Suspense>} path="/forgot-password" />
 
             {/* Main routes (inside layout, guarded by portal access) */}
             <Route
@@ -222,6 +230,7 @@ export default function AppRoutes() {
             </Route>
           </Routes>
         </NotifyContext.Provider>
+        </MotionProvider>
         </AntApp>
       </StyleProvider>
     </ConfigProvider>
