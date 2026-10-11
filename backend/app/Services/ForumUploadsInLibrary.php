@@ -21,7 +21,7 @@ use WP_Query;
  *
  * Those uploads carry UploadClaims::PORTAL_META, so they are left out of both
  * the library and the picker, and kept a click away: the list view gets a
- * "Forum uploads" link beside its filters that shows them and nothing else.
+ * "Bit Connect uploads" link beside its filters that shows them and nothing else.
  * A query that names its posts or their parent still finds them, so a topic's
  * own media and an editor reopening a gallery are not cut short. Uploads from
  * before the mark existed carry none and stay listed.
@@ -75,7 +75,7 @@ final class ForumUploadsInLibrary
     }
 
     /**
-     * The "Forum uploads" link core shows beside the list view's filters.
+     * The "Bit Connect uploads" link core shows beside the list view's filters.
      *
      * @param array<string, string> $views
      *
@@ -90,7 +90,7 @@ final class ForumUploadsInLibrary
             '<a href="%s"%s>%s</a>',
             esc_url(add_query_arg(['mode' => 'list', self::VIEW_ARG => 1], admin_url('upload.php'))),
             $current ? ' class="current" aria-current="page"' : '',
-            esc_html__('Forum uploads', 'bit-connect')
+            esc_html__('Bit Connect uploads', 'bit-connect')
         );
 
         return $views;

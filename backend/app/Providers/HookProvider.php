@@ -71,7 +71,7 @@ class HookProvider
         MembersOnlyGuard::register();
 
         // What members upload in the forum stays out of the Media Library and
-        // the media picker, under a "Forum uploads" view of its own.
+        // the media picker, under a "Bit Connect uploads" view of its own.
         ForumUploadsInLibrary::register();
 
         // Same correction for links to a single comment, which core builds from
