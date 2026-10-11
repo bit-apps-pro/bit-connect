@@ -1,3 +1,4 @@
+import { contentMedia } from '@common/helpers/content-media'
 import { __ } from '@common/helpers/i18nWrap'
 import { plainText } from '@common/helpers/plain-text'
 import { type Topic } from '@features/topic-modal/shared/type'
@@ -7,7 +8,7 @@ import { tagLabel } from '@utilities/tag-filter'
 import UserLink from '@utilities/user-link'
 import { archivePath } from '@utils/listing-path'
 import { Flex, Tag, Typography } from 'antd'
-import { LuCalendar, LuMessageCircle } from 'react-icons/lu'
+import { LuCalendar, LuMessageCircle, LuPlay } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
@@ -61,6 +62,9 @@ export default function TopicCard({
     vote: { hasVoted, total }
   } = topic
   const excerpt = excerptOf(postContent)
+  // Only for a topic told in pictures or video alone: with words, the excerpt
+  // already says what it is about and the card stays text.
+  const media = excerpt ? [] : contentMedia(postContent)
 
   const postDate = new Date(postDateGmt.replace(' ', 'T') + 'Z')
   const relativeDate = relativeTime(postDateGmt)
@@ -135,6 +139,8 @@ export default function TopicCard({
               {excerpt}
             </p>
           )}
+
+          {media.length > 0 && <MediaStrip media={media} />}
 
           <TopicCardSummary topic={topic} />
         </Link>
@@ -233,6 +239,53 @@ export default function TopicCard({
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+/** Thumbnails shown on a card. More than this collapse into a count. */
+const MEDIA_SHOWN = 3
+
+/**
+ * The excerpt's stand-in for a topic with no words: small thumbnails of what it
+ * shows, so the card does not sit empty under its title.
+ *
+ * A video shows a frame from half a second in — the very first is often black
+ * — and `preload="metadata"` fetches only enough to draw it, with a play mark. Nothing here takes a click: the card's link
+ * opens the topic, where the video plays.
+ */
+function MediaStrip({ media }: { media: ReturnType<typeof contentMedia> }) {
+  const shown = media.slice(0, MEDIA_SHOWN)
+  const more = media.length - shown.length
+
+  return (
+    <div aria-hidden className="bc-pointer-events-none bc-mt-2 bc-flex bc-items-center bc-gap-2">
+      {shown.map(({ kind, src }, index) => (
+        <span
+          className="bc-relative bc-h-14 bc-w-20 bc-shrink-0 bc-overflow-hidden bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface-sunken"
+          key={`${src}-${index}`}
+        >
+          {kind === 'video' ? (
+            <>
+              <video
+                className="bc-h-full bc-w-full bc-object-cover"
+                muted
+                playsInline
+                preload="metadata"
+                src={src.includes('#') ? src : `${src}#t=0.5`}
+              />
+              <span className="bc-absolute bc-inset-0 bc-flex bc-items-center bc-justify-center">
+                <span className="bc-flex bc-h-6 bc-w-6 bc-items-center bc-justify-center bc-rounded-full bc-bg-black/60 bc-text-white">
+                  <LuPlay size={12} />
+                </span>
+              </span>
+            </>
+          ) : (
+            <img alt="" className="bc-h-full bc-w-full bc-object-cover" loading="lazy" src={src} />
+          )}
+        </span>
+      ))}
+      {more > 0 && <span className="bc-text-sm bc-font-medium bc-text-ink-muted">+{more}</span>}
     </div>
   )
 }
