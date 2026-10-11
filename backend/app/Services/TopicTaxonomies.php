@@ -35,6 +35,10 @@ use BitApps\BitConnect\Enum\Taxonomies;
  *   - `follow`    the follow target type members follow a term by, or ''.
  *   - `orderable` whether the admin may drag its terms into an order.
  *   - `icons`     whether its terms carry an icon.
+ *   - `assignable` optional callable(int $termId, int $userId): bool — whether
+ *                 that member may file a topic under that term. Omitted, any
+ *                 term of the taxonomy may be chosen. Asked when a topic is
+ *                 created or edited; an answer other than `true` refuses.
  *
  * Every field is checked rather than trusted: a parameter or segment this
  * plugin already uses is refused, so an entry can add to the portal but never
@@ -54,7 +58,7 @@ final class TopicTaxonomies
     ];
 
     /**
-     * @return array<string, array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool}>
+     * @return array<string, array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool, assignable: null|callable}>
      */
     public static function all(): array
     {
@@ -98,6 +102,8 @@ final class TopicTaxonomies
                 'follow'    => sanitize_key((string) ($entry['follow'] ?? '')),
                 'orderable' => (bool) ($entry['orderable'] ?? false),
                 'icons'     => (bool) ($entry['icons'] ?? false),
+                // Kept only when it can be called; checked, like every field.
+                'assignable' => \is_callable($entry['assignable'] ?? null) ? $entry['assignable'] : null,
             ];
         }
 
@@ -120,7 +126,7 @@ final class TopicTaxonomies
     /**
      * The entry carrying a taxonomy, or null when none does.
      *
-     * @return null|array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool}
+     * @return null|array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool, assignable: null|callable}
      */
     public static function forTaxonomy(string $taxonomy): ?array
     {
@@ -131,6 +137,23 @@ final class TopicTaxonomies
         }
 
         return null;
+    }
+
+    /**
+     * Whether a member may file a topic under this term of an added taxonomy.
+     *
+     * Yes unless the taxonomy's entry says otherwise through `assignable`; a
+     * parameter no entry carries is refused.
+     */
+    public static function mayAssign(string $param, int $termId, int $userId): bool
+    {
+        $entry = self::all()[$param] ?? null;
+
+        if ($entry === null) {
+            return false;
+        }
+
+        return $entry['assignable'] === null || ($entry['assignable'])($termId, $userId) === true;
     }
 
     /**

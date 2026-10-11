@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\AssignableTermRule;
 use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
@@ -65,7 +66,7 @@ final class CreateTopicRequest extends Request
         // One term each from a taxonomy another plugin files topics under,
         // required when that plugin says so — see TopicTaxonomies.
         foreach (TopicTaxonomies::all() as $param => $entry) {
-            $rules[$param] = [$entry['required'] ? 'required' : 'nullable', 'integer', 'min:1'];
+            $rules[$param] = [$entry['required'] ? 'required' : 'nullable', 'integer', 'min:1', new AssignableTermRule($param)];
         }
 
         return $rules;

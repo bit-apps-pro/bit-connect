@@ -138,6 +138,13 @@ class TopicService
 
         $topics = [];
         foreach ($query->posts as $post) {
+            // A lookup by slug is singular, and WP_Query skips `tax_query` for
+            // singular queries — so whatever a plugin excluded through
+            // topicQueryArgs() can still come back here. Asked one by one.
+            if (!empty($filters['name']) && !self::isReadable($post)) {
+                continue;
+            }
+
             $topicData = $this->prepareTopicData($post, $includeComments);
             $topics[] = $topicData;
         }

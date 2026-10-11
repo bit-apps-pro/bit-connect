@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\AssignableTermRule;
 use BitApps\BitConnect\Http\Rules\InRule;
 use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
@@ -80,7 +81,7 @@ final class UpdateTopicRequest extends Request
 
         // A taxonomy another plugin files topics under — see TopicTaxonomies.
         foreach (array_keys(TopicTaxonomies::all()) as $param) {
-            $rules[$param] = ['nullable', 'integer', 'min:1'];
+            $rules[$param] = ['nullable', 'integer', 'min:1', new AssignableTermRule($param)];
         }
 
         return $rules;
