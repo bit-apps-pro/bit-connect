@@ -114,15 +114,6 @@
   z-index: 1;
 }
 
-.focused .commentBubble {
-  background-color: var(--bc-surface);
-}
-
-/* Hover must still register on the focused row, or the bubble looks frozen. */
-.focused .commentBubble:hover {
-  background-color: var(--bc-surface-hover);
-}
-
 @keyframes comment-focus-arrive {
   0%,
   25% {
@@ -182,6 +173,16 @@
 }
 
 .commentBubble:hover {
+  background-color: var(--bc-surface-hover);
+}
+
+/* The focused row's bubble, after the plain bubble rules it outranks. */
+.focused .commentBubble {
+  background-color: var(--bc-surface);
+}
+
+/* Hover must still register on the focused row, or the bubble looks frozen. */
+.focused .commentBubble:hover {
   background-color: var(--bc-surface-hover);
 }
 

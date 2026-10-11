@@ -57,7 +57,7 @@
    landed, and the stretched ::after has no box of its own to outline. */
 .topic-card:focus-within {
   border-color: var(--bc-brand);
-  box-shadow: 0 0 0 2px rgb(50 102 234 / 25%);
+  box-shadow: 0 0 0 2px rgba(50, 102, 234, 25%);
 }
 
 .topic-card a:focus:not(:focus-visible) {

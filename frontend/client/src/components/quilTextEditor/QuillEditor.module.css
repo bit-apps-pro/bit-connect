@@ -48,7 +48,7 @@
   object-fit: contain;
   border-radius: 8px;
   margin: 8px 0;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 12%);
 }
 
 /* Phones: shorter cap — 360px would be nearly half a phone screen. */
@@ -242,7 +242,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  background: rgb(0 0 0 / 55%);
+  background: rgba(0, 0, 0, 55%);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -323,7 +323,7 @@
   margin: 8px 0;
   background: #000;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 12%);
 }
 
 @media (width < 768px) {

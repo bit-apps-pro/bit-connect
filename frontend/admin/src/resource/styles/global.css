@@ -46,6 +46,14 @@ html {
   text-rendering: optimizelegibility;
 }
 
+#bit-apps-root .ant-input-affix-wrapper-focused,
+#bit-apps-root .ant-input-affix-wrapper:focus-within,
+#bit-apps-root .ant-select-focused .ant-select-selector {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--bc-line-strong) !important;
+}
+
 #bit-apps-root button:focus:not(:focus-visible),
 #bit-apps-root input:focus:not(:focus-visible),
 #bit-apps-root select:focus:not(:focus-visible),
@@ -56,14 +64,6 @@ html {
 #bit-apps-root .ant-select-selector:focus:not(:focus-visible) {
   outline: none !important;
   box-shadow: none !important;
-}
-
-#bit-apps-root .ant-input-affix-wrapper-focused,
-#bit-apps-root .ant-input-affix-wrapper:focus-within,
-#bit-apps-root .ant-select-focused .ant-select-selector {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: var(--bc-line-strong) !important;
 }
 
 /* WP admin's input[type=text] sets a min-height antd never resets (30px before
@@ -107,6 +107,16 @@ svg {
   font-size: 16px;
   overflow: auto;
   isolation: isolate;
+}
+
+/* The shared WordPress reset sets the media modal in Montserrat, a font this
+   plugin never loads, so the picker fell back to the system sans. Set it in
+   the plugin's own font; `body` outranks the reset's `.media-modal *`, which
+   is also !important. The modal mounts outside #bit-apps-root, so the
+   `#bit-apps-root *` rule above never meets it. */
+/* stylelint-disable-next-line no-descending-specificity */
+body .media-modal * {
+  font-family: var(--font-family) !important;
 }
 
 a:focus {

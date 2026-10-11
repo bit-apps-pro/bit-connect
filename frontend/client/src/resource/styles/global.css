@@ -15,6 +15,12 @@
   height: calc(100vh - 50px);
 }
 
+body,
+html {
+  font-optical-sizing: auto;
+  height: 100%;
+}
+
 /* The full-page portal template (backend/templates/portal-template.php) wraps
    the app in #bit-connect-portal. Its body showed through the layout's outer
    margins as a white frame in dark mode, so it takes the backdrop token — the
@@ -43,6 +49,33 @@ body:has(#bit-connect-portal) {
 #bit-connect-portal,
 #bit-connect-u-root {
   color: var(--bc-ink);
+}
+
+#bit-connect-u-root {
+  direction: ltr;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  font-size: 16px;
+
+  /* The portal mounts inside the active WordPress theme and inherits whatever
+     that theme sets on <body> — Twenty Twenty-Five ships 300 (Light). Light
+     renders thin or gets synthesised depending on which faces the visitor's
+     font provides, so pin the body weight here; components still override it. */
+  font-weight: 400;
+  overflow: auto;
+  isolation: isolate;
+}
+
+/* Themes style headings directly with their own heading font (Twenty
+   Twenty-Four sets Cardo on h1–h6), which beats inheritance from the root —
+   and antd's Typography headings set no family of their own. Hand headings
+   back to the portal's font, including those inside antd overlays, which
+   mount on <body> outside the root. */
+:is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
+  :is(h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
 }
 
 /* Full-viewport shell for the main portal layout: header keeps its natural
@@ -77,12 +110,6 @@ body:has(#bit-connect-u-root > .ant-layout-has-sider) {
   line-height: 1;
 }
 
-body,
-html {
-  font-optical-sizing: auto;
-  height: 100%;
-}
-
 #bit-connect-u-root * {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
@@ -103,15 +130,6 @@ html {
   box-shadow: none !important;
 }
 
-/* buttons/links: only remove outline for mouse clicks, keep for keyboard nav */
-#bit-connect-u-root button:focus:not(:focus-visible),
-#bit-connect-u-root .ant-btn:focus:not(:focus-visible),
-#bit-connect-u-root .ant-input-affix-wrapper:focus:not(:focus-visible),
-#bit-connect-u-root .ant-select-selector:focus:not(:focus-visible) {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 /* Ant Design wrapper focus classes */
 #bit-connect-u-root .ant-input-affix-wrapper-focused,
 #bit-connect-u-root .ant-input-affix-wrapper:focus-within,
@@ -119,6 +137,15 @@ html {
   outline: none !important;
   box-shadow: none !important;
   border-color: var(--bc-line-strong) !important;
+}
+
+/* buttons/links: only remove outline for mouse clicks, keep for keyboard nav */
+#bit-connect-u-root button:focus:not(:focus-visible),
+#bit-connect-u-root .ant-btn:focus:not(:focus-visible),
+#bit-connect-u-root .ant-input-affix-wrapper:focus:not(:focus-visible),
+#bit-connect-u-root .ant-select-selector:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 svg {
@@ -137,23 +164,6 @@ svg {
   background-image: linear-gradient(90deg, var(--bg-5) 0, var(--bg-10) 30px, var(--bg-5) 60px);
   background-size: 200%;
   animation: skeleton 1s infinite ease-out;
-}
-
-#bit-connect-u-root {
-  direction: ltr;
-  font-family: var(--font-family);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  height: 100%;
-  font-size: 16px;
-
-  /* The portal mounts inside the active WordPress theme and inherits whatever
-     that theme sets on <body> — Twenty Twenty-Five ships 300 (Light). Light
-     renders thin or gets synthesised depending on which faces the visitor's
-     font provides, so pin the body weight here; components still override it. */
-  font-weight: 400;
-  overflow: auto;
-  isolation: isolate;
 }
 
 a:focus:not(:focus-visible) {
@@ -262,7 +272,7 @@ a:focus:not(:focus-visible) {
    A faint, translucent thumb over either surface: the bar is a hint that more
    is below, not a control to compete with the content beside it. */
 .scroller {
-  --scrollbar-color-thumb: rgb(0 0 0 / 0.14);
+  --scrollbar-color-thumb: rgba(0, 0, 0, 14%);
   --scrollbar-color-track: transparent;
   --scrollbar-width: auto;
   --scrollbar-width-legacy: 0.75rem;
@@ -274,7 +284,7 @@ a:focus:not(:focus-visible) {
 }
 
 [color-scheme='dark'] .scroller {
-  --scrollbar-color-thumb: rgb(255 255 255 / 0.16);
+  --scrollbar-color-thumb: rgba(255, 255, 255, 16%);
 }
 
 @supports (scrollbar-width: auto) {
