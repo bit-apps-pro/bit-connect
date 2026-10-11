@@ -12,4 +12,12 @@ import { type ComponentType } from 'react'
 // eslint-disable-next-line unicorn/no-null -- the slot is declared empty, and the caller tests for it
 const SidebarSections: ComponentType | null = null
 
+/**
+ * Whether a path is one of the sections' own places — so Topics, which marks
+ * itself on every listing route, stands down there. None, while there are no
+ * sections.
+ */
+// eslint-disable-next-line unicorn/no-null -- declared empty with the slot above
+export const sectionOwnsPath: ((pathname: string) => boolean) | null = null
+
 export default SidebarSections

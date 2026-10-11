@@ -14,7 +14,7 @@ import { matchPath, useLocation } from 'react-router'
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
-import SidebarSections from './sidebar-sections'
+import SidebarSections, { sectionOwnsPath } from './sidebar-sections'
 import SidebarNavItem from './SidebarNavItem'
 
 const { Sider } = Layout
@@ -39,7 +39,7 @@ function NavList({ className, showRoadmap }: { className?: string; showRoadmap: 
       <SidebarNavItem
         props={{
           glyph: <LuLayoutList size={18} />,
-          isActive: isListingPath(pathname),
+          isActive: isListingPath(pathname) && !sectionOwnsPath?.(pathname),
           label: __('Topics'),
           path: '',
           reserveIconSlot: true,

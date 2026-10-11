@@ -2018,6 +2018,21 @@ if (!function_exists('wp_set_post_terms')) {
     }
 }
 
+if (!function_exists('wp_set_object_terms')) {
+    /**
+     * The same store as wp_set_post_terms(); ids only, as the plugin passes them.
+     *
+     * @param array<int, int>|int $terms
+     * @param mixed               $objectId
+     * @param mixed               $taxonomy
+     * @param mixed               $append
+     */
+    function wp_set_object_terms($objectId, $terms, $taxonomy, $append = false)
+    {
+        return wp_set_post_terms($objectId, $terms, $taxonomy, $append);
+    }
+}
+
 if (!function_exists('get_objects_in_term')) {
     /**
      * Posts filed under a term, from the same store wp_set_post_terms() writes.

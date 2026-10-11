@@ -165,7 +165,12 @@ final class TopicTaxonomies
     {
         foreach (self::all() as $param => $entry) {
             if (isset($data[$param])) {
-                wp_set_post_terms($postId, $data[$param], $entry['taxonomy']);
+                // Term ids, set as ids. wp_set_post_terms() reads a value for a
+                // non-hierarchical taxonomy as a term *name*, so id 87 became a
+                // new term called "87".
+                $termIds = array_values(array_filter(array_map('intval', (array) $data[$param]), static fn (int $id): bool => $id > 0));
+
+                wp_set_object_terms($postId, $termIds, $entry['taxonomy']);
             }
         }
     }

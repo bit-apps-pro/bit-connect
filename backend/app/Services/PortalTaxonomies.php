@@ -236,7 +236,13 @@ final class PortalTaxonomies
 
         $term = get_term_by('slug', $termSlug, $taxonomy);
 
-        return $term instanceof WP_Term ? $term : null;
+        if (!$term instanceof WP_Term) {
+            return null;
+        }
+
+        // A term the portal would not list to this reader has no archive for
+        // them either: its page would name it. Answered as missing.
+        return ExtensionPoints::portalTerms([$term], $taxonomy) === [] ? null : $term;
     }
 
     /**

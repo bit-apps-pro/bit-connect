@@ -20,9 +20,10 @@ export default function ListingContext({ archiveName = '' }: { archiveName?: str
   const activeStage = useActiveStage()
   const { stages } = useStagesStore()
 
+  // Below lg only: from there the archive's own heading names it.
   if (archiveName) {
     return (
-      <div className="bc-flex">
+      <div className="bc-flex lg:bc-hidden">
         <span className={CHIP_CLASS}>
           <span className="bc-min-w-0 bc-truncate">{archiveName}</span>
         </span>
