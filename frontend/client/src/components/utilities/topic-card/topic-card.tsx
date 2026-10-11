@@ -131,51 +131,61 @@ export default function TopicCard({
           </p>
         </Link>
 
-        {/* One wrapping meta row at every width — author, date, comments, type,
-            then tags. The author and tag links sit above the card overlay, so
-            they keep their own destinations. */}
-        <div className="topic-card__meta bc-mt-3 bc-flex bc-min-w-0 bc-flex-wrap bc-items-center bc-gap-x-3 bc-gap-y-2 md:bc-gap-x-4">
+        {/* One meta row — author, date, comments, type, then tags. On a phone
+            it never wraps: the author's name gives way with an ellipsis, so
+            the date and count keep their line. Below 360px, where even a
+            shortened name would not fit beside them, and from sm, it wraps.
+            The author and tag links sit above the card overlay, so they keep
+            their own destinations. */}
+        <div className="topic-card__meta bc-mt-3 bc-flex bc-min-w-0 bc-items-center bc-gap-x-3 bc-gap-y-2 max-[359px]:bc-flex-wrap sm:bc-flex-wrap md:bc-gap-x-4">
           <TopicCardState topic={topic} />
           <UserLink
             avatar={authorAvatar}
-            avatarSize={24}
+            avatarSize={18}
             badge={topic.author_badge}
+            // Dropped on phones, where it pushed the comment count onto a
+            // second line; the topic page and profile still carry it.
+            badgeClassName="bc-hidden sm:bc-inline"
+            // The avatar and the first letters at least, however short the line.
+            className="bc-min-w-[3.25rem]"
             name={authorName}
-            // Capped on narrow screens: a full name pushed the date onto its own
-            // line, which pushed the type chip onto a third — three meta rows on
-            // a 320px card. Uncapped from md, where the line has room.
-            nameClassName="bc-block bc-max-w-[88px] bc-truncate bc-text-sm bc-text-ink-muted sm:bc-max-w-none"
+            // Capped on a phone, and shrinks below the cap when the line is
+            // short, so a long name ends in an ellipsis rather than pushing the
+            // date and count onto a second line. Uncapped from sm.
+            nameClassName="bc-block bc-max-w-[88px] bc-truncate bc-text-xs bc-text-ink-muted sm:bc-max-w-none sm:bc-text-sm"
             slug={topic.author_slug}
           />
 
-          <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap="small">
-            {/* The icon is decoration next to a self-explanatory date; at 320px
-                its 26px was the difference between the meta fitting on two
-                lines and spilling onto three. */}
-            <LuCalendar className="bc-hidden sm:bc-block" size={18} />
-            {/* The calendar date from sm, where the row has room for it; the
-                shorter "2mo ago" on phones. Each carries the other as a hint. */}
+          {/* Icons are sized in em, a step above the text they label, so they
+              scale with it: 12px text on a phone, where the smaller type is
+              what lets "Comments" fit the line, and 14px from sm. */}
+          <Flex
+            align="center"
+            className="bc-shrink-0 bc-text-xs bc-text-ink-muted sm:bc-text-sm"
+            gap={4}
+          >
+            <LuCalendar className="bc-shrink-0" size="1.15em" />
+            {/* "3d ago" — how fresh a topic is matters more down a list than
+                the day it was posted, which the hover carries instead. */}
             <time
               className="bc-whitespace-nowrap"
               dateTime={postDate.toISOString()}
-              title={relativeDate}
+              title={calendarDate}
             >
-              <span className="sm:bc-hidden">{relativeDate}</span>
-              <span className="bc-hidden sm:bc-inline">{calendarDate}</span>
+              {relativeDate}
             </time>
           </Flex>
 
           {canComment && (
-            <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap="small">
-              <LuMessageCircle size={18} />
-              {/* The count alone on phones, where the icon says what it is. */}
+            <Flex
+              align="center"
+              className="bc-shrink-0 bc-text-xs bc-text-ink-muted sm:bc-text-sm"
+              gap={4}
+            >
+              <LuMessageCircle className="bc-shrink-0" size="1.15em" />
               <span className="bc-whitespace-nowrap">
-                {commentsCount}
-                <span className="bc-hidden sm:bc-inline">
-                  {' '}
-                  {/* The count arrives as a string from WordPress. */}
-                  {Number(commentsCount) === 1 ? __('Comment') : __('Comments')}
-                </span>
+                {commentsCount} {/* The count arrives as a string from WordPress. */}
+                {Number(commentsCount) === 1 ? __('Comment') : __('Comments')}
               </span>
             </Flex>
           )}
