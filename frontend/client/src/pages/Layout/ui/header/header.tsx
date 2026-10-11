@@ -50,6 +50,10 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
     }
   }, [checkAuth, isLoggedIn, user])
 
+  const openCreate = () => {
+    if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
+  }
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -186,7 +190,9 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
             {isMobile && (
               <Button
                 aria-label={__('Open menu')}
-                className="bc-shrink-0"
+                // Pulled out by its own padding, like the Back button below, so
+                // the glyph lines up with the page gutter rather than 8px in.
+                className="bc--ml-2 bc-shrink-0"
                 // Lucide draws the same 2px stroke at every size, so scaling an
                 // icon up thins it out relative to its own box: at 22 this was
                 // the largest glyph in the bar and the lightest, three hairlines
@@ -223,47 +229,51 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                 disappoint. */}
             {isLoggedIn && <NotificationBell />}
             {isLoggedIn && canCreatePost && (
-              // The label steps up with the room to hold it: a plus alone on a
-              // phone, "New" once a wide phone can carry a word, the whole
-              // sentence on desktop. It used to keep antd's sentence-sized
-              // flanks around that one short word, which made the loudest and
-              // widest object in the bar out of its smallest label — beside a
-              // 36px bell and a 36px menu button, on the row with the least
-              // room. Sized to them it joins their rhythm instead of breaking
-              // it.
-              //
-              // Drawn as the list's own Create button (pages/topics/topics.tsx)
-              // at the bar's 36px height: the same 10px corners, 18px plus and
-              // 8px gap, so the one action reads as one button whichever page
-              // offers it. The icon-only form on a phone stays a disc, the
-              // shape every other icon button in that bar wears.
-              //
-              // The glyph's heavier stroke is the menu button's trick — Lucide
-              // draws 2px at every size, so a glyph thins out as it grows.
-              //
-              // The name is spelled out for assistive tech at every width: below
-              // `sm` both labels are `display: none`, and a button whose only
-              // content is an icon has no accessible name at all.
-              //
-              // The gap is antd's own flex `gap`, which a hidden label takes no
-              // part in, so the plus stays centred in the disc on a phone.
-              <Button
-                aria-label={__('Create New Topic')}
-                className={cn([
-                  'bc-w-9 bc-px-0 sm:bc-w-auto sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5',
-                  listHasCreate && 'lg:bc-hidden'
-                ])}
-                icon={<LuPlus size={18} strokeLinecap="round" strokeWidth={2.5} />}
-                onClick={() => {
-                  if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
-                }}
-                shape="round"
-                size="middle"
-                type="primary"
-              >
-                <span className="bc-hidden md:bc-inline">{__('Create New Topic')}</span>
-                <span className="bc-hidden sm:bc-inline md:bc-hidden">{__('New')}</span>
-              </Button>
+              <>
+                {/* The label steps up with the room to hold it: "New" on a
+                    wide phone, the whole sentence on desktop. Sized to the
+                    bar's 36px bell and menu button so it joins their rhythm
+                    instead of being the widest object on the row with the
+                    least room.
+
+                    Drawn as the list's own Create button
+                    (pages/topics/topics.tsx) at the bar's height: the same
+                    10px corners, 18px plus and 8px gap, so the one action reads
+                    as one button whichever page offers it.
+
+                    The glyph's heavier stroke is the menu button's trick —
+                    Lucide draws 2px at every size, so a glyph thins out as it
+                    grows. */}
+                <Button
+                  aria-label={__('Create New Topic')}
+                  className={cn([
+                    'bc-hidden sm:bc-inline-flex sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5',
+                    listHasCreate && 'lg:bc-hidden'
+                  ])}
+                  icon={<LuPlus size={18} strokeLinecap="round" strokeWidth={2.5} />}
+                  onClick={openCreate}
+                  size="middle"
+                  type="primary"
+                >
+                  <span className="bc-hidden md:bc-inline">{__('Create New Topic')}</span>
+                  <span className="bc-hidden sm:bc-inline md:bc-hidden">{__('New')}</span>
+                </Button>
+
+                {/* Phones: a floating button in the thumb's reach instead of a
+                    disc in the bar, which shared the narrowest row on the
+                    screen with the logo, bell and account menu. Fixed to the
+                    viewport — the header is sticky, not transformed, so it is
+                    no containing block — and lifted clear of the home
+                    indicator. Below the sidebar drawer (z-40), which covers
+                    it while open. */}
+                <Button
+                  aria-label={__('Create New Topic')}
+                  className="bc-fixed bc-bottom-[calc(1rem+env(safe-area-inset-bottom))] bc-right-4 bc-z-30 bc-h-14 bc-w-14 bc-rounded-[14px] bc-shadow-lg sm:bc-hidden"
+                  icon={<LuPlus size={26} strokeLinecap="round" strokeWidth={2.5} />}
+                  onClick={openCreate}
+                  type="primary"
+                />
+              </>
             )}
             {isLoggedIn && userMenuItems.length > 0 ? (
               <Dropdown

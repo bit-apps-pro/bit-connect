@@ -66,18 +66,20 @@ export default function SearchInput({
 
   return (
     <div className={cn(className, 'bc-relative bc-w-full')}>
-      <div className="bc-absolute bc-left-3.5 bc-top-1/2 bc-z-10 bc-flex bc--translate-y-1/2">
-        <LuSearch className="bc-text-ink-subtle" size={20} />
+      <div className="bc-absolute bc-left-3 bc-top-1/2 bc-z-10 bc-flex bc--translate-y-1/2">
+        <LuSearch className="bc-text-ink-subtle" size={18} />
       </div>
+      {/* Outlined on a light fill rather than antd's filled variant: the rule
+          gives the field an edge against a white page, and outlined keeps
+          antd's brand border on focus. */}
       <Input
         allowClear
-        className="bc-rounded-lg bc-pl-11"
+        className="bc-h-10 bc-rounded-[8px] bc-border-line bc-bg-surface-hover bc-pl-10 bc-text-[14px] focus-within:bc-border-primary hover:bc-border-primary"
         name="search"
         onChange={handleSearchChange}
         placeholder={__('Search topic, tag, etc.')}
         size="large"
         type="search"
-        variant="filled"
         {...props}
       />
     </div>

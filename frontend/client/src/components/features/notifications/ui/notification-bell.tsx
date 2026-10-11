@@ -135,9 +135,11 @@ export default function NotificationBell() {
       // A square, not a pill: the badge sits inside the button as a child, so
       // antd charges it the 15px flanks of a text button and the bell ended up
       // half again as wide as the icon it holds. Squared off, it matches the
-      // menu button at the other end of the bar. The right margin clears the
-      // badge, which hangs 6px past the button's edge.
-      className="bc-mr-2 bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0"
+      // menu button at the other end of the bar. From md the right margin
+      // clears the badge, which hangs 6px past the button's edge; on a phone
+      // the bell sits close to the account menu instead, and the badge hangs
+      // into that button's own padding.
+      className="bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0 md:bc-mr-2"
       onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
       type="text"
     >
@@ -151,10 +153,14 @@ export default function NotificationBell() {
           A fixed square rounded off, so one digit and two draw the same
           circle instead of the count stretching into a pill. "99+" is the one
           label too wide for that circle at 10px, so it alone steps down. */}
+      {/* The count is pinned over the icon's corner explicitly: left in flow it
+          sat beside the bell, doubling the badge to 36px, pushing the bell to
+          the button's left edge and hanging the count in the gap after it. */}
       <Badge
+        className="bc-relative bc-flex"
         classNames={{
           indicator: [
-            'bc-h-[18px] bc-w-[18px] bc-min-w-[18px] bc-rounded-full bc-bg-primary bc-p-0',
+            'bc-absolute bc-right-0 bc-top-0 bc-h-[18px] bc-w-[18px] bc-min-w-[18px] bc-rounded-full bc-bg-primary bc-p-0',
             'bc-font-semibold bc-leading-[18px]',
             unreadCount > 99 ? 'bc-text-[8.5px] bc-tracking-tighter' : 'bc-text-[10px]'
           ].join(' ')

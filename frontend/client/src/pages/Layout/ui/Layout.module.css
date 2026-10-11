@@ -19,6 +19,14 @@
   scrollbar-gutter: stable both-edges;
 }
 
+/* Phones float the Create button over the bottom-right corner (see header);
+   room under the content lets the last row scroll clear of it. */
+@media (width < 640px) {
+  .contentWrp {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 .layoutWrp[color-scheme='dark'] {
   background-color: hsla(287deg, 0%, 0%, 100%) !important;
   background-image:

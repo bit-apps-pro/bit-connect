@@ -1,6 +1,7 @@
 import './topics.css'
 
 import NotifyContext from '@common/context/NotifyContext'
+import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
@@ -31,15 +32,15 @@ import TopicListBanners from './topic-list-banners'
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
 
-/** Modern "elevated dark circle" styling for the mobile filter button. */
-// Quiet neutral circle matching the filled search input beside it — the filter
-// is a secondary control, not a call to action. The active-filter state is
-// signalled by the small blue dot, not by the button itself.
+// A bordered square matching the search field beside it: same height, corners
+// and rule, so the two read as one toolbar. The filter is a secondary control,
+// not a call to action — the active-filter state is signalled by the small
+// blue dot, not by the button itself.
 const FILTER_BUTTON_CLASS = [
   'bc-group bc-relative bc-flex bc-h-10 bc-w-10 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center',
-  'bc-rounded-full bc-border-none bc-bg-surface-raised bc-text-ink-subtle',
+  'bc-rounded-[8px] bc-border bc-border-solid bc-border-line bc-bg-surface-hover bc-text-ink',
   'bc-transition-colors bc-duration-200 bc-ease-out',
-  'hover:bc-bg-surface-raised hover:bc-text-ink-muted',
+  'hover:bc-border-primary hover:bc-text-primary',
   'active:bc-scale-95'
 ].join(' ')
 
@@ -354,9 +355,9 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
               onClick={() => setFilterOpen(true)}
               type="button"
             >
-              <LuSlidersHorizontal size={18} />
+              <LuSlidersHorizontal size={20} />
               {hasActiveFilters && (
-                <span className="filter-dot-pulse bc-absolute bc-right-2 bc-top-2 bc-h-2 bc-w-2 bc-rounded-full bc-bg-primary" />
+                <span className="filter-dot-pulse bc-absolute bc--right-1 bc--top-1 bc-h-2.5 bc-w-2.5 bc-rounded-full bc-bg-primary bc-ring-2 bc-ring-surface" />
               )}
             </button>
           )}
@@ -374,52 +375,68 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         {/* phone: what the list is showing, since the sidebar that says so is
             folded into the drawer there. A stage archive, or the archive the
             listing is scoped to, is a choice the chips themselves offer. */}
-        <ListingContext
-          archiveName={
-            !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
-          }
-        />
+        {/* phone: where the list is and what narrows it, on one line. The place
+            chips truncate before the filters do, since a filter's name is what
+            its remove button acts on; past that the row scrolls sideways. From
+            md the place chips give way to the sidebar, so with no filters the
+            row would be empty space. */}
+        <div
+          className={cn([
+            'bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden',
+            activeChips.length === 0 && 'md:bc-hidden'
+          ])}
+          style={{ scrollbarWidth: 'none' }}
+        >
+          <ListingContext
+            archiveName={
+              !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === ''
+                ? (archiveName ?? archiveSlug)
+                : ''
+            }
+          />
 
-        {/* mobile: active (non-default) filters as removable chips. The row
-            collapses/expands as chips come and go; each chip pops in and out. */}
-        <AnimatePresence initial={false}>
-          {activeChips.length > 0 && (
-            <m.div
-              animate={{ height: 'auto', opacity: 1 }}
-              className="bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-overflow-hidden lg:bc-hidden"
-              exit={{ height: 0, opacity: 0 }}
-              initial={{ height: 0, opacity: 0 }}
-              key="filter-chips"
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-              <AnimatePresence initial={false} mode="popLayout">
-                {activeChips.map(chip => (
-                  <m.span
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-raised bc-py-1 bc-pl-3 bc-pr-1.5 bc-text-xs bc-font-medium bc-text-ink-muted"
-                    exit={{ opacity: 0, scale: 0.85 }}
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    key={chip.key}
-                    layout
-                    transition={{ duration: 0.18, ease: 'easeOut' }}
-                  >
-                    {chip.label}
-                    {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
-                        button is easy to miss with a thumb. */}
-                    <button
-                      aria-label={__('Remove filter')}
-                      className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded-full bc-border-none bc-bg-transparent bc-text-ink-subtle bc-transition-colors hover:bc-bg-surface-raised hover:bc-text-ink-muted"
-                      onClick={chip.onRemove}
-                      type="button"
+          {/* mobile: active (non-default) filters as removable chips, in the
+              type strip's selected style — each one is a filter the reader
+              switched on. Each chip pops in and out. */}
+          <AnimatePresence initial={false}>
+            {activeChips.length > 0 && (
+              <m.div
+                animate={{ opacity: 1 }}
+                className="bc-flex bc-shrink-0 bc-items-center bc-gap-2"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                key="filter-chips"
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                <AnimatePresence initial={false} mode="popLayout">
+                  {activeChips.map(chip => (
+                    <m.span
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bc-inline-flex bc-h-8 bc-shrink-0 bc-items-center bc-gap-1 bc-whitespace-nowrap bc-rounded-md bc-border bc-border-solid bc-border-primary/30 bc-bg-primary/10 bc-pl-3 bc-pr-1 bc-text-sm bc-font-medium bc-text-primary"
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      key={chip.key}
+                      layout
+                      transition={{ duration: 0.18, ease: 'easeOut' }}
                     >
-                      <LuX size={14} />
-                    </button>
-                  </m.span>
-                ))}
-              </AnimatePresence>
-            </m.div>
-          )}
-        </AnimatePresence>
+                      {chip.label}
+                      {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
+                          button is easy to miss with a thumb. */}
+                      <button
+                        aria-label={__('Remove filter')}
+                        className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded bc-border-none bc-bg-transparent bc-text-primary bc-transition-colors hover:bc-bg-primary/15"
+                        onClick={chip.onRemove}
+                        type="button"
+                      >
+                        <LuX size={14} />
+                      </button>
+                    </m.span>
+                  ))}
+                </AnimatePresence>
+              </m.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* desktop toolbar: search and Create, then the type chips opposite
             the pickers. Create lives here rather than in the header on the

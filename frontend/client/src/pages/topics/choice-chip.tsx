@@ -6,9 +6,12 @@ export interface Choice {
   to: string
 }
 
+// The type strip's chip (see topic-type-filter), outlined: the two rows sit
+// together on a phone and read as one set. Not its selected blue — this names
+// where the reader is, it is not a filter they switched on.
 export const CHIP_CLASS = cn([
-  'bc-flex bc-h-8 bc-min-w-0 bc-max-w-[60%] bc-shrink bc-items-center bc-gap-1 bc-rounded-full bc-px-3',
-  'bc-bg-surface-raised bc-text-[13px] bc-font-semibold bc-text-ink'
+  'bc-flex bc-h-8 bc-min-w-0 bc-max-w-[60%] bc-shrink bc-items-center bc-gap-1 bc-rounded-md bc-px-3',
+  'bc-border bc-border-solid bc-border-line bc-bg-surface bc-text-sm bc-text-ink'
 ])
 
 /**
