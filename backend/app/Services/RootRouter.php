@@ -365,25 +365,16 @@ final class RootRouter
     /**
      * Whether this reader should be given the topic page at all.
      *
-     * Published is the ordinary answer. A hidden topic is the exception: its
-     * author and the moderators are served it — marked, and still absent from
-     * every listing — and everyone else falls through to the not-found screen
-     * as before.
-     *
-     * The status check has to happen here as well as in TopicService. This runs
-     * on the WordPress route, which decided the request was a 404 long before
-     * any service was asked, so letting the author through downstream while
-     * this line still tested for 'publish' gave them a 404 on their own topic
-     * and an API that cheerfully returned it.
+     * The check has to happen here as well as downstream: this runs on the
+     * WordPress route, which decided the request was a 404 long before any
+     * service was asked. It asks TopicService rather than keeping rules of its
+     * own — a private copy here once admitted only published and hidden topics,
+     * so the author of a private one got a 404 on its page while the API
+     * returned it, and it would have ignored whatever a plugin holds back.
      */
     private function isReadable(WP_Post $topic): bool
     {
-        if ($topic->post_status === 'publish') {
-            return true;
-        }
-
-        return $topic->post_status === ContentVisibilityService::HIDDEN_STATUS
-            && ContentVisibilityService::isPostViewableWhileHidden((int) $topic->post_author);
+        return TopicService::isReadable($topic);
     }
 
     /**

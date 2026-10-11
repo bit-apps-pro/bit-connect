@@ -11,6 +11,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
+use WP_Post;
 
 /**
  * Who has asked to hear about what.
@@ -363,7 +364,27 @@ final class FollowService
     {
         return $userId > 0
             && self::isValidTargetType($targetType)
-            && self::isValidTargetId($targetType, $targetId);
+            && self::isValidTargetId($targetType, $targetId)
+            && self::mayFollowTopic($userId, $targetType, $targetId);
+    }
+
+    /**
+     * A topic is followed only by someone who may read it. Following one they
+     * cannot open would confirm it exists; the notifications it brings are
+     * held back from them anyway (see NotificationService).
+     *
+     * Muting stays open to everyone — unfollow() does not ask — so a member who
+     * has since lost access can still silence a thread.
+     */
+    private static function mayFollowTopic(int $userId, string $targetType, int $targetId): bool
+    {
+        if ($targetType !== Follow::TARGET_TOPIC) {
+            return true;
+        }
+
+        $post = get_post($targetId);
+
+        return $post instanceof WP_Post && TopicService::isReadableBy($post, $userId);
     }
 
     /**

@@ -13,6 +13,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Model\Notification;
+use WP_Post;
 
 /**
  * The one way anything in this plugin tells a member something happened.
@@ -377,9 +378,19 @@ final class NotificationService
             $excluded[] = $actorId;
         }
 
+        // A row names its topic — in the bell, the email and the digest — so
+        // nobody is written one about a topic they cannot open. Asked last,
+        // after every listener, so a recipient a filter added is held to it too.
+        $thread = $topicId ?? ($targetType === self::TARGET_TOPIC ? $targetId : 0);
+        $topic = $thread > 0 ? get_post($thread) : null;
+
         $written = 0;
 
         foreach (self::normalizeIds($candidates, $excluded) as $userId) {
+            if ($topic instanceof WP_Post && !TopicService::isReadableBy($topic, $userId)) {
+                continue;
+            }
+
             if (self::deliver($userId, $actorId, $type, $targetType, $targetId, $context, $topicId)) {
                 ++$written;
             }

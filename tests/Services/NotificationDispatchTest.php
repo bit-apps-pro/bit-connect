@@ -150,6 +150,29 @@ final class NotificationDispatchTest extends TestCase
     }
 
     /**
+     * A row names its topic in the bell, the email and the digest, so nobody
+     * is written one about a topic a plugin keeps from them.
+     */
+    public function testNobodyIsToldAboutATopicTheyCannotRead(): void
+    {
+        $GLOBALS['__bc_follows'] = [
+            ['user_id' => self::FOLLOWER, 'target_type' => Follow::TARGET_TOPIC, 'target_id' => self::TOPIC, 'muted' => 0],
+        ];
+        $GLOBALS['__wp_filters']['bit_connect_topic_readable'] = static fn (bool $readable, WP_Post $post, int $userId): bool => $userId !== self::FOLLOWER;
+
+        NotificationService::dispatch(
+            NotificationTypes::TOPIC_REPLY,
+            NotificationService::TARGET_COMMENT,
+            self::COMMENT,
+            [],
+            self::TOPIC
+        );
+
+        $this->assertNotContains(self::FOLLOWER, $this->recipients());
+        $this->assertContains(self::AUTHOR, $this->recipients());
+    }
+
+    /**
      * Nobody is notified about what they did themselves.
      */
     public function testTheActorIsNeverToldAboutTheirOwnAction(): void

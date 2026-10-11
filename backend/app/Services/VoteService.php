@@ -53,7 +53,9 @@ class VoteService
 
         $post = get_post($postId);
 
-        if (!$post || $post->post_type !== EnumPostTypes::BIT_CONNECT->value) {
+        // A topic the voter cannot read is as good as missing: a vote on it
+        // would confirm it exists and move counts its readers see.
+        if (!$post || $post->post_type !== EnumPostTypes::BIT_CONNECT->value || !TopicService::isReadableBy($post, $userId)) {
             return $this->error(__('Invalid post.', 'bit-connect'));
         }
 

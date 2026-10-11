@@ -12,6 +12,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use WP_Comment;
+use WP_Post;
 
 /**
  * The decisions this plugin lets another plugin make.
@@ -413,5 +414,74 @@ final class ExtensionPoints
         $offered = Hooks::applyFilter('bit_connect_topic_list_query', $args, $view);
 
         return \is_array($offered) ? $offered : $args;
+    }
+
+    /**
+     * Whether a topic this plugin would let someone read stays readable.
+     *
+     * This plugin decides from the topic's status and the reader alone; a
+     * listener may hold a topic back for reasons of its own. It can only take
+     * away: a topic the status rules refuse is never offered, so nothing a
+     * listener answers makes a hidden or private topic readable.
+     *
+     * Asked about one topic at a time — the single-topic page, the write paths
+     * and each notification recipient. The lists are narrowed separately, by
+     * topicQueryArgs(), so the two must agree.
+     *
+     * Anything but `true` holds the topic back: a listener that answers with
+     * the wrong type fails closed rather than open.
+     *
+     * @param WP_Post $post   the topic, already readable by this plugin's rules
+     * @param int     $userId the reader, 0 for a visitor
+     */
+    public static function topicReadable(WP_Post $post, int $userId): bool
+    {
+        return Hooks::applyFilter('bit_connect_topic_readable', true, $post, $userId) === true;
+    }
+
+    /**
+     * The query behind every topic list, offered before it runs.
+     *
+     * The listing, search, archives, profile lists and the sitemap all go
+     * through here, so a listener that keeps some topics from a reader — the
+     * same ones it refuses in topicReadable() — narrows every list at once,
+     * typically with a `tax_query` clause or `post__not_in`.
+     *
+     * A listener adds to the query; it must not widen the statuses, which this
+     * plugin chose for the reader. An answer that is not an array is discarded.
+     *
+     * @param array  $args    the WP_Query arguments this plugin built
+     * @param int    $userId  the reader the list is for, 0 for a visitor
+     * @param string $context `list` for the portal's own lists, `sitemap` for
+     *                        what search engines are told about
+     */
+    public static function topicQueryArgs(array $args, int $userId, string $context): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_query_args', $args, $userId, $context);
+
+        return \is_array($offered) ? $offered : $args;
+    }
+
+    /**
+     * The terms of a taxonomy the portal lists to its reader.
+     *
+     * Every term, unless a listener keeps some from this reader — a term that
+     * stands for something they may not see. Only removal is honoured: an
+     * answer that adds terms, or is not an array, leaves the list as it was.
+     *
+     * @param array<int, mixed> $terms    the terms this plugin would list
+     * @param string            $taxonomy their taxonomy
+     *
+     * @return array<int, mixed>
+     */
+    public static function portalTerms(array $terms, string $taxonomy): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_portal_terms', $terms, $taxonomy);
+
+        if (!\is_array($offered) || \count($offered) > \count($terms)) {
+            return $terms;
+        }
+
+        return array_values($offered);
     }
 }

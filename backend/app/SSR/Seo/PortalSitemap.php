@@ -6,6 +6,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\StageService;
@@ -580,8 +581,10 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             return $urls;
         }
 
+        // Told to search engines, so asked as a visitor: a topic a plugin keeps
+        // from visitors stays out of the sitemap as it does out of the lists.
         $query = new WP_Query(
-            [
+            ExtensionPoints::topicQueryArgs([
                 'post_type'      => PostTypes::BIT_CONNECT->value,
                 'post_status'    => 'publish',
                 'posts_per_page' => $remaining,
@@ -595,7 +598,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 'no_found_rows'          => true,
                 'update_post_meta_cache' => false,
                 'update_post_term_cache' => false,
-            ]
+            ], 0, 'sitemap')
         );
 
         // In root mode a topic shares the URL space with pages and posts, and
@@ -1128,7 +1131,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
     private static function latestModified(): string
     {
         $query = new WP_Query(
-            [
+            ExtensionPoints::topicQueryArgs([
                 'post_type'              => PostTypes::BIT_CONNECT->value,
                 'post_status'            => 'publish',
                 'posts_per_page'         => 1,
@@ -1137,7 +1140,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 'no_found_rows'          => true,
                 'update_post_meta_cache' => false,
                 'update_post_term_cache' => false,
-            ]
+            ], 0, 'sitemap')
         );
 
         $modified = $query->posts[0]->post_modified_gmt ?? '';

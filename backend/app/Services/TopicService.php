@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
@@ -127,6 +128,11 @@ class TopicService
             $args = ExtensionPoints::topicListQuery($args, (string) $filters['view']);
         }
 
+        // Every list, whatever it was asked for: whatever a plugin holds back
+        // from this reader one topic at a time (isReadable) it keeps out of
+        // the lists here too, search and archives included.
+        $args = ExtensionPoints::topicQueryArgs($args, $currentUserId, 'list');
+
         $query = new WP_Query($args);
         $this->lastQueryTotal = (int) $query->found_posts;
 
@@ -238,22 +244,44 @@ class TopicService
      */
     public static function isReadable(WP_Post $post): bool
     {
-        switch ($post->post_status) {
-            case 'publish':
-                return true;
+        $readable = match ($post->post_status) {
+            'publish'                               => true,
+            ContentVisibilityService::HIDDEN_STATUS => ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author),
+            'private'                               => ContentVisibilityService::isOwnContent((int) $post->post_author)
+                || self::mayReadPrivate($post, static fn (string $cap) => current_user_can($cap)),
+            default => false,
+        };
 
-            case ContentVisibilityService::HIDDEN_STATUS:
-                return ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
+        // A plugin may hold back a topic these rules allow, never the reverse.
+        return $readable && ExtensionPoints::topicReadable($post, get_current_user_id());
+    }
 
-            case 'private':
-                $postType = get_post_type_object($post->post_type);
-
-                return ContentVisibilityService::isOwnContent((int) $post->post_author)
-                    || ($postType && current_user_can($postType->cap->read_private_posts));
-
-            default:
-                return false;
+    /**
+     * Whether a given member — not necessarily the one asking — may read this
+     * topic. The same rules as isReadable(), answered for someone else: the
+     * notification layer asks it of every recipient before writing them a row
+     * that names the topic.
+     *
+     * @param int $userId the member, 0 for a visitor
+     */
+    public static function isReadableBy(WP_Post $post, int $userId): bool
+    {
+        if ($userId === get_current_user_id()) {
+            return self::isReadable($post);
         }
+
+        $isAuthor = $userId > 0 && $userId === (int) $post->post_author;
+
+        $readable = match ($post->post_status) {
+            'publish'                               => true,
+            ContentVisibilityService::HIDDEN_STATUS => $isAuthor
+                || ($userId > 0 && user_can($userId, Capabilities::MODERATE->value)),
+            'private' => $isAuthor
+                || ($userId > 0 && self::mayReadPrivate($post, static fn (string $cap) => user_can($userId, $cap))),
+            default => false,
+        };
+
+        return $readable && ExtensionPoints::topicReadable($post, $userId);
     }
 
     /**
@@ -681,6 +709,19 @@ class TopicService
             'slug'      => $resolved,
             'available' => $resolved === $sanitized,
         ];
+    }
+
+    /**
+     * Whether the capability check given may read other people's private
+     * posts of this type — exactly who `perm => readable` admits.
+     *
+     * @param callable(string): bool $can
+     */
+    private static function mayReadPrivate(WP_Post $post, callable $can): bool
+    {
+        $postType = get_post_type_object($post->post_type);
+
+        return $postType && $can($postType->cap->read_private_posts);
     }
 
     /**

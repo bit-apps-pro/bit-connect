@@ -14,6 +14,7 @@ use BitApps\BitConnect\Http\Requests\ApproveTermRequest;
 use BitApps\BitConnect\Http\Requests\GetTaxonomiesRequest;
 use BitApps\BitConnect\Http\Requests\MergeTermsRequest;
 use BitApps\BitConnect\Http\Requests\ReorderTermsRequest;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TermMergeService;
 use BitApps\BitConnect\Services\TermOrderService;
@@ -57,6 +58,9 @@ final class TaxonomyController
                     static fn ($term): bool => !\in_array((int) $term->term_id, $pending, true)
                 ));
             }
+
+            // Nor a term a plugin keeps from this reader.
+            $terms = ExtensionPoints::portalTerms($terms, $taxonomy->name);
 
             // Sorted here rather than in the clients: this payload carries no
             // order meta, and it is the single read path the portal's filters

@@ -159,7 +159,9 @@ final class CommentController
 
         // Only forum topics accept comments — without this, anyone with the
         // create-comment cap could attach comments to any page/post on the site.
-        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value) {
+        // And only topics the commenter may read: a topic they cannot open is
+        // answered as missing, the way reading its comments already is.
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Topic not found', 404);
         }
 
