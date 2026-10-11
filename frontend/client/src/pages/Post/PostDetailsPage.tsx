@@ -220,13 +220,11 @@ export default function PostDetailsPage() {
     return error ? <Error404 /> : <PostDetailsSkeleton />
   }
 
-  const postVoteBox = (
-    <VoteBox
-      isVote={post.vote.hasVoted}
-      onVote={canPostUpvote && memberMayVotePost ? handlePostVote : undefined}
-      votes={post.vote.total}
-    />
-  )
+  const voteBoxProps = {
+    isVote: post.vote.hasVoted,
+    onVote: canPostUpvote && memberMayVotePost ? handlePostVote : undefined,
+    votes: post.vote.total
+  }
 
   return (
     // On phones the page supplies the whole gutter, because the panel below
@@ -277,7 +275,9 @@ export default function PostDetailsPage() {
           <ReportModal />
           <ShareDialog />
 
-          <div className="bc-hidden lg:bc-block">{postVoteBox}</div>
+          <div className="bc-hidden lg:bc-block">
+            <VoteBox {...voteBoxProps} />
+          </div>
 
           <Space className="bc-w-full bc-max-w-full bc-min-w-0 bc-py-1" direction="vertical">
             {/* Below lg the vote control is handed to the header, which puts it
@@ -295,7 +295,7 @@ export default function PostDetailsPage() {
                 so the block closes at the same distance from the comments
                 whether or not the topic has files. */}
             <div className="bc-mb-3 lg:bc-mb-6">
-              <PostHeader post={post} voteBox={postVoteBox} />
+              <PostHeader post={post} voteBox={<VoteBox compact {...voteBoxProps} />} />
 
               {attachments.length > 0 && (
                 <AttachmentList attachments={attachments} className="bc-mt-2 lg:bc-mt-4" />
