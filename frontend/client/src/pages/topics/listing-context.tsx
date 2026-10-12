@@ -5,10 +5,9 @@ import { ALL_STAGES, listingLink } from '@pages/Layout/ui/Sidebar/listing-link'
 
 import useListingSelection from '../Layout/data/use-listing-selection'
 import ChoiceChip, { CHIP_CLASS, type Choice } from './choice-chip'
-import ListingContextExtras from './listing-context-extras'
 
 /**
- * Where the list is, as pickers — "Stage: In Progress ⌄" — at the head of the
+ * Where the list is, as a picker — "Stage: In Progress ⌄" — at the head of the
  * filter row. Picking one navigates to that listing.
  *
  * @param archiveName the term a tag, type or status archive is listing. That
@@ -48,7 +47,6 @@ export default function ListingContext({ archiveName = '' }: { archiveName?: str
 
   return (
     <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2">
-      {ListingContextExtras && <ListingContextExtras />}
       {stages.length > 1 && <ChoiceChip choices={stageChoices} title={__('Stage')} />}
     </div>
   )
