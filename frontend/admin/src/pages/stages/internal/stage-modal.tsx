@@ -3,7 +3,6 @@ import slugify from '@common/helpers/slugify'
 import Input from '@components/utilities/Input/Input'
 import TextArea from '@components/utilities/Textarea/TextArea'
 import ChipPreview from '@utilities/chip-preview'
-import IconPickerField, { iconDarkHint, iconSizeHint } from '@utilities/icon-picker-field'
 import SlugField, { useSlugSync } from '@utilities/slug-field'
 import { Alert, ColorPicker, Form, type FormInstance, Modal } from 'antd'
 import { useEffect } from 'react'
@@ -42,11 +41,6 @@ export default function StageModal({
       form.setFieldsValue({
         color: stage.meta?.bit_connect_color,
         description: stage.description,
-        icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
-        icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
-        icon_file_name: stage.iconFileName,
-        icon_id: stage.meta?.bit_connect_icon_id || 0,
-        icon_url: stage.meta?.bit_connect_icon_url,
         name: stage.name,
         slug: stage.slug
       })
@@ -58,15 +52,9 @@ export default function StageModal({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields()
-      // Ensure all icon fields are included even if they're undefined
       const formData: StageFormData = {
         color: values.color,
         description: values.description,
-        icon_dark_id: values.icon_dark_id || 0,
-        icon_dark_url: values.icon_dark_url,
-        icon_file_name: values.icon_file_name,
-        icon_id: values.icon_id || 0,
-        icon_url: values.icon_url,
         name: values.name,
         // Sanitised again server-side; blank lets WordPress derive it.
         slug: slugify(values.slug ?? '')
@@ -129,22 +117,6 @@ export default function StageModal({
         <Form.Item label={__('Description')} name="description">
           <TextArea placeholder={__('Enter stage description (optional)')} rows={3} />
         </Form.Item>
-
-        <IconPickerField
-          baseName="icon"
-          extra={iconSizeHint()}
-          form={form}
-          label={__('Icon (light mode)')}
-          previewAlt={__('Stage icon')}
-        />
-
-        <IconPickerField
-          baseName="icon_dark"
-          extra={iconDarkHint()}
-          form={form}
-          label={__('Icon (dark mode)')}
-          previewAlt={__('Stage icon for dark mode')}
-        />
       </Form>
       {errorMessage && <Alert message={errorMessage} type="error" />}
     </Modal>

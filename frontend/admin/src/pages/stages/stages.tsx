@@ -1,5 +1,4 @@
 import { __ } from '@common/helpers/i18nWrap'
-import TermIconCell from '@utilities/term-icon-cell'
 import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
@@ -55,11 +54,6 @@ export default function Stages() {
     form.setFieldsValue({
       color: stage.meta?.bit_connect_color,
       description: stage.description,
-      icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
-      icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
-      icon_file_name: stage.iconFileName,
-      icon_id: stage.meta?.bit_connect_icon_id || 0,
-      icon_url: stage.meta?.bit_connect_icon_url,
       name: stage.name,
       slug: stage.slug
     })
@@ -75,16 +69,9 @@ export default function Stages() {
       const formattedBody = {
         description: data.description,
         meta: {
-          // Send the icon keys even when empty. WordPress deletes a meta sent
-          // as null but ignores one that never arrives, and `wpApi` serialises
-          // undefined to null — so an omitted key would leave a removed icon
-          // in place.
-          // An empty string, not null, clears a removed colour the same way.
-          bit_connect_color: data.color || '',
-          bit_connect_icon_dark_id: data.icon_dark_id || 0,
-          bit_connect_icon_dark_url: data.icon_dark_url,
-          bit_connect_icon_id: data.icon_id || 0,
-          bit_connect_icon_url: data.icon_url
+          // An empty string, not null: WordPress ignores a meta that never
+          // arrives, so an omitted key would leave a removed colour in place.
+          bit_connect_color: data.color || ''
         },
         name: data.name,
         ...(data.slug ? { slug: data.slug } : {})
@@ -131,11 +118,6 @@ export default function Stages() {
           <Text type="secondary">{__('No color')}</Text>
         ),
       title: __('Color')
-    },
-    {
-      key: 'icon',
-      render: (_: unknown, record: Stage) => <TermIconCell alt={record.name} meta={record.meta} />,
-      title: __('Icon')
     },
     {
       key: 'actions',
