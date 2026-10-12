@@ -4,8 +4,6 @@ import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle from '@common/hooks/usePageTitle'
-import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
-import SearchInput from '@utilities/search-input'
 import SortFilter from '@utilities/sort-filter'
 import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
 import TopicCard from '@utilities/topic-card'
@@ -14,11 +12,10 @@ import getScrollParent from '@utils/get-scroll-parent'
 import { Button, Drawer } from 'antd'
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { LuArrowUp, LuPlus, LuSlidersHorizontal, LuX } from 'react-icons/lu'
+import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useSearchParams } from 'react-router'
 
 import config from '@/config/config'
-import { useAuthStore } from '@/store/auth.zustand'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
@@ -87,13 +84,16 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   // sidebar's stages stay beside it and narrow it, so it is the forum's own
   // listing over fewer topics, and opens on the default stage as the root does.
   //
-  // A search goes further: it is the forum's search box, not the page's, so it
-  // drops the archive, the scope and any stage — even one the URL names — and
-  // runs over every topic. The refinements the reader picked here (sort, type,
-  // tags) still apply, since their chips stay on screen beside the results.
+  // A search drops the listing scope and any stage — even one the URL names.
+  // It keeps a term archive, though: the header's search box only lands on an
+  // archive with `?search=` when the reader searched *in* it (a board, a tag),
+  // the way a forum's search stays inside the board you are on; a search for
+  // everything goes to the root. The refinements the reader picked here (sort,
+  // type, tags) still apply, since their chips stay on screen beside the
+  // results.
   const { scope: pageScope } = useListingSelection()
   const isSearching = search !== ''
-  const scopeFilter = isSearching ? undefined : archiveFilter
+  const scopeFilter = archiveFilter
   const listingScope = isSearching ? '' : pageScope
   const stageParam = isSearching ? '' : searchParams.get('stage') || ''
   const spansAllStages =
@@ -108,26 +108,16 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   // Filters). Hiding one removes its control, its chip and its share of the
   // reset/"filters are active" state; the matching URL params are still applied
   // to the query below, so links people have already shared keep working.
-  const { sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
+  const { sort: showSortFilter, tags: showTagFilter, types: showTypeFilter } = config.PORTAL_FILTERS
   const showAnyFilter = showSortFilter || showTagFilter
-  // The type chips ride the sort filter's switch, which is where the type
-  // choice lived before it had a row of its own. A type archive (`/topic/bug`)
-  // has already chosen, and a chip there could not override the path anyway.
-  const showTypeChips = showSortFilter && !scopeFilter?.['topic-types']
-
-  const { setCreateModalOpen } = useTopicModalStore()
-  const { can, isLoggedIn } = useAuthStore()
-  // Same rule as the header's button: the server refuses the topic anyway.
-  const canCreatePost = can('bit_connect_forum_create_post')
+  // A type archive (`/topic/bug`) has already chosen, and a chip there could
+  // not override the path anyway.
+  const showTypeChips = showTypeFilter && !scopeFilter?.['topic-types']
 
   const [filterOpen, setFilterOpen] = useState(false)
   const hasActiveFilters =
-    (showSortFilter &&
-      (sortBy !== 'newest' ||
-        visibility !== '' ||
-        myTopics !== '' ||
-        topicType !== '' ||
-        view !== '')) ||
+    (showSortFilter && (sortBy !== 'newest' || visibility !== '' || myTopics !== '' || view !== '')) ||
+    (showTypeFilter && topicType !== '') ||
     (showTagFilter && tags !== '')
 
   // Active (non-default) filters, shown as removable chips under the search bar.
@@ -179,7 +169,8 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const resetFilters = () =>
     setSearchParams(prev => {
       const keys = [
-        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'view', 'topic-types'] : []),
+        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'view'] : []),
+        ...(showTypeFilter ? ['topic-types'] : []),
         ...(showTagFilter ? ['tags'] : [])
       ]
       for (const key of keys) {
@@ -200,13 +191,13 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     } else if (sortBy !== 'newest') {
       activeChips.push({ key: 'sort', label: __('Oldest'), onRemove: clearSort })
     }
-    if (topicType !== '') {
-      activeChips.push({
-        key: 'topic-type',
-        label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
-        onRemove: clearTopicType
-      })
-    }
+  }
+  if (showTypeFilter && topicType !== '') {
+    activeChips.push({
+      key: 'topic-type',
+      label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
+      onRemove: clearTopicType
+    })
   }
   if (showTagFilter) {
     for (const slug of tagSlugs) {
@@ -410,10 +401,29 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     // From sm both fall back to 12, where each panel adds padding of its own.
     <div className="bc-p-4 sm:bc-p-3 lg:bc-p-6 lg:bc-space-y-4" ref={rootRef}>
       <div className="bc-flex bc-flex-col bc-gap-2 bc-mb-4">
-        {/* mobile: always-visible search + a filter button that opens a sheet */}
+        {TopicListBanners && <TopicListBanners />}
+
+        {/* A term archive's own heading, description and Follow. Not for a
+            stage archive, which the stage picker already names, nor the archive
+            the listing is scoped to, which is the picker beside it. */}
+        {showArchiveHeader && !isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
+          <ArchiveHeader archive={archive} term={archiveTerm} />
+        )}
+
+        {/* below lg: where the list is and what narrows it, on one line, with
+            the button that opens the filter sheet at the end. The place chips
+            truncate before the filters do, since a filter's name is what its
+            remove button acts on; past that the row scrolls sideways. Search
+            itself lives in the header. */}
         <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
-          <SearchInput className="bc-flex-1" />
-          {showAnyFilter && (
+          <div
+            className="bc-flex bc-min-w-0 bc-flex-1 bc-items-center bc-gap-2 bc-overflow-x-auto"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {listingContext}
+            {filterChips}
+          </div>
+          {(showAnyFilter || showTypeChips) && (
             <button
               aria-label={__('Filters')}
               className={FILTER_BUTTON_CLASS}
@@ -428,58 +438,24 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
           )}
         </div>
 
-        {TopicListBanners && <TopicListBanners />}
-
-        {/* A term archive's own heading, description and Follow. Not for a
-            stage archive, which the stage picker already names, nor the archive
-            the listing is scoped to, which is the picker beside it. */}
-        {showArchiveHeader && !isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
-          <ArchiveHeader archive={archive} term={archiveTerm} />
-        )}
-
-        {/* below lg: where the list is and what narrows it, on one line. The
-            place chips truncate before the filters do, since a filter's name is
-            what its remove button acts on; past that the row scrolls sideways. */}
-        <div
-          className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          {listingContext}
-          {filterChips}
-        </div>
-
-        {/* desktop toolbar: search and Create, then the type chips, then the
-            pickers for where the list is (stage, and any added choice) opposite
-            the ones that sort and narrow it. Create lives here rather than in
-            the header on the list — the header hides its own from lg on
-            listing routes. */}
+        {/* desktop toolbar, one row: the type chips from the left edge,
+            taking whatever width is left and scrolling sideways past it, then
+            every picker together on the right — where the list is (stage, and
+            any added choice) beside the ones that sort and narrow it. Search
+            and Create are the header's, on every page. The chips had a row of
+            their own once, beside the search box; with that gone it left two
+            half-empty rows. */}
         <div className="bc-hidden bc-flex-col bc-gap-3 lg:bc-flex">
-          <div className="bc-mb-1 bc-flex bc-items-center bc-justify-between bc-gap-6">
-            <SearchInput className="bc-min-w-48 bc-max-w-[600px]" />
-            {isLoggedIn && canCreatePost && (
-              <Button
-                icon={<LuPlus size={18} strokeWidth={2.5} />}
-                onClick={() => {
-                  if (canAct('bit_connect_forum_create_post')) setCreateModalOpen(true)
-                }}
-                size="large"
-                type="primary"
-              >
-                {__('Create New Topic')}
-              </Button>
-            )}
-          </div>
-          {showTypeChips && <TopicTypeFilter layout="strip" />}
           <div className="bc-flex bc-items-center bc-gap-3">
-            {listingContext}
-            {/* ml-auto: with no stage picker the sort and tag pickers still
-                hold the right edge. */}
-            {showAnyFilter && (
-              <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-3">
-                {showSortFilter && <SortFilter />}
-                {showTagFilter && <TagFilter />}
-              </div>
+            {showTypeChips && (
+              <TopicTypeFilter className="bc-flex-1" layout="strip" scope={scopeFilter} />
             )}
+            {/* ml-auto: with no chips the pickers still hold the right edge. */}
+            <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-3">
+              {listingContext}
+              {showSortFilter && <SortFilter />}
+              {showTagFilter && <TagFilter />}
+            </div>
           </div>
           {activeChips.length > 0 && (
             <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
@@ -514,7 +490,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
           {showTypeChips && (
             <div className="bc-flex bc-flex-col bc-gap-2">
               <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Topic type')}</span>
-              <TopicTypeFilter />
+              <TopicTypeFilter scope={scopeFilter} />
             </div>
           )}
           {showSortFilter && (

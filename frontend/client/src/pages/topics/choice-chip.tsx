@@ -24,8 +24,18 @@ export const CHIP_CLASS = cn([
  *
  * @param title what the choices are, shown before the current one from lg and
  *              in its place while none is selected
+ * @param alwaysTitled show the title at every width — for a row of pickers
+ *              whose choices share labels ("All"), which say nothing bare
  */
-export default function ChoiceChip({ choices, title }: { choices: Choice[]; title: string }) {
+export default function ChoiceChip({
+  alwaysTitled = false,
+  choices,
+  title
+}: {
+  alwaysTitled?: boolean
+  choices: Choice[]
+  title: string
+}) {
   const navigate = useNavigate()
   const selected = choices.find(choice => choice.isSelected)
 
@@ -48,7 +58,11 @@ export default function ChoiceChip({ choices, title }: { choices: Choice[]; titl
         ])}
         type="button"
       >
-        {selected && <span className="bc-hidden bc-shrink-0 bc-text-ink-muted lg:bc-inline">{title}:</span>}
+        {selected && (
+          <span className={cn(['bc-shrink-0 bc-text-ink-muted', alwaysTitled ? 'bc-inline' : 'bc-hidden lg:bc-inline'])}>
+            {title}:
+          </span>
+        )}
         <span className="bc-min-w-0 bc-truncate lg:bc-font-medium">{selected?.label ?? title}</span>
         <LuChevronDown aria-hidden className="bc-shrink-0 bc-text-ink-muted" size={14} />
       </button>
