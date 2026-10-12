@@ -516,6 +516,10 @@ msgid "Sort"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/access-section.tsx:33
+msgid "A row of chips over the list, one per topic type."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/access-section.tsx:38
 msgid "Narrow the list down to a tag."
 msgstr ""
 

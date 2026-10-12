@@ -64,7 +64,8 @@ describe('the portal’s filter switches', () => {
 
     expect(result.current.generalSettings.portalFilters).toEqual({
       sort: true,
-      tags: true
+      tags: true,
+      types: true
     })
   })
 
@@ -73,8 +74,15 @@ describe('the portal’s filter switches', () => {
 
     expect(result.current.generalSettings.portalFilters).toEqual({
       sort: true,
-      tags: false
+      tags: false,
+      types: true
     })
+  })
+
+  it('keep the type chips where Sort left them until they are saved on their own', async () => {
+    const result = await load({ portalFilters: { sort: false } })
+
+    expect(result.current.generalSettings.portalFilters.types).toBe(false)
   })
 })
 

@@ -1598,6 +1598,10 @@ msgid "Sort"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:208
+msgid "A row of chips over the list, one per topic type."
+msgstr ""
+
+#: backend/i18n/frontend-strings.php:210
 msgid "Narrow the list down to a tag."
 msgstr ""
 

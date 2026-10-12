@@ -133,6 +133,15 @@ class TopicService
         // the lists here too, search and archives included.
         $args = ExtensionPoints::topicQueryArgs($args, $currentUserId, 'list');
 
+        // Just which topics match, for a question about the set rather than a
+        // page of it — the same statuses and readability as the list.
+        if (!empty($filters['ids_only'])) {
+            $args['fields'] = 'ids';
+            $args['no_found_rows'] = true;
+
+            return array_map('intval', (new WP_Query($args))->posts);
+        }
+
         $query = new WP_Query($args);
         $this->lastQueryTotal = (int) $query->found_posts;
 
@@ -166,6 +175,27 @@ class TopicService
         }
 
         return $topics;
+    }
+
+    /**
+     * Slugs of the topic types the readable topics under `$taxQuery` are filed
+     * as — only topics this reader could list, so the answer names no type
+     * that exists only behind a topic held back from them.
+     *
+     * @return list<string>
+     */
+    public function topicTypesUsed(array $taxQuery): array
+    {
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Topics are filtered by taxonomy by design; there is no meta equivalent.
+        $ids = $this->getAllTopics(['tax_query' => $taxQuery, 'ids_only' => true]);
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $slugs = wp_get_object_terms($ids, Taxonomies::TOPIC_TYPES->value, ['fields' => 'slugs']);
+
+        return is_wp_error($slugs) ? [] : array_values(array_unique($slugs));
     }
 
     /**

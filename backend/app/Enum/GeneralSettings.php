@@ -18,16 +18,22 @@ enum GeneralSettings: string
      * Each control is visible unless an admin explicitly switched it off, so an
      * option saved before this setting existed keeps its full filter toolbar.
      *
+     * The topic-type chips had no switch of their own at first and rode Sort's,
+     * so a site that never saved `types` keeps whatever Sort says — switching
+     * Sort off used to hide them, and still does there.
+     *
      * @param mixed $settings the stored general_settings option
      */
     public static function portalFilters($settings): array
     {
         $stored = \is_array($settings) ? $settings : [];
         $filters = \is_array($stored['portalFilters'] ?? null) ? $stored['portalFilters'] : [];
+        $sort = !isset($filters['sort']) || (bool) $filters['sort'];
 
         return [
-            'sort' => !isset($filters['sort']) || (bool) $filters['sort'],
-            'tags' => !isset($filters['tags']) || (bool) $filters['tags'],
+            'sort'  => $sort,
+            'tags'  => !isset($filters['tags']) || (bool) $filters['tags'],
+            'types' => isset($filters['types']) ? (bool) $filters['types'] : $sort,
         ];
     }
 

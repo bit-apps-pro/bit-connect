@@ -77,7 +77,7 @@ declare const SERVER_VARIABLES: {
   portalAccess?: 'everyone' | 'logged_in'
   /** URL segment → the filter its archive pins and its taxonomy — see BaseView. */
   portalArchives?: Record<string, { filter: string; follow: string; label: string; taxonomy: string }>
-  portalFilters?: { sort?: boolean; tags?: boolean }
+  portalFilters?: { sort?: boolean; tags?: boolean; types?: boolean }
   /**
    * How long a topic or reply may be and what media it may carry
    * (PostingLimits.php). Both apps receive it: the portal enforces it, the

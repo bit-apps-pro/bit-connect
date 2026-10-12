@@ -30,6 +30,11 @@ export default function AccessSection({ disabled, form, onPatch, onPatchFilter }
           label: __('Sort')
         },
         {
+          description: __('A row of chips over the list, one per topic type.'),
+          key: 'types',
+          label: __('Topic types')
+        },
+        {
           description: __('Narrow the list down to a tag.'),
           key: 'tags',
           label: __('Tags')

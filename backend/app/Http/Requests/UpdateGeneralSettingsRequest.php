@@ -55,6 +55,7 @@ final class UpdateGeneralSettingsRequest extends Request
     public function toSettingsData(): array
     {
         $portalFilters = \is_array($this->portalFilters) ? $this->portalFilters : [];
+        $showSort = self::isFilterVisible($portalFilters, 'sort');
 
         return [
             'communityTitle'      => sanitize_text_field($this->communityTitle ?? ''),
@@ -63,8 +64,11 @@ final class UpdateGeneralSettingsRequest extends Request
             'logoPermalinkCustom' => esc_url_raw($this->logoPermalinkCustom ?? ''),
             'portalAccess'        => \in_array($this->portalAccess, ['everyone', 'logged_in'], true) ? $this->portalAccess : 'everyone',
             'portalFilters'       => [
-                'sort' => self::isFilterVisible($portalFilters, 'sort'),
+                'sort' => $showSort,
                 'tags' => self::isFilterVisible($portalFilters, 'tags'),
+                // A form that predates the type switch posts none: the chips
+                // keep following Sort, as they did — see GeneralSettings::portalFilters().
+                'types' => isset($portalFilters['types']) ? self::isFilterVisible($portalFilters, 'types') : $showSort,
             ],
             'promo' => $this->promo(),
         ];

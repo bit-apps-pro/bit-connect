@@ -6,6 +6,8 @@ export type LogoPermalinkMode = 'custom' | 'default'
 export interface PortalFilters {
   sort: boolean
   tags: boolean
+  /** The row of topic-type chips over the list. */
+  types: boolean
 }
 
 /**

@@ -60,35 +60,7 @@ final class TopicController
         $myTopics = $validatedData['my_topics'] ?? '';
         $view = $validatedData['view'] ?? '';
 
-        // Build taxonomy filters
-        $taxonomyFilters = [
-            Taxonomies::STAGES->value      => $validatedData['stages'] ?? null,
-            Taxonomies::TOPIC_TYPES->value => $validatedData['topic-types'] ?? null,
-            Taxonomies::STATUSES->value    => $validatedData['statuses'] ?? null,
-            Taxonomies::TAGS->value        => $validatedData['tags'] ?? null,
-        ];
-
-        foreach (TopicTaxonomies::all() as $param => $entry) {
-            $taxonomyFilters[$entry['taxonomy']] = $validatedData[$param] ?? null;
-        }
-
-        // Build tax_query array for WP_Query
-        $taxQuery = [];
-        foreach ($taxonomyFilters as $taxonomy => $term) {
-            if (!empty($term)) {
-                $terms = array_map('trim', explode(',', $term));
-                $taxQuery[] = [
-                    'taxonomy' => $taxonomy,
-                    'field'    => 'slug',
-                    'terms'    => $terms,
-                    'operator' => 'IN',
-                ];
-            }
-        }
-
-        if (\count($taxQuery) > 1) {
-            $taxQuery['relation'] = 'AND';
-        }
+        $taxQuery = $this->taxQuery($validatedData);
 
         // Build filters array for TopicService
         $filters = [
@@ -136,6 +108,21 @@ final class TopicController
                 ],
             ]
         );
+    }
+
+    /**
+     * The topic types the topics under these filters are filed as, so an
+     * archive offers type chips only for types it holds.
+     *
+     * Takes the list's own filters and ignores `topic-types`: the answer is
+     * the row of choices, which must not shrink to the one already picked.
+     */
+    public function typesUsed(GetAllTopicsRequest $request)
+    {
+        $filters = $request->validated();
+        unset($filters['topic-types']);
+
+        return Response::success($this->topicService->topicTypesUsed($this->taxQuery($filters)));
     }
 
     /**
@@ -630,6 +617,42 @@ final class TopicController
             ],
             $id
         );
+    }
+
+    /**
+     * A `tax_query` for WP_Query from the list's term filters — each a
+     * comma-separated list of slugs, any of which matches.
+     */
+    private function taxQuery(array $validatedData): array
+    {
+        $taxonomyFilters = [
+            Taxonomies::STAGES->value      => $validatedData['stages'] ?? null,
+            Taxonomies::TOPIC_TYPES->value => $validatedData['topic-types'] ?? null,
+            Taxonomies::STATUSES->value    => $validatedData['statuses'] ?? null,
+            Taxonomies::TAGS->value        => $validatedData['tags'] ?? null,
+        ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $taxonomyFilters[$entry['taxonomy']] = $validatedData[$param] ?? null;
+        }
+
+        $taxQuery = [];
+        foreach ($taxonomyFilters as $taxonomy => $term) {
+            if (!empty($term)) {
+                $taxQuery[] = [
+                    'taxonomy' => $taxonomy,
+                    'field'    => 'slug',
+                    'terms'    => array_map('trim', explode(',', $term)),
+                    'operator' => 'IN',
+                ];
+            }
+        }
+
+        if (\count($taxQuery) > 1) {
+            $taxQuery['relation'] = 'AND';
+        }
+
+        return $taxQuery;
     }
 
     /**

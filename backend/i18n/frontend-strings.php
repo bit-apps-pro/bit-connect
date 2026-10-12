@@ -207,6 +207,8 @@ return [
 
     'Sort' => __('Sort', 'bit-connect'),
 
+    'A row of chips over the list, one per topic type.' => __('A row of chips over the list, one per topic type.', 'bit-connect'),
+
     'Narrow the list down to a tag.' => __('Narrow the list down to a tag.', 'bit-connect'),
 
     'Tags' => __('Tags', 'bit-connect'),

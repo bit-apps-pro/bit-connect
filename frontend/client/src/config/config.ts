@@ -142,7 +142,7 @@ interface ConfigType {
    * server, which a plugin may add to — see BaseView::portalArchives().
    */
   PORTAL_ARCHIVES: Record<string, PortalArchive>
-  PORTAL_FILTERS: { sort: boolean; tags: boolean }
+  PORTAL_FILTERS: { sort: boolean; tags: boolean; types: boolean }
   POST_URL: string
   /** How long a topic or reply may be and what media it may carry — see PostingLimits.php. */
   POSTING_LIMITS: PostingLimits
@@ -257,7 +257,10 @@ const config = {
   PORTAL_ARCHIVES: SERVER_VARIABLES?.portalArchives ?? ownArchives,
   PORTAL_FILTERS: {
     sort: portalFilters.sort !== false,
-    tags: portalFilters.tags !== false
+    tags: portalFilters.tags !== false,
+    // Rode Sort's switch before it had one of its own; the server fills it in
+    // from Sort where it was never saved, and so does this.
+    types: (portalFilters.types ?? portalFilters.sort) !== false
   },
   POST_URL: getServerVariable('postURL', ''),
   // Pro routes register under their own REST namespace (bit-connect-pro/v1),

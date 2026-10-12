@@ -5,6 +5,8 @@ import { useSearchParams } from 'react-router'
 
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
+import useTopicTypesUsed from './use-topic-types-used'
+
 /** Width of the fade that marks a strip edge with more chips past it. */
 const FADE = '2rem'
 
@@ -20,17 +22,26 @@ const FADE = '2rem'
  * toolbar where they share the row with the pickers: wrapped, eight types
  * stacked four rows deep beside two controls a single row tall. An edge fades
  * only while there are chips past it, so a row that fits shows no fade at all.
+ *
+ * Under an archive (`scope`) the row offers only the types its topics are
+ * filed as, so a tag or a board holding questions and bug reports shows those
+ * two rather than every type the forum has. The type in the URL keeps its chip
+ * either way, so a shared link never lands on a filter with no way to clear it.
  */
 export default function TopicTypeFilter({
   className,
-  layout = 'wrap'
+  layout = 'wrap',
+  scope
 }: {
   className?: string
   layout?: 'strip' | 'wrap'
+  scope?: Record<string, string>
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
-  const topicTypes = useTaxonomiesStoreSelect()?.['bit-connect-topic-types'] || []
+  const allTypes = useTaxonomiesStoreSelect()?.['bit-connect-topic-types'] || []
   const current = searchParams.get('topic-types') || ''
+  const used = useTopicTypesUsed(scope)
+  const topicTypes = used ? allTypes.filter(type => used.includes(type.slug) || type.slug === current) : allTypes
 
   const isStrip = layout === 'strip'
   const stripRef = useRef<HTMLDivElement>(null)
