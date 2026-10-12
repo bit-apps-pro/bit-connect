@@ -4282,3 +4282,11 @@ msgstr ""
 #: frontend/client/src/pages/roadmap/roadmap.tsx:103
 msgid "See all %d"
 msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:66
+msgid "You can now read"
+msgstr ""
+
+#: frontend/client/src/components/features/notifications/ui/notification-row.tsx:73
+msgid "asked to join"
+msgstr ""

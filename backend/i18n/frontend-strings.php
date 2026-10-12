@@ -1962,6 +1962,10 @@ return [
     'No topics yet' => __('No topics yet', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    'See all %d' => __('See all %d', 'bit-connect')
+    'See all %d' => __('See all %d', 'bit-connect'),
+
+    'You can now read' => __('You can now read', 'bit-connect'),
+
+    'asked to join' => __('asked to join', 'bit-connect')
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

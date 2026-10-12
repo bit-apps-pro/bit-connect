@@ -60,7 +60,23 @@ function describe(item: NotificationItem) {
   const name = <span className="bc-font-semibold bc-text-ink">{who}</span>
   const subject = <span className="bc-font-medium bc-text-ink">{named}</span>
 
+  const space = <span className="bc-font-medium bc-text-ink">{item.context.space_name ?? ''}</span>
+
   switch (item.type) {
+    case 'access_granted': {
+      return (
+        <>
+          {__('You can now read')} {space}
+        </>
+      )
+    }
+    case 'access_requested': {
+      return (
+        <>
+          {name} {__('asked to join')} {space}
+        </>
+      )
+    }
     case 'badge_awarded': {
       return (
         <>

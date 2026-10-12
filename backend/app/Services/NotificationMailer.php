@@ -303,6 +303,21 @@ final class NotificationMailer
                     $named
                 );
 
+            case NotificationTypes::ACCESS_REQUESTED:
+                return \sprintf(
+                    // translators: 1: member name, 2: the space they asked to join
+                    __('%1$s asked to join %2$s', 'bit-connect'),
+                    $who,
+                    (string) ($context['space_name'] ?? '')
+                );
+
+            case NotificationTypes::ACCESS_GRANTED:
+                return \sprintf(
+                    // translators: %s: the private space the member can now open
+                    __('You can now read %s', 'bit-connect'),
+                    (string) ($context['space_name'] ?? '')
+                );
+
             default:
                 return __('Something happened in the forum', 'bit-connect');
         }

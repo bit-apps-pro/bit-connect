@@ -81,6 +81,14 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, when a member suggests a tag that is not in the list.')]
     case TAG_SUGGESTED = 'tag_suggested';
 
+    #[Label('A member asks to join')]
+    #[Description('Sent to moderators only, when a member asks to join a private space.')]
+    case ACCESS_REQUESTED = 'access_requested';
+
+    #[Label('You are let into a private space')]
+    #[Description('An admin lets you into a private space, or adds you to one.')]
+    case ACCESS_GRANTED = 'access_granted';
+
     /**
      * The label, translated.
      *
@@ -112,6 +120,8 @@ enum NotificationTypes: string
             self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
             self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
             self::TAG_SUGGESTED        => __('A new tag needs approval', 'bit-connect'),
+            self::ACCESS_REQUESTED     => __('A member asks to join', 'bit-connect'),
+            self::ACCESS_GRANTED       => __('You are let into a private space', 'bit-connect'),
         };
     }
 
@@ -133,6 +143,8 @@ enum NotificationTypes: string
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
             self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
             self::TAG_SUGGESTED        => __('Sent to moderators only, when a member suggests a tag that is not in the list.', 'bit-connect'),
+            self::ACCESS_REQUESTED     => __('Sent to moderators only, when a member asks to join a private space.', 'bit-connect'),
+            self::ACCESS_GRANTED       => __('An admin lets you into a private space, or adds you to one.', 'bit-connect'),
         };
     }
 
@@ -148,18 +160,23 @@ enum NotificationTypes: string
      */
     public static function isModeratorOnly(NotificationTypes $type): bool
     {
-        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED || $type === self::TAG_SUGGESTED;
+        return $type === self::REPORT_FILED
+            || $type === self::TOPIC_POSTED
+            || $type === self::TAG_SUGGESTED
+            || $type === self::ACCESS_REQUESTED;
     }
 
     /**
      * Types this plugin raises by itself.
      *
-     * All but one. Nothing here awards a profile badge — the catalogue, the
+     * All but three. Nothing here awards a profile badge — the catalogue, the
      * assignment screen and the endpoint behind them are not part of this
      * plugin — so BADGE_AWARDED is a case this forum can render and deliver but
      * never originates. It stays in the enum because it must: a badge awarded
      * by another plugin arrives as this type, and dropping the case would leave
      * the mailer and the notification list unable to read a row they are handed.
+     * The same holds for ACCESS_REQUESTED and ACCESS_GRANTED: this plugin has
+     * no private spaces to ask to join, so it delivers those and raises neither.
      *
      * What it should not do is appear as a preference row on a forum where
      * nothing can raise it, for exactly the reason isModeratorOnly() exists —
@@ -171,7 +188,7 @@ enum NotificationTypes: string
      */
     public static function isDispatchedHere(NotificationTypes $type): bool
     {
-        return $type !== self::BADGE_AWARDED;
+        return !\in_array($type, [self::BADGE_AWARDED, self::ACCESS_REQUESTED, self::ACCESS_GRANTED], true);
     }
 
     /**
@@ -229,6 +246,8 @@ enum NotificationTypes: string
                 self::MENTION,
                 self::REPORT_RESOLVED,
                 self::CONTENT_ACTIONED,
+                // The answer to a request the member made and is waiting on.
+                self::ACCESS_GRANTED,
             ],
             true
         );

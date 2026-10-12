@@ -5006,3 +5006,31 @@ msgstr ""
 #: backend/i18n/frontend-strings.php:1937
 msgid "Period"
 msgstr ""
+
+#: backend/app/Enum/NotificationTypes.php:146
+msgid "A member asks to join"
+msgstr ""
+
+#: backend/app/Enum/NotificationTypes.php:147
+msgid "You are let into a private space"
+msgstr ""
+
+#: backend/app/Enum/NotificationTypes.php:171
+msgid "Sent to moderators only, when a member asks to join a private space."
+msgstr ""
+
+#: backend/app/Enum/NotificationTypes.php:172
+msgid "An admin lets you into a private space, or adds you to one."
+msgstr ""
+
+#. translators: 1: member name, 2: the space they asked to join
+#: backend/app/Services/NotificationMailer.php:309
+#, php-format
+msgid "%1$s asked to join %2$s"
+msgstr ""
+
+#. translators: %s: the private space the member can now open
+#: backend/app/Services/NotificationMailer.php:317
+#, php-format
+msgid "You can now read %s"
+msgstr ""
