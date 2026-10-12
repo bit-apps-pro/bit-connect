@@ -1439,6 +1439,35 @@ return [
 
     'Search topic, tag, etc.' => __('Search topic, tag, etc.', 'bit-connect'),
 
+    'Search topics' => __('Search topics', 'bit-connect'),
+
+    'Close search' => __('Close search', 'bit-connect'),
+
+    'Search suggestions' => __('Search suggestions', 'bit-connect'),
+
+    'Recent searches' => __('Recent searches', 'bit-connect'),
+
+    /* translators: %s: a past search term */
+    'Remove “%s” from recent searches' => __('Remove “%s” from recent searches', 'bit-connect'),
+
+    /* translators: %s: what the visitor typed into the search box */
+    'Search for “%s”' => __('Search for “%s”', 'bit-connect'),
+
+    /* translators: 1: what the visitor typed into the search box, 2: the board, tag or other term searched in */
+    'Search for “%1$s” in %2$s' => __('Search for “%1$s” in %2$s', 'bit-connect'),
+
+    /* translators: %s: the board, tag or other term the search is limited to */
+    'Search in %s' => __('Search in %s', 'bit-connect'),
+
+    /* translators: %s: the board, tag or other term the search is limited to */
+    'Search everywhere, not only in %s' => __('Search everywhere, not only in %s', 'bit-connect'),
+
+    'Searching…' => __('Searching…', 'bit-connect'),
+
+    'Browse' => __('Browse', 'bit-connect'),
+
+    'People' => __('People', 'bit-connect'),
+
     'Newest' => __('Newest', 'bit-connect'),
 
     'Oldest' => __('Oldest', 'bit-connect'),

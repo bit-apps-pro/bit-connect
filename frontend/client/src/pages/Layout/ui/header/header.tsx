@@ -6,15 +6,26 @@ import { NotificationBell } from '@features/notifications'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import TopicModals from '@features/topic-modal/ui/topic-modals'
 import logo from '@resource/img/logo.svg'
+import SearchInput from '@utilities/search-input'
 import ThemeToggle from '@utilities/theme-toggle'
 import { userProfilePath } from '@utilities/user-link'
 import { externalLoginUrl, externalRegisterUrl, registrationIsOffered } from '@utils/auth-urls'
 import { isListingPath } from '@utils/listing-path'
 import { routePath } from '@utils/route-path'
 import { Avatar, Button, Dropdown, Grid } from 'antd'
-import { useEffect } from 'react'
-import { LuChevronDown, LuLogIn, LuLogOut, LuMenu, LuPlus, LuUser, LuUserPlus } from 'react-icons/lu'
-import { Link, useLocation } from 'react-router'
+import { useEffect, useState } from 'react'
+import {
+  LuChevronDown,
+  LuLogIn,
+  LuLogOut,
+  LuMenu,
+  LuPlus,
+  LuSearch,
+  LuUser,
+  LuUserPlus,
+  LuX
+} from 'react-icons/lu'
+import { Link, useLocation, useSearchParams } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
@@ -33,12 +44,37 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
   // The server refuses the topic anyway; a button that only ever answers
   // "not authorized" is worse than no button.
   const canCreatePost = can('bit_connect_forum_create_post')
-  // The topic list carries its own Create button beside the search from `lg`,
-  // so there the header's would be the same action twice on one screen.
-  const listHasCreate = isListingPath(location.pathname)
   const { fetchSettings } = useAdminSettingsStore()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
+
+  // Phones fold the search into a button that opens a row under the bar. A
+  // results page keeps the row open, so the term being shown stays on screen.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchOpen, setSearchOpen] = useState(false)
+  // The root list, or an archive (a board, a tag) searched inside.
+  const showingResults = isListingPath(location.pathname) && !!searchParams.get('search')
+  const searchRowOpen = isMobile && (searchOpen || showingResults)
+
+  // Closing the row on a results page ends the search too: the row is held
+  // open by it, and a hidden term would still be narrowing the list.
+  const toggleSearch = () => {
+    if (!searchRowOpen) {
+      setSearchOpen(true)
+      return
+    }
+    setSearchOpen(false)
+    if (showingResults) {
+      setSearchParams(
+        prev => {
+          prev.delete('search')
+          if (prev.has('page')) prev.set('page', '1')
+          return prev
+        },
+        { replace: true }
+      )
+    }
+  }
 
   useEffect(() => {
     fetchSettings().catch(console.error)
@@ -186,7 +222,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
         ])}
       >
         <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
-          <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2">
+          <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 md:bc-flex-1 md:bc-basis-0">
             {isMobile && (
               <Button
                 aria-label={__('Open menu')}
@@ -218,7 +254,26 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               </Link>
             )}
           </div>
-          <div className="bc-flex bc-shrink-0 bc-items-center bc-gap-1">
+          {/* Centred between the brand and the account controls, which share
+              the remaining width equally so the field sits on the page's axis
+              whatever either side holds. */}
+          {!isMobile && <SearchInput className="bc-min-w-0 bc-max-w-[560px] bc-flex-[1.4]" withShortcut />}
+          <div className="bc-flex bc-shrink-0 bc-items-center bc-justify-end bc-gap-1 md:bc-flex-1 md:bc-basis-0">
+            {isMobile && (
+              <Button
+                aria-expanded={searchRowOpen}
+                aria-label={searchRowOpen ? __('Close search') : __('Search topics')}
+                icon={
+                  searchRowOpen ? (
+                    <LuX size={22} strokeLinecap="round" strokeWidth={2.25} />
+                  ) : (
+                    <LuSearch size={22} strokeLinecap="round" strokeWidth={2.25} />
+                  )
+                }
+                onClick={toggleSearch}
+                type="text"
+              />
+            )}
             {/* Before the account controls: this is a display preference, not an
                 account action, and it has to stay reachable for logged-out
                 visitors — who are most of the portal's traffic. They keep the
@@ -246,10 +301,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                     grows. */}
                 <Button
                   aria-label={__('Create New Topic')}
-                  className={cn([
-                    'bc-hidden sm:bc-inline-flex sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5',
-                    listHasCreate && 'lg:bc-hidden'
-                  ])}
+                  className="bc-hidden sm:bc-inline-flex sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5"
                   icon={<LuPlus size={18} strokeLinecap="round" strokeWidth={2.5} />}
                   onClick={openCreate}
                   size="middle"
@@ -346,6 +398,9 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
             )}
           </div>
         </div>
+        {searchRowOpen && (
+          <SearchInput className="bc-mt-3" focusOnMount={searchOpen} onDismiss={() => setSearchOpen(false)} />
+        )}
       </header>
       <TopicModals />
     </>
