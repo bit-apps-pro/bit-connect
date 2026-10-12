@@ -14,6 +14,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
+use BitApps\BitConnect\Http\Controller\PortalPageController;
 use BitApps\BitConnect\Http\Controller\RoadmapPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
@@ -169,6 +170,14 @@ final class RootRouter
         // it exists on every portal, with nothing to resolve against.
         if ($path === 'roadmap') {
             $this->claim($portal, static fn () => (new RoadmapPageController())->show(new Request()));
+
+            return;
+        }
+
+        // A page a plugin draws, claimed the same way. Before topics: such a
+        // path is the plugin's, as `roadmap` is this plugin's.
+        if (PortalPageController::isPage($path)) {
+            $this->claim($portal, static fn () => (new PortalPageController())->show(new Request(), $path));
 
             return;
         }

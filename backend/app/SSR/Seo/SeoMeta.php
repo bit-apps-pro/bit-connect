@@ -262,6 +262,32 @@ final class SeoMeta
     }
 
     /**
+     * Describe a page a plugin draws — see ExtensionPoints::portalPages().
+     * Never indexed: like the roadmap it is drawn client-side, and what it
+     * lists is the plugin's to expose, not this plugin's to advertise.
+     */
+    public static function forPortalPage(string $title): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title' => \sprintf(
+                // translators: 1: the page's title, 2: community name.
+                __('%1$s | %2$s', 'bit-connect'),
+                $title,
+                $community
+            ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,follow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
      * Describe the roadmap route.
      *
      * `noindex,follow` for now: the board is drawn client-side, so a crawler

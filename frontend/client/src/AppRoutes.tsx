@@ -13,6 +13,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router'
 
+import addedPortalRoutes from './added-portal-routes'
 import NotifyContext from './common/context/NotifyContext'
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
@@ -72,6 +73,8 @@ export const routeList: {
     index: false,
     path: ROADMAP_PATH
   },
+  // Pages plugins draw, each a static segment the server serves the shell at.
+  ...addedPortalRoutes.map(route => ({ element: route.element, index: false, path: route.path })),
   // Term archives (`/tag/api`, `/topic/question`). Also two segments, but React
   // Router ranks the static `/user` prefix above this dynamic one, so the
   // profile route above still wins. Unknown segments render 404 here, matching

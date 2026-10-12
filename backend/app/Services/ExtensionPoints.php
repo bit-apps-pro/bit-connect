@@ -463,6 +463,42 @@ final class ExtensionPoints
     }
 
     /**
+     * Portal paths this plugin does not route itself, which a plugin draws —
+     * one segment each, e.g. `boards` for `/boards` — with the page's title.
+     *
+     * The portal serves its shell at each and the plugin's own client route
+     * draws the page. A path this plugin already uses, or one that is not a
+     * plain lower-case segment, is dropped: a plugin can add pages, never take
+     * one over. Read per request, so a listener registered on
+     * `plugins_loaded` is in time.
+     *
+     * @return array<string, string> path => page title
+     */
+    public static function portalPages(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_portal_pages', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        $reserved = ['page', 'user', 'notifications', 'roadmap', 'login', 'register', 'verify-email', 'forgot-password', 'comment'];
+        $pages = [];
+
+        foreach ($offered as $path => $title) {
+            $path = \is_string($path) ? $path : '';
+
+            if (!preg_match('/^[a-z0-9][a-z0-9-]{0,39}$/', $path) || \in_array($path, $reserved, true) || PortalTaxonomies::isReservedSegment($path)) {
+                continue;
+            }
+
+            $pages[$path] = sanitize_text_field(\is_string($title) ? $title : '') ?: $path;
+        }
+
+        return $pages;
+    }
+
+    /**
      * Published topics a plugin keeps from this reader, by id — for the queries
      * this plugin writes as SQL (profile lists, counts, insights), which no
      * WP_Query argument reaches. The same topics topicReadable() refuses.

@@ -39,6 +39,13 @@ class TopicDetailsController
      */
     public function show(Request $request, $slug, $commentId = null)
     {
+        // The single-segment route also carries the pages plugins draw — see
+        // ExtensionPoints::portalPages(). Read here, per request, because the
+        // route table is built before plugins register their pages.
+        if ($commentId === null && \is_string($slug) && PortalPageController::isPage($slug)) {
+            return (new PortalPageController())->show($request, $slug);
+        }
+
         // Prepare data for the topic details view
         $topicsView = new TopicsView();
         $topicsView->prepareTopicDetailsData($slug);
