@@ -719,6 +719,23 @@ class TopicService
     }
 
     /**
+     * " AND {column} NOT IN (…)" over the topics a plugin keeps from this
+     * reader, for a query written as SQL; '' when there are none.
+     *
+     * The ids are integers by the time they reach here (see
+     * ExtensionPoints::heldBackTopicIds()), so the list is safe to inline.
+     *
+     * @param string $column the topic id column, e.g. `p.ID` — the caller's own literal
+     * @param int    $userId the reader, 0 for a visitor
+     */
+    public static function heldBackSql(string $column, int $userId): string
+    {
+        $ids = ExtensionPoints::heldBackTopicIds($userId);
+
+        return $ids === [] ? '' : " AND {$column} NOT IN (" . implode(',', $ids) . ')';
+    }
+
+    /**
      * Whether the capability check given may read other people's private
      * posts of this type — exactly who `perm => readable` admits.
      *

@@ -463,6 +463,28 @@ final class ExtensionPoints
     }
 
     /**
+     * Published topics a plugin keeps from this reader, by id — for the queries
+     * this plugin writes as SQL (profile lists, counts, insights), which no
+     * WP_Query argument reaches. The same topics topicReadable() refuses.
+     *
+     * Only ids are honoured: anything else in the answer is dropped.
+     *
+     * @param int $userId the reader, 0 for a visitor
+     *
+     * @return array<int, int>
+     */
+    public static function heldBackTopicIds(int $userId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_held_back_topic_ids', [], $userId);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $offered), static fn (int $id): bool => $id > 0)));
+    }
+
+    /**
      * The terms of a taxonomy the portal lists to its reader.
      *
      * Every term, unless a listener keeps some from this reader — a term that

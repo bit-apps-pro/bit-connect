@@ -3,6 +3,7 @@
 namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Services\ExtensionPoints;
+use BitApps\BitConnect\Services\TopicService;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,7 +23,8 @@ final class ReadabilityExtensionPointsTest extends TestCase
     {
         unset(
             $GLOBALS['__wp_filters']['bit_connect_topic_query_args'],
-            $GLOBALS['__wp_filters']['bit_connect_portal_terms']
+            $GLOBALS['__wp_filters']['bit_connect_portal_terms'],
+            $GLOBALS['__wp_filters']['bit_connect_held_back_topic_ids']
         );
     }
 
@@ -47,6 +49,24 @@ final class ReadabilityExtensionPointsTest extends TestCase
         $GLOBALS['__wp_filters']['bit_connect_topic_query_args'] = static fn () => null;
 
         $this->assertSame(['post_type' => 'bit-connect'], ExtensionPoints::topicQueryArgs(['post_type' => 'bit-connect'], 0, 'sitemap'));
+    }
+
+    public function testHeldBackTopicsBecomeAnSqlExclusion(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_held_back_topic_ids'] = static fn (array $ids, int $userId): array => $userId === 0 ? [5, '7', 5] : [];
+
+        $this->assertSame(' AND p.ID NOT IN (5,7)', TopicService::heldBackSql('p.ID', 0));
+        $this->assertSame('', TopicService::heldBackSql('p.ID', 3), 'nothing held back from this reader');
+    }
+
+    /**
+     * The ids are inlined into SQL, so nothing but positive integers survives.
+     */
+    public function testOnlyIdsAreTakenFromTheAnswer(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_held_back_topic_ids'] = static fn (): array => ['1) OR (1=1', -4, 0, 9];
+
+        $this->assertSame([1, 9], ExtensionPoints::heldBackTopicIds(0));
     }
 
     public function testATermCanBeKeptFromTheReader(): void

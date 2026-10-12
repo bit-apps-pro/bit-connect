@@ -62,6 +62,16 @@ class UserInsightsService
     }
 
     /**
+     * Leaves out the topics a plugin keeps from whoever is viewing the
+     * profile — not cached, so it can answer for them. See
+     * TopicService::heldBackSql().
+     */
+    private static function heldBack(string $column): string
+    {
+        return TopicService::heldBackSql($column, get_current_user_id());
+    }
+
+    /**
      * The GMT instant a period starts at, or the epoch for all time.
      *
      * Same boundaries as the admin dashboard: the site's midnight at the start of
@@ -84,7 +94,7 @@ class UserInsightsService
             Connection::prepare(
                 "SELECT COUNT(*) FROM {$wpdbPosts}
                  WHERE post_author = %d AND post_type = %s AND post_status = 'publish'
-                   AND post_date_gmt >= %s",
+                   AND post_date_gmt >= %s" . self::heldBack('ID'),
                 $userId,
                 PostTypes::BIT_CONNECT->value,
                 $since
@@ -107,7 +117,7 @@ class UserInsightsService
                  WHERE c.user_id = %d AND c.comment_approved = '1'
                    AND c.comment_type IN ('', 'comment')
                    AND p.post_type = %s AND p.post_status = 'publish'
-                   AND c.comment_date_gmt >= %s",
+                   AND c.comment_date_gmt >= %s" . self::heldBack('p.ID'),
                 $userId,
                 PostTypes::BIT_CONNECT->value,
                 $since
@@ -129,7 +139,7 @@ class UserInsightsService
                 "SELECT COUNT(*) FROM {$votes} v
                  INNER JOIN {$wpdbPosts} p ON p.ID = v.post_id
                  WHERE p.post_author = %d AND p.post_type = %s AND p.post_status = 'publish'
-                   AND v.created_at >= %s",
+                   AND v.created_at >= %s" . self::heldBack('p.ID'),
                 $userId,
                 PostTypes::BIT_CONNECT->value,
                 $since
@@ -154,9 +164,9 @@ class UserInsightsService
                         (SELECT COUNT(*) FROM {$votes} v WHERE v.post_id = p.ID) AS votes
                  FROM {$wpdbPosts} p
                  WHERE p.post_author = %d AND p.post_type = %s AND p.post_status = 'publish'
-                   AND p.post_date_gmt >= %s
+                   AND p.post_date_gmt >= %s" . self::heldBack('p.ID') . '
                  ORDER BY votes DESC, p.comment_count DESC, p.post_date_gmt DESC
-                 LIMIT %d",
+                 LIMIT %d',
                 $userId,
                 PostTypes::BIT_CONNECT->value,
                 $since,
@@ -203,9 +213,9 @@ class UserInsightsService
                  INNER JOIN {$wpdbTaxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id AND tt.taxonomy = %s
                  INNER JOIN {$wpdbTerms} t ON t.term_id = tt.term_id
                  WHERE p.post_author = %d AND p.post_type = %s AND p.post_status = 'publish'
-                   AND p.post_date_gmt >= %s
+                   AND p.post_date_gmt >= %s" . self::heldBack('p.ID') . '
                  GROUP BY t.term_id, t.name
-                 ORDER BY total DESC, t.name ASC",
+                 ORDER BY total DESC, t.name ASC',
                 Taxonomies::TOPIC_TYPES->value,
                 $userId,
                 PostTypes::BIT_CONNECT->value,

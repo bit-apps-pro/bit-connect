@@ -182,6 +182,16 @@ class UserStatsService
     }
 
     /**
+     * Leaves out the topics a plugin keeps from visitors. These totals are
+     * cached once per member and shown to every viewer, so they count what a
+     * visitor could count — never what only some readers may see.
+     */
+    private static function publicOnly(string $column): string
+    {
+        return TopicService::heldBackSql($column, 0);
+    }
+
+    /**
      * Drop the totals of whoever wrote a comment the portal counts.
      *
      * Guests are skipped — they have no profile and so no totals — as are
@@ -227,7 +237,7 @@ class UserStatsService
                  WHERE post_author = %d AND post_type = %s AND post_status = 'publish'",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . self::publicOnly('ID')
         );
     }
 
@@ -250,7 +260,7 @@ class UserStatsService
                  WHERE c.user_id = %d AND c.comment_approved = '1' AND p.post_type = %s",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . self::publicOnly('p.ID')
         );
     }
 
@@ -272,7 +282,7 @@ class UserStatsService
             Connection::prepare(
                 "SELECT COUNT(*) FROM {$votes} v
                  INNER JOIN {$wpdbPosts} p ON p.ID = v.post_id
-                 WHERE p.post_author = %d AND p.post_type = %s",
+                 WHERE p.post_author = %d AND p.post_type = %s" . self::publicOnly('p.ID'),
                 $userId,
                 PostTypes::BIT_CONNECT->value
             )

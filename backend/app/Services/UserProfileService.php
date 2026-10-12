@@ -224,18 +224,22 @@ class UserProfileService
         $userId = (int) $userId;
         $postType = PostTypes::BIT_CONNECT->value;
 
+        // Neither list names a topic a plugin keeps from the one viewing the
+        // profile — nor a comment written on one.
+        $viewer = get_current_user_id();
+
         $topicWhere = Connection::prepare(
             "p.post_author = %d AND p.post_type = %s AND p.post_status = 'publish'",
             $userId,
             $postType
-        );
+        ) . TopicService::heldBackSql('p.ID', $viewer);
 
         $commentWhere = Connection::prepare(
             "c.user_id = %d AND c.comment_approved = '1' AND c.comment_type IN ('', 'comment')
              AND cp.post_type = %s AND cp.post_status = 'publish'",
             $userId,
             $postType
-        );
+        ) . TopicService::heldBackSql('cp.ID', $viewer);
 
         $union = "SELECT 'topic' AS kind, p.ID AS item_id, p.post_date_gmt AS occurred_at
                   FROM {$wpdbPosts} p
@@ -330,6 +334,8 @@ class UserProfileService
         $userId = (int) $userId;
         $offset = ($page - 1) * $perPage;
 
+        // A comment on a topic a plugin keeps from the viewer is left out with
+        // it: the row carries the comment's words and the topic's title.
         $where = Connection::prepare(
             "c.user_id = %d
              AND c.comment_approved = '1'
@@ -338,7 +344,7 @@ class UserProfileService
              AND p.post_status = 'publish'",
             $userId,
             PostTypes::BIT_CONNECT->value
-        );
+        ) . TopicService::heldBackSql('p.ID', get_current_user_id());
 
         $total = (int) Connection::get_var(
             "SELECT COUNT(*) FROM {$wpdbComments} c
@@ -407,7 +413,7 @@ class UserProfileService
              AND p.post_status = 'publish'",
             $userId,
             PostTypes::BIT_CONNECT->value
-        );
+        ) . TopicService::heldBackSql('p.ID', get_current_user_id());
 
         $total = (int) Connection::get_var(
             "SELECT COUNT(*) FROM {$votes} v
@@ -467,7 +473,7 @@ class UserProfileService
                  WHERE post_author = %d AND post_type = %s AND post_status = 'publish'",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . TopicService::heldBackSql('ID', get_current_user_id())
         );
 
         $lastComment = Connection::get_var(
@@ -477,7 +483,7 @@ class UserProfileService
                  WHERE c.user_id = %d AND c.comment_approved = '1' AND p.post_type = %s",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . TopicService::heldBackSql('p.ID', get_current_user_id())
         );
 
         $latest = max((string) $lastPost, (string) $lastComment);
