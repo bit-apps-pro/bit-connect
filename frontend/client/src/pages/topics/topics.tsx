@@ -50,9 +50,14 @@ export interface TopicsProps {
    * Keys match the filter payload below (`tags`, `topic-types`, …).
    */
   archiveFilter?: Record<string, string>
+  /**
+   * Whether a term archive draws its own heading above the list. Off when a
+   * plugin lays the archive out as a page of its own — see archive-page-for.
+   */
+  showArchiveHeader?: boolean
 }
 
-export default function Topics({ archiveFilter }: TopicsProps = {}) {
+export default function Topics({ archiveFilter, showArchiveHeader = true }: TopicsProps = {}) {
   const { notificationApi } = useContext(NotifyContext)
   const [searchParams, setSearchParams] = useSearchParams()
   const search = searchParams.get('search') || ''
@@ -428,7 +433,7 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         {/* A term archive's own heading, description and Follow. Not for a
             stage archive, which the stage picker already names, nor the archive
             the listing is scoped to, which is the picker beside it. */}
-        {!isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
+        {showArchiveHeader && !isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
           <ArchiveHeader archive={archive} term={archiveTerm} />
         )}
 

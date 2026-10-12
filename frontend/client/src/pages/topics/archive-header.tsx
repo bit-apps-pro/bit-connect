@@ -4,8 +4,6 @@ import { tagLabel } from '@utilities/tag-filter'
 
 import { type PortalArchive } from '@/config/config'
 
-import ArchiveHeaderExtras from './archive-header-extras'
-
 /**
  * What a term archive is, above its list: the term's name, what the admin
  * wrote about it, and Follow where the term can be followed.
@@ -20,7 +18,7 @@ import ArchiveHeaderExtras from './archive-header-extras'
 export default function ArchiveHeader({ archive, term }: { archive: PortalArchive; term: TaxonomyTerm | undefined }) {
   if (!term) return
 
-  const header = (
+  return (
     <div className="bc-flex bc-items-start bc-justify-between bc-gap-3">
       <div className="bc-min-w-0">
         <h1 className="bc-m-0 bc-hidden bc-text-[21px] bc-font-medium bc-leading-tight bc-text-ink md:bc-block">
@@ -40,15 +38,6 @@ export default function ArchiveHeader({ archive, term }: { archive: PortalArchiv
           targetType={archive.follow}
         />
       )}
-    </div>
-  )
-
-  if (!ArchiveHeaderExtras) return header
-
-  return (
-    <div className="bc-flex bc-flex-col bc-gap-3">
-      {header}
-      <ArchiveHeaderExtras archive={archive} term={term} />
     </div>
   )
 }
