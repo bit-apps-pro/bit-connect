@@ -162,6 +162,11 @@ export interface Topic {
   post_type: string
   // A topic need not have a term in every taxonomy — the server sends null for
   // the ones it has none in, including in the SSR state the first render uses.
+  /**
+   * When the topic entered its current stage, GMT `Y-m-d H:i:s`; '' for one
+   * that moved before the plugin recorded it. Absent from older responses.
+   */
+  stage_changed_at?: string
   terms: {
     /** One term of a taxonomy a plugin adds, under its parameter — see TopicTaxonomies.php. */
     [param: string]: null | Term | Term[] | undefined

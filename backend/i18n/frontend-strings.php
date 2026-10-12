@@ -1984,7 +1984,27 @@ return [
 
     'Clear all' => __('Clear all', 'bit-connect'),
 
-    'What is planned, being worked on and done. Open a topic to vote or comment on it.' => __('What is planned, being worked on and done. Open a topic to vote or comment on it.', 'bit-connect'),
+    'What we’re planning, building and have shipped. Vote on a card to move it up.' => __('What we’re planning, building and have shipped. Vote on a card to move it up.', 'bit-connect'),
+
+    'Type' => __('Type', 'bit-connect'),
+
+    /* translators: %d: how many comments the topic has. */
+    '%d comment' => __('%d comment', 'bit-connect'),
+
+    /* translators: %d: how many comments the topic has. */
+    '%d comments' => __('%d comments', 'bit-connect'),
+
+    /* translators: %d: how many more cards the click adds. */
+    'Show %d more' => __('Show %d more', 'bit-connect'),
+
+    'No topics match these filters' => __('No topics match these filters', 'bit-connect'),
+
+    'Try another one, or see the whole roadmap.' => __('Try another one, or see the whole roadmap.', 'bit-connect'),
+
+    'Clear filters' => __('Clear filters', 'bit-connect'),
+
+    /* translators: 1: a roadmap stage's name, e.g. Shipped; 2: a short date, e.g. Sep 28 */
+    '%1$s %2$s' => __('%1$s %2$s', 'bit-connect'),
 
     'Nothing is on the roadmap yet.' => __('Nothing is on the roadmap yet.', 'bit-connect'),
 
