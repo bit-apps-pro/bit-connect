@@ -166,6 +166,22 @@ class Follow extends Model
     }
 
     /**
+     * The ids of one kind of thing a member follows and has not muted.
+     *
+     * @return int[]
+     */
+    public static function activeTargetIds(int $userId, string $targetType): array
+    {
+        $rows = static::select(['target_id'])
+            ->where('user_id', $userId)
+            ->where('target_type', $targetType)
+            ->where('muted', 0)
+            ->get();
+
+        return array_map(static fn ($row): int => (int) $row->target_id, self::asList($rows ?? []));
+    }
+
+    /**
      * Everything one member follows and has not muted, newest first.
      *
      * @return array{data: array<int, object>, total: int, pages: int}

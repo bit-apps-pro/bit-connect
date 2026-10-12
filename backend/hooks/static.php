@@ -2,6 +2,7 @@
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Route;
 use BitApps\BitConnect\Http\Controller\AuthPageController;
+use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
 use BitApps\BitConnect\Http\Controller\RoadmapPageController;
@@ -31,6 +32,10 @@ Route::get('/page/{page}', [new TopicsController(), 'index']);
 // otherwise take it and look for a topic by that name. Static beats dynamic
 // here only because this is declared first; the router matches in order.
 Route::get('/notifications', [new NotificationsPageController(), 'show']);
+
+// What the member follows - matches frontend route '/following'. Before
+// '/{slug}' for the same reason as '/notifications'.
+Route::get('/following', [new FollowingPageController(), 'show']);
 
 // The stages as a board - matches frontend route '/roadmap'. Before '/{slug}'
 // for the same reason as '/notifications'.

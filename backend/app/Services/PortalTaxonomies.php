@@ -32,9 +32,10 @@ final class PortalTaxonomies
     /**
      * Segments the portal already routes besides its archives, which an
      * archive segment would shadow or be shadowed by: the list's own
-     * pagination, member profiles, the notifications page and the roadmap.
+     * pagination, member profiles, the notifications and following pages and
+     * the roadmap.
      */
-    private const ROUTED_SEGMENTS = ['page', 'user', 'notifications', 'roadmap'];
+    private const ROUTED_SEGMENTS = ['page', 'user', 'notifications', 'following', 'roadmap'];
 
     /**
      * Archive key => taxonomy name.

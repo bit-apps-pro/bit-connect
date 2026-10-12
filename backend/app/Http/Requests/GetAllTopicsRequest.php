@@ -23,6 +23,7 @@ use BitApps\BitConnect\Services\TopicTaxonomies;
  * @property null|string $tags
  * @property null|string $visibility
  * @property null|string $my_topics
+ * @property null|string $followed
  * @property null|string $view
  */
 final class GetAllTopicsRequest extends Request
@@ -61,6 +62,7 @@ final class GetAllTopicsRequest extends Request
             'tags'        => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'visibility'  => ['nullable', 'string', 'sanitize:text', 'max:20'],
             'my_topics'   => ['nullable', 'string', 'sanitize:text', 'max:5'],
+            'followed'    => ['nullable', 'string', 'sanitize:text', 'max:5'],
             'view'        => ['nullable', 'string', 'sanitize:key', 'max:40'], // see ExtensionPoints::topicListQuery()
         ];
 

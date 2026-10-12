@@ -482,7 +482,7 @@ final class ExtensionPoints
             return [];
         }
 
-        $reserved = ['page', 'user', 'notifications', 'roadmap', 'login', 'register', 'verify-email', 'forgot-password', 'comment'];
+        $reserved = ['page', 'user', 'notifications', 'following', 'roadmap', 'login', 'register', 'verify-email', 'forgot-password', 'comment'];
         $pages = [];
 
         foreach ($offered as $path => $title) {

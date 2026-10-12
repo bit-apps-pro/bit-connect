@@ -113,6 +113,14 @@ class TopicService
             $args['author'] = $currentUserId;
         }
 
+        // The topics the reader follows. `[0]` when they follow none, because an
+        // empty post__in means "no restriction" to WP_Query, not "nothing".
+        // `perm => readable` still applies, so a topic they followed and can no
+        // longer open drops out.
+        if (!empty($filters['followed']) && $currentUserId > 0) {
+            $args['post__in'] = Follow::activeTargetIds($currentUserId, Follow::TARGET_TOPIC) ?: [0];
+        }
+
         // Explicit author filter, used by the public profile pages. Previously
         // getTopicsByAuthor() set this and nothing read it, so it silently
         // returned every topic. `perm => readable` above still applies, so a

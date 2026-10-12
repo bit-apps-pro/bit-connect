@@ -12,6 +12,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
+use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
 use BitApps\BitConnect\Http\Controller\PortalPageController;
@@ -162,6 +163,14 @@ final class RootRouter
         // own email.
         if ($path === 'notifications') {
             $this->claim($portal, static fn () => (new NotificationsPageController())->show(new Request()));
+
+            return;
+        }
+
+        // What the member follows. Claimed outright like the notifications page,
+        // and for the same reason: it is whoever is logged in's own list.
+        if ($path === 'following') {
+            $this->claim($portal, static fn () => (new FollowingPageController())->show(new Request()));
 
             return;
         }

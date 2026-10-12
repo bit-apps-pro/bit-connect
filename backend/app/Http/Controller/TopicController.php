@@ -81,6 +81,12 @@ final class TopicController
             $filters['my_topics'] = true;
         }
 
+        $followed = $validatedData['followed'] ?? '';
+
+        if ($followed === 'true' || $followed === '1') {
+            $filters['followed'] = true;
+        }
+
         if ($view !== '') {
             $filters['view'] = $view;
         }

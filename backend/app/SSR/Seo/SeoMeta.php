@@ -262,6 +262,30 @@ final class SeoMeta
     }
 
     /**
+     * Describe the member's own following page. Never indexed, for the reason
+     * the notifications page is not: it is a different list for every reader.
+     */
+    public static function forFollowing(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title' => \sprintf(
+                // translators: %s: community name.
+                __('Following | %s', 'bit-connect'),
+                $community
+            ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
      * Describe a page a plugin draws — see ExtensionPoints::portalPages().
      * Never indexed: like the roadmap it is drawn client-side, and what it
      * lists is the plugin's to expose, not this plugin's to advertise.
