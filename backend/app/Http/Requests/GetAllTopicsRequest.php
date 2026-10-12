@@ -46,10 +46,13 @@ final class GetAllTopicsRequest extends Request
 
     public function rules()
     {
+        // `sortBy` is newest, oldest or votes, and anything else reads as
+        // newest — see TopicController::all(). Lenient on purpose: it arrives
+        // from the listing's `?sort=`, and a stale link should not fail the list.
         $rules = [
             'search'      => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'name'        => ['nullable', 'string', 'sanitize:text', 'max:200'],
-            'sortBy'      => ['nullable', 'string', 'sanitize:text', 'max:50'],
+            'sortBy'      => ['nullable', 'string', 'sanitize:key', 'max:50'],
             'page'        => ['nullable', 'integer', 'min:1'],
             'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
             'stages'      => ['nullable', 'string', 'sanitize:text', 'max:200'],

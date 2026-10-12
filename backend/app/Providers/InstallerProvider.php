@@ -132,6 +132,9 @@ final class InstallerProvider
             // Data only: marks earlier forum uploads so the Media Library
             // leaves them out (ForumUploadsInLibrary).
             'Bit_Connect_MarkPortalUploads',
+            // Data only: dates the stage of topics from before the date was
+            // kept (StageHistoryService).
+            'Bit_Connect_StageDates',
         ];
 
         return [

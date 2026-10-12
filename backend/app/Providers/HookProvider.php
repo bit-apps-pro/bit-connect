@@ -21,7 +21,9 @@ use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ProfileSlugService;
+use BitApps\BitConnect\Services\StageHistoryService;
 use BitApps\BitConnect\Services\TagApprovalService;
+use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\UserStatsService;
 use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
@@ -96,6 +98,13 @@ class HookProvider
         // and comments change, including from wp-admin, which the portal's own
         // API never sees.
         UserStatsService::registerHooks();
+
+        // When a topic last moved stage, for the roadmap's "Shipped Sep 28".
+        // Global for the same reason: an admin moves topics from wp-admin.
+        StageHistoryService::register();
+
+        // Topic lists ordered by votes — see TopicService::voteOrderClauses().
+        Hooks::addFilter('posts_clauses', [TopicService::class, 'voteOrderClauses'], 10, 2);
 
         // Instant notification email. Registered globally rather than on the API
         // request alone: a notification can be raised from wp-admin or WP-CLI,

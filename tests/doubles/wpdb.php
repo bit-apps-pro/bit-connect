@@ -22,6 +22,8 @@ class WpdbDouble
 
     public $posts = 'wp_posts';
 
+    public $postmeta = 'wp_postmeta';
+
     public $comments = 'wp_comments';
 
     public $users = 'wp_users';

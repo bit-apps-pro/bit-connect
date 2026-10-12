@@ -66,7 +66,7 @@ final class TopicController
         $filters = [
             'numberposts' => $perPage,
             'paged'       => $page,
-            'orderby'     => 'date',
+            'orderby'     => $sortBy === TopicService::ORDER_VOTES ? TopicService::ORDER_VOTES : 'date',
             'order'       => ($sortBy === 'oldest') ? 'ASC' : 'DESC',
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Topics are filtered by taxonomy by design; there is no meta equivalent.
             'tax_query'        => $taxQuery,

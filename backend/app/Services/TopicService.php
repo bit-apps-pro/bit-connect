@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
@@ -22,11 +24,47 @@ use WP_Term;
  */
 class TopicService
 {
+    /** `sortBy` value, and the WP_Query var it becomes, for most votes first. */
+    public const ORDER_VOTES = 'votes';
+
+    private const VOTE_ORDER_VAR = 'bit_connect_vote_order';
+
     /**
      * Total number of topics matching the most recent getAllTopics() query,
      * ignoring pagination limits. Populated by getAllTopics().
      */
     private int $lastQueryTotal = 0;
+
+    /**
+     * `posts_clauses` for a topic list ordered by votes: most first, newest
+     * first among equals.
+     *
+     * Counted from the votes table, one row per vote, as every card's own
+     * total is (Vote::getPostVoteCount). Not from the `_bit_connect_vote_count`
+     * post meta: that cache is written only when something reads it through
+     * VoteService, which the listing never does, so on most topics it is
+     * simply absent. A LEFT JOIN keeps topics nobody has voted on, as none.
+     *
+     * @param array<string, string> $clauses
+     * @param WP_Query              $query
+     *
+     * @return array<string, string>
+     */
+    public static function voteOrderClauses($clauses, $query)
+    {
+        if (!$query instanceof WP_Query || !$query->get(self::VOTE_ORDER_VAR)) {
+            return $clauses;
+        }
+
+        global $wpdb;
+
+        $votes = Connection::prop('prefix') . Config::VAR_PREFIX . 'votes';
+
+        $clauses['join'] .= " LEFT JOIN (SELECT post_id, COUNT(*) AS total FROM {$votes} WHERE post_id IS NOT NULL GROUP BY post_id) AS bc_votes ON (bc_votes.post_id = {$wpdb->posts}.ID)";
+        $clauses['orderby'] = "COALESCE(bc_votes.total, 0) DESC, {$wpdb->posts}.post_date DESC, {$wpdb->posts}.ID DESC";
+
+        return $clauses;
+    }
 
     /**
      * Get all topics with optional filtering.
@@ -122,6 +160,13 @@ class TopicService
         if (!empty($filters['name'])) {
             $args['name'] = $filters['name'];
             $includeComments = true;
+        }
+
+        // Most votes first. Before the view: a named list a plugin adds sets
+        // its own order, and that is the more specific question.
+        if (($filters['orderby'] ?? '') === self::ORDER_VOTES) {
+            $args['orderby'] = 'date';
+            $args[self::VOTE_ORDER_VAR] = true;
         }
 
         if (!empty($filters['view'])) {
@@ -864,8 +909,10 @@ class TopicService
             'hidden'         => $post->post_status === ContentVisibilityService::HIDDEN_STATUS,
             'comments_count' => get_comments_number($post->ID),
             'vote'           => self::getPostVoteStatus($post->ID),
-            'terms'          => $this->getTopicTerms($post->ID),
-            'attachments'    => $this->formatAttachments($post->ID, (string) $post->post_content),
+            // When it entered its stage, GMT; '' if that predates the record.
+            'stage_changed_at' => StageHistoryService::changedAt((int) $post->ID),
+            'terms'            => $this->getTopicTerms($post->ID),
+            'attachments'      => $this->formatAttachments($post->ID, (string) $post->post_content),
         ];
 
         if ($includeComments) {
