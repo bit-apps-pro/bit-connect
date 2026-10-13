@@ -101,8 +101,9 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const stages =
     stageParam === ALL_STAGES ? '' : stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
   // Cards name their stage only where the list mixes them; under one stage the
-  // picker already says which.
-  const showsStageBadges = stages === ''
+  // picker already says which — as does a stage's own archive, which narrows
+  // by its path rather than `?stage=`.
+  const showsStageBadges = stages === '' && !archiveFilter?.stages
 
   // Each filter control can be switched off per-site (admin → General → Portal
   // Filters). Hiding one removes its control, its chip and its share of the
@@ -246,8 +247,13 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     transition: { delay: Math.min(index * 0.05, 0.3), duration: 0.3, ease: 'easeOut' as const }
   })
 
+  // The "all caught up" note is only meaningful after the user has actually
+  // paginated — a list that fits in the first page never shows it.
+  const [hasPaginated, setHasPaginated] = useState(false)
+
   // (Re)load the first page on mount and whenever the filters change.
   useEffect(() => {
+    setHasPaginated(false)
     fetchAllPosts(filters).catch(() => {
       notificationApi?.error({ message: __('Failed to load posts') })
     })
@@ -265,6 +271,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
       entries => {
         if (entries[0]?.isIntersecting) {
           // fetchMorePosts guards against concurrent calls internally.
+          setHasPaginated(true)
           fetchMorePosts().catch(() => {
             notificationApi?.error({ message: __('Failed to load more posts') })
           })
@@ -350,12 +357,16 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     />
   )
 
+  // On desktop the type strip already shows the selected type, so its chip
+  // would only repeat it — the row lists what the strip can't.
+  const desktopChips = showTypeChips ? activeChips.filter(chip => chip.key !== 'topic-type') : activeChips
+
   // Active (non-default) filters as removable chips, in the type strip's
   // selected style — each one is a filter the reader switched on. Each chip
   // pops in and out.
-  const filterChips = (
+  const renderFilterChips = (chips: typeof activeChips) => (
     <AnimatePresence initial={false}>
-      {activeChips.length > 0 && (
+      {chips.length > 0 && (
         <m.div
           animate={{ opacity: 1 }}
           className="bc-flex bc-shrink-0 bc-flex-wrap bc-items-center bc-gap-2 max-lg:bc-flex-nowrap"
@@ -365,7 +376,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           <AnimatePresence initial={false} mode="popLayout">
-            {activeChips.map(chip => (
+            {chips.map(chip => (
               <m.span
                 animate={{ opacity: 1, scale: 1 }}
                 className="bc-inline-flex bc-h-8 bc-shrink-0 bc-items-center bc-gap-1 bc-whitespace-nowrap bc-rounded-md bc-border bc-border-solid bc-border-primary/30 bc-bg-primary/10 bc-pl-3 bc-pr-1 bc-text-sm bc-font-medium bc-text-primary"
@@ -421,7 +432,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
             style={{ scrollbarWidth: 'none' }}
           >
             {listingContext}
-            {filterChips}
+            {renderFilterChips(activeChips)}
           </div>
           {(showAnyFilter || showTypeChips) && (
             <button
@@ -457,9 +468,9 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
               {showTagFilter && <TagFilter />}
             </div>
           </div>
-          {activeChips.length > 0 && (
+          {desktopChips.length > 0 && (
             <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
-              {filterChips}
+              {renderFilterChips(desktopChips)}
               <Button onClick={resetFilters} size="small" type="link">
                 {__('Clear all')}
               </Button>
@@ -535,7 +546,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
             </div>
           )}
 
-          {!hasMore && !isLoadingMore && (
+          {hasPaginated && !hasMore && !isLoadingMore && (
             <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
               <span>{__("🎉 You're all caught up. That's every topic!")}</span>
             </div>

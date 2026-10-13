@@ -999,9 +999,9 @@ class TopicService
         ];
 
         // One term each from a taxonomy another plugin adds, under the
-        // parameter that carries it.
+        // parameter that carries it — with its picture, when its terms have one.
         foreach (TopicTaxonomies::all() as $param => $entry) {
-            $singleTermTaxonomies[$entry['taxonomy']] = ['key' => $param, 'meta' => []];
+            $singleTermTaxonomies[$entry['taxonomy']] = ['key' => $param, 'meta' => $entry['icons'] ? ['icon'] : []];
         }
 
         $terms = [];

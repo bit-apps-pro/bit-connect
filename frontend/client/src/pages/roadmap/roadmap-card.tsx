@@ -3,8 +3,11 @@ import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import { queryClient } from '@config/query-client'
 import { type Topic } from '@features/topic-modal/shared/type'
+import { chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
 import { type InfiniteData } from '@tanstack/react-query'
+import { tagLabel } from '@utilities/tag-filter'
+import { archivePath } from '@utils/listing-path'
 import { Avatar, Tag } from 'antd'
 import { useContext } from 'react'
 import { LuCircleCheck, LuLayoutGrid, LuMessageCircle, LuUser } from 'react-icons/lu'
@@ -23,12 +26,14 @@ import useChipProps from '@/utils/use-chip-props'
 import { placeNames, shortDate, withVote } from './roadmap-data'
 
 // Every row has a fixed height — the title always takes two lines, the type
-// row one, the footer one — so the cards are one size down a column and across
-// the board, whatever each topic holds. The skeleton below keeps the same rows.
+// row one, the place-and-tags row one, the footer one — so the cards are one
+// size down a column and across the board, whatever each topic holds. The
+// skeleton below keeps the same rows.
 const CARD_CLASS =
   'bc-relative bc-flex bc-gap-3 bc-rounded-[12px] bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-3.5'
 const TITLE_HEIGHT = 'bc-h-[2.75em]'
 const TYPE_ROW_HEIGHT = 'bc-h-[22px]'
+const PLACE_ROW_HEIGHT = 'bc-h-[18px]'
 const FOOTER_HEIGHT = 'bc-h-5'
 
 function setCachedVote(queryKey: unknown[], postId: number, vote: Vote) {
@@ -55,6 +60,8 @@ export default function RoadmapCard({
   const { can, isLoggedIn } = useAuthStore()
   const type = topic.terms.topic_types
   const where = placeNames(topic, places)
+  // Absent rather than empty in some responses, as the other taxonomies can be.
+  const tags = topic.terms.tags ?? []
   const comments = Number(topic.comments_count || 0)
   // On the last column, when the topic got there.
   const arrivedOn = arrived && topic.stage_changed_at ? shortDate(topic.stage_changed_at) : ''
@@ -102,24 +109,44 @@ export default function RoadmapCard({
           {topic.post_title}
         </Link>
 
-        {/* What kind of request it is, as the coloured chip, then where it was
-            posted as quiet text: the type is what a reader scans the column
-            for, and a second chip beside it would compete with it. */}
-        <div className={`bc-flex ${TYPE_ROW_HEIGHT} bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-hidden`}>
+        {/* What kind of request it is, as the coloured chip: the type is what a
+            reader scans the column for. */}
+        <div className={`bc-flex ${TYPE_ROW_HEIGHT} bc-min-w-0 bc-items-center bc-overflow-hidden`}>
           {type && (
-            <Tag className="bc-m-0 bc-max-w-[60%] bc-shrink-0 bc-truncate" {...chipTagProps(type.meta?.color)}>
+            <Tag className="bc-m-0 bc-max-w-full bc-truncate" {...chipTagProps(type.meta?.color)}>
               {type.name}
             </Tag>
           )}
+        </div>
+
+        {/* Where it was posted, then its tags, as quiet text on a line of their
+            own — beside the type, a column this narrow cut the place to a few
+            letters. One line high: a tag that does not fit wraps onto a second
+            line that is clipped, so a tag shows whole or not at all. The topic
+            page carries the full set. Tags sit above the card's link overlay
+            so each opens its archive. */}
+        <div
+          className={`bc-flex ${PLACE_ROW_HEIGHT} bc-min-w-0 bc-flex-wrap bc-items-center bc-gap-x-2 bc-overflow-hidden bc-text-xs bc-text-ink-muted`}
+        >
           {where.map(place => (
             <span
-              className="bc-inline-flex bc-min-w-0 bc-max-w-full bc-items-center bc-gap-1 bc-text-xs bc-text-ink-muted"
+              className={`bc-inline-flex ${PLACE_ROW_HEIGHT} bc-min-w-0 bc-max-w-full bc-items-center bc-gap-1`}
               key={`${place.label}-${place.name}`}
               title={`${place.label}: ${place.name}`}
             >
               <LuLayoutGrid aria-hidden className="bc-shrink-0" size={12} />
               <span className="bc-truncate">{place.name}</span>
             </span>
+          ))}
+          {tags.map(tag => (
+            <Link
+              className={`bc-relative bc-z-10 ${PLACE_ROW_HEIGHT} bc-whitespace-nowrap bc-leading-[18px] bc-no-underline hover:bc-text-ink ${tag.pending ? 'bc-italic bc-text-ink-subtle' : 'bc-text-ink-muted'}`}
+              key={tag.slug}
+              title={chipTitle(tag.name, tag.pending)}
+              to={archivePath('tags', tag.slug)}
+            >
+              {tagLabel(tag.name)}
+            </Link>
           ))}
         </div>
 
@@ -182,6 +209,9 @@ export function RoadmapCardSkeleton() {
         </div>
         <div className={`bc-flex ${TYPE_ROW_HEIGHT} bc-items-center`}>
           <div className={`bc-h-[18px] bc-w-24 ${BAR}`} />
+        </div>
+        <div className={`bc-flex ${PLACE_ROW_HEIGHT} bc-items-center`}>
+          <div className={`bc-h-3 bc-w-28 ${BAR}`} />
         </div>
         <div className={`bc-flex ${FOOTER_HEIGHT} bc-items-center bc-justify-between`}>
           <div className={`bc-h-3 bc-w-20 ${BAR}`} />

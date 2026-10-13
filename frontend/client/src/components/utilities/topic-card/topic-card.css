@@ -47,10 +47,48 @@
   position: relative;
   z-index: 10;
 
-  /* The row is a flex container, so its width is the card's; without this the
-     overlay under it stays clickable everywhere except the links themselves. */
-  width: fit-content;
-  max-width: 100%;
+  /* The row spans the card so the tags can sit at its right end. It lets
+     clicks through to the card overlay under it; only what it holds takes
+     them. */
+  pointer-events: none;
+}
+
+.topic-card__meta > :not(.topic-card__tags),
+.topic-card__tags > * {
+  pointer-events: auto;
+}
+
+/* The tags fill what the row leaves, right-aligned, one line high. A basis of
+   0 means the box never pushes the rest of the row onto another line; a tag
+   that does not fit wraps below that line and is clipped, so a card shows the
+   tags it has room for, whole, or none. */
+.topic-card__tags {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+  height: 1.25rem;
+  overflow: hidden;
+  line-height: 1.25rem;
+  pointer-events: none;
+}
+
+/* A wrapped line always keeps its first item, however wide. This empty one
+   takes that place, so even the first tag wraps away when it does not fit
+   instead of showing cut in half. It is a full line tall, or that first line
+   would be no height at all and the next one — the tag that did not fit —
+   would start at the top, in view. The gap is a margin for the same reason: a
+   column-gap would sit beside the spacer and count against the first tag. */
+.topic-card__tags::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.25rem;
+}
+
+.topic-card__tags > * {
+  margin-left: 0.75rem;
 }
 
 /* Keyboard parity with hover: tabbing to the card link has to show where focus

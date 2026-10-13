@@ -1,8 +1,9 @@
 import { contentMedia } from '@common/helpers/content-media'
+import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import { plainText } from '@common/helpers/plain-text'
 import { type Topic } from '@features/topic-modal/shared/type'
-import { CHIP_LINK, chipClass, chipTitle } from '@pages/Post/ui/tag-chips'
+import { chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
 import StageIcon from '@utilities/stage-icon'
 import { tagLabel } from '@utilities/tag-filter'
@@ -225,6 +226,9 @@ export default function TopicCard({
             </Flex>
           )}
 
+          {/* Where the topic was posted, as plain meta beside who and when. */}
+          {TopicCardTerms && <TopicCardTerms topic={topic} />}
+
           {/* From md only: below that the type is the chip beside the title. */}
           {topicTypes && (
             <Tag
@@ -236,24 +240,25 @@ export default function TopicCard({
             </Tag>
           )}
 
-          {TopicCardTerms && <TopicCardTerms topic={topic} />}
-
-          {/* Tags are the card's least-used signal and the first thing to wrap:
-              on a phone they took a second row of their own on some cards and
-              not others, so no two rows read alike. They return from md, where
-              the meta line has room for them. The topic page always shows the
-              full set. */}
+          {/* Tags are the card's least-used signal, so they take what the line
+              has left, at its right end, and never a row of their own: the box
+              is one line high, and a tag that does not fit wraps onto a line
+              that is clipped (see topic-card.css). The topic page always shows
+              the full set. Plain `#name` links rather than pills, so they sit
+              quietly beside the meta; each opens its archive. */}
           {tags.length > 0 && (
-            <div className="bc-hidden bc-min-w-0 bc-max-w-full bc-flex-wrap bc-gap-x-2 bc-gap-y-1 md:bc-flex">
-              {/* The same pills the topic page uses, so a tag looks like a tag
-                  wherever it appears — as muted text they read as more meta.
-                  Each links to its archive; the meta row sits above the card's
-                  overlay, so they keep their own destination. */}
+            <div className="topic-card__tags">
               {tags.map(tag => (
-                <Link className={CHIP_LINK} key={tag.term_id} to={archivePath('tags', tag.slug)}>
-                  <Tag className={chipClass(tag.pending)} title={chipTitle(tag.name, tag.pending)}>
-                    {tagLabel(tag.name)}
-                  </Tag>
+                <Link
+                  className={cn([
+                    'bc-whitespace-nowrap bc-text-[12px] bc-no-underline hover:bc-text-ink sm:bc-text-[13px]',
+                    tag.pending ? 'bc-italic bc-text-ink-subtle' : 'bc-text-ink-muted'
+                  ])}
+                  key={tag.term_id}
+                  title={chipTitle(tag.name, tag.pending)}
+                  to={archivePath('tags', tag.slug)}
+                >
+                  {tagLabel(tag.name)}
                 </Link>
               ))}
             </div>
