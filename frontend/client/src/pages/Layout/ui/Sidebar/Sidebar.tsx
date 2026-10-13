@@ -1,22 +1,17 @@
 import config from '@config/config'
 import Promo from '@features/promo'
-import { FOLLOWING_PATH } from '@pages/following/following-path'
 import { useStagesStore } from '@pages/Layout/data/use-stages'
-import { ROADMAP_PATH } from '@pages/roadmap/roadmap-path'
 import logo from '@resource/img/logo.svg'
-import { isListingPath } from '@utils/listing-path'
-import { routePath } from '@utils/route-path'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
 import { useEffect } from 'react'
-import { LuBookmarkCheck, LuKanban, LuLayoutList, LuX } from 'react-icons/lu'
-import { matchPath, useLocation } from 'react-router'
+import { LuX } from 'react-icons/lu'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
-import SidebarSections, { sectionOwnsPath } from './sidebar-sections'
-import SidebarNavItem from './SidebarNavItem'
+import SidebarPlaces from './sidebar-places'
+import SidebarSections from './sidebar-sections'
 
 const { Sider } = Layout
 
@@ -26,72 +21,13 @@ interface SidebarProps {
 }
 
 /**
- * Whether a path is the archive of a term that can be followed — a tag's page.
- *
- * Such a page is a place of its own, reached from a tag chip, a search or the
- * Following page, so no sidebar row claims it. Stage, status and topic-type
- * archives stay the Topics row's: they are the listing's own pickers.
- */
-const isFollowableArchive = (pathname: string): boolean => {
-  const segments = pathname.split('/').filter(Boolean)
-
-  return segments.length === 2 && (config.PORTAL_ARCHIVES[segments[0]]?.follow ?? '') !== ''
-}
-
-/**
- * The places a reader can go: the topic listing, once there are stages to lay
- * out the roadmap, and for a member what they follow. Places only — which
- * stage or archive the listing shows is the listing's own picker, so nothing
- * here doubles as a filter.
- *
- * Further sections (an add-on's own places) follow under their own headings.
+ * The portal's own places, then further sections (an add-on's own places)
+ * under their own headings.
  */
 function NavList({ className, showRoadmap }: { className?: string; showRoadmap: boolean }) {
-  const { pathname } = useLocation()
-
-  const places = (
-    <div className="bc-flex bc-flex-col bc-space-y-1">
-      <SidebarNavItem
-        props={{
-          glyph: <LuLayoutList size={18} />,
-          isActive: isListingPath(pathname) && !sectionOwnsPath?.(pathname) && !isFollowableArchive(pathname),
-          label: __('Topics'),
-          path: '',
-          reserveIconSlot: true,
-          to: '/'
-        }}
-      />
-      {showRoadmap && (
-        <SidebarNavItem
-          props={{
-            glyph: <LuKanban size={18} />,
-            isActive: matchPath(ROADMAP_PATH, pathname) !== null,
-            label: __('Roadmap'),
-            path: ROADMAP_PATH,
-            reserveIconSlot: true,
-            to: routePath(ROADMAP_PATH)
-          }}
-        />
-      )}
-      {/* The member's own list, so not offered to a guest. */}
-      {config.IS_LOGGED_IN && (
-        <SidebarNavItem
-          props={{
-            glyph: <LuBookmarkCheck size={18} />,
-            isActive: matchPath(FOLLOWING_PATH, pathname) !== null,
-            label: __('Following'),
-            path: FOLLOWING_PATH,
-            reserveIconSlot: true,
-            to: routePath(FOLLOWING_PATH)
-          }}
-        />
-      )}
-    </div>
-  )
-
   return (
     <nav className={cn(['bc-flex bc-w-full bc-flex-col', className])}>
-      {places}
+      <SidebarPlaces showRoadmap={showRoadmap} />
       {SidebarSections && <SidebarSections />}
     </nav>
   )

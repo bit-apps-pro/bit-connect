@@ -1064,6 +1064,11 @@ class TopicService
                 $iconId = (int) get_term_meta($term->term_id, 'bit_connect_icon_id', true);
                 $meta['icon'] = $iconId > 0 ? wp_get_attachment_image_url($iconId, 'full') : null;
             }
+
+            // The optional dark-theme counterpart; the portal falls back to
+            // the light icon when it is unset.
+            $iconDarkUrl = get_term_meta($term->term_id, 'bit_connect_icon_dark_url', true);
+            $meta['icon_dark'] = $iconDarkUrl !== '' ? $iconDarkUrl : null;
         }
         if ($meta !== []) {
             $data['meta'] = $meta;

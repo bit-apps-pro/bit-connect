@@ -15,6 +15,8 @@ export interface TermMeta {
   [key: string]: unknown
   color?: string
   icon?: string
+  /** Dark-theme counterpart to `icon`; absent, the light one serves both. */
+  icon_dark?: string
   is_default?: boolean
   order?: number
 }

@@ -338,8 +338,8 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     }
   }
 
-  // Where the list is: the stage picker (and any choice added beside it), or the
-  // term a tag, type or status archive is listing, which spans every stage.
+  // Where the list is: the term a tag, type or status archive is listing, which
+  // spans every stage.
   const listingContext = (
     <ListingContext
       archiveName={

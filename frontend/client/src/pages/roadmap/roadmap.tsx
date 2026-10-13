@@ -3,6 +3,7 @@ import { __, sprintf } from '@common/helpers/i18nWrap'
 import usePageTitle from '@common/hooks/usePageTitle'
 import { type Stage, useStagesStore } from '@pages/Layout/data/use-stages'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import StageIcon from '@utilities/stage-icon'
 import { Button } from 'antd'
 import { useEffect, useMemo } from 'react'
 import { LuSearchX } from 'react-icons/lu'
@@ -203,12 +204,20 @@ function RoadmapColumn({
       {/* Carries the column's top padding itself, so that pinned it still
           covers the cards scrolling under it, edge to edge. */}
       <header className="bc--mx-3 bc-flex bc-items-center bc-gap-2.5 bc-rounded-t-[16px] bc-bg-surface-sunken bc-px-4 bc-pb-1 bc-pt-4 sm:bc--mx-4 sm:bc-px-5 sm:bc-pt-5 lg:bc-sticky lg:bc-top-0 lg:bc-z-20">
-        <span
-          aria-hidden
-          // The fallback class only when there is no hue: the utilities are
-          // `!important`, so beside it the inline colour would never show.
-          className={cn(['bc-h-2.5 bc-w-2.5 bc-shrink-0 bc-rounded-full', !dot && 'bc-bg-ink-subtle'])}
-          style={dot ? { backgroundColor: dot } : undefined}
+        {/* The stage's own icon where it has one; its colour dot otherwise. */}
+        <StageIcon
+          className="bc-h-5 bc-w-5"
+          dark={stage.meta?.bit_connect_icon_dark_url}
+          fallback={
+            <span
+              aria-hidden
+              // The fallback class only when there is no hue: the utilities are
+              // `!important`, so beside it the inline colour would never show.
+              className={cn(['bc-h-2.5 bc-w-2.5 bc-shrink-0 bc-rounded-full', !dot && 'bc-bg-ink-subtle'])}
+              style={dot ? { backgroundColor: dot } : undefined}
+            />
+          }
+          light={stage.meta?.bit_connect_icon_url}
         />
         <h2 className="bc-m-0 bc-min-w-0 bc-truncate bc-text-[17px] bc-font-semibold bc-text-ink">{stage.name}</h2>
         {isPending ? (

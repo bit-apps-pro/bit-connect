@@ -4,6 +4,7 @@ import { plainText } from '@common/helpers/plain-text'
 import { type Topic } from '@features/topic-modal/shared/type'
 import { CHIP_LINK, chipClass, chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
+import StageIcon from '@utilities/stage-icon'
 import { tagLabel } from '@utilities/tag-filter'
 import UserLink from '@utilities/user-link'
 import { archivePath } from '@utils/listing-path'
@@ -164,6 +165,11 @@ export default function TopicCard({
               title={stages.name}
               {...chipTagProps(stages.meta.color)}
             >
+              <StageIcon
+                className="bc-mr-1 bc-inline-block bc-h-3.5 bc-w-3.5 bc-align-[-2px]"
+                dark={stages.meta.icon_dark}
+                light={stages.meta.icon}
+              />
               {stages.name}
             </Tag>
           )}

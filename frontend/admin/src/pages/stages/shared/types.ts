@@ -22,6 +22,11 @@ export interface Stage {
 export interface StageFormData {
   color?: string
   description?: string
+  icon_dark_id?: number
+  icon_dark_url?: string
+  icon_file_name?: string
+  icon_id?: number
+  icon_url?: string
   name: string
   /** Left blank lets WordPress derive one from the name. */
   slug?: string

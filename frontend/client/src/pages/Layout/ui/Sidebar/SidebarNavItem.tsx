@@ -4,7 +4,7 @@ import If from '@utilities/If'
 import { theme } from 'antd'
 import { m } from 'framer-motion'
 import { memo, type ReactNode, useState } from 'react'
-import { NavLink } from 'react-router'
+import { Link } from 'react-router'
 
 import { listingLink } from './listing-link'
 import { navItemStyle } from './SidebarNavItem.style'
@@ -62,8 +62,12 @@ function SidebarNavItem({
   // of leaving it, since the sidebar is the only place either choice is made.
   const to = toOverride ?? listingLink({ scope, stage: path })
 
+  // A plain Link, with the row's own answer as aria-current: NavLink matches the
+  // path alone, so every stage of a listing narrowed by `?stage=` would claim
+  // to be the current page.
   return (
-    <NavLink
+    <Link
+      aria-current={isActive ? 'page' : undefined}
       className={cn([
         // h-11 keeps the row at the 44px minimum touch target on phones.
         'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-cursor-pointer bc-items-center bc-gap-2 bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none'
@@ -90,7 +94,7 @@ function SidebarNavItem({
       )}
       {/* Truncates rather than spills: the row height never grows, and an icon
           takes 28px of a sider that is only 250px wide to begin with. */}
-      <span className="bc-min-w-0 bc-truncate">{label}</span>
+      <span className="bc-min-w-0 bc-flex-1 bc-truncate">{label}</span>
 
       <If conditions={isActive}>
         <m.span
@@ -100,6 +104,6 @@ function SidebarNavItem({
           layoutId={toOverride ? 'sidebar-nav-other-active' : 'sidebar-nav-item-active'}
         />
       </If>
-    </NavLink>
+    </Link>
   )
 }
