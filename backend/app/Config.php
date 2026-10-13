@@ -203,14 +203,14 @@ class Config
      * Saves option to option table.
      *
      * @param string $option   Option name
-     * @param bool   $autoload Whether option will autoload
-     * @param mixed  $value
+     * @param null|bool $autoload Whether option will autoload; null leaves it to WordPress
+     * @param mixed     $value
      *
      * @return bool
      */
-    public static function addOption($option, $value, $autoload = false)
+    public static function addOption($option, $value, $autoload = null)
     {
-        return add_option(self::withPrefix($option), $value, '', $autoload ? true : null);
+        return add_option(self::withPrefix($option), $value, '', \is_null($autoload) ? null : (bool) $autoload);
     }
 
     /**
@@ -218,13 +218,13 @@ class Config
      *
      * @param string $option   Option name
      * @param mixed  $value    Option value
-     * @param bool   $autoload Whether option will autoload
+     * @param null|bool $autoload Whether option will autoload; null leaves it unchanged
      *
      * @return bool
      */
     public static function updateOption($option, $value, $autoload = null)
     {
-        return update_option(self::withPrefix($option), $value, \is_null($autoload) ? null : true);
+        return update_option(self::withPrefix($option), $value, \is_null($autoload) ? null : (bool) $autoload);
     }
 
     public static function deleteOption($option)
