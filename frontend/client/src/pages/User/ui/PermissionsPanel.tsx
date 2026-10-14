@@ -72,7 +72,7 @@ export default function PermissionsPanel({
         <div className="bc-grid bc-gap-x-6 bc-gap-y-4 sm:bc-grid-cols-2">
           {grouped.map(([group, items]) => (
             <div key={group}>
-              <h3 className="bc-mb-1 bc-mt-0 bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-[0.06em] bc-text-ink-subtle">
+              <h3 className="bc-mb-1 bc-mt-0 bc-text-[11px] bc-font-semibold bc-text-ink-subtle">
                 {group}
               </h3>
               <ul className="bc-m-0 bc-list-none bc-p-0 bc-text-[13px]">

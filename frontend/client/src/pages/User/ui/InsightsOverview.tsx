@@ -112,19 +112,19 @@ export default function InsightsOverview({
         <StatTile
           icon={<LuPencilLine size={16} />}
           isLoading={isLoading}
-          label={__('Total Posts')}
+          label={__('Posts')}
           value={totals?.topics}
         />
         <StatTile
           icon={<LuThumbsUp size={16} />}
           isLoading={isLoading}
-          label={__('Total Upvotes')}
+          label={__('Upvotes')}
           value={totals?.votes_received}
         />
         <StatTile
           icon={<LuMessageCircle size={16} />}
           isLoading={isLoading}
-          label={__('Total Comments')}
+          label={__('Comments')}
           value={totals?.comments}
         />
       </div>

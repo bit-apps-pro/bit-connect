@@ -25,7 +25,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bc-flex bc-flex-1 bc-flex-col bc-items-center bc-gap-1">
       <span className="bc-text-[17px] bc-font-semibold bc-leading-none bc-text-ink">{value}</span>
-      <span className="bc-text-[10px] bc-uppercase bc-tracking-[0.04em] bc-leading-tight bc-text-ink-subtle">
+      <span className="bc-text-[10px] bc-leading-tight bc-text-ink-subtle">
         {label}
       </span>
     </div>

@@ -226,7 +226,7 @@ export default function SearchSuggestions({
           <li className="bc-m-0 bc-p-0" key={section.key} role="presentation">
             {section.label && (
               <div className="bc-flex bc-items-center bc-justify-between bc-px-4 bc-pb-1 bc-pt-2">
-                <span className="bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-wider bc-text-ink-subtle">
+                <span className="bc-text-[11px] bc-font-semibold bc-text-ink-subtle">
                   {section.label}
                 </span>
                 {section.action && (

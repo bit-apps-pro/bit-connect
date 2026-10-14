@@ -112,7 +112,7 @@ function RoleRow({ capabilityLabels, role }: RoleRowProps) {
         {groups.map(group => (
           <div key={group.label}>
             <Text
-              className="bc-block bc-mb-2 bc-text-xs bc-uppercase bc-tracking-wide bc-font-semibold"
+              className="bc-block bc-mb-2 bc-text-xs bc-font-semibold"
               type="secondary"
             >
               {group.label}

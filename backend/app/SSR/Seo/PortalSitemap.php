@@ -1072,7 +1072,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             h2 { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
             table { border: 1px solid var(--line); border-collapse: collapse; width: 100%%; }
             th, td { padding: 10px 12px; text-align: left; }
-            th { border-bottom: 1px solid var(--line); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+            th { border-bottom: 1px solid var(--line); font-size: 12px; }
             tr:nth-child(even) td { background: var(--row); }
             td { border-top: 1px solid var(--line); word-break: break-all; }
             a { color: var(--link); }

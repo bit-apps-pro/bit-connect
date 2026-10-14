@@ -77,7 +77,7 @@ export function bucketLabel(date: string, period: DashboardPeriod): string {
   const at = new Date(`${date}T00:00:00Z`)
 
   if (period === '12m') {
-    return at.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' }).toUpperCase()
+    return at.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })
   }
 
   if (period === '7d') {

@@ -30,7 +30,7 @@ export default function Error404() {
           </span>
 
           <div className="bc-flex bc-flex-col bc-gap-2">
-            <span className="bc-text-xs bc-font-semibold bc-uppercase bc-tracking-[0.2em] bc-text-ink-subtle">
+            <span className="bc-text-xs bc-font-semibold bc-tracking-[0.2em] bc-text-ink-subtle">
               {__('404')}
             </span>
             <h1 className="bc-m-0 bc-text-2xl bc-font-semibold bc-text-ink sm:bc-text-3xl">

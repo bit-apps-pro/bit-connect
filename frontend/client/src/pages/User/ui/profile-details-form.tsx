@@ -134,7 +134,7 @@ export default function ProfileDetailsForm({ profile }: { profile: undefined | U
           />
         </Form.Item>
 
-        <h3 className="bc-mb-3 bc-mt-5 bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-[0.06em] bc-text-ink-subtle">
+        <h3 className="bc-mb-3 bc-mt-5 bc-text-[11px] bc-font-semibold bc-text-ink-subtle">
           {__('Links')}
         </h3>
 
