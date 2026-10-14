@@ -195,11 +195,45 @@ class TopicService
             return array_map('intval', (new WP_Query($args))->posts);
         }
 
+        // Pinned topics lead the first page — the ones in this list. WordPress
+        // would prepend every sticky post to a list like this one, whatever
+        // its taxonomy filters, so a topic pinned in one board topped every
+        // other board's list and every stage's. They are asked for through the
+        // list's own arguments instead, then kept out of its pages.
+        $args['ignore_sticky_posts'] = true;
+        $perPage = (int) ($args['posts_per_page'] ?? -1);
+        $page = max(1, (int) ($args['paged'] ?? 1));
+        $pinned = $this->leadingPinned($args, $filters);
+
+        if ($perPage > 0) {
+            $pinned = \array_slice($pinned, 0, $perPage);
+        }
+
+        if ($pinned !== []) {
+            $args = self::withoutPosts($args, array_map(static fn (WP_Post $post): int => (int) $post->ID, $pinned));
+
+            // The pinned take the first places of page one, so every later
+            // page starts that many places earlier in the rest.
+            if ($perPage > 0) {
+                unset($args['paged']);
+                $args['offset'] = $page === 1 ? 0 : ($page - 1) * $perPage - \count($pinned);
+                $args['posts_per_page'] = $page === 1 ? max(1, $perPage - \count($pinned)) : $perPage;
+            }
+        }
+
         $query = new WP_Query($args);
-        $this->lastQueryTotal = (int) $query->found_posts;
+        $this->lastQueryTotal = (int) $query->found_posts + \count($pinned);
+
+        $posts = $query->posts;
+
+        if ($pinned !== [] && $page === 1) {
+            // A page the pinned fill on their own: the one row asked for above
+            // was only to count the rest.
+            $posts = $perPage > 0 && \count($pinned) >= $perPage ? $pinned : [...$pinned, ...$posts];
+        }
 
         $topics = [];
-        foreach ($query->posts as $post) {
+        foreach ($posts as $post) {
             // A lookup by slug is singular, and WP_Query skips `tax_query` for
             // singular queries — so whatever a plugin excluded through
             // topicQueryArgs() can still come back here. Asked one by one.
@@ -816,6 +850,64 @@ class TopicService
         $ids = ExtensionPoints::heldBackTopicIds($userId);
 
         return $ids === [] ? '' : " AND {$column} NOT IN (" . implode(',', $ids) . ')';
+    }
+
+    /**
+     * The pinned topics a list leads with: the sticky ones among what the list
+     * itself would return, in its own order. None for a search, a single
+     * topic, one author's topics or an explicit set of ids — the lists
+     * WordPress never led with sticky posts either.
+     *
+     * @param array<string, mixed> $args    the list's query, as it stands
+     * @param array<string, mixed> $filters
+     *
+     * @return array<int, WP_Post>
+     */
+    private function leadingPinned(array $args, array $filters): array
+    {
+        if (!empty($filters['s']) || !empty($filters['name']) || !empty($args['author']) || ($args['orderby'] ?? '') === 'post__in') {
+            return [];
+        }
+
+        $sticky = array_values(array_filter(array_map('intval', (array) get_option('sticky_posts', []))));
+
+        if (isset($args['post__in'])) {
+            $sticky = array_values(array_intersect($sticky, array_map('intval', (array) $args['post__in'])));
+        }
+
+        if ($sticky === []) {
+            return [];
+        }
+
+        unset($args['paged'], $args['offset']);
+        $args['post__in'] = $sticky;
+        $args['posts_per_page'] = -1;
+        $args['no_found_rows'] = true;
+
+        return array_values(array_filter((new WP_Query($args))->posts, static fn ($post): bool => $post instanceof WP_Post));
+    }
+
+    /**
+     * The query with these posts left out. Through `post__in` when the query
+     * has one — WP_Query reads `post__not_in` only when it does not.
+     *
+     * @param array<string, mixed> $args
+     * @param array<int, int>      $ids
+     *
+     * @return array<string, mixed>
+     */
+    private static function withoutPosts(array $args, array $ids): array
+    {
+        if (isset($args['post__in'])) {
+            // `[0]`, not empty: an empty post__in means "no restriction".
+            $args['post__in'] = array_values(array_diff(array_map('intval', (array) $args['post__in']), $ids)) ?: [0];
+
+            return $args;
+        }
+
+        $args['post__not_in'] = array_values(array_unique([...array_map('intval', (array) ($args['post__not_in'] ?? [])), ...$ids]));
+
+        return $args;
     }
 
     /**
