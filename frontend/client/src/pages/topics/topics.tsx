@@ -29,12 +29,12 @@ import TopicListBanners from './topic-list-banners'
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
 
-// A bordered square matching the search field beside it: same height, corners
-// and rule, so the two read as one toolbar. The filter is a secondary control,
+// A bordered square the height of the type chips and the sort picker beside it,
+// so the row reads as one toolbar. The filter is a secondary control,
 // not a call to action — the active-filter state is signalled by the small
 // blue dot, not by the button itself.
 const FILTER_BUTTON_CLASS = [
-  'bc-group bc-relative bc-flex bc-h-10 bc-w-10 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center',
+  'bc-group bc-relative bc-flex bc-h-8 bc-w-8 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center',
   'bc-rounded-[8px] bc-border bc-border-solid bc-border-line bc-bg-surface-hover bc-text-ink',
   'bc-transition-colors bc-duration-200 bc-ease-out',
   'hover:bc-border-primary hover:bc-text-primary',
@@ -110,16 +110,11 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   // reset/"filters are active" state; the matching URL params are still applied
   // to the query below, so links people have already shared keep working.
   const { sort: showSortFilter, tags: showTagFilter, types: showTypeFilter } = config.PORTAL_FILTERS
-  const showAnyFilter = showSortFilter || showTagFilter
   // A type archive (`/topic/bug`) has already chosen, and a chip there could
   // not override the path anyway.
   const showTypeChips = showTypeFilter && !scopeFilter?.['topic-types']
 
   const [filterOpen, setFilterOpen] = useState(false)
-  const hasActiveFilters =
-    (showSortFilter && (sortBy !== 'newest' || visibility !== '' || myTopics !== '' || view !== '')) ||
-    (showTypeFilter && topicType !== '') ||
-    (showTagFilter && tags !== '')
 
   // Active (non-default) filters, shown as removable chips under the search bar.
   const taxonomies = useTaxonomiesStoreSelect()
@@ -147,6 +142,13 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const clearTopicType = () =>
     setSearchParams(prev => {
       prev.delete('topic-types')
+      if (prev.has('page')) prev.set('page', '1')
+      return prev
+    })
+
+  const clearTags = () =>
+    setSearchParams(prev => {
+      prev.delete('tags')
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -347,20 +349,14 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
 
   // Where the list is: the term a tag, type or status archive is listing, which
   // spans every stage.
-  const listingContext = (
-    <ListingContext
-      archiveName={
-        !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === ''
-          ? (archiveName ?? archiveSlug)
-          : ''
-      }
-    />
-  )
+  const contextName =
+    !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
+  const listingContext = <ListingContext archiveName={contextName} />
 
-  // On desktop the type strip already shows the selected type and the sort
-  // control the selected ordering or list, so their chips would only repeat
-  // them — the row lists what the toolbar can't.
-  const desktopChips = activeChips.filter(
+  // The type strip already shows the selected type and the sort control the
+  // selected ordering or list, so their chips would only repeat them — the
+  // row lists what the toolbar can't.
+  const toolbarChips = activeChips.filter(
     chip => !(showTypeChips && chip.key === 'topic-type') && chip.key !== 'sort'
   )
 
@@ -424,33 +420,47 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
           <ArchiveHeader archive={archive} term={archiveTerm} />
         )}
 
-        {/* below lg: where the list is and what narrows it, on one line, with
-            the button that opens the filter sheet at the end. The place chips
-            truncate before the filters do, since a filter's name is what its
-            remove button acts on; past that the row scrolls sideways. Search
-            itself lives in the header. */}
-        <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
+        {/* below lg: the desktop toolbar's own shape — the type chips as a
+            strip scrolling sideways, the sort picker held at the right edge —
+            so the two filters a reader reaches for most are one tap away
+            rather than behind a sheet. Only tags, which need a search field
+            and a list, still open the sheet. Search itself lives in the
+            header. */}
+        {(showTypeChips || showSortFilter || showTagFilter) && (
+          <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
+            {showTypeChips && <TopicTypeFilter className="bc-flex-1" layout="strip" scope={scopeFilter} />}
+            <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-2">
+              {showSortFilter && <SortFilter />}
+              {showTagFilter && (
+                <button
+                  aria-label={__('Tags')}
+                  className={FILTER_BUTTON_CLASS}
+                  onClick={() => setFilterOpen(true)}
+                  type="button"
+                >
+                  <LuSlidersHorizontal size={16} />
+                  {tags !== '' && (
+                    <span className="filter-dot-pulse bc-absolute bc--right-1 bc--top-1 bc-h-2.5 bc-w-2.5 bc-rounded-full bc-bg-primary bc-ring-2 bc-ring-surface" />
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* below lg: where the list is, and the tags narrowing it — the type
+            and the ordering already show in the toolbar above. The place chip
+            truncates before the filters do, since a filter's name is what its
+            remove button acts on; past that the row scrolls sideways. */}
+        {(contextName || toolbarChips.length > 0) && (
           <div
-            className="bc-flex bc-min-w-0 bc-flex-1 bc-items-center bc-gap-2 bc-overflow-x-auto"
+            className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden"
             style={{ scrollbarWidth: 'none' }}
           >
             {listingContext}
-            {renderFilterChips(activeChips)}
+            {renderFilterChips(toolbarChips)}
           </div>
-          {(showAnyFilter || showTypeChips) && (
-            <button
-              aria-label={__('Filters')}
-              className={FILTER_BUTTON_CLASS}
-              onClick={() => setFilterOpen(true)}
-              type="button"
-            >
-              <LuSlidersHorizontal size={20} />
-              {hasActiveFilters && (
-                <span className="filter-dot-pulse bc-absolute bc--right-1 bc--top-1 bc-h-2.5 bc-w-2.5 bc-rounded-full bc-bg-primary bc-ring-2 bc-ring-surface" />
-              )}
-            </button>
-          )}
-        </div>
+        )}
 
         {/* desktop toolbar, one row: the type chips from the left edge,
             taking whatever width is left and scrolling sideways past it, then
@@ -471,9 +481,9 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
               {showTagFilter && <TagFilter />}
             </div>
           </div>
-          {desktopChips.length > 0 && (
+          {toolbarChips.length > 0 && (
             <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
-              {renderFilterChips(desktopChips)}
+              {renderFilterChips(toolbarChips)}
               <Button onClick={resetFilters} size="small" type="link">
                 {__('Clear all')}
               </Button>
@@ -482,11 +492,12 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
         </div>
       </div>
 
-      {/* Mobile filter sheet, opened by the filter button above. */}
+      {/* Phone tag sheet, opened by the button beside the sort picker: the
+          tag picker searches and lists, which a toolbar slot has no room for. */}
       <Drawer
         className="lg:bc-hidden"
         extra={
-          <Button disabled={!hasActiveFilters} onClick={resetFilters} size="small" type="link">
+          <Button disabled={tags === ''} onClick={clearTags} size="small" type="link">
             {__('Reset')}
           </Button>
         }
@@ -495,30 +506,10 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
         open={filterOpen}
         placement="bottom"
         styles={{ content: { borderTopLeftRadius: 16, borderTopRightRadius: 16 } }}
-        title={__('Filters')}
+        title={__('Tags')}
       >
-        {/* Label over control, no tinted panels: the sheet takes the toolbar's
-            white surface and its fields take the search box's treatment, so
-            opening it does not change the page's visual language. */}
-        <div className="bc-flex bc-flex-col bc-gap-5 bc-pb-2">
-          {showTypeChips && (
-            <div className="bc-flex bc-flex-col bc-gap-2">
-              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Topic type')}</span>
-              <TopicTypeFilter scope={scopeFilter} />
-            </div>
-          )}
-          {showSortFilter && (
-            <div className="bc-flex bc-flex-col bc-gap-2">
-              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Sort by')}</span>
-              <SortFilter block />
-            </div>
-          )}
-          {showTagFilter && (
-            <div className="bc-flex bc-flex-col bc-gap-2">
-              <span className="bc-text-sm bc-font-medium bc-text-ink">{__('Tags')}</span>
-              <TagFilter block />
-            </div>
-          )}
+        <div className="bc-pb-2">
+          <TagFilter block />
         </div>
       </Drawer>
 

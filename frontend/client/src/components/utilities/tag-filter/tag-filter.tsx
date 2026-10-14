@@ -154,7 +154,8 @@ export default function TagFilter({
       options={options}
       placeholder={__('Tags')}
       popupMatchSelectWidth={block || 240}
-      size="large"
+      // The type chips' height in the toolbar; the sheet's fields stay large.
+      size={block ? 'large' : 'middle'}
       style={{ width: block ? '100%' : 200 }}
       value={selected}
     />

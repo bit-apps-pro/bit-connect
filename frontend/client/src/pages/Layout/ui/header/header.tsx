@@ -253,16 +253,14 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
           {!isMobile && <SearchInput className="bc-min-w-0 bc-max-w-[560px] bc-flex-[1.4]" withShortcut />}
           <div className="bc-flex bc-shrink-0 bc-items-center bc-justify-end bc-gap-1 md:bc-flex-1 md:bc-basis-0">
             {isMobile && (
+              // Stays the magnifier while the row is open — tinted, so it reads
+              // as the control that row belongs to. Closing is the × at the
+              // field's end, where the eye already is.
               <Button
                 aria-expanded={searchRowOpen}
-                aria-label={searchRowOpen ? __('Close search') : __('Search topics')}
-                icon={
-                  searchRowOpen ? (
-                    <LuX size={22} strokeLinecap="round" strokeWidth={2.25} />
-                  ) : (
-                    <LuSearch size={22} strokeLinecap="round" strokeWidth={2.25} />
-                  )
-                }
+                aria-label={__('Search topics')}
+                className={searchRowOpen ? 'bc-text-primary' : undefined}
+                icon={<LuSearch size={22} strokeLinecap="round" strokeWidth={2.25} />}
                 onClick={toggleSearch}
                 type="text"
               />
@@ -390,7 +388,16 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
           </div>
         </div>
         {searchRowOpen && (
-          <SearchInput className="bc-mt-3" focusOnMount={searchOpen} onDismiss={() => setSearchOpen(false)} />
+          <div className="bc-mt-3 bc-flex bc-items-center bc-gap-1">
+            <SearchInput className="bc-min-w-0 bc-flex-1" focusOnMount={searchOpen} onDismiss={() => setSearchOpen(false)} />
+            <Button
+              aria-label={__('Close search')}
+              className="bc-shrink-0"
+              icon={<LuX size={22} strokeLinecap="round" strokeWidth={2.25} />}
+              onClick={toggleSearch}
+              type="text"
+            />
+          </div>
         )}
       </header>
       <TopicModals />

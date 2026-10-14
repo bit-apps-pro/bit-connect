@@ -94,7 +94,8 @@ export default function SortFilter({
       onChange={handleChange}
       options={options}
       popupMatchSelectWidth={block}
-      size="large"
+      // The type chips' height: the picker shares their row on every width.
+      size={block ? 'large' : 'middle'}
       value={currentValue}
     />
   )
