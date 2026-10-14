@@ -123,7 +123,7 @@ final class NotificationPreferences
         // *nothing on this forum raises it*. Both would otherwise be a switch
         // the member could set and never see honoured.
         foreach (ExtensionPoints::notifiableTypes() as $type) {
-            if (NotificationTypes::isModeratorOnly($type) && !$isModerator) {
+            if (!self::receivesType($type, $userId, $isModerator)) {
                 continue;
             }
 
@@ -181,7 +181,7 @@ final class NotificationPreferences
                 continue;
             }
 
-            if (NotificationTypes::isModeratorOnly($type) && !$isModerator) {
+            if (!self::receivesType($type, $userId, $isModerator)) {
                 continue;
             }
 
@@ -254,11 +254,20 @@ final class NotificationPreferences
             return false;
         }
 
-        return !(NotificationTypes::isModeratorOnly($type) && !user_can($userId, Capabilities::MODERATE->value))
+        return self::receivesType($type, $userId, user_can($userId, Capabilities::MODERATE->value));
+    }
 
-
-
-        ;
+    /**
+     * Whether this member is someone the type is ever sent to: every type
+     * reaches a moderator, and a moderator-only one reaches anyone else only
+     * when a plugin with moderators of its own says so — see
+     * ExtensionPoints::receivesModeratorType().
+     */
+    private static function receivesType(NotificationTypes $type, int $userId, bool $isModerator): bool
+    {
+        return !NotificationTypes::isModeratorOnly($type)
+            || $isModerator
+            || ExtensionPoints::receivesModeratorType($type, $userId);
     }
 
     /**

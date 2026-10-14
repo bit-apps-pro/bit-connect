@@ -211,14 +211,16 @@ enum NotificationTypes: string
     /**
      * Types where repeats collapse onto one row instead of stacking.
      *
-     * Votes only. A vote carries nothing of its own to read, so fifty of them
-     * are one fact — "fifty people liked this" — and fifty rows would bury
-     * every other notification the member has. A reply is the opposite: each
+     * Votes, and requests to join a private space. A vote carries nothing of
+     * its own to read, so fifty of them are one fact — "fifty people liked
+     * this" — and fifty rows would bury every other notification the member
+     * has. A request is the same: what a moderator needs is "twelve people are
+     * waiting", and the space's queue lists who. A reply is the opposite: each
      * one is a distinct thing somebody wrote and needs its own link.
      */
     public static function isCollapsible(NotificationTypes $type): bool
     {
-        return $type === self::VOTE_RECEIVED;
+        return $type === self::VOTE_RECEIVED || $type === self::ACCESS_REQUESTED;
     }
 
     /**

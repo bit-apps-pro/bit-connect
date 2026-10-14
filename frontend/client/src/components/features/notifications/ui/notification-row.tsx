@@ -71,7 +71,13 @@ function describe(item: NotificationItem) {
       )
     }
     case 'access_requested': {
-      return (
+      // Requests to join one space fold into a row, as votes do.
+      return item.count > 1 ? (
+        <>
+          <span className="bc-font-semibold bc-text-ink">{sprintf(__('%d people'), item.count)}</span>{' '}
+          {__('asked to join')} {space}
+        </>
+      ) : (
         <>
           {name} {__('asked to join')} {space}
         </>

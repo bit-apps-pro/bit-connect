@@ -48,6 +48,13 @@ final class NotificationService
     public const TARGET_USER = 'user';
 
     /**
+     * A private space someone asked to join — ACCESS_REQUESTED's target, so
+     * requests to join the same space fold into one row. Raised by whatever
+     * plugin provides the spaces; this one only delivers it.
+     */
+    public const TARGET_SPACE = 'space';
+
+    /**
      * The actor id kept for something the forum did on its own.
      *
      * Zero because no person did it — the auto-hide that fires when reports

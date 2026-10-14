@@ -305,6 +305,24 @@ final class ExtensionPoints
     }
 
     /**
+     * Whether a member who does not moderate the forum still receives this
+     * moderator-only type.
+     *
+     * This plugin's moderators are whoever holds the moderate capability, and
+     * that alone decides who it sends moderator-only types to. A plugin with
+     * moderators of its own — of one space, say — answers yes for them, for
+     * the types they act on. Only ever widens: a forum moderator receives
+     * every moderator-only type whatever a listener says.
+     *
+     * @param NotificationTypes $type   a moderator-only type
+     * @param int               $userId a member who does not moderate the forum
+     */
+    public static function receivesModeratorType(NotificationTypes $type, int $userId): bool
+    {
+        return $userId > 0 && (bool) Hooks::applyFilter('bit_connect_receives_moderator_type', false, $type->value, $userId);
+    }
+
+    /**
      * How many upvotes a member has received.
      *
      * This plugin counts the votes on their topics, which is every vote it
