@@ -150,12 +150,9 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
           ),
           onClick: handleLogout
         },
-        // Phone width only: the bar there was carrying a menu button, a logo, a
-        // theme button, a bell, Create and the avatar — six controls, two of
-        // them opening menus of their own. The theme control gives up its slot
-        // and moves in here (the header renders none below `md` once someone is
-        // logged in; see `withoutMenu`), last and behind a divider, because a
-        // display preference belongs under the account actions, not among them.
+        // The theme control lives here for anyone logged in — the header
+        // renders none for them — last and behind a divider, because a display
+        // preference belongs under the account actions, not among them.
         //
         // A childless `group` rather than a `disabled` item, though both render
         // an inert row: the pill owns its own clicks and needs the menu to stay
@@ -163,17 +160,13 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
         // `disabled` would hang `aria-disabled` over a live three-way switch.
         // A group title is not a menuitem, so rc-menu never fires the click
         // that closes the dropdown, and the radios keep their own semantics.
-        ...(isMobile
-          ? [
-              { type: 'divider' as const },
-              {
-                children: [],
-                key: 'theme',
-                label: <ThemeToggle block />,
-                type: 'group' as const
-              }
-            ]
-          : [])
+        { type: 'divider' as const },
+        {
+          children: [],
+          key: 'theme',
+          label: <ThemeToggle block />,
+          type: 'group' as const
+        }
       ]
     : []
 
@@ -274,11 +267,11 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                 type="text"
               />
             )}
-            {/* Before the account controls: this is a display preference, not an
-                account action, and it has to stay reachable for logged-out
-                visitors — who are most of the portal's traffic. They keep the
-                phone-width button too, having no account menu to hold it. */}
-            <ThemeToggle withoutMenu={isLoggedIn} />
+            {/* Guests only: logged in, the control sits in the account menu.
+                Logged out — most of the portal's traffic — there is no account
+                menu to hold it, so it stays in the bar, phone-width button and
+                all. */}
+            {!isLoggedIn && <ThemeToggle />}
             {/* Logged-in only, like Create below it: a guest has no
                 notifications, and an empty bell invites a click that can only
                 disappoint. */}
@@ -331,13 +324,11 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               <Dropdown
                 menu={{ items: userMenuItems }}
                 placement="bottomRight"
-                // Tap, not hover, on phones — where there is no hover to speak
-                // of and antd's default only works by way of the synthesised
-                // mouseenter. It cost the theme row above: the switch runs a
-                // view transition, the document goes inert under the finger for
-                // its duration, and the mouseleave that follows closed the menu
-                // out from under the choice being made. Desktop keeps hover.
-                trigger={isMobile ? ['click'] : ['hover']}
+                // Click, not hover, at every width: the theme row switches via a
+                // view transition, the document goes inert under the pointer
+                // for its duration, and the mouseleave that follows closed a
+                // hover menu out from under the choice being made.
+                trigger={['click']}
               >
                 <Button
                   aria-label={__('Account menu')}

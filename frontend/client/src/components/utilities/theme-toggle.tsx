@@ -12,10 +12,8 @@ import { cn } from '@/common/helpers/globalHelpers'
 
 /**
  * The theme control: a borderless segmented pill — Light · System · Dark —
- * where the chosen segment expands to show its name beside the icon while the
- * others stay icon-only. The label is the affordance: the control never needs
- * a legend, because the current state reads as a word, not as "whichever icon
- * looks pressed".
+ * icon-only, with the chosen segment raised on a thumb and each name in a
+ * tooltip and the segment's accessible label.
  *
  * A visible three-way switch rather than a menu behind an icon: all three
  * states show at once, so "system" is discoverable and reachable *back* after
@@ -28,13 +26,10 @@ import { cn } from '@/common/helpers/globalHelpers'
  * all three modes are still seen together when it opens — the discoverability
  * argument above, one tap deferred. The swap is CSS-only
  * (`bc-hidden md:bc-inline-flex`) because the client app is prerendered — a
- * JS breakpoint would flash the wrong control before hydration. `withoutMenu`
- * drops that fallback for bars that already hand the control to something else
- * at phone width.
+ * JS breakpoint would flash the wrong control before hydration.
  *
- * The thumb is a framer `layoutId` element and the segments are `layout`
- * elements, so a selection slides *and stretches* the thumb into the newly
- * sized segment; the theme itself changes via the shared ripple. The pill is
+ * The thumb is a framer `layoutId` element, so a selection slides it into the
+ * new segment; the theme itself changes via the shared ripple. The pill is
  * a real radiogroup: one tab stop, arrow keys move the selection.
  */
 
@@ -58,17 +53,9 @@ interface ThemeToggleProps {
       full pill at every viewport width (no menu collapse). */
   block?: boolean
   className?: string
-  /** Drop the phone-width menu button, leaving nothing below `md`. For bars
-      that carry the control somewhere else at that width — the portal header
-      hands it to the account menu, once there is an account to open one. */
-  withoutMenu?: boolean
 }
 
-export default function ThemeToggle({
-  block = false,
-  className,
-  withoutMenu = false
-}: ThemeToggleProps) {
+export default function ThemeToggle({ block = false, className }: ThemeToggleProps) {
   const [mode, setMode] = useAtom($themeMode)
   const isDark = useAtomValue($isDarkTheme)
   const { ripple, startSwitch } = useThemeSwitchRipple()
@@ -110,7 +97,7 @@ export default function ThemeToggle({
 
   return (
     <>
-      {!block && !withoutMenu && (
+      {!block && (
         <Dropdown
           menu={{
             items: OPTIONS.map(({ icon, label, value }) => ({
@@ -163,19 +150,16 @@ export default function ThemeToggle({
         {OPTIONS.map(({ icon, label, value }, index) => {
           const isActive = index === activeIndex
           const segment = (
-            <m.button
+            <button
               aria-checked={isActive}
               aria-label={label}
               className={cn([
                 'bc-relative bc-flex bc-h-7 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded-full bc-border-none bc-bg-transparent bc-p-0 bc-transition-colors',
                 'bc-outline-none focus-visible:bc-ring-2 focus-visible:bc-ring-primary/40',
-                block && 'bc-flex-1',
-                isActive
-                  ? 'bc-gap-1.5 bc-px-2.5 bc-text-ink'
-                  : 'bc-min-w-8 bc-text-ink-subtle hover:bc-text-ink-muted'
+                block ? 'bc-flex-1' : 'bc-w-8',
+                isActive ? 'bc-text-ink' : 'bc-text-ink-subtle hover:bc-text-ink-muted'
               ])}
               key={value}
-              layout
               onClick={event => handleSelect(value, event)}
               onKeyDown={handleSegmentKeyDown}
               ref={element => {
@@ -183,7 +167,6 @@ export default function ThemeToggle({
               }}
               role="radio"
               tabIndex={isActive ? 0 : -1}
-              transition={SEGMENT_SPRING}
               type="button"
             >
               {isActive && (
@@ -200,23 +183,9 @@ export default function ThemeToggle({
                 />
               )}
               <span className="bc-relative bc-flex">{icon}</span>
-              {isActive && (
-                <m.span
-                  animate={{ opacity: 1 }}
-                  className="bc-relative bc-overflow-hidden bc-whitespace-nowrap bc-text-xs bc-font-semibold"
-                  initial={{ opacity: 0 }}
-                  transition={{ delay: 0.1, duration: 0.2 }}
-                >
-                  {label}
-                </m.span>
-              )}
-            </m.button>
+            </button>
           )
-          // The active segment already says its name; a tooltip repeating it
-          // would just chase the thumb around.
-          return isActive ? (
-            segment
-          ) : (
+          return (
             <Tooltip key={value} placement="top" title={label}>
               {segment}
             </Tooltip>
