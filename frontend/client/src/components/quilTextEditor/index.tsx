@@ -16,7 +16,7 @@ function EditorPlaceholder({ className }: Pick<QuillEditorProps, 'className'>) {
   return (
     <div
       aria-busy="true"
-      className={`bc-mb-6 bc-min-h-[170px] bc-rounded-lg bc-border bc-border-solid bc-border-line ${className || ''}`}
+      className={`bc-min-h-[170px] bc-rounded-lg bc-border bc-border-solid bc-border-line ${className || ''}`}
     />
   )
 }

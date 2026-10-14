@@ -1071,7 +1071,9 @@ function QuillEditorInner({
       // but `hidden` makes this a scrollport of its own, and a sticky child
       // resolves against the nearest one — which would pin the toolbar to a box
       // that never scrolls, i.e. not at all. See .stickyToolbar.
-      className={`bc-relative bc-rounded-lg bc-overflow-clip bc-mb-6 ${extras.wrapperClassName ?? ''} ${className || ''}`}
+      // No margin of its own: the topic form's field already spaces it, and the
+      // comment box asks for its own through `className`.
+      className={`bc-relative bc-rounded-lg bc-overflow-clip ${extras.wrapperClassName ?? ''} ${className || ''}`}
       style={{ border: `1px solid ${token.colorBorder}` }}
     >
       <div ref={containerRef} />

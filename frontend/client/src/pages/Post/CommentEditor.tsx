@@ -449,6 +449,7 @@ export default function CommentEditor({
       )}
       <div key={key}>
         <QuillEditor
+          className="bc-mb-6"
           defaultValue={initialContent}
           maxImages={maxImages}
           maxLength={maxLength}
