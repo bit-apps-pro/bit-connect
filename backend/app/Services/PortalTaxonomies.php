@@ -30,6 +30,11 @@ use WP_Term;
 final class PortalTaxonomies
 {
     /**
+     * Term meta holding each slug a term's archive was once served at.
+     */
+    public const PREVIOUS_SLUG_META = 'bit_connect_previous_slug';
+
+    /**
      * Segments the portal already routes besides its archives, which an
      * archive segment would shadow or be shadowed by: the list's own
      * pagination, member profiles, the notifications and following pages and
@@ -94,6 +99,26 @@ final class PortalTaxonomies
         return (bool) Hooks::applyFilter(
             'bit_connect_archive_indexable',
             SeoSettings::archiveIndexable($segment),
+            $segment
+        );
+    }
+
+    /**
+     * Whether one term's archive may be indexed.
+     *
+     * Its segment's answer, refined per term through
+     * `bit_connect_archive_term_indexable` — a taxonomy whose terms differ
+     * from each other (some open to anyone, some not) answers for each one.
+     * Read by both the page's robots tag and the sitemap, so the two agree.
+     */
+    public static function isTermIndexable(WP_Term $term): bool
+    {
+        $segment = self::segmentFor($term->taxonomy);
+
+        return (bool) Hooks::applyFilter(
+            'bit_connect_archive_term_indexable',
+            self::isIndexable($segment),
+            $term,
             $segment
         );
     }
@@ -194,11 +219,79 @@ final class PortalTaxonomies
      */
     public static function renamedArchiveUrl(string $urlSegment, string $termSlug): string
     {
-        if (self::taxonomyFor($urlSegment) === '' || self::slugFor($urlSegment) === $urlSegment) {
+        if (self::taxonomyFor($urlSegment) !== '' && self::slugFor($urlSegment) !== $urlSegment) {
+            return self::resolve(self::slugFor($urlSegment), $termSlug) === null ? '' : self::url($urlSegment, $termSlug);
+        }
+
+        return self::renamedTermUrl($urlSegment, $termSlug);
+    }
+
+    /**
+     * Where `/{urlSegment}/{slug}` now lives when the term once had that slug,
+     * or '' when no term did.
+     *
+     * A term's archive URL is its slug, so editing the slug would otherwise
+     * 404 every link and search result pointing at the old one. The term's
+     * current URL wins: a slug some other term holds now is that term's page.
+     * Answered through resolve(), so a term this reader may not see is never
+     * named by a redirect either.
+     */
+    public static function renamedTermUrl(string $urlSegment, string $termSlug): string
+    {
+        $segment = self::segmentForSlug($urlSegment);
+        $taxonomy = self::taxonomyFor($segment);
+
+        if ($taxonomy === '' || $termSlug === '' || self::resolve($urlSegment, $termSlug) !== null) {
             return '';
         }
 
-        return self::resolve(self::slugFor($urlSegment), $termSlug) === null ? '' : self::url($urlSegment, $termSlug);
+        $terms = get_terms(
+            [
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => false,
+                'number'     => 1,
+                'meta_key'   => self::PREVIOUS_SLUG_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+                'meta_value' => sanitize_title($termSlug), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+            ]
+        );
+
+        $term = \is_array($terms) ? ($terms[0] ?? null) : null;
+
+        if (!$term instanceof WP_Term || self::resolve($urlSegment, $term->slug) === null) {
+            return '';
+        }
+
+        return self::url($segment, $term->slug);
+    }
+
+    /**
+     * Remembers a portal term's slug when an edit changes it, for
+     * renamedTermUrl() (`wp_update_term_data`).
+     *
+     * @param mixed $data
+     * @param mixed $termId
+     * @param mixed $taxonomy
+     *
+     * @return mixed
+     */
+    public static function rememberPreviousSlug($data, $termId, $taxonomy)
+    {
+        if (!\is_array($data) || !\is_string($taxonomy) || self::segmentFor($taxonomy) === '') {
+            return $data;
+        }
+
+        $term = get_term((int) $termId, $taxonomy);
+
+        if (
+            $term instanceof WP_Term
+            && isset($data['slug'])
+            && $data['slug'] !== $term->slug
+            && !\in_array($term->slug, get_term_meta((int) $termId, self::PREVIOUS_SLUG_META), true)
+        ) {
+            add_term_meta((int) $termId, self::PREVIOUS_SLUG_META, $term->slug);
+        }
+
+        return $data;
     }
 
     /**

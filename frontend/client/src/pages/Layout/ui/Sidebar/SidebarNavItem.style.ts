@@ -5,24 +5,20 @@ interface NavItemStyle {
   token: GlobalToken
 }
 
+/**
+ * The row's colours. Hover and keyboard focus are classes on the row, not keys
+ * here: this lands in an inline `style`, where `&:hover` is not CSS at all.
+ * The weight is the row's `bc-font-medium` for the same reason — Tailwind
+ * runs `important`, so a weight set here never applied.
+ */
 export const navItemStyle = ({ isActive, token }: NavItemStyle) => {
   return {
-    '&:focus': {
-      color: isActive ? '#3266EA' : token.colorText
-    },
-    '&:focusVisible': {
-      outline: `2px solid ${token.colorPrimary} !important`,
-      outlineOffset: '2px'
-    },
-    '&:hover': {
-      background: token.colorFillTertiary,
-      color: isActive ? '#3266EA' : token.colorText
-    },
     background: 'transparent',
     border: 'none',
     borderRadius: token.borderRadius,
-    color: isActive ? '#3266EA' : token.colorText,
-    fontWeight: isActive ? 500 : 400,
+    // The theme's primary, not the light brand hex: dark mode lifts it, and
+    // #3266EA read too dim as text on the dark sider.
+    color: isActive ? token.colorPrimary : token.colorText,
     padding: 10,
     textDecoration: 'none',
     width: '100%'

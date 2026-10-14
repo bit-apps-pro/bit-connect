@@ -20,6 +20,7 @@ use BitApps\BitConnect\Services\ForumUploadsInLibrary;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\StageHistoryService;
 use BitApps\BitConnect\Services\TagApprovalService;
@@ -43,6 +44,10 @@ class HookProvider
         new PostTypeProvider();
 
         Hooks::addAction('rest_api_init', [$this, 'loadAppApiHooks']);
+
+        // A term whose slug is edited keeps its old archive URL as a redirect —
+        // see PortalTaxonomies::renamedTermUrl().
+        Hooks::addFilter('wp_update_term_data', [PortalTaxonomies::class, 'rememberPreviousSlug'], 10, 3);
 
         // A deleted tag takes its follows with it — see FollowService.
         Hooks::addAction('delete_term', [FollowService::class, 'onTermDeleted'], 10, 3);

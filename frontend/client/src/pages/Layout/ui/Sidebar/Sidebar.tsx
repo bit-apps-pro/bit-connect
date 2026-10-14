@@ -103,8 +103,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Promo
               // Top margin only — the gap below now comes from the panel's own
               // padding, so this no longer doubles it.
-              // `bc-mr-3` restores the right inset the panel gave to the nav.
-              className="bc-mt-4 bc-mr-3 bc-shrink-0"
+              // `bc-mr-3` restores the right inset the panel gave to the nav;
+              // `bc-pl-2.5` is the rows' own padding, so the credit starts
+              // on the same line as their icons.
+              className="bc-mt-4 bc-mr-3 bc-pl-2.5 bc-shrink-0"
               eyebrow={config.PROMO.eyebrow}
               headline={config.PROMO.headline}
               url={config.PROMO.url}
@@ -198,7 +200,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
           {config.PROMO.enabled && (
             <Promo
-              className="bc-mx-4 bc-mb-4 bc-shrink-0"
+              // The list's `bc-px-3` plus the rows' own padding, so the credit
+              // lines up with their icons.
+              className="bc-mx-3 bc-mb-4 bc-pl-2.5 bc-shrink-0"
               eyebrow={config.PROMO.eyebrow}
               headline={config.PROMO.headline}
               url={config.PROMO.url}

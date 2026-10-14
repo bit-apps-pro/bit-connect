@@ -71,8 +71,8 @@ body:has(#bit-connect-portal) {
 /* Themes style headings directly with their own heading font (Twenty
    Twenty-Four sets Cardo on h1–h6), which beats inheritance from the root —
    and antd's Typography headings set no family of their own. Hand headings
-   back to the portal's font, including those inside antd overlays, which
-   mount on <body> outside the root.
+   the portal's heading font (Outfit, over Inter body text), including those
+   inside antd overlays, which mount on <body> outside the root.
 
    Colour too: block themes' Global Styles print an unlayered
    `h1, h2, h3, h4, h5, h6 { color: var(--wp--preset--color--contrast) }` — #111
@@ -84,7 +84,7 @@ body:has(#bit-connect-portal) {
 :is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
   :is(h1, h2, h3, h4, h5, h6) {
   color: var(--bc-ink);
-  font-family: inherit;
+  font-family: var(--bc-font-heading);
 }
 
 /* Full-viewport shell for the main portal layout: header keeps its natural
@@ -437,8 +437,10 @@ a:focus:not(:focus-visible) {
    land; this only removes the window before they do. Disabled buttons are
    excluded because antd dims their label, and these rules are unlayered — they
    would otherwise outrank that from @layer antd and leave a disabled solid
-   button with a white label on a grey fill. */
-.ant-btn-variant-solid:not(:disabled, .ant-btn-disabled) {
+   button with a white label on a grey fill. Ghost buttons are excluded too:
+   antd marks a `ghost` primary button solid as well, but paints no fill and
+   colours its label with the brand, so white here made the label vanish. */
+.ant-btn-variant-solid:not(:disabled, .ant-btn-disabled, .ant-btn-background-ghost) {
   color: #fff;
 }
 

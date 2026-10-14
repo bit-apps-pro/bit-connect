@@ -114,7 +114,7 @@ final class SeoMeta
             'robots'      => '',
             'jsonLd'      => self::schemaDocuments(
                 self::discussionJsonLd($topic, $url),
-                self::breadcrumbJsonLd($topic['post_title'] ?? '', $url)
+                self::breadcrumbJsonLd($topic['post_title'] ?? '', $url, self::topicTrail($topic))
             ),
         ];
     }
@@ -157,7 +157,7 @@ final class SeoMeta
 
         // A tag still awaiting review is served, for the topics that carry it,
         // but not offered to search until an administrator has let it in.
-        $indexable = PortalTaxonomies::isIndexable(PortalTaxonomies::segmentFor($term->taxonomy))
+        $indexable = PortalTaxonomies::isTermIndexable($term)
             && !TagApprovalService::isPending((int) $term->term_id);
 
         self::$meta = [
@@ -472,6 +472,38 @@ final class SeoMeta
     }
 
     /**
+     * The pages between the community and a topic in its breadcrumb — none of
+     * this plugin's own, since a topic's URL sits directly under the portal.
+     * `bit_connect_topic_breadcrumb` may name the place a topic was filed in,
+     * as a list of `['name' => …, 'url' => …]`; anything else is dropped.
+     *
+     * @param array<string, mixed> $topic
+     *
+     * @return array<int, array{name: string, url: string}>
+     */
+    private static function topicTrail(array $topic): array
+    {
+        $items = Hooks::applyFilter('bit_connect_topic_breadcrumb', [], $topic);
+
+        if (!\is_array($items)) {
+            return [];
+        }
+
+        $trail = [];
+
+        foreach ($items as $item) {
+            $name = \is_array($item) ? trim((string) ($item['name'] ?? '')) : '';
+            $url = \is_array($item) ? esc_url_raw((string) ($item['url'] ?? '')) : '';
+
+            if ($name !== '' && $url !== '') {
+                $trail[] = ['name' => wp_specialchars_decode($name, ENT_QUOTES), 'url' => $url];
+            }
+        }
+
+        return $trail;
+    }
+
+    /**
      * Describe a content route of a members-only portal.
      *
      * Every such route shows a logged-out visitor the same sign-in prompt, so
@@ -647,8 +679,10 @@ final class SeoMeta
     /**
      * Portal → topic trail, so the result shows the community as its parent
      * rather than a bare URL.
+     *
+     * @param array<int, array{name: string, url: string}> $between pages between the two
      */
-    private static function breadcrumbJsonLd(string $title, string $url): array
+    private static function breadcrumbJsonLd(string $title, string $url, array $between = []): array
     {
         if ($title === '') {
             return [];
@@ -657,23 +691,27 @@ final class SeoMeta
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
+        $pages = [
+            ['name' => $community, 'url' => SeoContent::portalUrl()],
+            ...$between,
+            ['name' => $title, 'url' => $url],
+        ];
+
+        $items = [];
+
+        foreach ($pages as $index => $page) {
+            $items[] = [
+                '@type'    => 'ListItem',
+                'position' => $index + 1,
+                'name'     => $page['name'],
+                'item'     => $page['url'],
+            ];
+        }
+
         return [
             '@context'        => 'https://schema.org',
             '@type'           => 'BreadcrumbList',
-            'itemListElement' => [
-                [
-                    '@type'    => 'ListItem',
-                    'position' => 1,
-                    'name'     => $community,
-                    'item'     => SeoContent::portalUrl(),
-                ],
-                [
-                    '@type'    => 'ListItem',
-                    'position' => 2,
-                    'name'     => $title,
-                    'item'     => $url,
-                ],
-            ],
+            'itemListElement' => $items,
         ];
     }
 

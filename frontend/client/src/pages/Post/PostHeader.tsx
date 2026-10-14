@@ -558,12 +558,13 @@ export default function PostHeader({
                 nameClassName="bc-whitespace-nowrap bc-text-sm bc-text-ink-muted"
                 slug={post.author_slug}
               />
-              <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap={'small'}>
+              <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap={4}>
                 {/* Decoration beside a self-explanatory "2mo ago", and on a
                     phone its 28px was the difference between the byline holding
                     one line and the chips after it wrapping onto a third. Same
-                    call the topic card makes at the same width. */}
-                <LuClock className="bc-hidden sm:bc-block" size={20} />
+                    call the topic card makes at the same width. Sized in em, a
+                    step above its text, like the card's, so the two match. */}
+                <LuClock className="bc-hidden bc-shrink-0 sm:bc-block" size="1.15em" />
                 <span className="bc-whitespace-nowrap">{postDate}</span>
               </Flex>
 

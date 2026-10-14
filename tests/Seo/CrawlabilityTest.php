@@ -280,6 +280,31 @@ final class CrawlabilityTest extends TestCase
         $this->assertSame('Try the forgot password link.', $data['comment'][0]['text']);
     }
 
+    public function testTopicBreadcrumbRunsFromTheCommunityToTheTopic(): void
+    {
+        SeoMeta::forTopic($this->topic);
+        $items = $this->breadcrumbItems(SeoMeta::head());
+
+        $this->assertSame(['Acme Community', 'How do I reset my password'], array_column($items, 'name'));
+        $this->assertSame([1, 2], array_column($items, 'position'));
+    }
+
+    public function testTopicBreadcrumbTakesThePlacesAFilterNames(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_breadcrumb'] = static fn (): array => [
+            ['name' => 'Gear Talk', 'url' => 'https://example.com/community/group/gear-talk'],
+            ['name' => '', 'url' => 'https://example.com/dropped'],
+            'not an item',
+        ];
+
+        SeoMeta::forTopic($this->topic);
+        $items = $this->breadcrumbItems(SeoMeta::head());
+
+        $this->assertSame(['Acme Community', 'Gear Talk', 'How do I reset my password'], array_column($items, 'name'));
+        $this->assertSame([1, 2, 3], array_column($items, 'position'));
+        $this->assertSame('https://example.com/community/group/gear-talk', $items[1]['item']);
+    }
+
     public function testTopicListEmitsCollectionPageStructuredData(): void
     {
         SeoMeta::forTopics([$this->topic, $this->makeTopic(2, 'Second topic', 'second-topic')]);
@@ -787,6 +812,28 @@ final class CrawlabilityTest extends TestCase
         $this->assertNotEmpty($matches, 'No JSON-LD block was emitted.');
 
         return json_decode($matches[1], true);
+    }
+
+    /**
+     * The BreadcrumbList's items, wherever among the head's JSON-LD it sits.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function breadcrumbItems(string $head): array
+    {
+        preg_match_all('#<script type="application/ld\+json">(.*?)</script>#s', $head, $matches);
+
+        foreach ($matches[1] as $json) {
+            $data = json_decode($json, true);
+
+            foreach ((isset($data['@type']) ? [$data] : ($data['@graph'] ?? $data)) as $document) {
+                if (\is_array($document) && ($document['@type'] ?? '') === 'BreadcrumbList') {
+                    return $document['itemListElement'];
+                }
+            }
+        }
+
+        $this->fail('No BreadcrumbList was emitted.');
     }
 
     /**

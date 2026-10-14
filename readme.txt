@@ -102,9 +102,9 @@ To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 `pnpm install`
 `pnpm build:free`
 
-= Bundled Font =
+= Bundled Fonts =
 
-The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), included in the plugin and served from your own site. It is licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Outfit.txt`. Source: https://github.com/Outfitio/Outfit-Fonts
+The portal's text is set in **Inter** (© 2016 The Inter Project Authors) and its headings in **Outfit** (© 2021 The Outfit Project Authors). Both are included in the plugin and served from your own site, and both are licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Inter.txt` and `LICENSE-Outfit.txt`. Sources: https://github.com/rsms/inter and https://github.com/Outfitio/Outfit-Fonts
 
 = Other Products by Bit Apps =
 
@@ -124,7 +124,7 @@ View the full, uncompiled source code and build instructions on [GitHub](https:/
 
 == External Services ==
 
-This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Outfit** typeface it is set in ships inside the plugin (SIL Open Font License 1.1) and is served from your own site.
+This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Inter** and **Outfit** typefaces it is set in ship inside the plugin (SIL Open Font License 1.1) and is served from your own site.
 
 = Bit Apps plugin catalogue =
 

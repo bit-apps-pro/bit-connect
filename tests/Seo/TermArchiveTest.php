@@ -162,6 +162,28 @@ final class TermArchiveTest extends TestCase
         $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
     }
 
+    public function testATermWhoseSlugWasEditedRedirectsFromItsOldSlug(): void
+    {
+        $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
+
+        $this->assertSame('https://example.com/community/topic/billing', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
+        // The current slug is served, not redirected; an unknown one stays a 404.
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'refunds'));
+
+        unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
+    }
+
+    public function testATermFilteredFromTheReaderIsNeverNamedByARedirect(): void
+    {
+        $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
+        $GLOBALS['__wp_filters']['bit_connect_portal_terms'] = [];
+
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
+
+        unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
+    }
+
     public function testAnAddedArchiveCannotTakeASegmentThePortalRoutes(): void
     {
         $this->addTeamsTaxonomy('stage');
@@ -347,6 +369,17 @@ final class TermArchiveTest extends TestCase
             '<link rel="canonical" href="https://example.com/community/status/needs-approval" />',
             $head
         );
+    }
+
+    public function testOneTermOfAnIndexedTaxonomyCanBeKeptOutOfTheIndex(): void
+    {
+        $billing = $this->makeTerm('billing', 'Billing', Taxonomies::TOPIC_TYPES->value);
+        $GLOBALS['__wp_filters']['bit_connect_archive_term_indexable'] = static fn (bool $indexable, WP_Term $term): bool => $indexable && $term->slug !== 'billing';
+
+        SeoMeta::forArchive($billing, [$this->makeTopic()]);
+
+        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', SeoMeta::head());
+        $this->assertTrue(PortalTaxonomies::isTermIndexable($this->makeTerm('shipping', 'Shipping', Taxonomies::TOPIC_TYPES->value)));
     }
 
     public function testSubjectArchivesStayIndexable(): void

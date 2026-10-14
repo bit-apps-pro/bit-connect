@@ -116,6 +116,7 @@ function useFollowedTerms() {
  */
 export default function FollowingPage() {
   usePageTitle(__('Following'))
+  const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('topics')
   const [page, setPage] = useState(1)
   const topics = useFollowedTopics(page)
@@ -156,7 +157,9 @@ export default function FollowingPage() {
       ) : (
         <EmptyState
           action={
-            <Button href={routePath(`/login?redirect_to=${encodeURIComponent('/following')}`)} type="primary">
+            // Through the router, not href: a router path is relative to the
+            // portal, and as a plain link it opened the site's own /login.
+            <Button onClick={() => navigate(routePath(`/login?redirect_to=${encodeURIComponent('/following')}`))} type="primary">
               {__('Sign in')}
             </Button>
           }

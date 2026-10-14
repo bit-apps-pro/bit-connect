@@ -357,9 +357,12 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     />
   )
 
-  // On desktop the type strip already shows the selected type, so its chip
-  // would only repeat it — the row lists what the strip can't.
-  const desktopChips = showTypeChips ? activeChips.filter(chip => chip.key !== 'topic-type') : activeChips
+  // On desktop the type strip already shows the selected type and the sort
+  // control the selected ordering or list, so their chips would only repeat
+  // them — the row lists what the toolbar can't.
+  const desktopChips = activeChips.filter(
+    chip => !(showTypeChips && chip.key === 'topic-type') && chip.key !== 'sort'
+  )
 
   // Active (non-default) filters as removable chips, in the type strip's
   // selected style — each one is a filter the reader switched on. Each chip

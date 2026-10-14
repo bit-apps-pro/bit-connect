@@ -70,7 +70,10 @@ function SidebarNavItem({
       aria-current={isActive ? 'page' : undefined}
       className={cn([
         // h-11 keeps the row at the 44px minimum touch target on phones.
-        'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-cursor-pointer bc-items-center bc-gap-2 bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none'
+        'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-shrink-0 bc-cursor-pointer bc-items-center bc-gap-2 bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none bc-transition-colors',
+        // The current row already has its pill.
+        !isActive && 'hover:bc-bg-surface-hover',
+        'focus-visible:bc-outline focus-visible:bc-outline-2 focus-visible:bc-outline-offset-2 focus-visible:bc-outline-primary'
       ])}
       style={navItemStyle({ isActive, token })}
       to={to}

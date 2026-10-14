@@ -68,6 +68,7 @@ const filesAndFolders = [
  */
 const bundledAssetLicenses = {
   'frontend/shared/fonts/OFL.txt': 'LICENSE-Outfit.txt',
+  'frontend/shared/fonts/OFL-Inter.txt': 'LICENSE-Inter.txt',
 }
 
 console.log('options passed:', {
@@ -115,12 +116,13 @@ try {
     await fse.copy(sourcePath, destinationPath)
   }
 
-  // The bundled typeface's licence.
+  // The bundled typefaces' licences.
   //
-  // The portal is set in Outfit, which ships inside the plugin rather than
-  // being fetched from Google Fonts — that is what keeps the front end from
-  // contacting a third party. Outfit is licensed under the SIL Open Font
-  // License 1.1, which requires the licence to travel with the font, and the
+  // The portal is set in Inter, with Outfit for headings and the admin; both
+  // ship inside the plugin rather than being fetched from Google Fonts — that
+  // is what keeps the front end from contacting a third party. Both are
+  // licensed under the SIL Open Font License 1.1, which requires the licence
+  // to travel with the font, and the
   // font files themselves land in `assets/` as hashed build output with no
   // room for a notice. So the licence is copied to the plugin root, where it
   // sits beside the plugin's own and a reviewer will look for it.

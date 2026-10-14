@@ -159,16 +159,23 @@ final class TopicTaxonomies
     /**
      * Writes each added taxonomy's terms found in a topic's data.
      *
+     * A parameter that is present but empty clears the topic's terms in that
+     * taxonomy — unless the taxonomy requires one; a missing one is left alone.
+     *
      * @param array<string, mixed> $data the topic's data, keyed by request parameter
      */
     public static function setTerms(int $postId, array $data): void
     {
         foreach (self::all() as $param => $entry) {
-            if (isset($data[$param])) {
+            if (\array_key_exists($param, $data)) {
                 // Term ids, set as ids. wp_set_post_terms() reads a value for a
                 // non-hierarchical taxonomy as a term *name*, so id 87 became a
                 // new term called "87".
                 $termIds = array_values(array_filter(array_map('intval', (array) $data[$param]), static fn (int $id): bool => $id > 0));
+
+                if ($termIds === [] && $entry['required']) {
+                    continue;
+                }
 
                 wp_set_object_terms($postId, $termIds, $entry['taxonomy']);
             }

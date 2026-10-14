@@ -309,8 +309,10 @@ final class TopicController
             if (isset($validatedData['topic-types'])) {
                 $updateData['topic_types'] = $validatedData['topic-types'];
             }
+            // Present and empty means "take it out of that taxonomy's term";
+            // absent means "leave it as it is".
             foreach (array_keys(TopicTaxonomies::all()) as $param) {
-                if (isset($validatedData[$param])) {
+                if (\array_key_exists($param, $validatedData)) {
                     $updateData[$param] = $validatedData[$param];
                 }
             }

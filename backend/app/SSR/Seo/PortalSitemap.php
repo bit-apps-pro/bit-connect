@@ -930,7 +930,6 @@ final class PortalSitemap extends WP_Sitemaps_Provider
             [
                 'taxonomy'   => $taxonomy,
                 'hide_empty' => true,
-                'fields'     => 'slugs',
                 // A tag a member suggested is not advertised until approved.
                 'exclude' => $taxonomy === Taxonomies::TAGS->value ? TagApprovalService::pendingIds() : [],
             ]
@@ -944,14 +943,19 @@ final class PortalSitemap extends WP_Sitemaps_Provider
 
         $urls = [];
 
-        foreach ($terms as $slug) {
+        foreach ($terms as $term) {
             // The default stage's archive 301s to the portal root, so
             // listing it would advertise a redirect as a destination.
-            if ($defaultStage !== '' && (string) $slug === $defaultStage) {
+            if (!$term instanceof WP_Term || ($defaultStage !== '' && $term->slug === $defaultStage)) {
                 continue;
             }
 
-            $urls[] = PortalTaxonomies::url($segment, (string) $slug);
+            // An archive whose own page says noindex is not advertised.
+            if (!PortalTaxonomies::isTermIndexable($term)) {
+                continue;
+            }
+
+            $urls[] = PortalTaxonomies::url($segment, $term->slug);
         }
 
         return self::$archiveUrls[$segment] = $urls;

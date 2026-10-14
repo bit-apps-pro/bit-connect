@@ -1,7 +1,9 @@
 import { type AliasToken } from 'antd/es/theme/internal'
 
+// Inter for reading; headings are handed Outfit in global.css, since antd has
+// no heading-family token of its own.
 const fontFamily =
-  "'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'"
+  "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'"
 
 /** Single brand blue. Anything that needs it in plain CSS reads --bc-brand. */
 const BRAND = '#3266ea'

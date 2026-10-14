@@ -25,11 +25,15 @@ function SidebarNavItem({ iconOnly = false, props: { icon: Icon, label, path } }
   return (
     <NavLink
       aria-label={iconOnly ? name : undefined}
-      className={cn([
-        'bc-relative bc-z-0 bc-flex bc-h-9 bc-cursor-pointer bc-items-center bc-gap-2.5 bc-text-sm',
-        iconOnly && 'bc-justify-center',
-        'bc-ring-slate-900 focus-visible:bc-ring dark:bc-ring-slate-50'
-      ])}
+      className={({ isActive }) =>
+        cn([
+          'bc-relative bc-z-0 bc-flex bc-h-9 bc-cursor-pointer bc-items-center bc-gap-2.5 bc-text-sm bc-transition-colors',
+          iconOnly && 'bc-justify-center',
+          // The current row already has its pill.
+          !isActive && 'hover:bc-bg-surface-hover',
+          'bc-ring-slate-900 focus-visible:bc-ring dark:bc-ring-slate-50'
+        ])
+      }
       style={({ isActive }) => navItemStyle({ isActive, token })}
       title={iconOnly ? name : undefined}
       to={path}

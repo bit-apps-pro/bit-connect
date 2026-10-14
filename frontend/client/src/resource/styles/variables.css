@@ -55,7 +55,8 @@
   --border-10: hsl(0deg, 0%, 88%);
   --border-20: hsl(0deg, 0%, 88%);
   --border-40: hsl(274deg, 13%, 57%);
-  --font-family: 'Outfit', sans-serif !important;
+  --font-family: 'Inter', sans-serif !important;
+  --bc-font-heading: 'Outfit', 'Inter', sans-serif;
   --border-rad: 0.8125rem;
 
   /* Brand — the single blue for actions, links and focus rings. Mirrors

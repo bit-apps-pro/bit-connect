@@ -10,7 +10,7 @@ import { tagLabel } from '@utilities/tag-filter'
 import UserLink from '@utilities/user-link'
 import { archivePath } from '@utils/listing-path'
 import { Flex, Tag, Typography } from 'antd'
-import { LuCalendar, LuMessageCircle, LuPlay } from 'react-icons/lu'
+import { LuClock, LuMessageCircle, LuPlay } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
@@ -81,6 +81,7 @@ export default function TopicCard({
   // disabled control, a guest a live one that asks them to sign in.
   const memberMayVote = !isLoggedIn || can('bit_connect_forum_vote_post')
   const { chipTagProps } = useChipProps()
+  const commentLabel = Number(commentsCount) === 1 ? __('Comment') : __('Comments')
 
   const handlePostVote = async () => {
     await onVote(postId)
@@ -178,10 +179,9 @@ export default function TopicCard({
           <UserLink
             avatar={authorAvatar}
             avatarSize={18}
-            badge={topic.author_badge}
-            // Dropped on phones, where it pushed the comment count onto a
-            // second line; the topic page and profile still carry it.
-            badgeClassName="bc-hidden sm:bc-inline"
+            // No member badge: a list row is read for what the topic is, and
+            // the badge was one more chip on a line that already has the type
+            // and tags. The topic page and the profile carry it.
             // The avatar and the first letters at least, however short the line.
             className="bc-min-w-[3.25rem]"
             name={authorName}
@@ -200,7 +200,9 @@ export default function TopicCard({
             className="bc-shrink-0 bc-text-xs bc-text-ink-muted sm:bc-text-sm"
             gap={4}
           >
-            <LuCalendar className="bc-shrink-0" size="1.15em" />
+            {/* A clock, not a calendar: what follows is time passed, as on
+                the topic page, not a date. */}
+            <LuClock aria-hidden className="bc-shrink-0" size="1.15em" />
             {/* "3d ago" — how fresh a topic is matters more down a list than
                 the day it was posted, which the hover carries instead. */}
             <time
@@ -212,16 +214,20 @@ export default function TopicCard({
             </time>
           </Flex>
 
+          {/* The count beside its icon, the word for screen readers and the
+              hover only: the bubble already says what is counted, and a list
+              of "0 Comments" read as more text than the topics themselves. */}
           {canComment && (
             <Flex
               align="center"
               className="bc-shrink-0 bc-text-xs bc-text-ink-muted sm:bc-text-sm"
               gap={4}
+              title={`${commentsCount} ${commentLabel}`}
             >
-              <LuMessageCircle className="bc-shrink-0" size="1.15em" />
+              <LuMessageCircle aria-hidden className="bc-shrink-0" size="1.15em" />
               <span className="bc-whitespace-nowrap">
                 {commentsCount} {/* The count arrives as a string from WordPress. */}
-                {Number(commentsCount) === 1 ? __('Comment') : __('Comments')}
+                <span className="bc-sr-only">{commentLabel}</span>
               </span>
             </Flex>
           )}
