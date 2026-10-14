@@ -1,6 +1,5 @@
 import { StyleProvider } from '@ant-design/cssinjs'
 import { FOLLOWING_PATH } from '@pages/following/following-path'
-import { ROADMAP_PATH } from '@pages/roadmap/roadmap-path'
 import Topics from '@pages/topics'
 import TopicArchive from '@pages/topics/archive'
 import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
@@ -33,7 +32,6 @@ const PostDetailsPage = lazy(() => import('./pages/Post/PostDetailsPage'))
 const UserProfilePage = lazy(() => import('./pages/User'))
 const NotificationsPage = lazy(() => import('./pages/Notifications'))
 const FollowingPage = lazy(() => import('./pages/following'))
-const RoadmapPage = lazy(() => import('./pages/roadmap'))
 const Login = lazy(() => import('./pages/Auth/LoginPage'))
 const Signup = lazy(() => import('./pages/Auth/RegisterPage'))
 const VerifyEmail = lazy(() => import('./pages/Auth/VerifyEmailPage'))
@@ -74,12 +72,6 @@ export const routeList: {
     element: <FollowingPage />,
     index: false,
     path: FOLLOWING_PATH
-  },
-  // The stages as a board. Static, so it outranks `/:postName` the same way.
-  {
-    element: <RoadmapPage />,
-    index: false,
-    path: ROADMAP_PATH
   },
   // Pages plugins draw, each a static segment the server serves the shell at.
   ...addedPortalRoutes.map(route => ({ element: route.element, index: false, path: route.path })),

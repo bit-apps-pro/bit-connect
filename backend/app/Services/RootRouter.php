@@ -16,7 +16,6 @@ use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
 use BitApps\BitConnect\Http\Controller\PortalPageController;
-use BitApps\BitConnect\Http\Controller\RoadmapPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
 use BitApps\BitConnect\Http\Controller\TopicsController;
@@ -175,16 +174,8 @@ final class RootRouter
             return;
         }
 
-        // The stages as a board. Claimed outright like the notifications page:
-        // it exists on every portal, with nothing to resolve against.
-        if ($path === 'roadmap') {
-            $this->claim($portal, static fn () => (new RoadmapPageController())->show(new Request()));
-
-            return;
-        }
-
         // A page a plugin draws, claimed the same way. Before topics: such a
-        // path is the plugin's, as `roadmap` is this plugin's.
+        // path is the plugin's, as `following` is this plugin's.
         if (PortalPageController::isPage($path)) {
             $this->claim($portal, static fn () => (new PortalPageController())->show(new Request(), $path));
 

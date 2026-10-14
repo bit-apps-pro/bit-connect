@@ -13,7 +13,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\Taxonomies;
 
 /**
- * When a topic last moved stage — what lets the roadmap say "Shipped Sep 28".
+ * When a topic last moved stage, sent with each topic as `stage_changed_at`.
  *
  * WordPress keeps no history of a post's terms, and neither the publish date
  * nor the modified date answers the question: a topic can sit untouched in

@@ -133,7 +133,7 @@ export default function ActivityChart({ activity, attention, className, period }
       subtitle={<AttentionSummary attention={attention} />}
       title={__('Community activity')}
     >
-      {/* Grows to the height of the row, which Roadmap progress usually sets.
+      {/* Grows to the height of the row, which Stage progress usually sets.
           The canvas sits out of flow so its own size cannot feed back into the
           box Chart.js measures, which would grow it on every resize. */}
       <div className="bc-relative bc-min-h-80 bc-flex-1">

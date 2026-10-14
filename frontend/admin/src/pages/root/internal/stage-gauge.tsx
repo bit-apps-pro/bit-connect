@@ -73,7 +73,7 @@ interface StageGaugeProps {
   stages: StageProgress[]
 }
 
-/** Every topic on the roadmap as one half ring, a band per stage in the admin's order. */
+/** Every topic as one half ring, a band per stage in the admin's order. */
 export default function StageGauge({ hues, stages }: StageGaugeProps) {
   const filled = stages.filter(stage => stage.count > 0)
   const total = filled.reduce((sum, stage) => sum + stage.count, 0)

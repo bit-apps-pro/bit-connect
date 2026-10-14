@@ -1,67 +1,48 @@
 import config from '@config/config'
 import { FOLLOWING_PATH } from '@pages/following/following-path'
-import { ROADMAP_PATH } from '@pages/roadmap/roadmap-path'
-import { isListingPath } from '@utils/listing-path'
+import useActiveStage from '@pages/Layout/data/use-active-stage'
+import { useStagesStore } from '@pages/Layout/data/use-stages'
+import StageIcon from '@utilities/stage-icon'
 import { routePath } from '@utils/route-path'
+import { theme } from 'antd'
 import { type ReactNode } from 'react'
-import { LuBookmarkCheck, LuKanban, LuLayoutList } from 'react-icons/lu'
+import { LuBookmarkCheck } from 'react-icons/lu'
 import { matchPath, useLocation } from 'react-router'
 
 import { __ } from '../../../../common/helpers/i18nWrap'
-import { sectionOwnsPath } from './sidebar-sections'
+import { listingLink } from './listing-link'
 import SidebarNavItem from './SidebarNavItem'
 
-export interface SidebarPlacesProps {
-  /** The portal has stages past the one new topics land in, for the roadmap to lay out. */
-  showRoadmap: boolean
-}
-
 /**
- * Whether a path is the archive of a term that can be followed — a tag's page.
- *
- * Such a page is a place of its own, reached from a tag chip, a search or the
- * Following page, so no sidebar row claims it. Stage, status and topic-type
- * archives stay the Topics row's: they are the listing's own pickers.
+ * The portal's stages, each opening the topic listing on that stage, and for
+ * a member what they follow.
  */
-const isFollowableArchive = (pathname: string): boolean => {
-  const segments = pathname.split('/').filter(Boolean)
-
-  return segments.length === 2 && (config.PORTAL_ARCHIVES[segments[0]]?.follow ?? '') !== ''
-}
-
-/**
- * The places a reader can go: the topic listing, once there are stages to lay
- * out the roadmap, and for a member what they follow. Places only — which
- * stage or archive the listing shows is the listing's own picker, so nothing
- * here doubles as a filter.
- */
-export default function SidebarPlaces({ showRoadmap }: SidebarPlacesProps): ReactNode {
+export default function SidebarPlaces(): ReactNode {
   const { pathname } = useLocation()
+  const stages = useStagesStore(state => state.stages)
+  const activeStage = useActiveStage()
 
   return (
     <div className="bc-flex bc-flex-col bc-space-y-1">
-      <SidebarNavItem
-        props={{
-          glyph: <LuLayoutList size={18} />,
-          isActive: isListingPath(pathname) && !sectionOwnsPath?.(pathname) && !isFollowableArchive(pathname),
-          label: __('Topics'),
-          path: '',
-          reserveIconSlot: true,
-          to: '/'
-        }}
-      />
-      {showRoadmap && (
+      {stages.map(stage => (
         <SidebarNavItem
+          key={stage.id}
           props={{
-            glyph: <LuKanban size={18} />,
-            isActive: matchPath(ROADMAP_PATH, pathname) !== null,
-            label: __('Roadmap'),
-            path: ROADMAP_PATH,
+            glyph: (
+              <StageIcon
+                dark={stage.meta?.bit_connect_icon_dark_url}
+                fallback={<StageDot color={stage.meta?.bit_connect_color} />}
+                light={stage.meta?.bit_connect_icon_url}
+              />
+            ),
+            isActive: activeStage === stage.slug,
+            label: stage.name,
+            path: stage.slug,
             reserveIconSlot: true,
-            to: routePath(ROADMAP_PATH)
+            to: listingLink({ stage: stage.slug })
           }}
         />
-      )}
+      ))}
       {/* The member's own list, so not offered to a guest. */}
       {config.IS_LOGGED_IN && (
         <SidebarNavItem
@@ -76,5 +57,18 @@ export default function SidebarPlaces({ showRoadmap }: SidebarPlacesProps): Reac
         />
       )}
     </div>
+  )
+}
+
+/** A stage's own colour, in place of an icon it does not have. */
+function StageDot({ color }: { color?: string }) {
+  const { token } = theme.useToken()
+
+  return (
+    <span
+      aria-hidden
+      className="bc-rounded-full"
+      style={{ background: color || token.colorTextQuaternary, display: 'block', height: 9, width: 9 }}
+    />
   )
 }

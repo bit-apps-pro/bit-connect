@@ -22,7 +22,7 @@ export default function StageProgress({ className, hues, period, stages }: Stage
       flush
       link={{ label: __('Stages'), to: 'stages' }}
       subtitle={sprintf(__('%1$d topics across your %2$d stages'), total, stages.length)}
-      title={__('Roadmap progress')}
+      title={__('Stage progress')}
     >
       <div className="bc-flex bc-flex-1 bc-flex-col bc-px-6 bc-pb-4 bc-pt-6">
         {stages.length === 0 ? (

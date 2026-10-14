@@ -35,7 +35,7 @@ final class PortalPagesTest extends TestCase
     public function testAPathThePortalAlreadyUsesIsRefused(): void
     {
         $GLOBALS['__wp_filters']['bit_connect_portal_pages'] = static fn (): array => [
-            'roadmap'       => 'Mine now',
+            'following'     => 'Mine now',
             'notifications' => 'Mine too',
             'login'         => 'And this',
             'tag'           => 'An archive segment',

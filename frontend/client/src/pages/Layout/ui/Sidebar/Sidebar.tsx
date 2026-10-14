@@ -24,10 +24,10 @@ interface SidebarProps {
  * The portal's own places, then further sections (an add-on's own places)
  * under their own headings.
  */
-function NavList({ className, showRoadmap }: { className?: string; showRoadmap: boolean }) {
+function NavList({ className }: { className?: string }) {
   return (
     <nav className={cn(['bc-flex bc-w-full bc-flex-col', className])}>
-      <SidebarPlaces showRoadmap={showRoadmap} />
+      <SidebarPlaces />
       {SidebarSections && <SidebarSections />}
     </nav>
   )
@@ -35,7 +35,7 @@ function NavList({ className, showRoadmap }: { className?: string; showRoadmap: 
 
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const isDarkTheme = useAtomValue($isDarkTheme)
-  const { fetchStages, stages } = useStagesStore()
+  const fetchStages = useStagesStore(state => state.fetchStages)
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
 
@@ -56,10 +56,6 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isMobile, isOpen, onClose])
-
-  // The roadmap lays out the stages past the one new topics land in, so it
-  // waits until the portal has one.
-  const showRoadmap = stages.some(stage => stage.slug !== config.DEFAULT_STAGE_SLUG)
 
   return (
     <>
@@ -94,10 +90,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               instead of claiming a fixed slice and overlapping it on short
               viewports. Harmless when the credit is off — the nav just gets the
               whole column. */}
-          <NavList
-            className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-pr-3"
-            showRoadmap={showRoadmap}
-          />
+          <NavList className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-pr-3" />
 
           {config.PROMO.enabled && (
             <Promo
@@ -195,7 +188,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
           <div className="bc-mx-4 bc-shrink-0 bc-border-0 bc-border-b bc-border-solid bc-border-line" />
           <div className="bc-min-h-0 bc-flex-1 bc-overflow-y-auto bc-px-3 bc-py-3">
-            <NavList showRoadmap={showRoadmap} />
+            <NavList />
           </div>
 
           {config.PROMO.enabled && (

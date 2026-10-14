@@ -806,7 +806,7 @@ return [
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
     '%1$d topics across your %2$d stages' => __('%1$d topics across your %2$d stages', 'bit-connect'),
 
-    'Roadmap progress' => __('Roadmap progress', 'bit-connect'),
+    'Stage progress' => __('Stage progress', 'bit-connect'),
 
     'No stages yet.' => __('No stages yet.', 'bit-connect'),
 
@@ -1978,39 +1978,12 @@ return [
 
     'Period' => __('Period', 'bit-connect'),
 
-    'Used for the stage badge on topic cards and its column on the roadmap.' => __('Used for the stage badge on topic cards and its column on the roadmap.', 'bit-connect'),
-
-    'Roadmap' => __('Roadmap', 'bit-connect'),
+    'Used for the stage badge on topic cards.' => __('Used for the stage badge on topic cards.', 'bit-connect'),
 
     'Clear all' => __('Clear all', 'bit-connect'),
 
-    'What we’re planning, building and have shipped. Vote on a card to move it up.' => __('What we’re planning, building and have shipped. Vote on a card to move it up.', 'bit-connect'),
-
-    'Type' => __('Type', 'bit-connect'),
-
-    /* translators: %d: how many comments the topic has. */
-    '%d comment' => __('%d comment', 'bit-connect'),
-
     /* translators: %d: how many comments the topic has. */
     '%d comments' => __('%d comments', 'bit-connect'),
-
-    /* translators: %d: how many more cards the click adds. */
-    'Show %d more' => __('Show %d more', 'bit-connect'),
-
-    'No topics match these filters' => __('No topics match these filters', 'bit-connect'),
-
-    'Try another one, or see the whole roadmap.' => __('Try another one, or see the whole roadmap.', 'bit-connect'),
-
-    'Clear filters' => __('Clear filters', 'bit-connect'),
-
-    /* translators: 1: a roadmap stage's name, e.g. Shipped; 2: a short date, e.g. Sep 28 */
-    '%1$s %2$s' => __('%1$s %2$s', 'bit-connect'),
-
-    'Nothing is on the roadmap yet.' => __('Nothing is on the roadmap yet.', 'bit-connect'),
-
-    'Failed to load topics' => __('Failed to load topics', 'bit-connect'),
-
-    'No topics yet' => __('No topics yet', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     'See all %d' => __('See all %d', 'bit-connect'),

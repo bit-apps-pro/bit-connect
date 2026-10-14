@@ -104,7 +104,7 @@ class HookProvider
         // API never sees.
         UserStatsService::registerHooks();
 
-        // When a topic last moved stage, for the roadmap's "Shipped Sep 28".
+        // When a topic last moved stage, sent with each topic.
         // Global for the same reason: an admin moves topics from wp-admin.
         StageHistoryService::register();
 

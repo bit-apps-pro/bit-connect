@@ -5,7 +5,6 @@ use BitApps\BitConnect\Http\Controller\AuthPageController;
 use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
-use BitApps\BitConnect\Http\Controller\RoadmapPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
 use BitApps\BitConnect\Http\Controller\TopicsController;
@@ -36,10 +35,6 @@ Route::get('/notifications', [new NotificationsPageController(), 'show']);
 // What the member follows - matches frontend route '/following'. Before
 // '/{slug}' for the same reason as '/notifications'.
 Route::get('/following', [new FollowingPageController(), 'show']);
-
-// The stages as a board - matches frontend route '/roadmap'. Before '/{slug}'
-// for the same reason as '/notifications'.
-Route::get('/roadmap', [new RoadmapPageController(), 'show']);
 
 // Auth screens - match the frontend routes '/login', '/register',
 // '/verify-email' and '/forgot-password'. Declared before '/{slug}' for the same

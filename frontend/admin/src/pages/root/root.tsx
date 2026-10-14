@@ -102,7 +102,7 @@ export default function Root() {
           <StatCards period={shownPeriod} stats={dashboard.stats} topicTypes={dashboard.topicTypes} />
 
           {/* Top contributors sits beside both tables, in the column under
-              Roadmap progress. */}
+              Stage progress. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
             <ActivityChart
               activity={dashboard.activity}

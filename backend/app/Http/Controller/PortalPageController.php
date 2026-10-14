@@ -17,7 +17,7 @@ use BitApps\BitConnect\Views\BaseView;
  * Serves the portal shell at a path a plugin draws — see
  * ExtensionPoints::portalPages().
  *
- * The same shell the roadmap and notifications get: nothing is prepared here,
+ * The same shell the notifications page gets: nothing is prepared here,
  * the app boots and the plugin's client route draws the page from its own
  * requests.
  */

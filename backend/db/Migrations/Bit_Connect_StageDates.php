@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
  * WordPress keeps no history of a post's terms, so for those topics the last
  * time each was modified stands in — moving a topic from its edit screen saves
  * it, so for most it is the move itself. Written once, here, rather than the
- * first time a reader happens to open the roadmap: a page view should not
+ * first time a topic is read: a page view should not
  * write to the database, and a later edit must not drag the date forward.
  *
  * Re-runnable: the migration list runs on activation and on every version

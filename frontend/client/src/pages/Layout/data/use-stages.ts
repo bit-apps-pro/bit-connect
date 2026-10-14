@@ -7,7 +7,7 @@ export interface Stage {
   iconFileName?: string
   id: number
   meta?: {
-    /** The stage's badge on topic cards and its column on the roadmap. */
+    /** The stage's badge on topic cards. */
     bit_connect_color?: string
     /** Optional dark-mode override; falls back to `icon_url`. */
     bit_connect_icon_dark_id?: number
