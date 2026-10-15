@@ -139,7 +139,7 @@ export default function NotificationBell() {
       // clears the badge, which hangs 6px past the button's edge; on a phone
       // the bell sits close to the account menu instead, and the badge hangs
       // into that button's own padding.
-      className="bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0 md:bc-mr-2"
+      className="touch-target bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0 md:bc-mr-2"
       onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
       type="text"
     >

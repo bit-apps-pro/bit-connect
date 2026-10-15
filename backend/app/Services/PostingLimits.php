@@ -63,6 +63,16 @@ final class PostingLimits
     public const TOPIC_TAGS_CEILING = 5;
 
     /**
+     * Structural caps on a topic's or comment's HTML, the editor's own
+     * (CONTENT_LIMITS in quill-validation.ts). Fixed, like the tag ceiling.
+     */
+    public const MAX_LINKS = 20;
+
+    public const MAX_TABLES = 3;
+
+    public const MAX_HEADINGS = 10;
+
+    /**
      * The limits in force, null where there is none. The file sizes are always
      * numbers: what the server accepts, or less if a listener says so. A kind
      * of file a listener sets no size for takes the general one.
@@ -137,6 +147,10 @@ final class PostingLimits
     {
         $limits = self::all()[$context];
 
+        if ($content !== null) {
+            self::assertStructure($content);
+        }
+
         if ($content !== null && $limits['characters'] !== null && self::countCharacters($content) > $limits['characters']) {
             throw new InvalidArgumentException(esc_html(self::charactersMessage($context, $limits['characters'])));
         }
@@ -164,6 +178,32 @@ final class PostingLimits
 
         if ($attachments !== null && $limits['attachments'] !== null && $files > $limits['attachments']) {
             throw new InvalidArgumentException(esc_html(self::filesMessage($context, $limits['attachments'])));
+        }
+    }
+
+    /**
+     * The editor's fixed caps on links, tables and headings, held here too.
+     *
+     * The editor refuses past them (quill-validation.ts, CONTENT_LIMITS), but
+     * the API took any amount, so a script could post a page of a thousand
+     * links the editor would never let anyone write. Same numbers, same words.
+     *
+     * @throws InvalidArgumentException naming the cap that was passed
+     */
+    private static function assertStructure(string $content): void
+    {
+        $caps = [
+            [self::MAX_LINKS, '/<a\b/i', __('Too many links (%1$d). Maximum is %2$d.', 'bit-connect')],
+            [self::MAX_TABLES, '/<table\b/i', __('Too many tables (%1$d). Maximum is %2$d.', 'bit-connect')],
+            [self::MAX_HEADINGS, '/<h[1-6]\b/i', __('Too many headings (%1$d). Maximum is %2$d.', 'bit-connect')],
+        ];
+
+        foreach ($caps as [$max, $pattern, $message]) {
+            $found = (int) preg_match_all($pattern, $content);
+
+            if ($found > $max) {
+                throw new InvalidArgumentException(esc_html(\sprintf($message, $found, $max)));
+            }
         }
     }
 

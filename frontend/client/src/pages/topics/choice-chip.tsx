@@ -13,7 +13,8 @@ export interface Choice {
 // together and read as one set. Not its selected blue — this names where the
 // reader is, it is not a filter they switched on.
 export const CHIP_CLASS = cn([
-  'bc-flex bc-h-8 bc-min-w-0 bc-max-w-[60%] bc-shrink bc-items-center bc-gap-1 bc-rounded-md bc-px-3',
+  // touch-target: 40px under a finger (global.css), 32px under a mouse.
+  'touch-target bc-flex bc-h-8 bc-min-w-0 bc-max-w-[60%] bc-shrink bc-items-center bc-gap-1 bc-rounded-md bc-px-3',
   'bc-border bc-border-solid bc-border-line bc-bg-surface bc-text-sm bc-text-ink'
 ])
 

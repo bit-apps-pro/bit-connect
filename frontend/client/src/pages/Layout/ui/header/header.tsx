@@ -334,7 +334,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               >
                 <Button
                   aria-label={__('Account menu')}
-                  className="bc-flex bc-items-center bc-gap-0.5 bc-px-1 md:bc-px-2"
+                  className="touch-target bc-flex bc-items-center bc-gap-0.5 bc-px-1 md:bc-px-2"
                   type="text"
                 >
                   <Avatar

@@ -241,4 +241,30 @@ final class PostingLimitsTest extends TestCase
 
         $this->assertSame(20 * self::MB, PostingLimits::maxFileSizeFor('video/mp4'));
     }
+
+    // The editor's structural caps hold with nobody listening: they are fixed,
+    // not the forum's limits, and the API is held to them like the editor.
+
+    public function testTwentyLinksAreAcceptedAndTwentyOneAreNot(): void
+    {
+        PostingLimits::assertWithin('topic', str_repeat('<a href="https://e.com">l</a>', PostingLimits::MAX_LINKS), null);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Too many links (21). Maximum is 20.');
+        PostingLimits::assertWithin('comment', str_repeat('<A href="https://e.com">l</A>', 21), null);
+    }
+
+    public function testTooManyTablesAreRefused(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Too many tables (4). Maximum is 3.');
+        PostingLimits::assertWithin('topic', str_repeat('<table><tr><td>t</td></tr></table>', 4), null);
+    }
+
+    public function testTooManyHeadingsAreRefusedWhateverTheirLevel(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Too many headings (11). Maximum is 10.');
+        PostingLimits::assertWithin('topic', str_repeat('<h2>a</h2>', 6) . str_repeat('<h4>b</h4>', 5), null);
+    }
 }

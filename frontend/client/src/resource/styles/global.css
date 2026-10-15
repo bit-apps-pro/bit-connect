@@ -485,6 +485,22 @@ a:focus:not(:focus-visible) {
     min-height: 40px;
   }
 
+  /* Controls drawn compact on purpose — the filter chips, the bell, the
+     account menu — still take a full target under a finger. min-height wins
+     over a fixed height, even one Tailwind marks important, so the desktop
+     size is untouched. */
+  .touch-target {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* A segmented control is tapped segment by segment, so each one grows. */
+  .ant-segmented.touch-target .ant-segmented-item-label {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
   /* A search field's button is icon-only too; the field grows to meet it
      rather than leaving a 40px button beside a 32px input. */
   .ant-input-search:not(.ant-input-group-wrapper-sm) .ant-input-affix-wrapper,

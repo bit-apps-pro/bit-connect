@@ -196,6 +196,7 @@ export default function TopicForm({
   // when there is one, is the exception they opt into.
   const [usualVisibility, otherVisibility] = visibilityOptions
   const showVisibility = otherVisibility !== undefined
+  const isOtherVisibility = Form.useWatch('post_status', form) === otherVisibility?.value && showVisibility
 
   return (
     // Field labels read as headings for their control, so they carry weight; antd
@@ -250,6 +251,15 @@ export default function TopicForm({
             <Tooltip placement="bottomRight" title={otherVisibility?.description}>{otherVisibility?.label}</Tooltip>
           </Checkbox>
         </Form.Item>
+
+        {/* Said in words once the box is ticked: a touch screen never shows
+            the tooltip, and this is the one choice whose consequence the
+            author must not miss. A row of its own under the bar. */}
+        {isOtherVisibility && otherVisibility?.description && (
+          <p className="bc-m-0 bc-basis-full bc-text-sm bc-text-ink-muted" role="status">
+            {otherVisibility.description}
+          </p>
+        )}
       </div>
 
       {/* A closed permalink is a line of helper text, so it tucks under the
