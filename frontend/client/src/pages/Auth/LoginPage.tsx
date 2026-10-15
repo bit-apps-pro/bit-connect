@@ -80,26 +80,25 @@ export default function LoginPage() {
           <Input autoComplete="username" placeholder={__('Enter your username or email')} />
         </Form.Item>
 
-        <Form.Item
-          // antd's <label> shrinks to its text, which left the row below no
-          // room to push the two apart: "PasswordForgot password?".
-          className="[&_.ant-form-item-label>label]:bc-w-full"
-          label={
-            <div className="bc-flex bc-w-full bc-items-center bc-justify-between">
-              <span>{__('Password')}</span>
-              <Link
-                className="bc-text-xs bc-text-primary hover:bc-text-primary/80 bc-font-medium bc-no-underline"
-                to={routePath(`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`)}
-              >
-                {__('Forgot password?')}
-              </Link>
-            </div>
-          }
-          name="password"
-          rules={[{ message: __('Please enter your password'), required: true }]}
-        >
-          <Input.Password autoComplete="current-password" placeholder={__('Enter your password')} />
-        </Form.Item>
+        {/* The link sits on the label's line but outside the <label>: inside
+            it, a screen reader named the field "Password Forgot password?". */}
+        <div className="bc-relative">
+          <Form.Item
+            label={__('Password')}
+            name="password"
+            rules={[{ message: __('Please enter your password'), required: true }]}
+          >
+            <Input.Password autoComplete="current-password" placeholder={__('Enter your password')} />
+          </Form.Item>
+          <Link
+            className="bc-absolute bc-right-0 bc-text-xs bc-text-primary hover:bc-text-primary/80 bc-font-medium bc-no-underline"
+            // On the label's baseline rather than its top edge.
+            style={{ top: 3 }}
+            to={routePath(`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`)}
+          >
+            {__('Forgot password?')}
+          </Link>
+        </div>
 
         <Form.Item initialValue={false} name="remember" valuePropName="checked">
           <Checkbox>{__('Remember me')}</Checkbox>
