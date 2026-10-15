@@ -33,6 +33,24 @@ type ProfileDetailsFormValues = Partial<Record<SocialLinkKey, string>> & {
  * interact (the slug tracks the name until the member picks their own), so a
  * single submit is the only way to apply both in a known order.
  */
+/**
+ * A profile link the server will keep: a whole web address over http or
+ * https, as MemberProfileService allows. antd's `url` type also passes ftp://
+ * and the like, which then saved as nothing. Empty clears the link.
+ */
+function validateLink(value: unknown): Promise<void> {
+  if (typeof value !== 'string' || value.trim() === '') return Promise.resolve()
+
+  try {
+    const { protocol } = new URL(value.trim())
+    if (protocol === 'http:' || protocol === 'https:') return Promise.resolve()
+  } catch {
+    // Not an address at all; refused below.
+  }
+
+  return Promise.reject(new Error(__('Please enter a valid URL')))
+}
+
 export default function ProfileDetailsForm({ profile }: { profile: undefined | UserProfile }) {
   const [form] = Form.useForm<ProfileDetailsFormValues>()
   const { isUpdatingProfile, updateProfile } = useUpdateProfile(form, profile?.id)
@@ -144,7 +162,9 @@ export default function ProfileDetailsForm({ profile }: { profile: undefined | U
               key={key}
               label={label}
               name={key}
-              rules={[{ message: __('Please enter a valid URL'), type: 'url' }]}
+              // http(s) only, as MemberProfileService keeps: antd's `url` also
+              // passes ftp:// and the like, which then saved as nothing.
+              rules={[{ message: __('Please enter a valid URL'), validator: (_, value) => validateLink(value) }]}
             >
               <Input placeholder="https://" prefix={LINK_ICONS[key]} />
             </Form.Item>
