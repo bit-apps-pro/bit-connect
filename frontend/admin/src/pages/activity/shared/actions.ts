@@ -41,6 +41,7 @@ const LOOKS: Record<string, ActionLook> = {
   delete_comment: { Icon: LuTrash2, tint: DESTROYED },
   delete_post: { Icon: LuTrash2, tint: DESTROYED },
   hide: { Icon: LuEyeOff, tint: RESTRICTED },
+  hide_post: { Icon: LuEyeOff, tint: RESTRICTED },
   lock_post: { Icon: LuLock, tint: RESTRICTED },
   pin_post: { Icon: LuPin, tint: 'bc-bg-tone-violet-soft bc-text-tone-violet' },
   resolve_reports: { Icon: LuShieldCheck, tint: OPENED },

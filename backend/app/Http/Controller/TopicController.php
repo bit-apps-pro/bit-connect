@@ -8,7 +8,6 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
-use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\CheckTopicSlugRequest;
@@ -29,6 +28,7 @@ use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
 use BitApps\BitConnect\Services\TagResolverService;
+use BitApps\BitConnect\Services\TopicModerationService;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
@@ -352,9 +352,9 @@ final class TopicController
             return Response::error('Failed to update topic', self::HTTP_SERVER_ERROR);
         }
 
-        $this->recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
+        TopicModerationService::recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
         $this->notifyMentions($id, $existingTopic, $topic);
-        $this->notifyStatusChange($id, $updateData, $existingTopic, $topic);
+        TopicModerationService::notifyStatusChange($id, $updateData, $existingTopic, $topic);
         $this->notifySuggestedTags($topic, $suggested);
 
         return Response::success($topic);
@@ -378,46 +378,8 @@ final class TopicController
             return Response::error('You are not allowed to delete this topic', 403);
         }
 
-        // Read before the delete, written after it succeeds. Reading first
-        // because once deleteTopic() returns there is no row left to take a
-        // title or an author from, and this log row is the only place the topic
-        // will have existed. Writing after because a delete that fails must not
-        // leave a record saying it happened.
-        $deleted = [
-            'post_title'   => $existingTopic['post_title'] ?? '',
-            'post_content' => ActivityLogService::excerpt($existingTopic['post_content'] ?? ''),
-        ];
-        $deletedAuthor = (int) ($existingTopic['post_author'] ?? 0);
-
-        $result = $this->topicService->deleteTopic($id);
-
-        if (!$result) {
+        if (!(new TopicModerationService($this->topicService))->deleteWithRecord((int) $id, $existingTopic)) {
             return Response::error('Failed to delete topic', self::HTTP_SERVER_ERROR);
-        }
-
-        ActivityLogService::recordIfNotAuthor(
-            ActivityActions::DELETE_POST,
-            ActivityLogService::TARGET_POST,
-            $id,
-            $deletedAuthor,
-            $deleted
-        );
-
-        // Same notice a report upheld with removal sends. Addressed explicitly:
-        // the topic the default audience would be read from is already gone.
-        // The dispatcher drops the actor, so deleting your own tells nobody.
-        if ($deletedAuthor > 0) {
-            NotificationService::dispatch(
-                NotificationTypes::CONTENT_ACTIONED,
-                NotificationService::TARGET_TOPIC,
-                (int) $id,
-                [
-                    'topic_title' => (string) $deleted['post_title'],
-                    'excerpt'     => wp_strip_all_tags((string) $deleted['post_content']),
-                ],
-                (int) $id,
-                [$deletedAuthor]
-            );
         }
 
         return Response::success(
@@ -571,63 +533,6 @@ final class TopicController
     }
 
     /**
-     * Tells a thread when its stage or status moves.
-     *
-     * The one edit to a topic that the people watching it actually want pushed
-     * to them: "Planned → Shipped" is the answer they subscribed for. Everything
-     * else this endpoint can change is either invisible to them (a slug), or
-     * their own doing (the author rewording their post), or already obvious on
-     * the page (a lock).
-     *
-     * Only fires when a term actually moved. `isset($updateData['statuses'])`
-     * alone is true whenever the form posted the field back unchanged, which on
-     * this endpoint is every single save — so the comparison is the whole guard.
-     *
-     * @param array<string, mixed> $updateData
-     * @param array<string, mixed> $existingTopic
-     * @param array<string, mixed> $after
-     */
-    private function notifyStatusChange(int $id, array $updateData, array $existingTopic, array $after): void
-    {
-        $moved = [];
-
-        foreach (['statuses', 'stages'] as $taxonomy) {
-            if (!isset($updateData[$taxonomy])) {
-                continue;
-            }
-
-            if ($this->termId($existingTopic, $taxonomy) !== $this->termId($after, $taxonomy)) {
-                $moved[] = $taxonomy;
-            }
-        }
-
-        if ($moved === []) {
-            return;
-        }
-
-        NotificationService::dispatch(
-            NotificationTypes::TOPIC_STATUS_CHANGED,
-            NotificationService::TARGET_TOPIC,
-            $id,
-            [
-                'topic_title' => (string) ($after['post_title'] ?? ''),
-                'changed'     => $moved,
-                // Names, not ids, and stored rather than resolved at read time:
-                // a status renamed or deleted next month should not turn an old
-                // notification into a blank.
-                'status' => $this->termName($after, 'statuses'),
-                'stage'  => $this->termName($after, 'stages'),
-                'from'   => [
-                    'status' => $this->termName($existingTopic, 'statuses'),
-                    'stage'  => $this->termName($existingTopic, 'stages'),
-                ],
-                'url' => PortalLocation::topicUrl((int) ($after['ID'] ?? 0)),
-            ],
-            $id
-        );
-    }
-
-    /**
      * A `tax_query` for WP_Query from the list's term filters — each a
      * comma-separated list of slugs, any of which matches.
      */
@@ -663,47 +568,6 @@ final class TopicController
         return $taxQuery;
     }
 
-    /**
-     * The id of a topic's single status or stage term, or 0 when it has none.
-     *
-     * Both live under `terms` as one nullable formatted term rather than a list
-     * — see TopicService::getTopicTerms(), which takes [0] of each taxonomy.
-     *
-     * @param array<string, mixed> $topic
-     */
-    private function termId(array $topic, string $key): int
-    {
-        $terms = \is_array($topic['terms'] ?? null) ? $topic['terms'] : [];
-        $term = \is_array($terms[$key] ?? null) ? $terms[$key] : [];
-
-        return (int) ($term['term_id'] ?? 0);
-    }
-
-    /**
-     * The name of a topic's single status or stage term, or '' when it has none.
-     *
-     * @param array<string, mixed> $topic
-     */
-    private function termName(array $topic, string $key): string
-    {
-        $terms = \is_array($topic['terms'] ?? null) ? $topic['terms'] : [];
-        $term = \is_array($terms[$key] ?? null) ? $terms[$key] : [];
-
-        return (string) ($term['name'] ?? '');
-    }
-
-    /**
-     * Records what a moderator did to somebody else's topic.
-     *
-     * Reads the same $updateData the service acted on, so it cannot claim an
-     * edit the controller dropped: only the author reaches the content branch,
-     * so post_title and post_content never enter that array for anybody else.
-     *
-     * There is no arm for the words themselves. Editing another member's topic
-     * was withdrawn, which left that branch unreachable for a non-author and its
-     * before/after snapshot writing nothing. What is recorded here is the pin
-     * and lock moves that remain a moderator's.
-     */
     /**
      * Tells moderators a tag is waiting for review, one row per tag.
      *
@@ -755,30 +619,5 @@ final class TopicController
             get_current_user_id(),
             PermissionService::canCreateTag()
         );
-    }
-
-    private function recordTopicActivity(int $id, int $author, array $updateData, array $after): void
-    {
-        // Pin and lock are recorded in whichever direction they were moved, so
-        // the feed reads as a history rather than a list of "changed pinning".
-        if (isset($updateData['is_pinned'])) {
-            ActivityLogService::recordIfNotAuthor(
-                $updateData['is_pinned'] ? ActivityActions::PIN_POST : ActivityActions::UNPIN_POST,
-                ActivityLogService::TARGET_POST,
-                $id,
-                $author,
-                ['post_title' => $after['post_title'] ?? '']
-            );
-        }
-
-        if (isset($updateData['is_locked'])) {
-            ActivityLogService::recordIfNotAuthor(
-                $updateData['is_locked'] ? ActivityActions::LOCK_POST : ActivityActions::UNLOCK_POST,
-                ActivityLogService::TARGET_POST,
-                $id,
-                $author,
-                ['post_title' => $after['post_title'] ?? '']
-            );
-        }
     }
 }

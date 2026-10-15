@@ -31,6 +31,7 @@ const TopicTypes = lazy(() => import('./pages/topic-types/topic-types'))
 const Tags = lazy(() => import('./pages/tags/tags'))
 const General = lazy(() => import('./pages/general/general'))
 const Manager = lazy(() => import('./pages/manager'))
+const Topics = lazy(() => import('./pages/topics'))
 const Activity = lazy(() => import('./pages/activity'))
 const Reports = lazy(() => import('./pages/reports'))
 const Notifications = lazy(() => import('./pages/notifications'))
@@ -112,6 +113,7 @@ export default function AppRoutes() {
               <Route element={<Stages />} path="stages" />
               <Route element={<General />} path="general/:tab?" />
               <Route element={<Manager />} path="manager" />
+              <Route element={<Topics />} path="topics" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
               <Route element={<Notifications />} path="notifications" />

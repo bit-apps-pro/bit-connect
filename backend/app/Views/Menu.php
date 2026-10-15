@@ -44,6 +44,7 @@ final class Menu
             'Tags'        => self::getTagsMenuAttributes(),
             'Status'      => self::getStatusMenuAttributes(),
             'Manager'     => self::getManagerMenuAttributes(),
+            'Topics'      => self::getTopicsMenuAttributes(),
             'Activity'    => self::getActivityMenuAttributes(),
             'Reports'     => self::getReportsMenuAttributes(),
             'Settings'    => self::getSettingsMenuAttributes(),
@@ -128,9 +129,25 @@ final class Menu
     }
 
     /**
-     * The one screen under this menu that answers to bit_connect_forum_moderate.
+     * Every topic in one table, to set statuses and stages, pin, lock, hide or
+     * delete — several at once. bit_connect_forum_moderate: that is the work a
+     * moderator does, and defining the statuses and stages stays with Manage.
+     */
+    private static function getTopicsMenuAttributes()
+    {
+        return [
+            'parent'     => Config::SLUG,
+            'type'       => 'submenu',
+            'name'       => 'Topics',
+            'capability' => Capabilities::MODERATE->value,
+            'slug'       => Config::SLUG . '#/topics',
+        ];
+    }
+
+    /**
+     * A screen under this menu that answers to bit_connect_forum_moderate.
      *
-     * Everything else here is settings and belongs to bit_connect_forum_manage; reviewing
+     * Most of the rest is settings and belongs to bit_connect_forum_manage; reviewing
      * what was done to a member's post does not.
      */
     private static function getActivityMenuAttributes()

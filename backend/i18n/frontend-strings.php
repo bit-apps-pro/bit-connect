@@ -1990,6 +1990,81 @@ return [
 
     'You can now read' => __('You can now read', 'bit-connect'),
 
-    'asked to join' => __('asked to join', 'bit-connect')
+    'asked to join' => __('asked to join', 'bit-connect'),
+
+    'Any status' => __('Any status', 'bit-connect'),
+
+    'Any stage' => __('Any stage', 'bit-connect'),
+
+    'Any type' => __('Any type', 'bit-connect'),
+
+    'Any visibility' => __('Any visibility', 'bit-connect'),
+
+    'Any author' => __('Any author', 'bit-connect'),
+
+    'Public' => __('Public', 'bit-connect'),
+
+    'Type a name' => __('Type a name', 'bit-connect'),
+
+    'No members found' => __('No members found', 'bit-connect'),
+
+    'Locked' => __('Locked', 'bit-connect'),
+
+    'Created' => __('Created', 'bit-connect'),
+
+    'No status' => __('No status', 'bit-connect'),
+
+    'No stage' => __('No stage', 'bit-connect'),
+
+    'Open in the portal' => __('Open in the portal', 'bit-connect'),
+
+    'No topics match.' => __('No topics match.', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d topics' => __('%d topics', 'bit-connect'),
+
+    'You cannot pin topics.' => __('You cannot pin topics.', 'bit-connect'),
+
+    'You cannot lock topics.' => __('You cannot lock topics.', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d selected' => __('%d selected', 'bit-connect'),
+
+    'Set…' => __('Set…', 'bit-connect'),
+
+    'Choose' => __('Choose', 'bit-connect'),
+
+    'Apply' => __('Apply', 'bit-connect'),
+
+    'Clear selection' => __('Clear selection', 'bit-connect'),
+
+    'Restore' => __('Restore', 'bit-connect'),
+
+    'Pin' => __('Pin', 'bit-connect'),
+
+    'Unpin' => __('Unpin', 'bit-connect'),
+
+    'Lock' => __('Lock', 'bit-connect'),
+
+    'Unlock' => __('Unlock', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d updated' => __('%d updated', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d already so' => __('%d already so', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d could not be changed' => __('%d could not be changed', 'bit-connect'),
+
+    'Nothing changed.' => __('Nothing changed.', 'bit-connect'),
+
+    'The topics could not be loaded.' => __('The topics could not be loaded.', 'bit-connect'),
+
+    'Set the status and stage of topics, pin, lock, hide or delete them — one at a time or several at once.' => __('Set the status and stage of topics, pin, lock, hide or delete them — one at a time or several at once.', 'bit-connect'),
+
+    'Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.' => __('Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.', 'bit-connect'),
+
+    'Deleting removes the topics and every comment on them. This cannot be undone.' => __('Deleting removes the topics and every comment on them. This cannot be undone.', 'bit-connect')
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

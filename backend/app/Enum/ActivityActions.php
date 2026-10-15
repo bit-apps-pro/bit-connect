@@ -58,6 +58,11 @@ enum ActivityActions: string
     #[Label('Restored after review')]
     case RESTORE = 'restore';
 
+    // A moderator hiding a topic by hand, from the admin's Topics screen. Not
+    // HIDE, whose label says a report caused it.
+    #[Label('Hid a topic')]
+    case HIDE_POST = 'hide_post';
+
     #[Label('Reports resolved')]
     case RESOLVE_REPORTS = 'resolve_reports';
 
@@ -88,6 +93,7 @@ enum ActivityActions: string
             self::UNLOCK_POST     => __('Unlocked a topic', 'bit-connect'),
             self::HIDE            => __('Hidden after a report', 'bit-connect'),
             self::RESTORE         => __('Restored after review', 'bit-connect'),
+            self::HIDE_POST       => __('Hid a topic', 'bit-connect'),
             self::RESOLVE_REPORTS => __('Reports resolved', 'bit-connect'),
         };
     }

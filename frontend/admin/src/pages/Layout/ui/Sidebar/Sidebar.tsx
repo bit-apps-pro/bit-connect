@@ -13,6 +13,7 @@ import {
   LuLayoutGrid,
   LuLifeBuoy,
   LuListFilter,
+  LuMessagesSquare,
   LuSettings,
   LuSlidersHorizontal,
   LuTag,
@@ -53,6 +54,7 @@ const navItems: {
   { icon: LuCircleCheck, label: __('Status'), path: '../status', requires: 'manage' },
   { icon: LuUsers, label: __('Manager'), path: '../manager', requires: 'manage' },
   // Ordered to match the WordPress menu, so the two navs read the same way.
+  { icon: LuMessagesSquare, label: __('Topics'), path: '../topics', requires: 'moderate' },
   { icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
   { icon: LuChartLine, label: __('Reports'), path: '../reports', requires: 'moderate' },
   { icon: LuBell, label: __('Notifications'), path: '../notifications', requires: 'manage' },

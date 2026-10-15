@@ -31,6 +31,7 @@ use BitApps\BitConnect\Http\Controller\ReportController;
 use BitApps\BitConnect\Http\Controller\SeoSettingsController;
 use BitApps\BitConnect\Http\Controller\TaxonomyController;
 use BitApps\BitConnect\Http\Controller\TopicController;
+use BitApps\BitConnect\Http\Controller\TopicModerationController;
 use BitApps\BitConnect\Http\Controller\UserManagementController;
 use BitApps\BitConnect\Http\Controller\UserProfileController;
 use BitApps\BitConnect\Http\Controller\UserStatsController;
@@ -97,6 +98,13 @@ Route::post('follows/toggle', [FollowController::class, 'toggle']);
 Route::get('follows', [FollowController::class, 'mine']);
 // One thing's state, for a page that did not arrive with it (a tag archive).
 Route::get('follows/state', [FollowController::class, 'state']);
+
+// The admin's Topics screen. bit_connect_forum_moderate, enforced in each
+// Request. Under `moderation/`, not `topics/`, which `topics/{id}` would
+// swallow. One row's status, stage, pin and lock go through `topics/{id}`.
+Route::get('moderation/topics', [TopicModerationController::class, 'index']);
+Route::get('moderation/topic-filters', [TopicModerationController::class, 'filters']);
+Route::post('moderation/topics/bulk', [TopicModerationController::class, 'bulk']);
 
 // Activity log — who did what to content they did not write. bit_connect_forum_moderate,
 // enforced in GetActivityLogRequest::authorize().
