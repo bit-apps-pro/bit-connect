@@ -44,8 +44,8 @@ export default function TopicsFilters({
   // Cleared from outside — the Clear button — empties the box too.
   useEffect(() => {
     if (filters.search === undefined) setSearch('')
-    if (filters.author === undefined) setAuthorName('')
-  }, [filters.search, filters.author])
+    if (filters.author_id === undefined) setAuthorName('')
+  }, [filters.search, filters.author_id])
 
   return (
     <div className="bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-gap-3 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-5 bc-py-4">
@@ -112,14 +112,14 @@ export default function TopicsFilters({
         notFoundContent={authorTerm.trim() === '' ? __('Type a name') : __('No members found')}
         onChange={(author: number | undefined, option) => {
           setAuthorName(author && !Array.isArray(option) ? String(option?.label ?? '') : '')
-          onChange({ author })
+          onChange({ author_id: author })
         }}
         onSearch={setAuthorTerm}
         options={authors.map(author => ({ label: author.name, value: author.id }))}
         placeholder={__('Any author')}
         showSearch
-        value={filters.author}
-        {...(filters.author && authorName ? { labelRender: () => authorName } : {})}
+        value={filters.author_id}
+        {...(filters.author_id && authorName ? { labelRender: () => authorName } : {})}
       />
 
       {isFiltered && (

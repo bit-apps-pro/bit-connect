@@ -26,7 +26,7 @@ describe('toQueryParam', () => {
 
 describe('asPage', () => {
   it('turns a body of any other shape into an empty table', () => {
-    expect(asPage(undefined)).toEqual({
+    expect(asPage()).toEqual({
       data: [],
       pagination: { current_page: 1, per_page: 20, total: 0, total_pages: 0 }
     })

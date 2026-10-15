@@ -109,7 +109,7 @@ export default function AppRoutes() {
               path="onboarding"
             />
             <Route element={<OnboardingGuard />} path="/">
-              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="activity" />} index />
+              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="topics" />} index />
               <Route element={<Stages />} path="stages" />
               <Route element={<General />} path="general/:tab?" />
               <Route element={<Manager />} path="manager" />

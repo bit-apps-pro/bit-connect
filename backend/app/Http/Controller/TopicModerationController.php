@@ -43,7 +43,7 @@ final class TopicModerationController
                 'page'       => $page,
                 'per_page'   => $perPage,
                 'search'     => (string) ($validated['search'] ?? ''),
-                'author'     => (int) ($validated['author'] ?? 0),
+                'author'     => (int) ($validated['author_id'] ?? 0),
                 'status'     => (int) ($validated['status'] ?? 0),
                 'stage'      => (int) ($validated['stage'] ?? 0),
                 'topic_type' => (int) ($validated['topic_type'] ?? 0),

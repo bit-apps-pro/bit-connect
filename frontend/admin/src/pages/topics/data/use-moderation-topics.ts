@@ -30,7 +30,7 @@ export function toQueryParam(filters: TopicFilters, view: string): QueryParam {
  * The response with every part the table walks guaranteed to be walkable, so
  * a body of any other shape becomes an empty table rather than a blank screen.
  */
-export function asPage(response: ResponseType<ModerationTopicsPage> | undefined): ModerationTopicsPage {
+export function asPage(response?: ResponseType<ModerationTopicsPage>): ModerationTopicsPage {
   const body = response?.data
   const pagination = body?.pagination
 

@@ -21,7 +21,7 @@ use BitApps\BitConnect\Services\TopicTaxonomies;
  * @property null|int    $status     a status term id
  * @property null|int    $stage      a stage term id
  * @property null|int    $topic_type a topic type term id
- * @property null|int    $author
+ * @property null|int    $author_id
  * @property null|string $visibility public | private | hidden
  * @property null|string $orderby
  * @property null|string $order      asc | desc
@@ -56,7 +56,10 @@ final class ListModerationTopicsRequest extends Request
             'status'     => ['nullable', 'integer', 'min:1'],
             'stage'      => ['nullable', 'integer', 'min:1'],
             'topic_type' => ['nullable', 'integer', 'min:1'],
-            'author'     => ['nullable', 'integer', 'min:1'],
+            // Not `author`: WordPress reads that from the query string as an
+            // author archive and answers its own 404 page before the REST
+            // route runs.
+            'author_id'  => ['nullable', 'integer', 'min:1'],
             'visibility' => ['nullable', 'string', new InRule(TopicModerationService::VISIBILITIES)],
             'orderby'    => ['nullable', 'string', new InRule(TopicModerationService::ORDER_BY)],
             'order'      => ['nullable', 'string', new InRule(['asc', 'desc'])],

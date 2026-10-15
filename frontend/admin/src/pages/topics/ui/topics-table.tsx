@@ -119,6 +119,8 @@ export default function TopicsTable({
       align: 'center',
       dataIndex: 'comments_count',
       key: 'comment_count',
+      // Busiest first: nobody sorts by comments to find the quiet ones.
+      sortDirections: ['descend', 'ascend'],
       sorter: true,
       sortOrder: sortOrder('comment_count'),
       title: __('Comments'),
@@ -167,6 +169,7 @@ export default function TopicsTable({
           </Text>
         </Tooltip>
       ),
+      sortDirections: ['descend', 'ascend'],
       sorter: true,
       sortOrder: sortOrder('date'),
       title: __('Created'),

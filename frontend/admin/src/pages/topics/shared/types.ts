@@ -38,7 +38,8 @@ export interface ModerationTopicsPage {
 }
 
 export interface TopicFilters {
-  author?: number
+  /** Not `author`, which WordPress reads as an author archive. */
+  author_id?: number
   order?: 'asc' | 'desc'
   orderby?: 'comment_count' | 'date' | 'modified' | 'title'
   page: number
