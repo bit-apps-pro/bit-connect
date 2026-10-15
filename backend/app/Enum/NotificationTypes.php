@@ -85,7 +85,7 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, when a member asks to join a private space.')]
     case ACCESS_REQUESTED = 'access_requested';
 
-    #[Label('You are let into a private space')]
+    #[Label('You are added to a group')]
     #[Description('An admin lets you into a private space, or adds you to one.')]
     case ACCESS_GRANTED = 'access_granted';
 
@@ -121,7 +121,7 @@ enum NotificationTypes: string
             self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
             self::TAG_SUGGESTED        => __('A new tag needs approval', 'bit-connect'),
             self::ACCESS_REQUESTED     => __('A member asks to join', 'bit-connect'),
-            self::ACCESS_GRANTED       => __('You are let into a private space', 'bit-connect'),
+            self::ACCESS_GRANTED       => __('You are added to a group', 'bit-connect'),
         };
     }
 
