@@ -119,7 +119,7 @@ return [
 
     'Activity' => __('Activity', 'bit-connect'),
 
-    'What was done to content by someone other than its author: hides, locks, pins, edits, deletions and restores.' => __('What was done to content by someone other than its author: hides, locks, pins, edits, deletions and restores.', 'bit-connect'),
+    'What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.' => __('What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.', 'bit-connect'),
 
     'Anyone' => __('Anyone', 'bit-connect'),
 
@@ -1775,9 +1775,9 @@ return [
 
     'Sort comments' => __('Sort comments', 'bit-connect'),
 
-    'Only you and the moderators can see this while a report is reviewed. Nothing has been deleted.' => __('Only you and the moderators can see this while a report is reviewed. Nothing has been deleted.', 'bit-connect'),
+    'Only you and the moderators can see this until a moderator restores it. Nothing has been deleted.' => __('Only you and the moderators can see this until a moderator restores it. Nothing has been deleted.', 'bit-connect'),
 
-    'Out of public view while a report is reviewed.' => __('Out of public view while a report is reviewed.', 'bit-connect'),
+    'Out of public view until a moderator restores it.' => __('Out of public view until a moderator restores it.', 'bit-connect'),
 
     'This comment is no longer available' => __('This comment is no longer available', 'bit-connect'),
 
@@ -2122,5 +2122,27 @@ return [
     'Everyone with an account, and what each of them may do in the forum.' => __('Everyone with an account, and what each of them may do in the forum.', 'bit-connect'),
 
     '%s tags' => __('%s tags', 'bit-connect'),
+
+    'Type or paste a link' => __('Type or paste a link', 'bit-connect'),
+
+    'Reload' => __('Reload', 'bit-connect'),
+
+    'Reloading the page usually fixes this.' => __('Reloading the page usually fixes this.', 'bit-connect'),
+
+    'This screen could not be loaded' => __('This screen could not be loaded', 'bit-connect'),
+
+    'Topic title' => __('Topic title', 'bit-connect'),
+
+    'Write a topic title' => __('Write a topic title', 'bit-connect'),
+
+    'Select or type tags…' => __('Select or type tags…', 'bit-connect'),
+
+    'Select tags…' => __('Select tags…', 'bit-connect'),
+
+    'This topic is locked. Only moderators can comment.' => __('This topic is locked. Only moderators can comment.', 'bit-connect'),
+
+    'Topic type name is required' => __('Topic type name is required', 'bit-connect'),
+
+    'For example, Question' => __('For example, Question', 'bit-connect'),
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

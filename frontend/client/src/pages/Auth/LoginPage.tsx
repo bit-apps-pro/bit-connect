@@ -81,6 +81,9 @@ export default function LoginPage() {
         </Form.Item>
 
         <Form.Item
+          // antd's <label> shrinks to its text, which left the row below no
+          // room to push the two apart: "PasswordForgot password?".
+          className="[&_.ant-form-item-label>label]:bc-w-full"
           label={
             <div className="bc-flex bc-w-full bc-items-center bc-justify-between">
               <span>{__('Password')}</span>

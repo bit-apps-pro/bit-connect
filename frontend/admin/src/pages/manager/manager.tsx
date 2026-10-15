@@ -95,10 +95,13 @@ export default function Manager() {
 
       {/* The layout's ground is sunken, so the list sits on its own raised
           card, like the Settings screen's sections. */}
+      {/* Scrolls sideways on a narrow screen, as antd's tables do, instead of
+          squeezing the flexible columns to nothing beside the fixed ones. */}
       <div
-        className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line"
+        className="bc-overflow-x-auto bc-rounded-lg bc-border bc-border-solid bc-border-line"
         style={{ backgroundColor: token.colorBgContainer }}
       >
+        <div style={{ minWidth: hasBadgeCatalog ? 860 : 720 }}>
         {/* The card and its header are painted the way antd paints a table —
             the translucent header fill laid over the container colour — so
             this list reads as the same kind of table as Stages or Tags. The
@@ -178,6 +181,7 @@ export default function Manager() {
               />
             </div>
           ))}
+        </div>
       </div>
 
       {(usersData?.total_pages ?? 0) > 1 && (

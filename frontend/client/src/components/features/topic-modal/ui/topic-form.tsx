@@ -256,14 +256,14 @@ export default function TopicForm({
           title rather than standing off it as a field of its own. */}
       <Form.Item
         className={isPermalinkOpen ? 'bc-mb-4' : 'bc-mb-1'}
-        label={__('Topic Title')}
+        label={__('Topic title')}
         name="post_title"
         rules={[
           { message: __('Please enter a topic title'), required: true },
           { max: 200, message: __('Topic title cannot exceed 200 characters') }
         ]}
       >
-        <Input maxLength={200} onChange={handleTitleChange} placeholder={__('Write a post title')} />
+        <Input maxLength={200} onChange={handleTitleChange} placeholder={__('Write a topic title')} />
       </Form.Item>
 
       {/* The slug is a power-user control: nothing but a link to open it until
@@ -311,7 +311,7 @@ export default function TopicForm({
           {showTopicType && (
             <Form.Item
               className="bc-mb-0"
-              label={__('Topic Type')}
+              label={__('Topic type')}
               name="topic-types"
               rules={[{ message: __('Please select a topic type'), required: topicTypeMode === 'required' }]}
             >
@@ -331,7 +331,7 @@ export default function TopicForm({
           `required` only paints the asterisk so it matches the other required fields. */}
       <Form.Item
         className="bc-mb-4"
-        label={__('Write Your Topic Description Here')}
+        label={__('Description')}
         name="post_content"
         required
         rules={[
@@ -373,7 +373,7 @@ export default function TopicForm({
             ? __('Not in the list? Type a new tag and press Enter. It is reviewed by a moderator before others can pick it.')
             : undefined
         }
-        label={__('Tag')}
+        label={__('Tags')}
         name="tags"
       >
         {/* Options carry the term id as their value, and antd filters on the
@@ -386,7 +386,7 @@ export default function TopicForm({
           mode={canSuggestTags ? 'tags' : 'multiple'}
           optionFilterProp="label"
           options={tagOptions}
-          placeholder={canSuggestTags ? __('Select or type tags..') : __('Select tags..')}
+          placeholder={canSuggestTags ? __('Select or type tags…') : __('Select tags…')}
         />
       </Form.Item>
 

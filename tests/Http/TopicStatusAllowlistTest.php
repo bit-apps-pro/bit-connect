@@ -95,7 +95,15 @@ final class TopicStatusAllowlistTest extends TestCase
         foreach ([new CreateTopicRequest(), new UpdateTopicRequest()] as $request) {
             foreach ($request->rules() as $rules) {
                 foreach ($rules as $rule) {
-                    $text = $rule instanceof InRule ? implode(',', $rule->allowed()) : (string) $rule;
+                    if ($rule instanceof InRule) {
+                        $text = implode(',', $rule->allowed());
+                    } elseif (\is_object($rule)) {
+                        // Only InRule carries an allowlist; any other rule
+                        // object bounds a length or a term, never a status.
+                        continue;
+                    } else {
+                        $text = (string) $rule;
+                    }
 
                     $this->assertStringNotContainsStringIgnoringCase(
                         'private',

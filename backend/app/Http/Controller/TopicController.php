@@ -164,7 +164,6 @@ final class TopicController
         $topicData = [
             'post_title'   => $validatedData['post_title'],
             'post_content' => $validatedData['post_content'] ?? '',
-            'post_excerpt' => $validatedData['post_content'] ?? '',
             'post_status'  => $validatedData['post_status'] ?? 'publish',
             'topic_types'  => $validatedData['topic-types'] ?? [],
             'tags'         => $resolved['ids'],
@@ -283,7 +282,11 @@ final class TopicController
             }
             if (!empty($validatedData['post_content']) && trim($validatedData['post_content'])) {
                 $updateData['post_content'] = $validatedData['post_content'];
-                $updateData['post_excerpt'] = $validatedData['post_content'];
+                // Cleared, not copied: SeoContent::excerpt() falls back to the
+                // content, and a copy of a long topic overflows the TEXT column
+                // and fails the whole write. Clearing also drops the stale
+                // copy older topics still carry.
+                $updateData['post_excerpt'] = '';
             }
             // Blank means "leave the permalink alone", not "rebuild it from the
             // title" — links already pointing at this topic have to keep working.

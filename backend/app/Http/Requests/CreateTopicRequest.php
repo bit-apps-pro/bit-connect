@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\AssignableTermRule;
 use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Http\Rules\LengthAtMostRule;
 use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PostingLimits;
@@ -47,7 +48,7 @@ final class CreateTopicRequest extends Request
             // `sanitize:title` is WordPress' own `sanitize_title()`, so whatever
             // reaches the service is already a valid slug. Left blank, the
             // service derives one from the title the way core does.
-            'post_name' => ['nullable', 'string', 'sanitize:title', 'max:200'],
+            'post_name' => ['nullable', 'string', 'sanitize:title', new LengthAtMostRule(200)],
             // Publish is the only status this endpoint creates: the allowlist
             // is a statement of what this plugin does rather than a gate on it.
             // Hiding a reported topic is moderation's, and goes through

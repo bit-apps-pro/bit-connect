@@ -1,6 +1,6 @@
 import { theme } from 'antd'
 import { motion } from 'framer-motion'
-import { type KeyboardEvent, type ReactNode, useId, useRef } from 'react'
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useRef } from 'react'
 
 import { cn } from '../../common/helpers/globalHelpers'
 
@@ -31,6 +31,14 @@ export default function PageTabs({ onChange, tabs, value }: PageTabsProps) {
   // Per bar, so two bars on one screen never trade a pill.
   const pillId = useId()
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
+
+  // On a narrow screen the bar scrolls sideways, and the open tab could sit
+  // past its edge with nothing to say it was there. Brought into view within
+  // the bar only (`nearest`), so the page itself does not jump.
+  const selectedIndex = tabs.findIndex(tab => tab.key === value)
+  useEffect(() => {
+    buttons.current[selectedIndex]?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [selectedIndex])
 
   // Arrow keys move between tabs and open the one they land on, as a radio
   // group does.

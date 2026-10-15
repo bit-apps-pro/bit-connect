@@ -204,7 +204,10 @@ final class ReportController
         // Destroy first, close second. The other way round, a delete that failed
         // would leave an empty queue and content still standing, with nothing
         // left to click.
-        if ($isRemoval && !ContentRemovalService::remove($targetType, $targetId)) {
+        if (
+            $isRemoval
+            && !ReportService::removingFor($targetType, $targetId, static fn (): bool => ContentRemovalService::remove($targetType, $targetId))
+        ) {
             return Response::error([], 500)
                 ->message(__('That could not be removed, so the reports are still open.', 'bit-connect'));
         }

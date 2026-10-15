@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Requests\GetPostVotesRequest;
 use BitApps\BitConnect\Http\Requests\TogglePostVoteRequest;
+use BitApps\BitConnect\Services\TopicAccess;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\VoteService;
 
@@ -37,6 +38,10 @@ final class VoteController
 
         if (!$post) {
             return Response::error(__('Post not found.', 'bit-connect'))->httpStatus(404);
+        }
+
+        if (!TopicAccess::allows(TopicAccess::UPVOTE)) {
+            return Response::error(__('Upvoting is turned off in this forum.', 'bit-connect'))->httpStatus(403);
         }
 
         $result = $this->voteService->togglePostVote(get_current_user_id(), $postId);

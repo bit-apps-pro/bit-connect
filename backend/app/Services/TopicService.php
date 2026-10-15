@@ -439,7 +439,8 @@ class TopicService
 
         $postId = wp_insert_post($postData);
 
-        if (is_wp_error($postId)) {
+        // 0 is how wp_insert_post() reports a failed database write.
+        if (is_wp_error($postId) || !$postId) {
             return null;
         }
 
@@ -541,7 +542,7 @@ class TopicService
 
         $result = wp_update_post($postData);
 
-        if (is_wp_error($result)) {
+        if (is_wp_error($result) || !$result) {
             return null;
         }
 

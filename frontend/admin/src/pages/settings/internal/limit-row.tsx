@@ -18,7 +18,9 @@ export interface LimitRowProps {
 export default function LimitRow({ hint, label, value }: LimitRowProps) {
   return (
     <div className="bc-rounded-md bc-border bc-border-solid bc-border-line bc-px-4 bc-py-3.5">
-      <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
+      {/* Wraps rather than squeezing: on a phone a fixed-width input beside
+          the label left it one letter wide. */}
+      <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-x-4 bc-gap-y-2">
         <Text className="bc-text-sm bc-font-medium bc-text-ink">{label}</Text>
         {typeof value === 'string' ? (
           <Text className="bc-min-w-0 bc-text-right bc-text-sm bc-text-ink" strong>

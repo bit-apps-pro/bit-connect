@@ -124,8 +124,10 @@ final class AttachmentController
             return Response::error('Failed to create attachment: ' . $attachId->get_error_message())->httpStatus(500);
         }
 
-        // wp_generate_attachment_metadata() is admin-side too.
+        // wp_generate_attachment_metadata() is admin-side too, and for a video
+        // or audio file it calls wp_read_video_metadata(), which lives in media.php.
         require_once ABSPATH . 'wp-admin/includes/image.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
         $attachData = wp_generate_attachment_metadata($attachId, $uploadedFile['file']);
         wp_update_attachment_metadata($attachId, $attachData);
 

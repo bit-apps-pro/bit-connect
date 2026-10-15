@@ -33,6 +33,7 @@ use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
+use BitApps\BitConnect\Services\TopicAccess;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\UploadClaims;
 use BitApps\BitConnect\Services\UserBadgeService;
@@ -165,6 +166,10 @@ final class CommentController
             return Response::error('Topic not found', 404);
         }
 
+        if (!TopicAccess::allows(TopicAccess::COMMENT)) {
+            return Response::error(__('Comments are turned off in this forum.', 'bit-connect'), 403);
+        }
+
         // Respect topic lock (comment_status closed). Moderators bypass the lock.
         if ($post->comment_status !== 'open' && !WpCapabilities::check(Capabilities::MODERATE->value)) {
             return Response::error('This topic is locked.', 403);
@@ -180,6 +185,10 @@ final class CommentController
 
         $parentId = $request->parent_id ? (int) $request->parent_id : 0;
         $attachments = array_map('intval', (array) ($request->attachments ?? []));
+
+        if (!self::hasSubstance($content, $attachments)) {
+            return Response::error(__('Comment content is required.', 'bit-connect'), 422);
+        }
 
         try {
             PostingLimits::assertWithin('comment', $content, $attachments);
@@ -283,6 +292,12 @@ final class CommentController
         $newAttachmentIds = $request->attachments !== null
             ? array_map('intval', (array) $request->attachments)
             : null;
+
+        $keptAttachmentIds = $newAttachmentIds ?? (array) get_comment_meta($commentId, '_bit_connect_comment_attachments', true);
+
+        if (!self::hasSubstance($content, array_filter($keptAttachmentIds))) {
+            return Response::error(__('Comment content is required.', 'bit-connect'), 422);
+        }
 
         try {
             PostingLimits::assertWithin('comment', $content, $newAttachmentIds);
@@ -441,6 +456,25 @@ final class CommentController
      *
      * @param WP_Comment $comment the comment just written
      */
+    /**
+     * Whether a comment says or shows anything once sanitized. The request's
+     * `required` rule passes `<p></p>` and a run of spaces, which sanitize to
+     * nothing. A picture or video on its own counts, as it does in the editor,
+     * and so does a comment that only carries files.
+     *
+     * @param int[] $attachmentIds
+     */
+    private static function hasSubstance(string $content, array $attachmentIds): bool
+    {
+        if ($attachmentIds !== [] || preg_match('~<(?:img|video|iframe)\b~i', $content)) {
+            return true;
+        }
+
+        $text = html_entity_decode(wp_strip_all_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return trim(str_replace("\u{00A0}", ' ', $text)) !== '';
+    }
+
     private function notifyThread(WP_Post $post, $comment, int $parentId): void
     {
         $commentId = (int) $comment->comment_ID;

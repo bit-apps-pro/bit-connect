@@ -110,15 +110,19 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
     ? [
         ...(user
           ? [
+              // A childless group, like the theme row below: a `disabled` item
+              // greyed the member's own name out to low contrast and announced
+              // it as an action that cannot be taken.
               {
-                disabled: true,
+                children: [],
                 key: 'account',
                 label: (
-                  <div className="bc-px-2 bc-py-1">
-                    <div className="bc-font-semibold">{user.display_name || user.username}</div>
+                  <div className="bc-py-1">
+                    <div className="bc-font-semibold bc-text-ink">{user.display_name || user.username}</div>
                     <div className="bc-text-xs bc-text-ink-muted">{user.email}</div>
                   </div>
-                )
+                ),
+                type: 'group' as const
               },
               {
                 type: 'divider' as const

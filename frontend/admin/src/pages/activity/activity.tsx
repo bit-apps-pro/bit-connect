@@ -118,7 +118,7 @@ export default function Activity() {
           {__('Activity')}
         </Title>
         <Text type="secondary">
-          {__('What was done to content by someone other than its author: hides, locks, pins, edits, deletions and restores.')}
+          {__('What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.')}
         </Text>
       </div>
 

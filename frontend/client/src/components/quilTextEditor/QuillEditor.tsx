@@ -1147,7 +1147,7 @@ function QuillEditorInner({
                         if (e.key === 'Enter') applyLink()
                         if (e.key === 'Escape') closeLinkPopover()
                       }}
-                      placeholder="Search or type URL"
+                      placeholder={__('Type or paste a link')}
                       ref={linkFieldRef}
                       size="middle"
                       // Plain icons inside the field, as the permalink's inline

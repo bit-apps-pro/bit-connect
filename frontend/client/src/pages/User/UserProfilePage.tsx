@@ -153,7 +153,7 @@ export default function UserProfilePage() {
   const tabs: TabItem<View>[] = useMemo(() => {
     const list: TabItem<View>[] = [
       { key: 'overview', label: __('Overview') },
-      { key: 'topics', label: __('Posts') },
+      { key: 'topics', label: __('Topics') },
       { key: 'comments', label: __('Comments') }
     ]
     if (isOwnProfile) {

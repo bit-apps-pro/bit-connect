@@ -484,6 +484,13 @@ a:focus:not(:focus-visible) {
     min-width: 40px;
     min-height: 40px;
   }
+
+  /* A search field's button is icon-only too; the field grows to meet it
+     rather than leaving a 40px button beside a 32px input. */
+  .ant-input-search:not(.ant-input-group-wrapper-sm) .ant-input-affix-wrapper,
+  .ant-input-search:not(.ant-input-group-wrapper-sm) > .ant-input-wrapper > .ant-input {
+    min-height: 40px;
+  }
 }
 
 /* Disabled buttons must read as unavailable rather than merely faint, and must

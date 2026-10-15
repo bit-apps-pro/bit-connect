@@ -4,7 +4,7 @@ import { useStagesStore } from '@pages/Layout/data/use-stages'
 import logo from '@resource/img/logo.svg'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { LuX } from 'react-icons/lu'
 
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
@@ -43,19 +43,65 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     fetchStages()
   }, [fetchStages])
 
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  // Read through a ref: the layout passes a new arrow each render, and an
+  // effect keyed on it would re-run — and pull focus back to Close — on every
+  // render while the drawer is open.
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
   // Escape closes the drawer, matching the backdrop tap. Only bound while it is
   // actually open so the portal's other Escape handlers keep working otherwise.
+  //
+  // It is a modal dialog, so it also behaves like one for the keyboard: focus
+  // moves into it on open (left behind, it sat on "Open menu" under the
+  // backdrop), Tab cycles inside it, and closing hands focus back to whatever
+  // opened it.
   useEffect(() => {
     if (!isMobile || !isOpen) return
 
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : undefined
+    // After a beat, not at once: visibility is part of the slide-in
+    // transition, and at its first instant the panel still computes as
+    // hidden, which a focus() call silently ignores.
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 50)
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose?.()
+      if (event.key === 'Escape') {
+        onCloseRef.current?.()
+        return
+      }
+
+      if (event.key !== 'Tab' || !drawerRef.current) return
+
+      const focusable = [
+        ...drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ]
+      const first = focusable.at(0)
+      const last = focusable.at(-1)
+
+      if (!first || !last) return
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
     document.addEventListener('keydown', onKeyDown)
 
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [isMobile, isOpen, onClose])
+    return () => {
+      window.clearTimeout(focusTimer)
+      document.removeEventListener('keydown', onKeyDown)
+      opener?.focus()
+    }
+  }, [isMobile, isOpen])
 
   return (
     <>
@@ -158,6 +204,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             'bc-transition-[transform,visibility] bc-duration-300 bc-ease-out',
             isOpen ? 'bc-visible bc-translate-x-0' : 'bc-invisible -bc-translate-x-full'
           ])}
+          ref={drawerRef}
           role="dialog"
         >
           <div className="bc-flex bc-shrink-0 bc-items-center bc-justify-between bc-gap-2 bc-px-4 bc-pb-3 bc-pt-4">
@@ -181,6 +228,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 'hover:bc-bg-surface-hover hover:bc-text-ink bc-transition-colors'
               ])}
               onClick={onClose}
+              ref={closeButtonRef}
               type="button"
             >
               <LuX size={18} />

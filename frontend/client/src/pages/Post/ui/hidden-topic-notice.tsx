@@ -48,11 +48,13 @@ export default function HiddenTopicNotice({
         <LuEyeOff size={13} />
         {__('Hidden')}
       </span>
+      {/* No reason is given, because the topic carries none: a moderator
+          hides one by hand from the Topics screen as well as over a report,
+          and the old "while a report is reviewed" told the author of a
+          hand-hidden topic about a report nobody filed. */}
       {isOwner
-        ? __(
-            'Only you and the moderators can see this while a report is reviewed. Nothing has been deleted.'
-          )
-        : __('Out of public view while a report is reviewed.')}
+        ? __('Only you and the moderators can see this until a moderator restores it. Nothing has been deleted.')
+        : __('Out of public view until a moderator restores it.')}
     </div>
   )
 }

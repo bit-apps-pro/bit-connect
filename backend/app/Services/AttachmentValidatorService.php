@@ -173,6 +173,12 @@ final class AttachmentValidatorService
             throw new InvalidArgumentException('File name is missing or invalid.');
         }
 
+        // The portal refuses the same names. Past 255 bytes the file system
+        // cannot hold the name, and the move into uploads fails with a 500.
+        if (\strlen($safeName) > 255) {
+            throw new InvalidArgumentException('File name is too long (maximum 255 characters).');
+        }
+
         $ext = strtolower(pathinfo($safeName, \PATHINFO_EXTENSION));
 
         if ($ext === '') {

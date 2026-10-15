@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\ProfileSlugService;
+use BitApps\BitConnect\Services\ReportService;
 use BitApps\BitConnect\Services\StageHistoryService;
 use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TopicService;
@@ -103,6 +104,10 @@ class HookProvider
         // and comments change, including from wp-admin, which the portal's own
         // API never sees.
         UserStatsService::registerHooks();
+
+        // Pending reports close when their topic or comment is deleted, from
+        // the portal or from wp-admin.
+        ReportService::registerHooks();
 
         // When a topic last moved stage, sent with each topic.
         // Global for the same reason: an admin moves topics from wp-admin.

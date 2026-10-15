@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Http\Rules\AssignableTermRule;
 use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Http\Rules\LengthAtMostRule;
 use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PostingLimits;
@@ -62,7 +63,7 @@ final class UpdateTopicRequest extends Request
             'post_title'   => ['nullable', 'string', 'sanitize:text', 'max:200'],
             'post_content' => ['nullable', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
-            'post_name' => ['nullable', 'string', 'sanitize:title', 'max:200'],
+            'post_name' => ['nullable', 'string', 'sanitize:title', new LengthAtMostRule(200)],
             // Publish is the only status this endpoint sets. Sending it for a
             // topic that is currently private makes it public, the same way
             // clearing a capability override is always available. Omitting the

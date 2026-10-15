@@ -5,7 +5,7 @@ import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { ConfigProvider, message, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { lazy, type ReactNode, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
 
 import { $isDarkTheme } from './common/globalStates/$appConfig'
@@ -31,6 +31,15 @@ function OnboardingGuard() {
 function GeneralRedirect() {
   const { tab } = useParams()
   return <Navigate replace to={tab === 'auth' ? '/settings/sign-in' : '/settings'} />
+}
+
+/**
+ * A screen only a forum manager may use. A moderator reaching one by its
+ * address used to get the form drawn with wrong defaults and every save
+ * refused; they land on Topics, as the dashboard already sends them.
+ */
+function manageOnly(screen: ReactNode) {
+  return config.CAN_MANAGE ? screen : <Navigate replace to="/topics" />
 }
 
 const Root = lazy(() => import('./pages/root/root'))
@@ -116,21 +125,21 @@ export default function AppRoutes() {
             />
             <Route element={<OnboardingGuard />} path="/">
               <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="topics" />} index />
-              <Route element={<Stages />} path="stages" />
+              <Route element={manageOnly(<Stages />)} path="stages" />
               {/* Folded into Settings; the old addresses still land there. */}
               <Route element={<GeneralRedirect />} path="general/:tab?" />
               <Route element={<Navigate replace to="/settings/notifications" />} path="notifications" />
               <Route element={<Navigate replace to="/settings/seo" />} path="seo" />
-              <Route element={<Manager />} path="manager" />
+              <Route element={manageOnly(<Manager />)} path="manager" />
               <Route element={<Topics />} path="topics" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
-              <Route element={<Settings />} path="settings/:tab?" />
+              <Route element={manageOnly(<Settings />)} path="settings/:tab?" />
               {/* Support, the changelog and what the add-on adds. */}
-              <Route element={<Support />} path="support" />
-              <Route element={<Tags />} path="tags/:tab?" />
-              <Route element={<Status />} path="status" />
-              <Route element={<TopicTypes />} path="topic-types" />
+              <Route element={manageOnly(<Support />)} path="support" />
+              <Route element={manageOnly(<Tags />)} path="tags/:tab?" />
+              <Route element={manageOnly(<Status />)} path="status" />
+              <Route element={manageOnly(<TopicTypes />)} path="topic-types" />
               {addedPages.map(page => (
                 <Route element={page.element} key={page.path} path={page.path} />
               ))}

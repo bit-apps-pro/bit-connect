@@ -232,7 +232,9 @@
 }
 
 .linkPopoverContent {
-  width: 300px;
+  /* Never wider than the screen: a fixed 300px ran off a phone's edge and
+     made the page zoom out to fit it. */
+  width: min(300px, calc(100vw - 48px));
 }
 
 .imageDeleteBtn {

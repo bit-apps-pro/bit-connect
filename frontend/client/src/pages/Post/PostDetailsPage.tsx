@@ -16,6 +16,7 @@ import { useNavigate, useParams } from 'react-router'
 import LoginGate from '@/components/features/login-warning-modal/ui/login-gate'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
+import { TopicNotFoundError } from '@/store/data/fetch-post-api'
 import { type ForumCapability } from '@/store/helper/capabilities'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { type Comment } from '@/types/post'
@@ -71,6 +72,9 @@ export default function PostDetailsPage() {
   useEffect(() => {
     if (postName) {
       fetchPostByName(postName).catch(error_ => {
+        // The page itself says the topic is not there; a toast over it would
+        // only say it twice.
+        if (error_ instanceof TopicNotFoundError) return
         notificationApi?.error({
           message: (error_ as { message?: string })?.message ?? __('Failed to load post')
         })
@@ -220,6 +224,11 @@ export default function PostDetailsPage() {
     return error ? <Error404 /> : <PostDetailsSkeleton />
   }
 
+  // The server lets moderators comment past a lock (CommentController), so
+  // the page does too.
+  const mayCommentWhenLocked = isLoggedIn && can('bit_connect_forum_moderate')
+  const commentsClosed = Boolean(post.is_locked) && !mayCommentWhenLocked
+
   const voteBoxProps = {
     isVote: post.vote.hasVoted,
     onVote: canPostUpvote && memberMayVotePost ? handlePostVote : undefined,
@@ -317,20 +326,24 @@ export default function PostDetailsPage() {
             </Flex>
 
             {/* A locked topic says so where the editor would be, instead of
-              offering a box the server will refuse. */}
-            {post.is_locked ? (
+              offering a box the server will refuse. A moderator is the one
+              exception the server makes, so they keep the editor under it. */}
+            {post.is_locked && (
               <Alert
                 className="bc-mb-4"
-                message={__('This topic is locked. New comments are closed.')}
+                message={
+                  mayCommentWhenLocked
+                    ? __('This topic is locked. Only moderators can comment.')
+                    : __('This topic is locked. New comments are closed.')
+                }
                 showIcon
                 type="info"
               />
-            ) : (
-              canComment && (
-                <LoginGate message={__('Log in to post a comment.')}>
-                  <CommentEditor onSubmit={handlePostComment} />
-                </LoginGate>
-              )
+            )}
+            {!commentsClosed && canComment && (
+              <LoginGate message={__('Log in to post a comment.')}>
+                <CommentEditor onSubmit={handlePostComment} />
+              </LoginGate>
             )}
 
             {/* A link to a reply that is gone: a gap at the head of the thread,
@@ -349,7 +362,7 @@ export default function PostDetailsPage() {
               onDelete={handleDeleteComment}
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
-              onReply={post.is_locked ? undefined : handleReply}
+              onReply={commentsClosed ? undefined : handleReply}
               renderVote={renderVote}
               sortOption={sortOption}
               topicAuthorId={Number(post.post_author) || 0}

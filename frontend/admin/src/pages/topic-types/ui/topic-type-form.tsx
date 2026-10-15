@@ -17,11 +17,14 @@ export default function TopicTypeForm({ form, isEditMode, open }: TopicTypeProps
 
   return (
     <Form form={form} layout="vertical">
-      <Form.Item label={__('Topic Type Name')} name="name" rules={[{ required: false }]}>
-        <Input
-          onChange={event => onNameChange(event.target.value)}
-          placeholder={__('Write Topic Title here')}
-        />
+      {/* Required here as on the server: left optional, an empty name went
+          through and came back as the raw "Missing parameter(s): name". */}
+      <Form.Item
+        label={__('Topic Type Name')}
+        name="name"
+        rules={[{ message: __('Topic type name is required'), required: true, whitespace: true }]}
+      >
+        <Input onChange={event => onNameChange(event.target.value)} placeholder={__('For example, Question')} />
       </Form.Item>
       <SlugField isEditMode={isEditMode} onChange={onSlugChange} />
       <Form.Item

@@ -8,6 +8,7 @@ import { Outlet, useLocation } from 'react-router'
 import { $isDarkTheme } from '../../../common/globalStates/$appConfig'
 import { __ } from '../../../common/helpers/i18nWrap'
 import OfflineBanner from '../../../components/utilities/OfflineBanner'
+import ScreenErrorBoundary from '../../../components/utilities/screen-error-boundary'
 import globalCssInJs from '../../../resource/globalCssInJs'
 import cls from './Layout.module.css'
 import Sidebar from './Sidebar'
@@ -55,9 +56,11 @@ export default function Layout() {
             crosses the window height makes it appear, and the whole screen
             jumps sideways by its width. */}
         <Content className="scroller thin" style={{ overflow: 'auto', scrollbarGutter: 'stable' }}>
-          <Suspense fallback={fallbackOf()} key={screen}>
-            <Outlet />
-          </Suspense>
+          <ScreenErrorBoundary key={screen}>
+            <Suspense fallback={fallbackOf()}>
+              <Outlet />
+            </Suspense>
+          </ScreenErrorBoundary>
         </Content>
       </AntLayout>
     </ThemeProvider>

@@ -56,7 +56,7 @@ function Harness({
   return <TopicForm form={form} isEditMode={isEditMode} taxonomies={taxonomies} />
 }
 
-const title = () => screen.getByLabelText('Topic Title')
+const title = () => screen.getByLabelText('Topic title')
 const slugBox = () => screen.getByLabelText('Permalink')
 const openSlugButton = (name = 'Set a custom permalink') => screen.getByRole('button', { name })
 
@@ -76,7 +76,7 @@ describe('TopicForm slug field', () => {
     const labels = [...document.querySelectorAll('.ant-form-item-label label')].map(l =>
       l.textContent?.trim()
     )
-    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Topic Title') + 1)
+    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Topic title') + 1)
   })
 
   // The whole point of hiding it: an author who does not care about permalinks
@@ -230,7 +230,7 @@ const shownTags = () =>
   [...document.querySelectorAll('.ant-select-item-option-content')].map(o => o.textContent)
 
 const searchTags = async (query: string) => {
-  const box = screen.getByLabelText('Tag')
+  const box = screen.getByLabelText('Tags')
   await userEvent.click(box)
   await userEvent.type(box, query)
 }
@@ -260,7 +260,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
   })
 
   it('splits the row with a field a plugin adds', () => {
@@ -268,7 +268,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
     expect(screen.getByLabelText('Team')).toBeInTheDocument()
   })
 
@@ -291,12 +291,12 @@ describe('TopicForm taxonomy row', () => {
   it('marks Topic Type required only when it is', () => {
     mockTopicFormFields.topicType = 'required'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Topic Type')).not.toBeNull()
+    expect(requiredLabel('Topic type')).not.toBeNull()
     cleanup()
 
     mockTopicFormFields.topicType = 'optional'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Topic Type')).toBeNull()
+    expect(requiredLabel('Topic type')).toBeNull()
   })
 })
 
@@ -324,7 +324,7 @@ describe('TopicForm tag field', () => {
   it('leaves every tag on offer before anything is typed', async () => {
     render(<Harness taxonomies={taxonomies} />)
 
-    await userEvent.click(screen.getByLabelText('Tag'))
+    await userEvent.click(screen.getByLabelText('Tags'))
 
     expect(shownTags()).toEqual(['billing', 'onboarding', 'reporting'])
   })
