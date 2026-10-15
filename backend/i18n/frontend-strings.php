@@ -2070,5 +2070,7 @@ return [
     'Keywords that link related topics. Tags members suggest wait under Pending until you approve them.' => __('Keywords that link related topics. Tags members suggest wait under Pending until you approve them.', 'bit-connect'),
 
     'Everyone with an account, and what each of them may do in the forum.' => __('Everyone with an account, and what each of them may do in the forum.', 'bit-connect'),
+
+    '%s tags' => __('%s tags', 'bit-connect'),
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

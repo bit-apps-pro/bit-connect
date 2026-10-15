@@ -13,6 +13,8 @@ import TagMergeModal from './tag-merge-modal'
 
 export type TagsView = 'all' | 'pending'
 
+const PAGE_SIZE = 20
+
 /** What deleting this tag does to the topics under it. */
 const deleteWarning = (tag: Tag) => {
   if (tag.count === 0) return __('No topic uses this tag.')
@@ -53,6 +55,16 @@ export default function TagsTable({ search = '', view = 'all' }: { search?: stri
     () => tags?.filter(tag => (view === 'all' || tag.pending) && (search === '' || matches(tag, search))),
     [tags, search, view]
   )
+
+  // Back to the first page whenever what is shown changes, so a search never
+  // opens on page 4 of its results — reset while rendering, keyed on the
+  // search and the tab, rather than a frame later in an effect.
+  const [page, setPage] = useState({ for: `${view}\n${search}`, number: 1 })
+  if (page.for !== `${view}\n${search}`) setPage({ for: `${view}\n${search}`, number: 1 })
+  // Deleting the last tag on the last page leaves that page empty; show the
+  // one before it instead.
+  const lastPage = Math.max(1, Math.ceil((shown?.length ?? 0) / PAGE_SIZE))
+  const currentPage = Math.min(page.number, lastPage)
 
   const handleEdit = (id: number) => {
     setSearchParams({ id: id.toString(), modal: 'edit' })
@@ -176,7 +188,19 @@ export default function TagsTable({ search = '', view = 'all' }: { search?: stri
         columns={columns}
         dataSource={shown}
         locale={{ emptyText }}
-        pagination={false}
+        pagination={{
+          current: currentPage,
+          hideOnSinglePage: true,
+          onChange: number => setPage(previous => ({ ...previous, number })),
+          pageSize: PAGE_SIZE,
+          showSizeChanger: false,
+          showTotal: total =>
+            sprintf(
+              // translators: %s: how many tags the list holds.
+              __('%s tags'),
+              String(total)
+            )
+        }}
         rowClassName="bg-transparent"
         rowKey="id"
       />
