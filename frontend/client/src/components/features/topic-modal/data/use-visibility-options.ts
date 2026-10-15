@@ -3,7 +3,11 @@ import { createElement as h } from 'react'
 import { LuGlobe } from 'react-icons/lu'
 
 export interface VisibilityOption {
+  /** What choosing it means, shown on hover. */
+  description?: string
   label: React.ReactNode
+  /** What the create button says while it is chosen, when not just "Submit". */
+  submitLabel?: React.ReactNode
   value: string
 }
 

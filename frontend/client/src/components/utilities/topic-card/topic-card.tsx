@@ -2,6 +2,7 @@ import { contentMedia } from '@common/helpers/content-media'
 import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import { plainText } from '@common/helpers/plain-text'
+import { createdTopicId } from '@features/topic-modal/shared/created-topic'
 import { type Topic } from '@features/topic-modal/shared/type'
 import { chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
@@ -10,8 +11,9 @@ import { tagLabel } from '@utilities/tag-filter'
 import UserLink from '@utilities/user-link'
 import { archivePath } from '@utils/listing-path'
 import { Flex, Tag, Typography } from 'antd'
+import { useEffect, useRef } from 'react'
 import { LuClock, LuMessageCircle, LuPlay } from 'react-icons/lu'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
 import { useAuthStore } from '@/store/auth.zustand'
@@ -83,12 +85,31 @@ export default function TopicCard({
   const { chipTagProps } = useChipProps()
   const commentLabel = Number(commentsCount) === 1 ? __('Comment') : __('Comments')
 
+  // The topic its author was just sent here to see: brought into view and
+  // picked out for a moment — see created-topic.ts.
+  const isJustCreated = createdTopicId(useLocation().state) === postId
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isJustCreated) return
+
+    // Glided to, not jumped to — unless the reader has asked for less motion.
+    const still = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    cardRef.current?.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'nearest' })
+  }, [isJustCreated])
+
   const handlePostVote = async () => {
     await onVote(postId)
   }
 
   return (
-    <div className="topic-card bc-relative bc-flex bc-max-w-full bc-gap-3 bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-3 bc-transition-all lg:bc-gap-4 lg:bc-p-4">
+    <div
+      className={cn(
+        'topic-card bc-relative bc-flex bc-max-w-full bc-gap-3 bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-3 bc-transition-all lg:bc-gap-4 lg:bc-p-4',
+        isJustCreated && 'topic-card--created'
+      )}
+      ref={cardRef}
+    >
       {/* Above the card link overlay so voting never navigates. */}
       <div className="bc-relative bc-z-10">
         <VoteBox isVote={hasVoted} onVote={memberMayVote ? handlePostVote : undefined} votes={total} />

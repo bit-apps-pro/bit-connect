@@ -10,7 +10,7 @@ import { useSinglePostStore } from '@/store/single-post.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useUpdateTopic from '../data/use-update-topic'
-import { TOPIC_MODAL_WIDTH } from '../shared/modal-width'
+import { TOPIC_MODAL_MASK, TOPIC_MODAL_WIDTH } from '../shared/modal-width'
 import useTopicModalStore from '../state/use-topic-modal-store'
 import TopicForm from './topic-form'
 
@@ -147,7 +147,8 @@ export default function TopicEditModal() {
           maxHeight: '70vh',
           overflowY: 'auto',
           paddingInline: '22px'
-        }
+        },
+        mask: TOPIC_MODAL_MASK
       }}
       title={__('Edit Topic')}
       width={TOPIC_MODAL_WIDTH}

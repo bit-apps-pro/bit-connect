@@ -8,3 +8,10 @@
  * its margins.
  */
 export const TOPIC_MODAL_WIDTH = 720
+
+/**
+ * The backdrop behind both topic modals: antd's dimming plus a light blur.
+ * Dimmed alone, the topic list behind stayed sharp enough to read and pulled
+ * the eye away from the post being written.
+ */
+export const TOPIC_MODAL_MASK = { backdropFilter: 'blur(4px)' } as const

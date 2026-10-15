@@ -12,8 +12,8 @@ import useFileStore, { type WPAttachmentData } from '@features/file-uploader/sta
 import FileList from '@features/file-uploader/ui/file-list'
 import If from '@utilities/If'
 import { slugify } from '@utils/slug'
-import { type FormInstance } from 'antd'
-import { Form, Input, Radio, Select } from 'antd'
+import { type CheckboxChangeEvent, type FormInstance } from 'antd'
+import { Checkbox, Form, Input, Select, Tooltip } from 'antd'
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from 'react'
 
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
@@ -192,6 +192,10 @@ export default function TopicForm({
   // the topic's current status lets an implementation keep offering a choice
   // the topic is already using, so editing does not silently change it.
   const visibilityOptions = useVisibilityOptions(form.getFieldValue('post_status'))
+  // The first is what a topic is unless the author says otherwise; a second,
+  // when there is one, is the exception they opt into.
+  const [usualVisibility, otherVisibility] = visibilityOptions
+  const showVisibility = otherVisibility !== undefined
 
   return (
     // Field labels read as headings for their control, so they carry weight; antd
@@ -204,26 +208,49 @@ export default function TopicForm({
       // forms both render `#post_title`, and a label can reach the wrong input.
       name={isEditMode ? 'topic-edit' : 'topic-create'}
     >
-      {destinationField}
-
-      {/* Hidden rather than unrendered when only one visibility is on offer: a
-          radio group of one is a control with nothing to decide, but the field
-          still has to register `publish` so the payload is identical either way.
-          Dropping the Form.Item entirely would leave post_status off the request
-          and lean on the server's default instead. */}
-      <Form.Item
-        className="bc-mb-4"
-        hidden={visibilityOptions.length < 2}
-        initialValue="publish"
-        name="post_status"
+      {/* Where the topic goes and who may read it, as one bar above the title:
+          both are settled before the writing starts, and neither needs a row of
+          its own. The bar wraps on a phone rather than squeezing the two. */}
+      <div
+        className={
+          destinationField || showVisibility
+            ? 'bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3'
+            : undefined
+        }
       >
-        <Radio.Group
-          // antd aligns the radio dot to the label's text baseline, which sits it a
-          // couple of pixels high next to the 16px icon. Center it against the row.
-          className="[&_.ant-radio-wrapper]:bc-items-center"
-          options={visibilityOptions}
-        />
-      </Form.Item>
+        {destinationField}
+
+        {/* One box to tick rather than a choice between equals: almost every
+            topic takes the usual visibility, and the other is the exception.
+            Hidden rather than unrendered when there is nothing to opt into —
+            the field still has to register `publish` so the payload is
+            identical either way. Dropping the Form.Item entirely would leave
+            post_status off the request and lean on the server's default. */}
+        <Form.Item
+          // A box on a line of text rides above the pill's centre by the line's
+          // descender; as a flex item it is centred on the row like the pill.
+          className="bc-mb-0 [&_.ant-form-item-control-input-content]:bc-flex"
+          getValueFromEvent={(event: CheckboxChangeEvent) =>
+            event.target.checked ? otherVisibility?.value : usualVisibility?.value
+          }
+          getValueProps={(value: string) => ({ checked: value === otherVisibility?.value })}
+          hidden={!showVisibility}
+          initialValue="publish"
+          name="post_status"
+        >
+          <Checkbox
+            // antd sits the box on the label's text baseline, a couple of pixels
+            // low beside the 16px icon, so the two are centred on each other
+            // instead. It also pads the label on the right for a following
+            // control; at the end of the bar that would stop it short of the
+            // fields' right edge.
+            className="bc-items-center [&_.ant-checkbox+span]:bc-pe-0"
+          >
+            {/* Opens under the box and toward the form, not off the modal's edge. */}
+            <Tooltip placement="bottomRight" title={otherVisibility?.description}>{otherVisibility?.label}</Tooltip>
+          </Checkbox>
+        </Form.Item>
+      </div>
 
       {/* A closed permalink is a line of helper text, so it tucks under the
           title rather than standing off it as a field of its own. */}
