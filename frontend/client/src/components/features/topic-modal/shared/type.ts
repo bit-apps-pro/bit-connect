@@ -143,6 +143,8 @@ export interface Topic {
   ID: number
   /** A moderator closed the thread: its comments stay readable, but nobody can add one. */
   is_locked?: boolean
+  /** A moderator pinned it: it leads the lists it appears in. */
+  is_pinned?: boolean
   menu_order: number
   permalink: string
   ping_status: string

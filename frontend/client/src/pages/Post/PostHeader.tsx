@@ -26,6 +26,7 @@ import { toEditAttribution } from '@/types/edit-attribution'
 import useChipProps from '@/utils/use-chip-props'
 
 import ContentBox from './ContentBox'
+import useTopicPinItem from './data/use-topic-pin-item'
 import { formattedDate } from './PostDetailsPage'
 import HiddenTopicNotice from './ui/hidden-topic-notice'
 import TagChips from './ui/tag-chips'
@@ -89,6 +90,7 @@ export default function PostHeader({
   const canDeletePost = canDeleteAny || Boolean(isOwner && can('bit_connect_forum_delete_own_post'))
   const canLock = can('bit_connect_forum_lock_post')
   const [isLocking, setIsLocking] = useState(false)
+  const pinItem = useTopicPinItem(post)
 
   useEffect(() => {
     if (allStatuses.length === 0) {
@@ -309,6 +311,8 @@ export default function PostHeader({
       })
     }
 
+    if (pinItem) items.push(pinItem)
+
     if (canDeletePost) {
       items.push({
         danger: true,
@@ -340,6 +344,7 @@ export default function PostHeader({
     handleReport,
     handleToggleLock,
     isOwner,
+    pinItem,
     post.is_locked
   ])
 
