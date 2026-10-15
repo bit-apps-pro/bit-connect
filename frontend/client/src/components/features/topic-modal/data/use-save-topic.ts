@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormInstance } from 'antd'
 import { useContext } from 'react'
 
-import { usePostsStore } from '@/store/posts.zustand'
+import { TOPIC_LIST_QUERY_KEY } from '@/store/data/fetch-all-posts-api'
 
 import { slugDisclosure } from '../shared/slug-disclosure'
 import { type SaveTopicPayload, type Topic } from '../shared/type'
@@ -13,7 +13,6 @@ import useTopicRequest from './use-topic-request'
 
 export default function useSaveTopic(form: FormInstance) {
   const { notificationApi } = useContext(NotifyContext)
-  const fetchAllPosts = usePostsStore(state => state.fetchAllPosts)
   const queryClient = useQueryClient()
   // Which endpoint a topic goes to depends on the visibility it was given.
   // See use-topic-request.
@@ -62,8 +61,9 @@ export default function useSaveTopic(form: FormInstance) {
               message: __('Topic created successfully')
             }
       )
-      // Reload the list (page 1) with the currently active filters.
-      void fetchAllPosts(usePostsStore.getState().filters)
+      // The new topic belongs at the top of the lists it fits; the one on screen
+      // refetches now, the others the next time they are opened.
+      void queryClient.invalidateQueries({ queryKey: TOPIC_LIST_QUERY_KEY })
       // This save just consumed a slug; a cached verdict from before it would
       // still call that slug free.
       queryClient.invalidateQueries({ queryKey: ['topic-slug-check'] })

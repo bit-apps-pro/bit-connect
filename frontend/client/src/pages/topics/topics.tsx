@@ -23,11 +23,16 @@ import useAddedViews from '../../components/utilities/sort-filter/use-added-view
 import useListingSelection from '../Layout/data/use-listing-selection'
 import { ALL_STAGES } from '../Layout/ui/Sidebar/listing-link'
 import ArchiveHeader from './archive-header'
+import useTopics from './data/use-topics'
 import ListingContext from './listing-context'
+import TopicListSkeleton from './topic-card-skeleton'
 import TopicListBanners from './topic-list-banners'
 
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
+
+/** How long (ms) a switch to an unopened stage keeps the old list before the skeleton. */
+const SKELETON_DELAY_MS = 250
 
 // A bordered square the height of the type chips and the sort picker beside it,
 // so the row reads as one toolbar. The filter is a secondary control,
@@ -232,19 +237,42 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     [myTopics, search, sortBy, stages, tags, topicType, view, visibility, scopeFilter]
   )
 
-  const { fetchAllPosts, fetchMorePosts, hasMore, isLoading, isLoadingMore, posts, toggleVote } =
-    usePostsStore()
+  const toggleVote = usePostsStore(state => state.toggleVote)
+  const {
+    error: loadError,
+    fetchNextPage,
+    hasNextPage: hasMore,
+    isFetchingNextPage: isLoadingMore,
+    isPending: isLoading,
+    isPlaceholderData: isSwitching,
+    posts
+  } = useTopics(filters)
 
-  // Applying a filter changes this key, remounting the list container so the
-  // cards replay their entrance animation — the visual cue that the result set
-  // changed. Appended pages (infinite scroll) keep the same key, so only the
-  // new cards animate in.
+  // Which list is on screen: undefined while the previous one stands in.
   const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
+  const listKey = isSwitching ? undefined : filtersKey
+
+  // The topics already shown in this list, so only the ones that arrive later —
+  // the next page, a topic posted since — animate in. A whole new list (another
+  // stage, or the real list replacing a stand-in) swaps in place instead: every
+  // card fading in again on each switch read as the page blinking.
+  const [seen, setSeen] = useState(() => ({ ids: new Set(posts.map(topic => topic.ID)), key: listKey }))
+  useEffect(() => {
+    setSeen(previous => {
+      const ids = posts.map(topic => topic.ID)
+      if (previous.key === listKey && ids.every(id => previous.ids.has(id))) return previous
+
+      return { ids: new Set(previous.key === listKey ? [...previous.ids, ...ids] : ids), key: listKey }
+    })
+  }, [posts, listKey])
 
   const shouldReduceMotion = useReducedMotion()
-  const cardMotion = (index: number) => ({
+  const cardMotion = (topicId: number, index: number) => ({
     animate: { opacity: 1, y: 0 },
-    initial: shouldReduceMotion ? false : { opacity: 0, y: 12 },
+    initial:
+      shouldReduceMotion || listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
+        ? false
+        : { opacity: 0, y: 12 },
     // Stagger is capped so late infinite-scroll pages don't accumulate delay.
     transition: { delay: Math.min(index * 0.05, 0.3), duration: 0.3, ease: 'easeOut' as const }
   })
@@ -253,13 +281,49 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   // paginated — a list that fits in the first page never shows it.
   const [hasPaginated, setHasPaginated] = useState(false)
 
-  // (Re)load the first page on mount and whenever the filters change.
+  // A new filter set starts from its first page; useTopics fetches it. The list
+  // no longer remounts on a switch, so it would keep the old scroll position
+  // and open the new stage halfway down — back to the top instead. Not on
+  // mount: arriving at the list is the scroller's business.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const isFirstFilters = useRef(true)
   useEffect(() => {
     setHasPaginated(false)
-    fetchAllPosts(filters).catch(() => {
-      notificationApi?.error({ message: __('Failed to load posts') })
+    if (isFirstFilters.current) {
+      isFirstFilters.current = false
+      return
+    }
+    getScrollParent(rootRef.current)?.scrollTo({ top: 0 })
+  }, [filters])
+
+  useEffect(() => {
+    if (loadError) notificationApi?.error({ message: __('Failed to load posts') })
+  }, [loadError, notificationApi])
+
+  // Guards against concurrent calls, and against paging the previous list while
+  // it stands in for the new one.
+  // A stage not opened before: the previous list holds for a beat, then gives
+  // way to the skeleton. Its topics belong to the stage the reader just left,
+  // so they are not shown for long — but a skeleton flashed for the 200ms a
+  // quick answer takes would blink just the same. A stage already opened shows
+  // its cached topics at once and never gets here.
+  const [isSlowSwitch, setIsSlowSwitch] = useState(false)
+  useEffect(() => {
+    if (!isSwitching) return
+    const timer = setTimeout(() => setIsSlowSwitch(true), SKELETON_DELAY_MS)
+    return () => {
+      clearTimeout(timer)
+      setIsSlowSwitch(false)
+    }
+  }, [isSwitching])
+  const showSkeleton = isLoading || (isSwitching && isSlowSwitch)
+
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || isSwitching) return
+    fetchNextPage().catch(() => {
+      notificationApi?.error({ message: __('Failed to load more posts') })
     })
-  }, [filters, fetchAllPosts, notificationApi])
+  }, [fetchNextPage, isLoadingMore, isSwitching, notificationApi])
 
   // Infinite scroll: load the next page when the sentinel scrolls into view.
   // The list lives inside a scrollable layout container, so observe relative to
@@ -272,11 +336,8 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) {
-          // fetchMorePosts guards against concurrent calls internally.
           setHasPaginated(true)
-          fetchMorePosts().catch(() => {
-            notificationApi?.error({ message: __('Failed to load more posts') })
-          })
+          loadMore()
         }
       },
       { root: getScrollParent(node), rootMargin: '300px' }
@@ -284,15 +345,15 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
 
     observer.observe(node)
     return () => observer.disconnect()
-    // `isLoading`/`posts.length` are included because the sentinel is only
-    // rendered once loading finishes and there are posts. Without them the
-    // observer wouldn't re-attach after a client-side navigation where
-    // `hasMore` is already true (carried over in the persistent store).
-  }, [hasMore, fetchMorePosts, notificationApi, isLoading, posts.length])
+    // `showSkeleton`/`posts.length` are included because the sentinel is only
+    // rendered while the list is (not its skeleton) and there are posts.
+    // Without them the observer wouldn't re-attach after a client-side
+    // navigation where `hasMore` is already true (carried over in the query
+    // cache).
+  }, [hasMore, loadMore, showSkeleton, posts.length])
 
   // Scroll-to-top button: show it while the user scrolls down past a threshold,
   // then auto-hide once scrolling stops for SCROLL_IDLE_HIDE_MS.
-  const rootRef = useRef<HTMLDivElement>(null)
   const scrollParentRef = useRef<HTMLElement | undefined>(undefined)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -513,20 +574,16 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
         </div>
       </Drawer>
 
-      {isLoading && (
-        <div className="bc-flex bc-items-center bc-justify-center bc-p-8">
-          <span>{__('Loading posts...')}</span>
-        </div>
-      )}
-      {!isLoading && posts.length === 0 && (
+      {showSkeleton && <TopicListSkeleton />}
+      {!showSkeleton && posts.length === 0 && (
         <div className="bc-flex bc-items-center bc-justify-center bc-p-8">
           <span>{__('No posts found')}</span>
         </div>
       )}
-      {!isLoading && posts.length > 0 && (
-        <div className="bc-flex bc-flex-col bc-gap-4" key={filtersKey}>
+      {!showSkeleton && posts.length > 0 && (
+        <div aria-busy={isSwitching} className="bc-flex bc-flex-col bc-gap-4">
           {posts.map((topic, index) => (
-            <m.div key={topic.ID} {...cardMotion(index)}>
+            <m.div key={topic.ID} {...cardMotion(topic.ID, index)}>
               <TopicCard onVote={handlePostVote} showStage={showsStageBadges} topic={topic} />
             </m.div>
           ))}
@@ -534,11 +591,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
           {/* Sentinel: observed to trigger loading the next page */}
           <div aria-hidden="true" className="bc-h-px" ref={sentinelRef} />
 
-          {isLoadingMore && (
-            <div className="bc-flex bc-items-center bc-justify-center bc-p-4">
-              <span>{__('Loading more...')}</span>
-            </div>
-          )}
+          {isLoadingMore && <TopicListSkeleton count={2} />}
 
           {hasPaginated && !hasMore && !isLoadingMore && (
             <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">

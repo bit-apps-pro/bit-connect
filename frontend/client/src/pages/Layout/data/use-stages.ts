@@ -48,7 +48,9 @@ export const useStagesStore = create<StagesStore>((set, get) => ({
       throw error
     }
   },
-  isLoading: false,
+  // Loading from the start: the sidebar fetches on mount, and its placeholder
+  // rows should cover that first frame rather than pop in one frame late.
+  isLoading: true,
   setError: error => set({ error }),
   setLoading: isLoading => set({ isLoading }),
   stages: []

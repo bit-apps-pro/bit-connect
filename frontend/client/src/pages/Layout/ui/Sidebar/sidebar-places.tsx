@@ -12,6 +12,7 @@ import { matchPath, useLocation } from 'react-router'
 import { __ } from '../../../../common/helpers/i18nWrap'
 import { listingLink } from './listing-link'
 import SidebarNavItem from './SidebarNavItem'
+import StageRowsSkeleton from './stage-rows-skeleton'
 
 /**
  * The portal's stages, each opening the topic listing on that stage, and for
@@ -24,6 +25,7 @@ export default function SidebarPlaces(): ReactNode {
 
   return (
     <div className="bc-flex bc-flex-col bc-space-y-1">
+      <StageRowsSkeleton />
       {stages.map(stage => (
         <SidebarNavItem
           key={stage.id}

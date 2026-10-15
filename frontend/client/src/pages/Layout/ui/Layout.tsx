@@ -4,6 +4,7 @@ import { Global, ThemeProvider } from '@emotion/react'
 import LoginWarningModal from '@features/login-warning-modal/ui/login-warning-modal'
 import useTaxonomies from '@features/topic-modal/data/use-taxonomies'
 import getScrollParent from '@utils/get-scroll-parent'
+import { isListingPath } from '@utils/listing-path'
 import { Layout as AntLayout, Space, theme } from 'antd'
 import { m, useReducedMotion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
@@ -36,7 +37,12 @@ export default function Layout() {
   const antConfig = useToken()
 
   const { key: locationKey, pathname } = useLocation()
-  const suspenseKey = pathname.split('/')[1]
+  // Moving between stages, tags and other archives is the same page showing a
+  // different list, not a new page: keyed as one, so the list swaps its topics
+  // in place instead of the whole column fading out and back in on every click.
+  const isListing = isListingPath(pathname)
+  const pageKey = isListing ? 'listing' : pathname
+  const suspenseKey = isListing ? 'listing' : pathname.split('/')[1]
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // A tap in the phone drawer is a choice made, so it closes on arrival —
@@ -104,15 +110,15 @@ export default function Layout() {
               costs the page below it no space. */}
           <div aria-hidden="true" className="bc-h-px bc--mb-px" ref={topSentinelRef} />
 
-          {/* Enter-only fade keyed by pathname: each navigation fades the new
-              page in. Deliberately no AnimatePresence exit here — animating the
-              outgoing page requires snapshotting the outlet and doubles the
+          {/* Enter-only fade keyed by page: each navigation to another page
+              fades it in. Deliberately no AnimatePresence exit here — animating
+              the outgoing page requires snapshotting the outlet and doubles the
               transition time; an enter fade gives the perceived smoothness
               without either cost. */}
           <m.div
             animate={{ opacity: 1, y: 0 }}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-            key={pathname}
+            key={pageKey}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <Suspense fallback={fallbackOf()} key={suspenseKey}>
