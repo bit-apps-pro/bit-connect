@@ -111,6 +111,8 @@ declare const SERVER_VARIABLES: {
   siteURL: string
   timeFormat: string
   timeZone: string
+  /** Topics per server-rendered list page (TopicsView::pageSize()). */
+  topicListPageSize?: number
   /** Whether the site's permalinks end in a slash (BaseView.php). */
   trailingSlash?: boolean
   translations?: Record<string, string>

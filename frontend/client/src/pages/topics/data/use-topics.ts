@@ -9,6 +9,16 @@ const TOPICS_PER_PAGE = 10
 type TopicList = InfiniteData<TopicsPage, number>
 
 /**
+ * Where the list begins. The portal root starts on page 1 of its own size; a
+ * `/page/N` URL starts on page N of the server's, so it shows the topics the
+ * server rendered there, and scrolling on continues from N + 1.
+ */
+interface ListStart {
+  perPage?: number
+  startPage?: number
+}
+
+/**
  * The list the portal showed last, whichever route showed it.
  *
  * `keepPreviousData` only bridges a filter change inside one mounted list, and
@@ -26,14 +36,14 @@ let lastShown: TopicList | undefined
  * (`isPlaceholderData`) until its own arrives, rather than blanking the page
  * to a loading line on every switch.
  */
-export default function useTopics(filters: PostsFilters) {
+export default function useTopics(filters: PostsFilters, { perPage = TOPICS_PER_PAGE, startPage = 1 }: ListStart = {}) {
   const query = useInfiniteQuery<TopicsPage, Error, TopicList, readonly unknown[], number>({
     getNextPageParam: ({ pagination }: TopicsPage) =>
       pagination.current_page < pagination.total_pages ? pagination.current_page + 1 : undefined,
-    initialPageParam: 1,
+    initialPageParam: startPage,
     placeholderData: previous => previous ?? lastShown,
-    queryFn: ({ pageParam }) => fetchAllPostsApi({ ...filters, page: pageParam, per_page: TOPICS_PER_PAGE }),
-    queryKey: [...TOPIC_LIST_QUERY_KEY, filters]
+    queryFn: ({ pageParam }) => fetchAllPostsApi({ ...filters, page: pageParam, per_page: perPage }),
+    queryKey: [...TOPIC_LIST_QUERY_KEY, filters, startPage, perPage]
   })
 
   const { data, isPlaceholderData } = query

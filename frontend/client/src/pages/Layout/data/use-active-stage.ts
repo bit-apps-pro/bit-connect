@@ -69,11 +69,11 @@ export function resolveActiveStage({
   // stage's listing while one is running.
   if (spansAllStages) return undefined
 
-  // The portal root, and the deeper pages of it that exist as a crawl path —
-  // or the archive the listing is scoped to, which is the same listing over
-  // fewer topics. Everything else is not a stage listing and marks nothing.
-  const listing =
-    isScopedListing || (matchPath('/', pathname) ?? matchPath('/page/:pageNumber', pathname))
+  // The portal root — or the archive the listing is scoped to, which is the
+  // same listing over fewer topics. Everything else is not a stage listing and
+  // marks nothing, the root's deeper pages included: `/page/N` is the server's
+  // crawl path through every stage, so no one stage is current there.
+  const listing = isScopedListing || matchPath('/', pathname)
 
   return listing ? defaultStage : undefined
 }

@@ -167,6 +167,8 @@ interface ConfigType {
   TIME_FORMAT: string
   /** Settings → General → Timezone: an IANA name, or `±HH:MM` for a manual offset. */
   TIME_ZONE: string
+  /** Topics per server-rendered list page, so `/page/N` starts where the server's did; 0 means one page. */
+  TOPIC_LIST_PAGE_SIZE: number
   /** Whether portal URLs end in a slash — see utils/route-path.ts. */
   TRAILING_SLASH: boolean
   /** Seed for the bell's badge, so it is right on first paint. */
@@ -282,6 +284,8 @@ const config = {
   SITE_URL: siteURL,
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
   TIME_ZONE: getServerVariable('timeZone', '') ?? '',
+  // Through Number(), not as a fallback: 0 (every topic on one page) is falsy.
+  TOPIC_LIST_PAGE_SIZE: Number(SERVER_VARIABLES?.topicListPageSize ?? 30),
   // Read straight off the payload rather than through getServerVariable, which
   // treats `false` — the answer on any site without trailing slashes — as a
   // missing value.

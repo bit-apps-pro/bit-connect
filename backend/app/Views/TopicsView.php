@@ -32,6 +32,17 @@ class TopicsView extends SSRView
      */
     private const SSR_TOPIC_LIMIT = 30;
 
+    /**
+     * Topics per server-rendered list page; 0 or less renders them all.
+     *
+     * Also sent to the app, which has to start `/page/N` on the same topic the
+     * server did — its own page size would put page 2 somewhere else entirely.
+     */
+    public static function pageSize(): int
+    {
+        return (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
+    }
+
     public BaseView $baseView;
 
     /**
@@ -71,7 +82,7 @@ class TopicsView extends SSRView
             return $this->prepareClosed(['topics' => [], 'page' => 1, 'totalPages' => 1]);
         }
 
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
+        $limit = self::pageSize();
         $page = max(1, (int) $page);
 
         $topicsData = $this->topicService->getAllTopics(
@@ -147,7 +158,7 @@ class TopicsView extends SSRView
 
         $this->baseView->registerAssets();
 
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
+        $limit = self::pageSize();
 
         $topicsData = $this->topicService->getAllTopics(
             [

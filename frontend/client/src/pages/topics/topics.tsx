@@ -1,9 +1,9 @@
 import './topics.css'
 
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
-import usePageTitle from '@common/hooks/usePageTitle'
+import usePageTitle, { pageTitle } from '@common/hooks/usePageTitle'
 import SortFilter from '@utilities/sort-filter'
 import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
 import TopicCard from '@utilities/topic-card'
@@ -13,7 +13,7 @@ import { Button, Drawer } from 'antd'
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
-import { useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 
 import config from '@/config/config'
 import { usePostsStore } from '@/store/posts.zustand'
@@ -97,12 +97,24 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   // type, tags) still apply, since their chips stay on screen beside the
   // results.
   const { scope: pageScope } = useListingSelection()
+
+  // `/page/N`: a deeper page of the list the server renders as a crawl path —
+  // every stage, newest first, TOPIC_LIST_PAGE_SIZE at a time. A reader lands
+  // here from a search result or the server's own "next" link, so the app has
+  // to show the topics that page held, not the default stage from the top.
+  const { pageNumber } = useParams()
+  const listPage = archiveFilter ? 1 : Math.max(1, Number.parseInt(pageNumber ?? '', 10) || 1)
+  const isDeepPage = listPage > 1 && config.TOPIC_LIST_PAGE_SIZE > 0
   const isSearching = search !== ''
   const scopeFilter = archiveFilter
   const listingScope = isSearching ? '' : pageScope
   const stageParam = isSearching ? '' : searchParams.get('stage') || ''
   const spansAllStages =
-    isSearching || tags !== '' || view !== '' || (scopeFilter !== undefined && listingScope === '')
+    isSearching ||
+    tags !== '' ||
+    view !== '' ||
+    isDeepPage ||
+    (scopeFilter !== undefined && listingScope === '')
   const stages =
     stageParam === ALL_STAGES ? '' : stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
   // Cards name their stage only where the list mixes them; under one stage the
@@ -134,6 +146,11 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const archiveTerm = archive ? taxonomies?.[archive.taxonomy]?.find(term => term.slug === archiveSlug) : undefined
   const archiveName = archiveKey ? archiveTerm?.name : ''
   usePageTitle(archiveName)
+
+  // After usePageTitle, so it wins: the server's "Community | Page N" form.
+  useEffect(() => {
+    if (isDeepPage) document.title = sprintf(__('%1$s | Page %2$s'), pageTitle(), String(listPage))
+  }, [isDeepPage, listPage])
 
   const clearSort = () =>
     setSearchParams(prev => {
@@ -246,7 +263,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     isPending: isLoading,
     isPlaceholderData: isSwitching,
     posts
-  } = useTopics(filters)
+  } = useTopics(filters, isDeepPage ? { perPage: config.TOPIC_LIST_PAGE_SIZE, startPage: listPage } : undefined)
 
   // Which list is on screen: undefined while the previous one stands in.
   const filtersKey = useMemo(() => JSON.stringify(filters), [filters])

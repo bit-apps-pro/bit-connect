@@ -150,6 +150,8 @@ class BaseView
             'portalArchives'    => self::portalArchives(),
             'defaultStageSlug'  => StageService::defaultStageSlug(),
             'defaultStatusSlug' => StatusService::defaultStatusSlug(),
+            // The server's list page size, so `/page/N` starts where it did.
+            'topicListPageSize' => TopicsView::pageSize(),
             'wpMediaSettings'   => [
                 'maxUploadBytes'      => wp_max_upload_size(),
                 'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),

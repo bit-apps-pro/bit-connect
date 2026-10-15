@@ -26,13 +26,13 @@ class TopicsController
     /**
      * Handle the root route and render the topics page.
      *
-     * @param int|string $page list page, 1 unless a `/page/{n}` route matched
+     * @param int|string $pageNumber list page, 1 unless a `/page/{n}` route matched
      *
      * @return string
      */
-    public function index(Request $request, $page = 1) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+    public function index(Request $request, $pageNumber = 1)
     {
-        $page = max(1, (int) $page);
+        $page = max(1, (int) $pageNumber);
 
         // Before anything is rendered, so a plugin that answers some form of
         // this URL with a redirect — an older address of one of its archives —

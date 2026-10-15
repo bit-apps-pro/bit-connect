@@ -20,11 +20,12 @@ if (!defined('ABSPATH')) {
 // Root route - matches frontend route '/'
 Route::get('/', [new TopicsController(), 'index']);
 
-// Paginated list - matches frontend route '/page/:pageNumber'. The placeholder is
-// `{page}`, not the frontend's name: the router binds placeholders to controller
-// parameters by name, and as `{pageNumber}` it never reached `$page`, so every
-// page rendered — and described itself — as page 1. See SeoMeta::forTopics().
-Route::get('/page/{page}', [new TopicsController(), 'index']);
+// Paginated list - matches frontend route '/page/:pageNumber'. The router binds
+// placeholders to controller parameters by name, so this must match
+// TopicsController::index()'s `$pageNumber`. It must not be `{page}`: the
+// placeholder also names the rewrite rule's query var, and `page` is WordPress's
+// own <!--nextpage--> var, so redirect_canonical 301s `/page/2` back to page 1.
+Route::get('/page/{pageNumber}', [new TopicsController(), 'index']);
 
 // The member's own notifications - matches frontend route '/notifications'.
 // Declared before the single-segment '/{slug}' route below, which would

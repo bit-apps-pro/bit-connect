@@ -16,7 +16,12 @@ describe('resolveActiveStage', () => {
 
   it('falls back to the default stage on a listing that names none', () => {
     expect(resolve('/')).toBe(DEFAULT_STAGE)
-    expect(resolve('/page/2')).toBe(DEFAULT_STAGE)
+  })
+
+  // The root's deeper pages list every stage, as the server renders them.
+  it('marks nothing on a deeper page of the list', () => {
+    expect(resolve('/page/2')).toBeUndefined()
+    expect(resolve('/page/2/')).toBeUndefined()
   })
 
   it('marks the stage a stage archive names in its path', () => {
