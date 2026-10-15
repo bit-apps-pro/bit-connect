@@ -57,7 +57,7 @@ final class AuthApiController
             // never throttled for it.
             AuthRateLimiter::consume(AuthRateLimiter::LOGIN, $username);
 
-            return Response::error(self::errorMessage($user))
+            return Response::error(self::loginErrorMessage($user))
                 ->httpStatus(401);
         }
 
@@ -240,12 +240,20 @@ final class AuthApiController
 
         $result = retrieve_password($login);
 
-        if (is_wp_error($result)) {
+        // The same answer whether or not an account matched. WordPress says
+        // "There is no account with that username or email address", which let
+        // anyone test addresses against the site one at a time. A real failure
+        // — the mail could not be sent, resets are switched off — still says so.
+        $unknownAccount = is_wp_error($result) && \in_array($result->get_error_code(), ['invalidcombo', 'invalid_email'], true);
+
+        if (is_wp_error($result) && !$unknownAccount) {
             return Response::error(self::errorMessage($result))
                 ->httpStatus(422);
         }
 
-        return Response::success(['message' => __('Password reset email sent. Please check your inbox.', 'bit-connect')]);
+        return Response::success(
+            ['message' => __('If an account matches, a link to reset its password is on its way. Please check your inbox.', 'bit-connect')]
+        );
     }
 
     /**
@@ -282,6 +290,29 @@ final class AuthApiController
     private static function errorMessage($error): string
     {
         return trim(wp_strip_all_tags((string) $error->get_error_message()));
+    }
+
+    /**
+     * A failed sign-in, worded so it does not say which half was wrong.
+     *
+     * WordPress answers an unknown username "is not registered on this site"
+     * and a known one with the wrong password "The password you entered for
+     * the username X is incorrect", so the form told anyone which accounts
+     * exist. Those codes share one sentence; anything else — a second factor
+     * asked for, an account awaiting verification, a lockout — is the member's
+     * to read and passes through as WordPress or its plugin wrote it.
+     *
+     * @param \WP_Error $error
+     */
+    private static function loginErrorMessage($error): string
+    {
+        $credentialCodes = ['invalid_username', 'invalid_email', 'incorrect_password'];
+
+        if (\in_array($error->get_error_code(), $credentialCodes, true)) {
+            return __('The username, email address or password is incorrect.', 'bit-connect');
+        }
+
+        return self::errorMessage($error);
     }
 
     /**

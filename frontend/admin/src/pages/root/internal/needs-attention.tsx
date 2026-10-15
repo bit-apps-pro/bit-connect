@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { Grid } from 'antd'
 import { type ReactNode } from 'react'
 import { LuArrowRight } from 'react-icons/lu'
 import { Link } from 'react-router'
@@ -17,6 +18,8 @@ interface QueueProps {
   first?: boolean
   label: string
   /** An admin route, or an absolute wp-admin URL, which opens in the same tab. */
+  /** One under another, on a screen too narrow for three side by side. */
+  stacked?: boolean
   to: string
   /** Drawn in the warning colour while it is not zero. */
   urgent?: boolean
@@ -26,11 +29,13 @@ interface QueueProps {
  * One queue as a count and the way to work through it. The whole tile is the
  * link, so the number itself can be clicked.
  */
-function Queue({ action, count, first, label, to, urgent }: QueueProps) {
+function Queue({ action, count, first, label, stacked, to, urgent }: QueueProps) {
   // One padding per tile rather than a base and an `sm:` override: in the admin
-  // the base utility wins over the responsive one on the same property.
+  // the base utility wins over the responsive one on the same property. On a
+  // phone the tiles stack, ruled off above rather than beside each other.
+  const rule = stacked ? 'bc-border-t' : 'bc-border-l'
   const className = `bc-group bc-flex bc-min-w-0 bc-flex-col bc-gap-1 bc-py-4 bc-pr-4 bc-text-inherit bc-no-underline hover:bc-bg-surface-hover ${
-    first ? 'bc-pl-6' : 'bc-border-0 bc-border-l bc-border-solid bc-border-line bc-pl-4'
+    first ? 'bc-pl-6' : `bc-border-0 ${rule} bc-border-solid bc-border-line ${stacked ? 'bc-pl-6' : 'bc-pl-4'}`
   }`
   const content: ReactNode = (
     <>
@@ -77,6 +82,7 @@ interface NeedsAttentionProps {
  */
 export default function NeedsAttention({ attention, className, topics }: NeedsAttentionProps) {
   const isClear = attention.reports === 0 && attention.pendingReplies === 0 && attention.unanswered === 0
+  const stacked = !Grid.useBreakpoint().sm
 
   const columns: TopicColumn<UnansweredTopic>[] = [
     {
@@ -110,7 +116,11 @@ export default function NeedsAttention({ attention, className, topics }: NeedsAt
       subtitle={isClear ? __('Nothing is waiting on you right now.') : undefined}
       title={__('Needs attention')}
     >
-      <div className="bc-grid bc-grid-cols-3 bc-border-0 bc-border-b bc-border-solid bc-border-line">
+      {/* Three across from sm; below it each label wrapped a word to a line. */}
+      <div
+        className="bc-grid bc-border-0 bc-border-b bc-border-solid bc-border-line"
+        style={{ gridTemplateColumns: stacked ? '1fr' : 'repeat(3, minmax(0, 1fr))' }}
+      >
         <Queue
           action={__('Review reports')}
           count={attention.reports}
@@ -123,6 +133,7 @@ export default function NeedsAttention({ attention, className, topics }: NeedsAt
           action={__('Approve comments')}
           count={attention.pendingReplies}
           label={__('Comments awaiting approval')}
+          stacked={stacked}
           to={attention.pendingRepliesUrl}
           urgent
         />
@@ -130,6 +141,7 @@ export default function NeedsAttention({ attention, className, topics }: NeedsAt
           action={__('Open topics')}
           count={attention.unanswered}
           label={__('Topics waiting for a comment')}
+          stacked={stacked}
           to="topics"
         />
       </div>

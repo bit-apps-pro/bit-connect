@@ -12,9 +12,9 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 /**
  * Transient-based rate limiter for forum votes.
  *
- * Tracks vote actions per user within a sliding window and rejects requests
- * that exceed the configured threshold. Stored in wp_options via transients —
- * no extra tables required.
+ * Counts a member's votes until they go a whole window without one, and
+ * refuses past the threshold. Stored in wp_options via transients — no extra
+ * tables required.
  *
  * Default limits (configurable via filters):
  *   - 30 votes per 60-second window per user
@@ -59,8 +59,8 @@ final class VoteRateLimiter
     }
 
     /**
-     * Records a vote action for the user, consuming one rate-limit slot.
-     * If no slot exists yet, creates one with a TTL equal to the window length.
+     * Records a vote action for the user, consuming one rate-limit slot, and
+     * restarts the window.
      */
     public static function consume(int $userId): void
     {
@@ -72,13 +72,11 @@ final class VoteRateLimiter
         $key = self::buildKey($userId);
         $count = self::getCount($userId);
 
-        if ($count === 0) {
-            // First action in this window — set transient with full TTL
-            set_transient($key, 1, $window);
-        } else {
-            // Increment without resetting TTL (keep original window expiry)
-            set_transient($key, $count + 1, $window);
-        }
+        // Every counted vote restarts the window, so the count clears once the
+        // member has gone a whole window without voting. That is what the
+        // refusal promises — "wait 60 seconds" — and a refused vote is never
+        // counted, so waiting is always enough.
+        set_transient($key, $count + 1, $window);
     }
 
     /**

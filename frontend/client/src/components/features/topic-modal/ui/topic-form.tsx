@@ -191,12 +191,17 @@ export default function TopicForm({
   // with one option; the add-on's implementation knows about the rest. Passing
   // the topic's current status lets an implementation keep offering a choice
   // the topic is already using, so editing does not silently change it.
-  const visibilityOptions = useVisibilityOptions(form.getFieldValue('post_status'))
+  //
+  // Watched rather than read with getFieldValue(): this renders before the
+  // <Form> below has mounted, and reading an unconnected form instance logged
+  // antd's "not connected to any Form element" on every open.
+  const postStatus = Form.useWatch('post_status', form) as string | undefined
+  const visibilityOptions = useVisibilityOptions(postStatus)
   // The first is what a topic is unless the author says otherwise; a second,
   // when there is one, is the exception they opt into.
   const [usualVisibility, otherVisibility] = visibilityOptions
   const showVisibility = otherVisibility !== undefined
-  const isOtherVisibility = Form.useWatch('post_status', form) === otherVisibility?.value && showVisibility
+  const isOtherVisibility = postStatus === otherVisibility?.value && showVisibility
 
   return (
     // Field labels read as headings for their control, so they carry weight; antd
