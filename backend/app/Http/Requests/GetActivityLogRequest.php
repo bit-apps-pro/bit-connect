@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\PermissionService;
 
 /**
@@ -15,6 +17,7 @@ use BitApps\BitConnect\Services\PermissionService;
  * @property null|int    $actor       filter to one actor
  * @property null|string $action      filter to one action slug
  * @property null|string $target_type post | comment
+ * @property null|string $period      today | yesterday | 7d | 30d | 90d, on the site's calendar
  * @property null|int    $page
  * @property null|int    $per_page
  */
@@ -48,6 +51,7 @@ final class GetActivityLogRequest extends Request
             'action'      => ['nullable', 'string'],
             'target_type' => ['nullable', 'string'],
             'target_id'   => ['nullable', 'integer'],
+            'period'      => ['nullable', 'string', new InRule(ActivityLogService::PERIODS)],
             'page'        => ['nullable', 'integer'],
             'per_page'    => ['nullable', 'integer'],
         ];

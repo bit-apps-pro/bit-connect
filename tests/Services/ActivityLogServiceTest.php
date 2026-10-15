@@ -228,6 +228,38 @@ final class ActivityLogServiceTest extends TestCase
     }
 
     /**
+     * A rolling window starts at a midnight and stays open, so a row written a
+     * moment ago is never left out of "Today".
+     */
+    public function testARollingPeriodStartsAtAMidnightAndHasNoEnd(): void
+    {
+        $today = gmdate('Y-m-d 00:00:00');
+
+        $this->assertSame([$today, null], ActivityLogService::periodWindow('today'));
+        $this->assertSame(
+            [gmdate('Y-m-d 00:00:00', strtotime('-6 days', strtotime($today))), null],
+            ActivityLogService::periodWindow('7d')
+        );
+    }
+
+    /** Yesterday is the one window that closes, at today's midnight. */
+    public function testYesterdayEndsWhereTodayBegins(): void
+    {
+        $today = gmdate('Y-m-d 00:00:00');
+
+        $this->assertSame(
+            [gmdate('Y-m-d 00:00:00', strtotime('-1 day', strtotime($today))), $today],
+            ActivityLogService::periodWindow('yesterday')
+        );
+    }
+
+    public function testAnUnknownPeriodIsNoWindow(): void
+    {
+        $this->assertNull(ActivityLogService::periodWindow(''));
+        $this->assertNull(ActivityLogService::periodWindow('forever'));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function onlyRow(): array

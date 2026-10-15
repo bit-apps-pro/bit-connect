@@ -44,7 +44,7 @@ const { Sider } = Layout
  * refuses them.
  */
 interface NavItem {
-  group: 'community' | 'help' | 'home' | 'organize' | 'settings'
+  group: 'community' | 'home' | 'organize' | 'settings'
   icon: IconType
   label: string
   path: string
@@ -64,7 +64,7 @@ const navItems: NavItem[] = [
   { group: 'settings', icon: LuSettings, label: __('Settings'), path: '../settings', requires: 'manage' },
   // Last: it is the one screen here that is about the plugin rather than
   // about the forum.
-  { group: 'help', icon: LuLifeBuoy, label: __('Support'), path: '../support', requires: 'manage' }
+  { group: 'settings', icon: LuLifeBuoy, label: __('Support'), path: '../support', requires: 'manage' }
 ]
 
 export default function Sidebar() {
@@ -75,7 +75,7 @@ export default function Sidebar() {
   const allNavItems = addedPages.reduce((items, page) => {
     const index = items.findIndex(item => item.path === `../${page.after}`)
     const entry: NavItem = {
-      group: index === -1 ? 'help' : items[index].group,
+      group: index === -1 ? 'settings' : items[index].group,
       icon: page.icon,
       label: page.label,
       path: `../${page.path}`,

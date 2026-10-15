@@ -45,7 +45,7 @@ export default function StatCards({ period, stats, topicTypes }: StatCardsProps)
       <StatCard
         delta={stats.newTopics}
         footnote={topicTypeSummary(topicTypes)}
-        label={__('Total Posts')}
+        label={__('Total Topics')}
         period={period}
         value={stats.totalTopics}
       />

@@ -5016,7 +5016,7 @@ msgid "A member asks to join"
 msgstr ""
 
 #: backend/app/Enum/NotificationTypes.php:147
-msgid "You are let into a private space"
+msgid "You are added to a group"
 msgstr ""
 
 #: backend/app/Enum/NotificationTypes.php:171

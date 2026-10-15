@@ -119,9 +119,25 @@ return [
 
     'Activity' => __('Activity', 'bit-connect'),
 
-    'matching actions' => __('matching actions', 'bit-connect'),
+    'What was done to content by someone other than its author: hides, locks, pins, edits, deletions and restores.' => __('What was done to content by someone other than its author: hides, locks, pins, edits, deletions and restores.', 'bit-connect'),
 
-    'actions recorded' => __('actions recorded', 'bit-connect'),
+    'Anyone' => __('Anyone', 'bit-connect'),
+
+    'Any time' => __('Any time', 'bit-connect'),
+
+    'Last 90 days' => __('Last 90 days', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Member #%s' => __('Member #%s', 'bit-connect'),
+
+    /* translators: 1: first row shown, 2: last row shown, 3: how many rows match. */
+    'Showing %1$s–%2$s of %3$s' => __('Showing %1$s–%2$s of %3$s', 'bit-connect'),
+
+    'Show only this member’s actions' => __('Show only this member’s actions', 'bit-connect'),
+
+    'Show this comment’s history' => __('Show this comment’s history', 'bit-connect'),
+
+    'Show this topic’s history' => __('Show this topic’s history', 'bit-connect'),
 
     'Any action' => __('Any action', 'bit-connect'),
 
@@ -731,20 +747,55 @@ return [
 
     'Remove content' => __('Remove content', 'bit-connect'),
 
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d topics without a reply' => __('%d topics without a reply', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d reported items to review' => __('%d reported items to review', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d replies held for approval' => __('%d replies held for approval', 'bit-connect'),
-
     'Nothing is waiting on you right now.' => __('Nothing is waiting on you right now.', 'bit-connect'),
+
+    'Needs attention' => __('Needs attention', 'bit-connect'),
+
+    'Review reports' => __('Review reports', 'bit-connect'),
+
+    'Reported items' => __('Reported items', 'bit-connect'),
+
+    'Approve comments' => __('Approve comments', 'bit-connect'),
+
+    'Comments awaiting approval' => __('Comments awaiting approval', 'bit-connect'),
+
+    'Open topics' => __('Open topics', 'bit-connect'),
+
+    'Topics waiting for a comment' => __('Topics waiting for a comment', 'bit-connect'),
+
+    'Oldest waiting for a comment' => __('Oldest waiting for a comment', 'bit-connect'),
+
+    'Posted' => __('Posted', 'bit-connect'),
+
+    'No topic is waiting for a comment.' => __('No topic is waiting for a comment.', 'bit-connect'),
+
+    'Response time' => __('Response time', 'bit-connect'),
+
+    'Topics started this week' => __('Topics started this week', 'bit-connect'),
+
+    'Topics started this month' => __('Topics started this month', 'bit-connect'),
+
+    'Topics started this year' => __('Topics started this year', 'bit-connect'),
+
+    'No topics were started in this period.' => __('No topics were started in this period.', 'bit-connect'),
+
+    'Median time to first comment' => __('Median time to first comment', 'bit-connect'),
+
+    /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$d of %2$d have a comment from someone else' => __('%1$d of %2$d have a comment from someone else', 'bit-connect'),
+
+    'Commented on within a day' => __('Commented on within a day', 'bit-connect'),
+
+    'Counted once a topic is a day old.' => __('Counted once a topic is a day old.', 'bit-connect'),
+
+    /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$d of %2$d topics at least a day old' => __('%1$d of %2$d topics at least a day old', 'bit-connect'),
 
     'Community activity' => __('Community activity', 'bit-connect'),
 
-    'Posts and comments over time' => __('Posts and comments over time', 'bit-connect'),
+    'Topics and comments published' => __('Topics and comments published', 'bit-connect'),
+
+    'Topics and comments over time' => __('Topics and comments over time', 'bit-connect'),
 
     'Rank' => __('Rank', 'bit-connect'),
 
@@ -804,7 +855,7 @@ return [
 
     'No stages yet.' => __('No stages yet.', 'bit-connect'),
 
-    'Total Posts' => __('Total Posts', 'bit-connect'),
+    'Total Topics' => __('Total Topics', 'bit-connect'),
 
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
     'Across %1$d of %2$d topics' => __('Across %1$d of %2$d topics', 'bit-connect'),
@@ -1449,6 +1500,8 @@ return [
 
     /* translators: 1: what the visitor typed into the search box, 2: the board, tag or other term searched in */
     'Search for “%1$s” in %2$s' => __('Search for “%1$s” in %2$s', 'bit-connect'),
+
+    '%1$s | Page %2$s' => __('%1$s | Page %2$s', 'bit-connect'),
 
     /* translators: %s: the board, tag or other term the search is limited to */
     'Search in %s' => __('Search in %s', 'bit-connect'),

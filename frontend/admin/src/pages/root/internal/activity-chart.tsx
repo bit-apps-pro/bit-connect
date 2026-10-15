@@ -1,12 +1,11 @@
-import { __, sprintf } from '@common/helpers/i18nWrap'
+import { __ } from '@common/helpers/i18nWrap'
 import { theme } from 'antd'
 import { BarElement, CategoryScale, Chart as ChartJS, type ChartOptions, LinearScale, Tooltip } from 'chart.js'
 import { useMemo } from 'react'
 import { Bar } from 'react-chartjs-2'
-import { Link } from 'react-router'
 
 import { bucketLabel } from '../shared/format'
-import { type ActivityBucket, type DashboardAttention, type DashboardPeriod } from '../shared/types'
+import { type ActivityBucket, type DashboardPeriod } from '../shared/types'
 import DashboardCard from './dashboard-card'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip)
@@ -23,47 +22,13 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   )
 }
 
-/**
- * What is waiting on someone, under the chart's title. Each part is only
- * mentioned when it is not zero, and reports link to their queue.
- */
-function AttentionSummary({ attention }: { attention: DashboardAttention }) {
-  const parts = [
-    attention.unanswered > 0 && (
-      <span key="unanswered">{sprintf(__('%d topics without a reply'), attention.unanswered)}</span>
-    ),
-    attention.reports > 0 && (
-      <Link className="bc-text-negative hover:bc-underline" key="reports" to="reports">
-        {sprintf(__('%d reported items to review'), attention.reports)}
-      </Link>
-    ),
-    attention.pendingReplies > 0 && (
-      <span key="held">{sprintf(__('%d replies held for approval'), attention.pendingReplies)}</span>
-    )
-  ].filter(Boolean)
-
-  if (parts.length === 0) return <>{__('Nothing is waiting on you right now.')}</>
-
-  return (
-    <>
-      {parts.map((part, index) => (
-        <span key={index}>
-          {index > 0 && ' · '}
-          {part}
-        </span>
-      ))}
-    </>
-  )
-}
-
 interface ActivityChartProps {
   activity: ActivityBucket[]
-  attention: DashboardAttention
   className?: string
   period: DashboardPeriod
 }
 
-export default function ActivityChart({ activity, attention, className, period }: ActivityChartProps) {
+export default function ActivityChart({ activity, className, period }: ActivityChartProps) {
   const { token } = theme.useToken()
 
   const data = useMemo(
@@ -83,7 +48,7 @@ export default function ActivityChart({ activity, attention, className, period }
           borderRadius: { bottomLeft: 0, bottomRight: 0, topLeft: 6, topRight: 6 },
           borderSkipped: false as const,
           data: activity.map(bucket => bucket.topics),
-          label: __('Posts'),
+          label: __('Topics'),
           maxBarThickness: 48
         }
       ],
@@ -126,11 +91,11 @@ export default function ActivityChart({ activity, attention, className, period }
       className={className}
       extra={
         <div className="bc-flex bc-items-center bc-gap-5">
-          <LegendDot color={token.colorPrimary} label={__('Posts')} />
+          <LegendDot color={token.colorPrimary} label={__('Topics')} />
           <LegendDot color={COMMENTS_COLOR} label={__('Comments')} />
         </div>
       }
-      subtitle={<AttentionSummary attention={attention} />}
+      subtitle={__('Topics and comments published')}
       title={__('Community activity')}
     >
       {/* Grows to the height of the row, which Stage progress usually sets.
@@ -138,7 +103,7 @@ export default function ActivityChart({ activity, attention, className, period }
           box Chart.js measures, which would grow it on every resize. */}
       <div className="bc-relative bc-min-h-80 bc-flex-1">
         <div className="bc-absolute bc-inset-0">
-          <Bar aria-label={__('Posts and comments over time')} data={data} options={options} role="img" />
+          <Bar aria-label={__('Topics and comments over time')} data={data} options={options} role="img" />
         </div>
       </div>
     </DashboardCard>

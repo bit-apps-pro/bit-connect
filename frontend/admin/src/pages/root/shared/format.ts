@@ -94,6 +94,30 @@ export function shortDate(value: string): string {
   return Number.isNaN(at.getTime()) ? '' : formatSiteTime(at, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+const HOUR = 3600
+const DAY = 24 * HOUR
+
+/**
+ * "45 min", "3.5 hr", "2 days" — a wait in the largest unit that keeps the
+ * number small. Intl names the unit, so it comes out in the reader's language.
+ */
+export function shortDuration(seconds: number): string {
+  if (seconds < HOUR) return formatUnit(Math.max(1, Math.round(seconds / 60)), 'minute', 0)
+  // One decimal while the number is a single digit: "3.5 hr" says more than "4 hr".
+  if (seconds < 2 * DAY) return formatUnit(seconds / HOUR, 'hour', seconds < 10 * HOUR ? 1 : 0)
+
+  return formatUnit(seconds / DAY, 'day', seconds < 10 * DAY ? 1 : 0)
+}
+
+function formatUnit(value: number, unit: 'day' | 'hour' | 'minute', digits: number): string {
+  return new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: digits,
+    style: 'unit',
+    unit,
+    unitDisplay: unit === 'day' ? 'long' : 'short'
+  }).format(value)
+}
+
 /** Up to two initials for an avatar: "Sara Khan" → "SK", "admin" → "AD". */
 export function initials(name: null | string): string {
   const words = (name ?? '').trim().split(/\s+/).filter(Boolean)

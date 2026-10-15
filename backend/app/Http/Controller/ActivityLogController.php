@@ -46,6 +46,7 @@ final class ActivityLogController
                     'action'      => $action,
                     'target_type' => $targetType,
                     'target_id'   => max(0, (int) ($validated['target_id'] ?? 0)),
+                    'period'      => (string) ($validated['period'] ?? ''),
                     'page'        => (int) ($validated['page'] ?? 1),
                     'per_page'    => (int) ($validated['per_page'] ?? 20),
                 ]

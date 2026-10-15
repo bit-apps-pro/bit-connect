@@ -39,6 +39,11 @@ final class DashboardController
 
     private const TOP_CONTRIBUTORS_LIMIT = 5;
 
+    private const UNANSWERED_LIMIT = 5;
+
+    /** How soon a first comment has to land for a topic to count as answered promptly. */
+    private const PROMPT_REPLY_SECONDS = DAY_IN_SECONDS;
+
     public function get(GetDashboardRequest $request)
     {
         $period = \is_string($request->period) && $request->period !== '' ? $request->period : self::DEFAULT_PERIOD;
@@ -49,11 +54,13 @@ final class DashboardController
 
         $mostRequested = $this->getMostRequested($postType, $votesTable, $since);
         $recentTopics = $this->getRecentTopics($postType, $votesTable);
+        $unansweredTopics = $this->getOldestUnanswered($postType);
 
         $stages = $this->stagesFor(
             array_merge(
                 array_column($mostRequested, 'id'),
-                array_column($recentTopics, 'id')
+                array_column($recentTopics, 'id'),
+                array_column($unansweredTopics, 'id')
             )
         );
 
@@ -64,6 +71,8 @@ final class DashboardController
                 'stats'         => $this->getStats($postType, $votesTable, $since),
                 'topicTypes'    => $this->getTopicTypeNames(),
                 'attention'     => $this->getAttention($postType),
+                'unanswered'    => $this->withStage($unansweredTopics, $stages),
+                'response'      => $this->getResponseTimes($postType, $since),
                 'activity'      => $this->getActivity($postType, $period, $since),
                 'stages'        => $this->getStageProgress($postType, $since),
                 'mostRequested' => $this->withStage($mostRequested, $stages),
@@ -215,8 +224,8 @@ final class DashboardController
     }
 
     /**
-     * What is waiting on someone: topics nobody has answered, reported items
-     * awaiting a decision, and replies held for approval.
+     * What is waiting on someone: topics nobody but their author has commented
+     * on, reported items awaiting a decision, and comments held for approval.
      */
     private function getAttention(string $postType): array
     {
@@ -227,8 +236,8 @@ final class DashboardController
         // phpcs:disable WordPress.DB.DirectDatabaseQuery
         $unanswered = (int) Connection::get_var(
             Connection::prepare(
-                "SELECT COUNT(*) FROM {$wpdbPosts}
-                 WHERE post_type = %s AND post_status = 'publish' AND comment_count = 0",
+                "SELECT COUNT(*) FROM {$wpdbPosts} p
+                 WHERE p.post_type = %s AND p.post_status = 'publish' AND " . $this->awaitingResponse(),
                 $postType
             )
         );
@@ -256,7 +265,147 @@ final class DashboardController
             'unanswered'     => $unanswered,
             'reports'        => $reports,
             'pendingReplies' => $pendingReplies,
+            // Held comments are approved on WordPress's own Comments screen,
+            // narrowed to this plugin's topics.
+            'pendingRepliesUrl' => admin_url(
+                'edit-comments.php?comment_status=moderated&post_type=' . rawurlencode($postType)
+            ),
         ];
+    }
+
+    /**
+     * The topics that have waited longest for a first comment, oldest first —
+     * the rows behind the "without a comment" count, so the dashboard names
+     * them rather than only counting them.
+     */
+    private function getOldestUnanswered(string $postType): array
+    {
+        $wpdbPosts = Connection::prop('posts');
+        $wpdbUsers = Connection::prop('users');
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $rows = Connection::get_results(
+            Connection::prepare(
+                "SELECT p.ID AS id,
+                        p.post_title AS title,
+                        u.display_name AS author,
+                        p.post_date_gmt AS created_at
+                 FROM {$wpdbPosts} p
+                 LEFT JOIN {$wpdbUsers} u ON p.post_author = u.ID
+                 WHERE p.post_type = %s AND p.post_status = 'publish' AND " . $this->awaitingResponse() . '
+                 ORDER BY p.post_date_gmt ASC, p.ID ASC
+                 LIMIT %d',
+                $postType,
+                self::UNANSWERED_LIMIT
+            )
+        );
+
+        return array_map(
+            static fn ($row) => [
+                'id'         => (int) $row->id,
+                'title'      => wp_specialchars_decode($row->title, ENT_QUOTES),
+                'url'        => PortalLocation::topicUrl((int) $row->id),
+                'author'     => $row->author,
+                'created_at' => $row->created_at,
+            ],
+            \is_array($rows) ? $rows : []
+        );
+    }
+
+    /**
+     * The condition, on a topic aliased `p`, that nobody but its author has
+     * commented on it yet — the same rule Response time measures by, so the
+     * count and the median never disagree about what an answer is. A held
+     * comment is not one: nobody can read it.
+     */
+    private function awaitingResponse(): string
+    {
+        $wpdbComments = Connection::prop('comments');
+
+        return "NOT EXISTS (
+                    SELECT 1 FROM {$wpdbComments} answer
+                    WHERE answer.comment_post_ID = p.ID
+                      AND answer.comment_approved = '1'
+                      AND answer.user_id <> p.post_author
+                 )";
+    }
+
+    /**
+     * How quickly topics started during the period got their first comment
+     * from someone other than their author — a member answering their own
+     * topic is not a response.
+     *
+     * The prompt-reply rate only counts topics old enough to have had the
+     * whole window: one posted an hour ago has not yet missed it.
+     */
+    private function getResponseTimes(string $postType, string $since): array
+    {
+        $wpdbComments = Connection::prop('comments');
+        $wpdbPosts = Connection::prop('posts');
+        $now = gmdate('Y-m-d H:i:s');
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $rows = Connection::get_results(
+            Connection::prepare(
+                "SELECT TIMESTAMPDIFF(SECOND, p.post_date_gmt, %s) AS age,
+                        TIMESTAMPDIFF(SECOND, p.post_date_gmt, MIN(c.comment_date_gmt)) AS waited
+                 FROM {$wpdbPosts} p
+                 LEFT JOIN {$wpdbComments} c
+                   ON c.comment_post_ID = p.ID
+                  AND c.comment_approved = '1'
+                  AND c.user_id <> p.post_author
+                 WHERE p.post_type = %s AND p.post_status = 'publish' AND p.post_date_gmt >= %s
+                 GROUP BY p.ID",
+                $now,
+                $postType,
+                $since
+            )
+        );
+
+        $waits = [];
+        $eligible = 0;
+        $prompt = 0;
+
+        foreach (\is_array($rows) ? $rows : [] as $row) {
+            $waited = $row->waited === null ? null : max(0, (int) $row->waited);
+
+            if ($waited !== null) {
+                $waits[] = $waited;
+            }
+
+            if ((int) $row->age >= self::PROMPT_REPLY_SECONDS) {
+                ++$eligible;
+
+                if ($waited !== null && $waited <= self::PROMPT_REPLY_SECONDS) {
+                    ++$prompt;
+                }
+            }
+        }
+
+        return [
+            'topics'           => \is_array($rows) ? \count($rows) : 0,
+            'answered'         => \count($waits),
+            'medianSeconds'    => $this->median($waits),
+            'promptEligible'   => $eligible,
+            'answeredPromptly' => $prompt,
+        ];
+    }
+
+    /**
+     * @param int[] $values
+     */
+    private function median(array $values): ?int
+    {
+        if ($values === []) {
+            return null;
+        }
+
+        sort($values);
+        $middle = intdiv(\count($values), 2);
+
+        return \count($values) % 2 === 1
+            ? $values[$middle]
+            : intdiv($values[$middle - 1] + $values[$middle], 2);
     }
 
     /**

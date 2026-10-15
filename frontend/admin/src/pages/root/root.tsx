@@ -6,8 +6,10 @@ import { LuArrowUpRight } from 'react-icons/lu'
 import useDashboard from './data/use-dashboard'
 import ActivityChart from './internal/activity-chart'
 import MostRequested from './internal/most-requested'
+import NeedsAttention from './internal/needs-attention'
 import PageSkeleton from './internal/page-skeleton'
 import RecentTopics from './internal/recent-topics'
+import ResponseTime from './internal/response-time'
 import StageProgress from './internal/stage-progress'
 import StatCards from './internal/stat-cards'
 import TopContributors from './internal/top-contributors'
@@ -101,15 +103,17 @@ export default function Root() {
         >
           <StatCards period={shownPeriod} stats={dashboard.stats} topicTypes={dashboard.topicTypes} />
 
-          {/* Top contributors sits beside both tables, in the column under
-              Stage progress. */}
+          {/* What needs doing comes first, beside how quickly members get an
+              answer. Top contributors sits beside both topic tables, in the
+              column under Stage progress. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
-            <ActivityChart
-              activity={dashboard.activity}
+            <NeedsAttention
               attention={dashboard.attention}
               className="xl:bc-col-span-2"
-              period={shownPeriod}
+              topics={dashboard.unanswered}
             />
+            <ResponseTime className="xl:bc-self-start" period={shownPeriod} response={dashboard.response} />
+            <ActivityChart activity={dashboard.activity} className="xl:bc-col-span-2" period={shownPeriod} />
             <StageProgress hues={hues} period={shownPeriod} stages={dashboard.stages} />
             <MostRequested
               className="xl:bc-col-span-2"

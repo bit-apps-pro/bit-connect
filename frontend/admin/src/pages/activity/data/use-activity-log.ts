@@ -26,6 +26,8 @@ export interface ActivityRow {
     exists: boolean
     id: number
     type: string
+    /** The portal address, or '' once the content is gone. */
+    url?: string
   }
 }
 
@@ -39,11 +41,15 @@ interface ActivityLogResponse {
   }
 }
 
+export type ActivityPeriod = '7d' | '30d' | '90d' | 'today' | 'yesterday'
+
 export interface ActivityFilters {
   action?: string
   actor?: number
   page?: number
   per_page?: number
+  /** A window counted in days on the site's calendar. */
+  period?: ActivityPeriod
   /** One topic or comment id — the history of a single piece of content. */
   target_id?: number
   target_type?: string

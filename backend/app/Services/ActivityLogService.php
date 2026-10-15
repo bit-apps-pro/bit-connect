@@ -10,6 +10,8 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Model\ActivityLog;
+use DateTimeImmutable;
+use DateTimeZone;
 
 /**
  * Records and reads what people did to content they did not write.
@@ -38,6 +40,25 @@ final class ActivityLogService
      * so nothing reaches it by forgetting to log in.
      */
     public const SYSTEM_ACTOR = 0;
+
+    public const PERIOD_TODAY = 'today';
+
+    public const PERIOD_YESTERDAY = 'yesterday';
+
+    public const PERIOD_WEEK = '7d';
+
+    public const PERIOD_MONTH = '30d';
+
+    public const PERIOD_QUARTER = '90d';
+
+    /** The windows the feed can be narrowed to, newest-reaching first. */
+    public const PERIODS = [
+        self::PERIOD_TODAY,
+        self::PERIOD_YESTERDAY,
+        self::PERIOD_WEEK,
+        self::PERIOD_MONTH,
+        self::PERIOD_QUARTER,
+    ];
 
     /**
      * How much of the before/after text is kept.
@@ -134,7 +155,7 @@ final class ActivityLogService
     /**
      * The admin feed: newest first, filterable, paginated.
      *
-     * @param array{actor?: int, action?: string, target_type?: string, target_id?: int, page?: int, per_page?: int} $filters
+     * @param array{actor?: int, action?: string, target_type?: string, target_id?: int, period?: string, page?: int, per_page?: int} $filters
      *
      * @return array{data: array<int, array<string, mixed>>, pagination: array<string, int>}
      */
@@ -164,6 +185,16 @@ final class ActivityLogService
             $query = $query->where('target_id', (int) $filters['target_id']);
         }
 
+        $window = self::periodWindow((string) ($filters['period'] ?? ''));
+
+        if ($window !== null) {
+            $query = $query->where('created_at', '>=', $window[0]);
+
+            if ($window[1] !== null) {
+                $query = $query->where('created_at', '<', $window[1]);
+            }
+        }
+
         // Newest first: orderBy() only names the column, desc() sets the
         // direction — it takes no second argument.
         $result = $query->orderBy('created_at')->desc()->paginate($page, $perPage);
@@ -177,6 +208,41 @@ final class ActivityLogService
                 'total_pages'  => (int) ($result['pages'] ?? 0),
             ],
         ];
+    }
+
+    /**
+     * A named period as GMT bounds: [from inclusive, to exclusive or null].
+     *
+     * Days are counted on the site's calendar — the timezone under Settings →
+     * General — because that is the calendar the screen files rows under, and
+     * "Yesterday" has to mean the rows under the Yesterday heading. created_at
+     * is GMT, so the site's midnights are converted before they are compared.
+     * An unknown period is no window at all; the request has already refused it.
+     *
+     * @return null|array{0: string, 1: null|string}
+     */
+    public static function periodWindow(string $period): ?array
+    {
+        $daysBack = [
+            self::PERIOD_TODAY     => 0,
+            self::PERIOD_YESTERDAY => 1,
+            self::PERIOD_WEEK      => 6,
+            self::PERIOD_MONTH     => 29,
+            self::PERIOD_QUARTER   => 89,
+        ][$period] ?? null;
+
+        if ($daysBack === null) {
+            return null;
+        }
+
+        $midnight = new DateTimeImmutable('today', wp_timezone());
+        $gmt = new DateTimeZone('UTC');
+        $from = $midnight->modify('-' . $daysBack . ' days')->setTimezone($gmt)->format('Y-m-d H:i:s');
+
+        // Yesterday is the one window that ends before now.
+        $to = $period === self::PERIOD_YESTERDAY ? $midnight->setTimezone($gmt)->format('Y-m-d H:i:s') : null;
+
+        return [$from, $to];
     }
 
     /**
@@ -249,6 +315,7 @@ final class ActivityLogService
         $actor = get_userdata((int) $row->actor_id);
         $targetAuthor = get_userdata((int) $row->target_author);
         $context = \is_string($row->context) ? json_decode($row->context, true) : null;
+        $exists = self::targetExists((string) $row->target_type, (int) $row->target_id);
 
         return [
             'id'           => (int) $row->id,
@@ -274,12 +341,24 @@ final class ActivityLogService
                 // False once the row it describes is gone, which is exactly the
                 // case this table exists to survive. The UI shows a title from
                 // the context blob instead of a dead link.
-                'exists' => self::targetExists((string) $row->target_type, (int) $row->target_id),
+                'exists' => $exists,
+                // Where the content can be read in the portal, while it can be.
+                // A gone target keeps no link: it would only lead to a 404.
+                'url' => $exists ? self::targetUrl((string) $row->target_type, (int) $row->target_id) : '',
             ],
             'reason'     => $row->reason === null ? '' : (string) $row->reason,
             'context'    => \is_array($context) ? $context : [],
             'created_at' => (string) $row->created_at,
         ];
+    }
+
+    private static function targetUrl(string $targetType, int $targetId): string
+    {
+        if ($targetType === self::TARGET_COMMENT) {
+            return PortalLocation::commentUrl($targetId);
+        }
+
+        return PortalLocation::topicUrl($targetId);
     }
 
     private static function targetExists(string $targetType, int $targetId): bool
