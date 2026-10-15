@@ -4,7 +4,7 @@ import { type ComponentType } from 'react'
  * Further sections under Branding, if a plugin adds any.
  *
  * A declaration, not a component: this plugin has nothing more to brand, and
- * says so by being `null`. The General screen checks before it renders, so an
+ * says so by being `null`. The Portal tab checks before it renders, so an
  * empty slot costs no markup.
  *
  * Anything drawn here keeps its own option and its own endpoint, and saves

@@ -94,7 +94,7 @@ export default function Manager() {
       </div>
 
       {/* The layout's ground is sunken, so the list sits on its own raised
-          card, like the General screen's sections. */}
+          card, like the Settings screen's sections. */}
       <div
         className="bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line"
         style={{ backgroundColor: token.colorBgContainer }}

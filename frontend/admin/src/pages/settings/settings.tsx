@@ -1,186 +1,108 @@
 import { __ } from '@common/helpers/i18nWrap'
-import useAutoSave from '@common/hooks/use-auto-save'
+import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
 import useRouteTab from '@common/hooks/use-route-tab'
 import PageTabs, { type PageTab } from '@utilities/page-tabs'
 import SaveStatus from '@utilities/save-status'
 import { Typography } from 'antd'
-import { type ReactNode, useCallback, useMemo, useState } from 'react'
-import { LuDatabase, LuGauge, LuMessageSquare, LuShieldCheck } from 'react-icons/lu'
-
-import useSettings from './data/use-settings'
-import useUpdateSettings from './data/use-update-settings'
-import ModerationSection from './internal/moderation-section'
-import PostingLimitsSection from './internal/posting-limits-section'
-import SettingsSection from './internal/settings-section'
-import TopicAccessExtras from './internal/topic-access-extras'
-import TopicFormSection from './internal/topic-form-section'
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { type ReactNode, useMemo } from 'react'
 import {
-  type CleanupSettings,
-  type SettingsFormData,
-  type TopicAccessSettings,
-  type TopicFieldMode,
-  type TopicFormFieldsSettings
-} from './shared/types'
+  LuBell,
+  LuDatabase,
+  LuGauge,
+  LuGlobe,
+  LuLogIn,
+  LuMessageSquare,
+  LuShieldCheck,
+  LuTrendingUp
+} from 'react-icons/lu'
+
+import General from '../general/general'
+import { panelVariants } from '../general/internal/motion'
+import Notifications from '../notifications'
+import Seo from '../seo'
+import ForumSettings from './forum-settings'
 
 const { Title } = Typography
 
-const TAB_KEYS = ['topics', 'moderation', 'limits', 'data'] as const
+// Ordered as an admin sets a forum up: the portal and how people get in, what
+// they may do there, then what reaches them and search engines. Data last.
+const TAB_KEYS = ['portal', 'sign-in', 'topics', 'moderation', 'limits', 'notifications', 'seo', 'data'] as const
 
+type TabKey = (typeof TAB_KEYS)[number]
+
+/**
+ * Every setting the forum has, on one screen.
+ *
+ * They were four screens — General, Settings, Notifications and SEO — and an
+ * admin had to guess which held a switch: who may read the portal sat under
+ * General, whether new topics wait for approval under Settings. One screen
+ * with a tab per subject leaves nothing to guess.
+ *
+ * Each tab saves as it changes and reports here under its own key, so the one
+ * status line beside the title speaks for every tab, the ones not open
+ * included.
+ */
 export default function Settings() {
-  const { isSettingsPending, settings } = useSettings()
-  const { updateSettings } = useUpdateSettings()
-
-  const [form, setForm] = useState<SettingsFormData>()
   // In the address, so a refresh keeps the open tab and a tab can be linked to.
   const { activeTab, setActiveTab } = useRouteTab('/settings', TAB_KEYS)
+  const { report, states } = usePageSaves()
+  const pageSave = combineSaves(states)
+  // Leaving any field saves at once, rather than waiting out the delay.
+  const saveAll = () => flushAll(states)
 
-  // Saved as it changes: each switch here is a whole setting on its own. A
-  // short delay, since there is nothing to type — only a quick run of flips
-  // to gather into one request.
-  const save = useAutoSave({
-    delay: 300,
-    draft: form,
-    save: updateSettings,
-    saved: isSettingsPending ? undefined : settings,
-    setDraft: setForm
-  })
-
-  const handleSettingChange = useCallback(
-    (
-      section: 'cleanup' | 'topicAccess',
-      key: keyof CleanupSettings | keyof TopicAccessSettings,
-      value: boolean
-    ) => {
-      setForm(prev => {
-        if (!prev) return prev
-        const updated: SettingsFormData = {
-          cleanup: { ...prev.cleanup },
-          topicAccess: { ...prev.topicAccess },
-          topicFormFields: { ...prev.topicFormFields }
-        }
-        if (section === 'topicAccess') {
-          updated.topicAccess[key as keyof TopicAccessSettings] = value
-        } else {
-          updated.cleanup[key as keyof CleanupSettings] = value
-        }
-        return updated
-      })
-    },
-    []
-  )
-
-  const handleFieldModeChange = useCallback((field: keyof TopicFormFieldsSettings, mode: TopicFieldMode) => {
-    setForm(prev => prev && { ...prev, topicFormFields: { ...prev.topicFormFields, [field]: mode } })
-  }, [])
-
-  const topicAccessSettings = useMemo(() => {
-    if (!form?.topicAccess) return []
-    return [
-      {
-        description: __('Let members upvote topics.'),
-        key: 'upvote',
-        label: __('Upvotes'),
-        value: form.topicAccess.upvote ?? false
-      },
-      {
-        description: __('Let members reply to topics.'),
-        key: 'comment',
-        label: __('Comments'),
-        value: form.topicAccess.comment ?? false
-      },
-      // Neither comment upvoting nor private topics is here, for the same
-      // reason: both settings are the add-on's, stored in the add-on's
-      // options and rendered by the add-on's own section, because the
-      // features they switch are entirely over there. A switch here for
-      // either would be a control with nothing behind it.
-    ]
-  }, [form])
-
-  const cleanupSettings = useMemo(() => {
-    if (!form?.cleanup) return []
-    return [
-      {
-        description: __(
-          'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.'
-        ),
-        key: 'deleteDataOnUninstall',
-        label: __('Delete data on uninstall'),
-        value: form.cleanup.deleteDataOnUninstall ?? false
-      }
-    ]
-  }, [form])
-
-  // Built once: PageTabs needs stable options, or a switch mid-slide cuts the
-  // thumb's animation short.
   const tabs = useMemo<PageTab[]>(
     () => [
+      { icon: <LuGlobe aria-hidden className="bc-shrink-0" size={16} />, key: 'portal', label: __('Portal') },
+      { icon: <LuLogIn aria-hidden className="bc-shrink-0" size={16} />, key: 'sign-in', label: __('Sign in') },
       { icon: <LuMessageSquare aria-hidden className="bc-shrink-0" size={16} />, key: 'topics', label: __('Topics') },
       { icon: <LuShieldCheck aria-hidden className="bc-shrink-0" size={16} />, key: 'moderation', label: __('Moderation') },
       { icon: <LuGauge aria-hidden className="bc-shrink-0" size={16} />, key: 'limits', label: __('Limits') },
+      { icon: <LuBell aria-hidden className="bc-shrink-0" size={16} />, key: 'notifications', label: __('Notifications') },
+      { icon: <LuTrendingUp aria-hidden className="bc-shrink-0" size={16} />, key: 'seo', label: __('SEO') },
       { icon: <LuDatabase aria-hidden className="bc-shrink-0" size={16} />, key: 'data', label: __('Data') }
     ],
     []
   )
 
-  const panels: Record<string, ReactNode> = {
-    data: (
-      <SettingsSection
-        disabled={!form}
-        onChange={(key, value) => handleSettingChange('cleanup', key as keyof CleanupSettings, value)}
-        settings={cleanupSettings}
-        subtitle={__('Choose what happens to your community’s data if the plugin is deleted.')}
-        title={__('Data cleanup')}
-      />
-    ),
-    // Takes nothing from this form: this plugin sets no posting limits and
-    // only states what the server allows. Another plugin's section would read
-    // and save its own.
-    limits: <PostingLimitsSection />,
-    // Takes nothing from this form: this plugin stores no moderation setting.
-    // Another plugin's section would read and save its own.
-    moderation: <ModerationSection />,
-    topics: (
-      <>
-        <SettingsSection
-          disabled={!form}
-          note={TopicAccessExtras && <TopicAccessExtras />}
-          onChange={(key, value) =>
-            handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
-          }
-          settings={topicAccessSettings}
-          subtitle={__('Choose what members can do on a topic.')}
-          title={__('Topic access')}
-        />
-        {form && (
-          <TopicFormSection disabled={!form} onChange={handleFieldModeChange} value={form.topicFormFields} />
-        )}
-      </>
-    )
+  const panels: Record<TabKey, ReactNode> = {
+    data: <ForumSettings section="data" />,
+    limits: <ForumSettings section="limits" />,
+    moderation: <ForumSettings section="moderation" />,
+    notifications: <Notifications />,
+    portal: <General section="portal" />,
+    seo: <Seo />,
+    'sign-in': <General section="sign-in" />,
+    topics: <ForumSettings section="topics" />
   }
 
   return (
-    <div className="bc-px-6 bc-pb-6">
-      <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
-        <Title className="bc-mb-0" level={3}>
-          {__('Settings')}
-        </Title>
-      </div>
+    // `reducedMotion="user"` rather than a per-component check: everything on
+    // this page keeps its opacity fades but stops moving for anyone whose
+    // system asks for that.
+    <PageSaveContext.Provider value={report}>
+      <MotionConfig reducedMotion="user">
+        <div className="bc-px-6 bc-pb-6" onBlur={saveAll}>
+          <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
+            <Title className="bc-mb-0" level={3}>
+              {__('Settings')}
+            </Title>
+            <SaveStatus {...pageSave} onRetry={saveAll} />
+          </div>
 
-      {/* The status sits on the tab row: it speaks for every tab, the ones
-          not open included. */}
-      <div className="bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3">
-        <PageTabs onChange={setActiveTab} tabs={tabs} value={activeTab} />
-        <SaveStatus
-          error={save.error}
-          onRetry={save.flushNow}
-          retrying={save.retrying}
-          status={save.status}
-        />
-      </div>
+          <div className="bc-mb-4">
+            <PageTabs onChange={setActiveTab} tabs={tabs} value={activeTab} />
+          </div>
 
-      {/* Top-aligned: each card is as tall as what it holds. Stretched to its
-          row's tallest, a two-row card sat above a block of empty white. */}
-      <div className="bc-grid bc-items-start bc-gap-5 xl:bc-grid-cols-2">{panels[activeTab]}</div>
-    </div>
+          {/* One panel out before the next comes in, in the same place: two
+              forms crossing over each other read as one broken one. */}
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div animate="in" exit="out" initial="out" key={activeTab} variants={panelVariants}>
+              {panels[activeTab]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </MotionConfig>
+    </PageSaveContext.Provider>
   )
 }

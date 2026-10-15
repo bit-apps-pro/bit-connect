@@ -35,22 +35,21 @@ final class Menu
      */
     public static function getSideBarMenu(Body $body)
     {
+        // The order of the in-app sidebar: daily work, then how topics are
+        // sorted, then settings, then the plugin's own Support screen.
         return [
-            'Home'          => self::getHomeMenuAttributes($body),
-            'Dashboard'     => self::getDashboardMenuAttributes(),
-            'General'       => self::getGeneralMenuAttributes(),
-            'Stages'        => self::getStagesMenuAttributes(),
-            'Topic Types'   => self::getTopicTypesMenuAttributes(),
-            'Tags'          => self::getTagsMenuAttributes(),
-            'Status'        => self::getStatusMenuAttributes(),
-            'Manager'       => self::getManagerMenuAttributes(),
-            'Topics'        => self::getTopicsMenuAttributes(),
-            'Activity'      => self::getActivityMenuAttributes(),
-            'Reports'       => self::getReportsMenuAttributes(),
-            'Notifications' => self::getNotificationsMenuAttributes(),
-            'SEO'           => self::getSeoMenuAttributes(),
-            'Settings'      => self::getSettingsMenuAttributes(),
-            'Support'       => self::getSupportMenuAttributes(),
+            'Home'        => self::getHomeMenuAttributes($body),
+            'Dashboard'   => self::getDashboardMenuAttributes(),
+            'Topics'      => self::getTopicsMenuAttributes(),
+            'Reports'     => self::getReportsMenuAttributes(),
+            'Activity'    => self::getActivityMenuAttributes(),
+            'Manager'     => self::getManagerMenuAttributes(),
+            'Topic Types' => self::getTopicTypesMenuAttributes(),
+            'Stages'      => self::getStagesMenuAttributes(),
+            'Status'      => self::getStatusMenuAttributes(),
+            'Tags'        => self::getTagsMenuAttributes(),
+            'Settings'    => self::getSettingsMenuAttributes(),
+            'Support'     => self::getSupportMenuAttributes(),
         ];
     }
 
@@ -214,39 +213,10 @@ final class Menu
         ];
     }
 
-    private static function getGeneralMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => 'General',
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/general',
-        ];
-    }
-
-    private static function getNotificationsMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => 'Notifications',
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/notifications',
-        ];
-    }
-
-    private static function getSeoMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => 'SEO',
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/seo',
-        ];
-    }
-
+    /**
+     * Every setting the forum has, one tab per subject: the portal, sign-in,
+     * topics, moderation, limits, notifications, SEO and data.
+     */
     private static function getSettingsMenuAttributes()
     {
         return [

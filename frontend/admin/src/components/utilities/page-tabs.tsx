@@ -18,9 +18,8 @@ interface PageTabsProps {
  * The tab bar a settings page switches its panels with: a filled pill for the
  * open tab, so it reads as a switch between panels rather than as links.
  *
- * The same bar the General page draws, and kept identical to it — theme tokens,
- * spacing and the width-holding labels — so moving between the two screens
- * does not change how a tab looks.
+ * One bar for every screen that has tabs — Settings, Tags, Topics — so moving
+ * between them does not change how a tab looks.
  */
 export default function PageTabs({ onChange, tabs, value }: PageTabsProps) {
   const { token } = theme.useToken()
@@ -63,7 +62,7 @@ export default function PageTabs({ onChange, tabs, value }: PageTabsProps) {
           }
         },
         // A 36px pill and 20px either side of each label; radii here rather
-        // than as classes, which antd's own styles outrank. See General.
+        // than as classes, which antd's own styles outrank.
         token: {
           borderRadius: 14,
           borderRadiusSM: 8,

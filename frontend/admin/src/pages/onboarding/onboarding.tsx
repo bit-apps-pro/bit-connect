@@ -23,7 +23,7 @@ export default function Onboarding() {
 
   const handleFinish = async () => {
     await completeOnboarding()
-    navigate('/general', { replace: true })
+    navigate('/settings', { replace: true })
   }
 
   return (

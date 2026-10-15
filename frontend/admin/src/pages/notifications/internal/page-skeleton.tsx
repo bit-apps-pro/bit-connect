@@ -10,23 +10,18 @@ function CardSkeleton({ rows }: { rows: number }) {
 }
 
 /**
- * The page's layout without its values: the header, the master switch and the
- * cards below it, drawn in place so nothing jumps when the settings arrive.
+ * The tab's layout without its values: the master switch and the cards below
+ * it, drawn in place so nothing jumps when the settings arrive.
  */
 export default function PageSkeleton() {
   return (
-    <div aria-busy className="bc-p-6">
-      <div className="bc-mb-5">
-        <Skeleton active paragraph={{ rows: 1, width: '45%' }} title={{ width: 180 }} />
+    <div aria-busy className="bc-flex bc-flex-col bc-gap-5">
+      <div className="bc-max-w-xl">
+        <CardSkeleton rows={1} />
       </div>
-      <div className="bc-flex bc-flex-col bc-gap-5">
-        <div className="bc-max-w-xl">
-          <CardSkeleton rows={1} />
-        </div>
-        <CardSkeleton rows={8} />
-        <CardSkeleton rows={4} />
-        <CardSkeleton rows={4} />
-      </div>
+      <CardSkeleton rows={8} />
+      <CardSkeleton rows={4} />
+      <CardSkeleton rows={4} />
     </div>
   )
 }

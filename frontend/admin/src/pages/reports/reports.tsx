@@ -142,7 +142,7 @@ export default function Reports() {
         )}
       </div>
 
-      {/* The same filled pill as the General page's tab bar, so a switch
+      {/* The same filled pill as the Settings screen's tab bar, so a switch
           between views looks the same wherever it appears. */}
       <ConfigProvider
         theme={{

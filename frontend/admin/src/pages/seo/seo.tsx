@@ -1,7 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useAutoSave from '@common/hooks/use-auto-save'
-import SaveStatus from '@utilities/save-status'
-import { Alert, Button, Skeleton, Typography } from 'antd'
+import { Alert, Button, Skeleton } from 'antd'
 import { useCallback, useState } from 'react'
 
 import useSeoSettings from './data/use-seo-settings'
@@ -12,8 +11,7 @@ import SeoSection from './internal/seo-section'
 import SeoStatus from './internal/seo-status'
 import { DEFAULT_SEO_SETTINGS, type SeoSettings } from './shared/types'
 
-const { Title } = Typography
-
+/** The SEO tab of the Settings screen: what search engines may index. */
 export default function Seo() {
   const { diagnostics, hasSeoSettings, isSeoSettingsError, isSeoSettingsPending, refetchSeoSettings, seoSettings } =
     useSeoSettings()
@@ -23,9 +21,10 @@ export default function Seo() {
 
   // Saved as each switch flips. The hook adopts the saved settings only while
   // no edit is waiting, so a refetch after one save never undoes the next.
-  const save = useAutoSave({
+  useAutoSave({
     delay: 300,
     draft: form,
+    key: 'seo',
     save: updateSeoSettings,
     saved: hasSeoSettings ? seoSettings : undefined,
     setDraft: setForm
@@ -45,24 +44,9 @@ export default function Seo() {
   const disabled = isSeoSettingsPending
 
   return (
-    <div className="bc-p-6">
-      {/* One page rather than tabs: what is left is a status card and six
-          switches, and each saves as it is flipped. */}
-      <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
-        <div className="bc-min-w-0 bc-flex-1 bc-basis-80">
-          <Title className="bc-mb-0" level={3}>
-            {__('SEO')}
-          </Title>
-        </div>
-
-        <SaveStatus
-          error={save.error}
-          onRetry={save.flushNow}
-          retrying={save.retrying}
-          status={save.status}
-        />
-      </div>
-
+    // One panel rather than tabs within the tab: what is left is a status card
+    // and six switches, and each saves as it is flipped.
+    <>
       {/* Until the settings arrive the page has nothing true to say: drawn
           from the empty defaults, the status card would warn that the portal
           is members-only and every switch would sit in the wrong place. */}
@@ -134,6 +118,6 @@ export default function Seo() {
       </SeoSection>
         </div>
       )}
-    </div>
+    </>
   )
 }

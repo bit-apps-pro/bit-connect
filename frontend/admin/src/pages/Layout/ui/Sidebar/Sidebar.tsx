@@ -3,9 +3,9 @@ import config from '@config/config'
 import logo from '@resource/img/logo.svg'
 import { Grid, Layout } from 'antd'
 import { useAtomValue } from 'jotai'
+import { Fragment } from 'react'
 import { type IconType } from 'react-icons'
 import {
-  LuBell,
   LuChartLine,
   LuChartNoAxesColumn,
   LuCircleCheck,
@@ -15,9 +15,7 @@ import {
   LuListFilter,
   LuMessagesSquare,
   LuSettings,
-  LuSlidersHorizontal,
   LuTag,
-  LuTrendingUp,
   LuUsers
 } from 'react-icons/lu'
 import { Link } from 'react-router'
@@ -31,48 +29,58 @@ import SidebarNavItem from './SidebarNavItem'
 const { Sider } = Layout
 
 /**
- * Which capability a screen answers to, so the nav offers nothing that would
- * only 403 on arrival.
+ * The nav, in the groups an admin reaches for them: the forum's daily work
+ * first, then how topics are sorted, then settings. A thin rule divides one
+ * group from the next — a rule rather than a heading, since the WordPress
+ * menu, which lists the same screens in the same order, can draw no heading.
  *
- * Mirrors Menu.php, which gates the WordPress menu the same way: everything
- * here is bit_connect_forum_manage except the two moderation screens. Without the split, a
- * moderator holding only bit_connect_forum_moderate would see a settings menu they cannot
- * open, and an administrator without bit_connect_forum_moderate would see a queue that
+ * Each entry names the capability its screen answers to, so the nav offers
+ * nothing that would only 403 on arrival. Mirrors Menu.php, which gates the
+ * WordPress menu the same way: Topics, Reports and Activity are
+ * bit_connect_forum_moderate, the work a moderator does; everything else is
+ * bit_connect_forum_manage. Without the split, a moderator holding only
+ * bit_connect_forum_moderate would see a settings menu they cannot open, and an
+ * administrator without bit_connect_forum_moderate would see a queue that
  * refuses them.
  */
-const navItems: {
+interface NavItem {
+  group: 'community' | 'help' | 'home' | 'organize' | 'settings'
   icon: IconType
   label: string
   path: string
   requires: 'manage' | 'moderate'
-}[] = [
-  { icon: LuLayoutGrid, label: __('Dashboard'), path: '../', requires: 'manage' },
-  { icon: LuSlidersHorizontal, label: __('General'), path: '../general', requires: 'manage' },
-  { icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
-  { icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
-  { icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
-  { icon: LuCircleCheck, label: __('Statuses'), path: '../status', requires: 'manage' },
-  { icon: LuUsers, label: __('Members'), path: '../manager', requires: 'manage' },
-  // Ordered to match the WordPress menu, so the two navs read the same way.
-  { icon: LuMessagesSquare, label: __('Topics'), path: '../topics', requires: 'moderate' },
-  { icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
-  { icon: LuChartLine, label: __('Reports'), path: '../reports', requires: 'moderate' },
-  { icon: LuBell, label: __('Notifications'), path: '../notifications', requires: 'manage' },
-  { icon: LuTrendingUp, label: __('SEO'), path: '../seo', requires: 'manage' },
-  { icon: LuSettings, label: __('Settings'), path: '../settings', requires: 'manage' },
-  // Last, and bit_connect_forum_manage: it is the one screen here that is about the plugin
-  // rather than about the forum.
-  { icon: LuLifeBuoy, label: __('Support'), path: '../support', requires: 'manage' }
+}
+
+const navItems: NavItem[] = [
+  { group: 'home', icon: LuLayoutGrid, label: __('Dashboard'), path: '../', requires: 'manage' },
+  { group: 'community', icon: LuMessagesSquare, label: __('Topics'), path: '../topics', requires: 'moderate' },
+  { group: 'community', icon: LuChartLine, label: __('Reports'), path: '../reports', requires: 'moderate' },
+  { group: 'community', icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
+  { group: 'community', icon: LuUsers, label: __('Members'), path: '../manager', requires: 'manage' },
+  { group: 'organize', icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
+  { group: 'organize', icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
+  { group: 'organize', icon: LuCircleCheck, label: __('Statuses'), path: '../status', requires: 'manage' },
+  { group: 'organize', icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
+  { group: 'settings', icon: LuSettings, label: __('Settings'), path: '../settings', requires: 'manage' },
+  // Last: it is the one screen here that is about the plugin rather than
+  // about the forum.
+  { group: 'help', icon: LuLifeBuoy, label: __('Support'), path: '../support', requires: 'manage' }
 ]
 
 export default function Sidebar() {
   const isDarkTheme = useAtomValue($isDarkTheme)
   const addedPages = useAddedPages()
   // Each added screen goes in after the one it names, or last when that one is
-  // not here.
+  // not here. It joins that screen's group.
   const allNavItems = addedPages.reduce((items, page) => {
-    const entry = { icon: page.icon, label: page.label, path: `../${page.path}`, requires: page.requires }
     const index = items.findIndex(item => item.path === `../${page.after}`)
+    const entry: NavItem = {
+      group: index === -1 ? 'help' : items[index].group,
+      icon: page.icon,
+      label: page.label,
+      path: `../${page.path}`,
+      requires: page.requires
+    }
 
     return index === -1 ? [...items, entry] : [...items.slice(0, index + 1), entry, ...items.slice(index + 1)]
   }, navItems)
@@ -122,8 +130,13 @@ export default function Sidebar() {
           out of the card. Same shape as the client sidebar. */}
       <nav className="bc-mt-1 bc-flex bc-min-h-0 bc-w-full bc-flex-1 bc-flex-col bc-justify-between">
         <div className="scroller thin reveal bc-min-h-0 bc-flex-1 bc-space-y-0.5 bc-overflow-y-auto">
-          {visibleNavItems.map(link => (
-            <SidebarNavItem iconOnly={compact} key={link.label} props={link} />
+          {visibleNavItems.map((link, index) => (
+            <Fragment key={link.path}>
+              {index > 0 && visibleNavItems[index - 1].group !== link.group && (
+                <hr className="bc-mx-2 bc-my-2 bc-border-0 bc-border-t bc-border-solid bc-border-line" />
+              )}
+              <SidebarNavItem iconOnly={compact} props={link} />
+            </Fragment>
           ))}
         </div>
 

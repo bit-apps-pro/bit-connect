@@ -201,7 +201,7 @@ return [
 
     'Sign in' => __('Sign in', 'bit-connect'),
 
-    'General' => __('General', 'bit-connect'),
+    'Send notifications' => __('Send notifications', 'bit-connect'),
 
     'How the topic list is sorted: newest, oldest or most active.' => __('How the topic list is sorted: newest, oldest or most active.', 'bit-connect'),
 
@@ -944,7 +944,7 @@ return [
 
     'Upvotes' => __('Upvotes', 'bit-connect'),
 
-    'Let members reply to topics.' => __('Let members reply to topics.', 'bit-connect'),
+    'Let members comment on topics.' => __('Let members comment on topics.', 'bit-connect'),
 
     'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.' => __('When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.', 'bit-connect'),
 
@@ -958,9 +958,9 @@ return [
 
     'Data cleanup' => __('Data cleanup', 'bit-connect'),
 
-    'Choose what members can do on a topic.' => __('Choose what members can do on a topic.', 'bit-connect'),
+    'Turn each one on or off for the whole forum.' => __('Turn each one on or off for the whole forum.', 'bit-connect'),
 
-    'Topic access' => __('Topic access', 'bit-connect'),
+    'What members can do' => __('What members can do', 'bit-connect'),
 
     'Please enter a valid Custom Login Page URL, for example https://example.com/login' => __('Please enter a valid Custom Login Page URL, for example https://example.com/login', 'bit-connect'),
 
