@@ -87,7 +87,7 @@ export default function StageModal({
       onCancel={onCancel}
       onOk={handleSubmit}
       open={open}
-      title={isEditMode ? __('Edit Stage') : __('Create Stage')}
+      title={isEditMode ? __('Edit Stage') : __('Add stage')}
       width={600}
     >
       <Form className="bc-mt-4" form={form} layout="vertical">

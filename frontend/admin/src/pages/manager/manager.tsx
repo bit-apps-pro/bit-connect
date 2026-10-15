@@ -64,8 +64,9 @@ export default function Manager() {
     <div className="bc-px-6 bc-pb-6">
       <div className="bc-min-w-0 bc-pb-4 bc-pt-5">
         <Title className="bc-mb-0" level={3}>
-          {__('Manage Users')}
+          {__('Members')}
         </Title>
+        <Text type="secondary">{__('Everyone with an account, and what each of them may do in the forum.')}</Text>
       </div>
 
       <div className="bc-mb-4 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3">
@@ -84,10 +85,10 @@ export default function Manager() {
               and this plugin draws none: what the add-on adds is said once, in
               words, on the Support screen. */}
           {hasBadgeCatalog && (
-            <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile Badges')}</Button>
+            <Button onClick={() => setBadgeModalOpen(true)}>{__('Profile badges')}</Button>
           )}
           <Button onClick={() => setRoleModalOpen(true)} type="primary">
-            {__('Role Capabilities')}
+            {__('Role permissions')}
           </Button>
         </div>
       </div>
@@ -115,7 +116,7 @@ export default function Manager() {
           <div>{__('Email')}</div>
           <div>{__('Roles')}</div>
           {hasBadgeCatalog && <div>{__('Badges')}</div>}
-          <div>{__('Capabilities')}</div>
+          <div>{__('Permissions')}</div>
         </div>
 
         {isUsersFetching && (

@@ -41,11 +41,11 @@ export default function TagCreateModal() {
       // Mount the body before the first open so the Form instance created above
       // is connected to a <Form>; antd warns otherwise.
       forceRender
-      okText={__('Create Tag')}
+      okText={__('Add tag')}
       onCancel={handleCancel}
       onOk={handleOk}
       open={isCreateModalOpen}
-      title={__('Create Tag')}
+      title={__('Add tag')}
     >
       <TagForm form={form} open={isCreateModalOpen} />
       {errorMessage && <Alert message={errorMessage} type="error" />}

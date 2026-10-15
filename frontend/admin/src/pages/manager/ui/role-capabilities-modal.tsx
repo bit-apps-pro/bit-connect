@@ -158,7 +158,7 @@ export default function RoleCapabilitiesModal({ onClose, open }: RoleCapabilitie
       title={
         <div>
           <Title className="bc-mb-0" level={4}>
-            {__('Forum Capabilities by Role')}
+            {__('Role permissions')}
           </Title>
           <Text className="bc-text-sm bc-font-normal" type="secondary">
             {__(

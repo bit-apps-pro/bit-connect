@@ -105,7 +105,7 @@ export default function BrandingSection({
       <Divider className="bc-my-0" />
       <label className="bc-flex bc-items-center bc-gap-3 bc-py-4" htmlFor="remove-bit-apps-branding">
         <Text className="bc-text-sm" strong>
-          {__('Remove Bit Apps Branding')}
+          {__('Remove Bit Apps branding')}
         </Text>
         <Switch
           checked={!form.promo.enabled}

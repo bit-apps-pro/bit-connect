@@ -36,19 +36,21 @@ final class Menu
     public static function getSideBarMenu(Body $body)
     {
         return [
-            'Home'        => self::getHomeMenuAttributes($body),
-            'Dashboard'   => self::getDashboardMenuAttributes(),
-            'General'     => self::getGeneralMenuAttributes(),
-            'Stages'      => self::getStagesMenuAttributes(),
-            'Topic Types' => self::getTopicTypesMenuAttributes(),
-            'Tags'        => self::getTagsMenuAttributes(),
-            'Status'      => self::getStatusMenuAttributes(),
-            'Manager'     => self::getManagerMenuAttributes(),
-            'Topics'      => self::getTopicsMenuAttributes(),
-            'Activity'    => self::getActivityMenuAttributes(),
-            'Reports'     => self::getReportsMenuAttributes(),
-            'Settings'    => self::getSettingsMenuAttributes(),
-            'Support'     => self::getSupportMenuAttributes(),
+            'Home'          => self::getHomeMenuAttributes($body),
+            'Dashboard'     => self::getDashboardMenuAttributes(),
+            'General'       => self::getGeneralMenuAttributes(),
+            'Stages'        => self::getStagesMenuAttributes(),
+            'Topic Types'   => self::getTopicTypesMenuAttributes(),
+            'Tags'          => self::getTagsMenuAttributes(),
+            'Status'        => self::getStatusMenuAttributes(),
+            'Manager'       => self::getManagerMenuAttributes(),
+            'Topics'        => self::getTopicsMenuAttributes(),
+            'Activity'      => self::getActivityMenuAttributes(),
+            'Reports'       => self::getReportsMenuAttributes(),
+            'Notifications' => self::getNotificationsMenuAttributes(),
+            'SEO'           => self::getSeoMenuAttributes(),
+            'Settings'      => self::getSettingsMenuAttributes(),
+            'Support'       => self::getSupportMenuAttributes(),
         ];
     }
 
@@ -122,7 +124,7 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Status',
+            'name'       => 'Statuses',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/status',
         ];
@@ -206,7 +208,7 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Manager',
+            'name'       => 'Members',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/manager',
         ];
@@ -220,6 +222,28 @@ final class Menu
             'name'       => 'General',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/general',
+        ];
+    }
+
+    private static function getNotificationsMenuAttributes()
+    {
+        return [
+            'parent'     => Config::SLUG,
+            'type'       => 'submenu',
+            'name'       => 'Notifications',
+            'capability' => Capabilities::MANAGE->value,
+            'slug'       => Config::SLUG . '#/notifications',
+        ];
+    }
+
+    private static function getSeoMenuAttributes()
+    {
+        return [
+            'parent'     => Config::SLUG,
+            'type'       => 'submenu',
+            'name'       => 'SEO',
+            'capability' => Capabilities::MANAGE->value,
+            'slug'       => Config::SLUG . '#/seo',
         ];
     }
 

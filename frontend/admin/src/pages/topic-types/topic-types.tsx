@@ -7,7 +7,7 @@ import TopicTypeEditModal from './ui/topic-type-edit-modal'
 import TopicTypesCreateModal from './ui/topic-types-create-modal'
 import TopicTypesTable from './ui/topic-types-table'
 
-const { Title } = Typography
+const { Text, Title } = Typography
 
 export default function TopicTypes() {
   const { setIsTopicTypeCreateModalOpen } = useTopicTypeStoreActions()
@@ -18,9 +18,10 @@ export default function TopicTypes() {
           <Title className="bc-mb-0" level={3}>
             {__('Topic Types')}
           </Title>
+          <Text type="secondary">{__('What kind of post a topic is, like a question or a bug report. Authors pick one when they post.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsTopicTypeCreateModalOpen(true)} type="primary">
-          {__('Add Topic Type')}
+          {__('Add topic type')}
         </Button>
       </div>
 

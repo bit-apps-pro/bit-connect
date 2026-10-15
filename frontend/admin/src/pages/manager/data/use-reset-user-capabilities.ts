@@ -22,7 +22,7 @@ export default function useResetUserCapabilities() {
       messageApi?.error(__('Failed to reset capabilities'))
     },
     onSuccess: () => {
-      messageApi?.success(__('Capabilities reset to role defaults'))
+      messageApi?.success(__('Permissions reset to role defaults'))
       queryClient.invalidateQueries({ queryKey: managerKeys.users() })
     }
   })

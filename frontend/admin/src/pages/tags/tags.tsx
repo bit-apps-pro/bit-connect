@@ -11,7 +11,7 @@ import TagCreateModal from './ui/tag-create-modal'
 import TagEditModal from './ui/tag-edit-modal'
 import TagsTable, { type TagsView } from './ui/tags-table'
 
-const { Title } = Typography
+const { Text, Title } = Typography
 
 const TAB_KEYS: readonly TagsView[] = ['all', 'pending']
 
@@ -46,9 +46,10 @@ export default function Tags() {
           <Title className="bc-mb-0" level={3}>
             {__('Tags')}
           </Title>
+          <Text type="secondary">{__('Keywords that link related topics. Tags members suggest wait under Pending until you approve them.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsCreateModalOpen(true)} type="primary">
-          {__('Create Tag')}
+          {__('Add tag')}
         </Button>
       </div>
 

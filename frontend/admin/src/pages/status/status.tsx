@@ -7,7 +7,7 @@ import StatusCreateModal from './ui/status-create-modal'
 import StatusEditModal from './ui/status-edit-modal'
 import StatusTable from './ui/status-table'
 
-const { Title } = Typography
+const { Text, Title } = Typography
 export default function Status() {
   const { setIsCreateStatusModalOpen } = useStatusStoreActions()
   return (
@@ -15,11 +15,12 @@ export default function Status() {
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
           <Title className="bc-mb-0" level={3}>
-            {__('Status')}
+            {__('Statuses')}
           </Title>
+          <Text type="secondary">{__('Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsCreateStatusModalOpen(true)} type="primary">
-          {__('Add Status')}
+          {__('Add status')}
         </Button>
       </div>
 

@@ -319,7 +319,7 @@ return [
 
     'Custom URL' => __('Custom URL', 'bit-connect'),
 
-    'Remove Bit Apps Branding' => __('Remove Bit Apps Branding', 'bit-connect'),
+    'Remove Bit Apps branding' => __('Remove Bit Apps branding', 'bit-connect'),
 
     'Choose an image' => __('Choose an image', 'bit-connect'),
 
@@ -425,8 +425,6 @@ return [
 
     'Status' => __('Status', 'bit-connect'),
 
-    'Manager' => __('Manager', 'bit-connect'),
-
     'Reports' => __('Reports', 'bit-connect'),
 
     'Notifications' => __('Notifications', 'bit-connect'),
@@ -441,19 +439,19 @@ return [
 
     'Failed to reset capabilities' => __('Failed to reset capabilities', 'bit-connect'),
 
-    'Capabilities reset to role defaults' => __('Capabilities reset to role defaults', 'bit-connect'),
+    'Permissions reset to role defaults' => __('Permissions reset to role defaults', 'bit-connect'),
 
     'Failed to update capabilities' => __('Failed to update capabilities', 'bit-connect'),
 
     'Capabilities updated' => __('Capabilities updated', 'bit-connect'),
 
-    'Manage Users' => __('Manage Users', 'bit-connect'),
+    'Members' => __('Members', 'bit-connect'),
 
     'Search by name, email or username…' => __('Search by name, email or username…', 'bit-connect'),
 
-    'Profile Badges' => __('Profile Badges', 'bit-connect'),
+    'Profile badges' => __('Profile badges', 'bit-connect'),
 
-    'Role Capabilities' => __('Role Capabilities', 'bit-connect'),
+    'Role permissions' => __('Role permissions', 'bit-connect'),
 
     'User' => __('User', 'bit-connect'),
 
@@ -463,15 +461,13 @@ return [
 
     'Badges' => __('Badges', 'bit-connect'),
 
-    'Capabilities' => __('Capabilities', 'bit-connect'),
-
     'No users found.' => __('No users found.', 'bit-connect'),
 
     'No role' => __('No role', 'bit-connect'),
 
-    'Set by role, on the Role Capabilities screen.' => __('Set by role, on the Role Capabilities screen.', 'bit-connect'),
+    'Set by role, on the Role permissions screen.' => __('Set by role, on the Role permissions screen.', 'bit-connect'),
 
-    'Capabilities, set by role' => __('Capabilities, set by role', 'bit-connect'),
+    'Permissions, set by role' => __('Permissions, set by role', 'bit-connect'),
 
     'Posts' => __('Posts', 'bit-connect'),
 
@@ -482,8 +478,6 @@ return [
     'Moderation & Admin' => __('Moderation & Admin', 'bit-connect'),
 
     'Save' => __('Save', 'bit-connect'),
-
-    'Forum Capabilities by Role' => __('Forum Capabilities by Role', 'bit-connect'),
 
     'Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.' => __('Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.', 'bit-connect'),
 
@@ -984,7 +978,7 @@ return [
 
     'Edit Stage' => __('Edit Stage', 'bit-connect'),
 
-    'Create Stage' => __('Create Stage', 'bit-connect'),
+    'Add stage' => __('Add stage', 'bit-connect'),
 
     'Stage Name' => __('Stage Name', 'bit-connect'),
 
@@ -1028,7 +1022,7 @@ return [
 
     'Status updated successfully' => __('Status updated successfully', 'bit-connect'),
 
-    'Add Status' => __('Add Status', 'bit-connect'),
+    'Add status' => __('Add status', 'bit-connect'),
 
     'Create' => __('Create', 'bit-connect'),
 
@@ -1092,7 +1086,7 @@ return [
 
     'Tag updated successfully' => __('Tag updated successfully', 'bit-connect'),
 
-    'Create Tag' => __('Create Tag', 'bit-connect'),
+    'Add tag' => __('Add tag', 'bit-connect'),
 
     'Edit Tag' => __('Edit Tag', 'bit-connect'),
 
@@ -1120,7 +1114,7 @@ return [
 
     'Topic type updated successfully' => __('Topic type updated successfully', 'bit-connect'),
 
-    'Add Topic Type' => __('Add Topic Type', 'bit-connect'),
+    'Add topic type' => __('Add topic type', 'bit-connect'),
 
     'Edit Topic Type' => __('Edit Topic Type', 'bit-connect'),
 
@@ -2065,6 +2059,16 @@ return [
 
     'Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.' => __('Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.', 'bit-connect'),
 
-    'Deleting removes the topics and every comment on them. This cannot be undone.' => __('Deleting removes the topics and every comment on them. This cannot be undone.', 'bit-connect')
+    'Deleting removes the topics and every comment on them. This cannot be undone.' => __('Deleting removes the topics and every comment on them. This cannot be undone.', 'bit-connect'),
+
+    'Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.' => __('Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.', 'bit-connect'),
+
+    'What kind of post a topic is, like a question or a bug report. Authors pick one when they post.' => __('What kind of post a topic is, like a question or a bug report. Authors pick one when they post.', 'bit-connect'),
+
+    'The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.' => __('The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.', 'bit-connect'),
+
+    'Keywords that link related topics. Tags members suggest wait under Pending until you approve them.' => __('Keywords that link related topics. Tags members suggest wait under Pending until you approve them.', 'bit-connect'),
+
+    'Everyone with an account, and what each of them may do in the forum.' => __('Everyone with an account, and what each of them may do in the forum.', 'bit-connect'),
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

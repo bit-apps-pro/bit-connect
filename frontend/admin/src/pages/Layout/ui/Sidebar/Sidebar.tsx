@@ -51,8 +51,8 @@ const navItems: {
   { icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
   { icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
   { icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
-  { icon: LuCircleCheck, label: __('Status'), path: '../status', requires: 'manage' },
-  { icon: LuUsers, label: __('Manager'), path: '../manager', requires: 'manage' },
+  { icon: LuCircleCheck, label: __('Statuses'), path: '../status', requires: 'manage' },
+  { icon: LuUsers, label: __('Members'), path: '../manager', requires: 'manage' },
   // Ordered to match the WordPress menu, so the two navs read the same way.
   { icon: LuMessagesSquare, label: __('Topics'), path: '../topics', requires: 'moderate' },
   { icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
@@ -110,7 +110,7 @@ export default function Sidebar() {
         aria-label={__('Bit Connect')}
         className="bc-mx-1 bc-mb-3 bc-mt-4 bc-flex bc-items-center bc-gap-2 bc-text-ink hover:bc-text-ink"
         title={__('Bit Connect')}
-        to="../support"
+        to="../"
       >
         <img alt="" className="bc-size-7 bc-shrink-0" src={logo} />
         {!compact && <span className="bc-text-lg bc-font-semibold">{__('Bit Connect')}</span>}
