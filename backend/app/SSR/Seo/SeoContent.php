@@ -266,7 +266,11 @@ HTML,
             return '';
         }
 
-        return wp_trim_words(wp_strip_all_tags(strip_shortcodes($source)), $words, '…');
+        // Stripping tags alone glues adjacent blocks together — `<p>a</p><p>b</p>`
+        // reads as "ab" — so every block boundary becomes a space first.
+        $source = preg_replace('~<br\s*/?>|</(?:p|div|li|h[1-6]|blockquote|pre|figure|tr|td|th)>~i', '$0 ', strip_shortcodes($source));
+
+        return wp_trim_words(wp_strip_all_tags((string) $source), $words, '…');
     }
 
     /**
