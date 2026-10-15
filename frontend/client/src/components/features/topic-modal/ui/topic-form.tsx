@@ -21,6 +21,7 @@ import { useAuthStore } from '@/store/auth.zustand'
 
 import descriptionOptional from '../data/description-optional'
 import useAddedTermFields from '../data/use-added-term-fields'
+import useDestinationField from '../data/use-destination-field'
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 import useVisibilityOptions from '../data/use-visibility-options'
 import { descriptionProblem } from '../shared/description-problem'
@@ -55,6 +56,7 @@ export default function TopicForm({
   const topicTypeMode = topicFormFields?.topicType ?? 'required'
   const showTopicType = topicTypeMode !== 'hidden'
   const addedTermFields = useAddedTermFields({ form, isEditMode: !!isEditMode })
+  const destinationField = useDestinationField({ form, isEditMode: !!isEditMode })
   // A limit of zero takes the control away rather than leaving one that only
   // ever refuses. The server enforces the same numbers — see PostingLimits.php.
   const {
@@ -202,6 +204,8 @@ export default function TopicForm({
       // forms both render `#post_title`, and a label can reach the wrong input.
       name={isEditMode ? 'topic-edit' : 'topic-create'}
     >
+      {destinationField}
+
       {/* Hidden rather than unrendered when only one visibility is on offer: a
           radio group of one is a control with nothing to decide, but the field
           still has to register `publish` so the payload is identical either way.
