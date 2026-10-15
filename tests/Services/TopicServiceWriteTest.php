@@ -213,18 +213,9 @@ final class TopicServiceWriteTest extends TestCase
     }
 
     /**
-     * Both call wp_update_post() and bump post_modified without a word
+     * It calls wp_update_post() and bumps post_modified without a word
      * changing, which is why that column cannot answer this.
      */
-    public function testPinningATopicIsNotAnEdit(): void
-    {
-        $this->seedTopic(20, ['post_title' => 'Cannot log in']);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-
-        $this->assertSame([], $GLOBALS['__wp_post_meta'][20] ?? []);
-    }
-
     public function testLockingATopicIsNotAnEdit(): void
     {
         $this->seedTopic(20, ['post_title' => 'Cannot log in']);
@@ -244,38 +235,8 @@ final class TopicServiceWriteTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Pinning and locking
+    // Locking
     // -----------------------------------------------------------------------
-
-    public function testPinningPutsTheTopicOnTheStickyList(): void
-    {
-        $this->seedTopic(20, []);
-
-        $this->assertTrue($this->topics->updateTopic(20, ['is_pinned' => true])['is_pinned']);
-        $this->assertSame([20], get_option('sticky_posts', []));
-    }
-
-    public function testPinningATopicTwiceListsItOnce(): void
-    {
-        $this->seedTopic(20, []);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-
-        $this->assertSame([20], get_option('sticky_posts', []));
-    }
-
-    public function testUnpinningTakesItOffAgainAndLeavesTheOthers(): void
-    {
-        $this->seedTopic(20, []);
-        $this->seedTopic(21, []);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-        $this->topics->updateTopic(21, ['is_pinned' => true]);
-        $this->topics->updateTopic(20, ['is_pinned' => false]);
-
-        $this->assertSame([21], get_option('sticky_posts', []));
-    }
 
     public function testLockingClosesCommentsAndUnlockingOpensThem(): void
     {
@@ -288,14 +249,17 @@ final class TopicServiceWriteTest extends TestCase
         $this->assertSame('open', $GLOBALS['__wp_posts'][20]->comment_status);
     }
 
-    public function testAnUpdateThatSaysNothingAboutPinningLeavesItAlone(): void
+    /**
+     * This plugin keeps no list of pinned topics, so a request carrying the
+     * flag changes nothing it stores.
+     */
+    public function testAnUpdateCarryingAPinFlagTouchesNoStickyList(): void
     {
         $this->seedTopic(20, []);
+
         $this->topics->updateTopic(20, ['is_pinned' => true]);
 
-        $this->topics->updateTopic(20, ['post_title' => 'Renamed']);
-
-        $this->assertSame([20], get_option('sticky_posts', []));
+        $this->assertSame([], get_option('sticky_posts', []));
     }
 
     // -----------------------------------------------------------------------

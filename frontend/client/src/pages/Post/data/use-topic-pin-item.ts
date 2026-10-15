@@ -11,10 +11,10 @@ export interface TopicMenuItem {
 }
 
 /**
- * The topic's ⋯ menu gains no pin entry.
+ * A further entry for the topic's ⋯ menu, after its lock entry.
  *
- * Topics are pinned from the admin's Topics screen. The header adds whatever
- * this returns after its lock entry, so `undefined` leaves the menu as it was.
+ * The menu already holds every action this plugin takes on a topic, so this
+ * adds none, and `undefined` leaves the menu as it was.
  */
 // eslint-disable-next-line unicorn/no-useless-undefined -- the slot is declared empty, and the header tests for it
 const useTopicPinItem: (post: Topic) => TopicMenuItem | undefined = () => undefined

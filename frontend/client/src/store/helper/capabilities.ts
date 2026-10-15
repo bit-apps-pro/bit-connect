@@ -15,7 +15,6 @@ export type ForumCapability =
   | 'bit_connect_forum_lock_post'
   | 'bit_connect_forum_manage'
   | 'bit_connect_forum_moderate'
-  | 'bit_connect_forum_pin_post'
   | 'bit_connect_forum_vote_post'
 
 /** cap => granted. Partial: an older payload may not carry every slug. */
@@ -74,8 +73,7 @@ function legacyFallback(user: CapabilityCarrier): CapabilityMap {
     bit_connect_forum_delete_any: isLegacyModerator,
     bit_connect_forum_lock_post: isLegacyModerator,
     bit_connect_forum_manage: isLegacyModerator,
-    bit_connect_forum_moderate: isLegacyModerator,
-    bit_connect_forum_pin_post: isLegacyModerator
+    bit_connect_forum_moderate: isLegacyModerator
   }
 
   for (const cap of LEGACY_OWNER_CAPS) caps[cap] = true

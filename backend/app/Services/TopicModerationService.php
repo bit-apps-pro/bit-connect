@@ -21,21 +21,21 @@ use WP_Term;
  *
  * The single-topic endpoint (TopicController) and the admin's Topics screen
  * both act through here, so a status moved from either place notifies the
- * thread the same way, and a pin or a delete is logged the same way.
+ * thread the same way, and a lock or a delete is logged the same way.
  *
  * The list is its own query rather than TopicService::getAllTopics(): that one
- * is the portal's, and puts the pinned topics first, which a table sorted by a
- * column and paged by offset cannot have. It also carries each topic's words
- * and attachments, which a row of a table has no use for.
+ * is the portal's, and may lead with topics another plugin puts first, which a
+ * table sorted by a column and paged by offset cannot have. It also carries
+ * each topic's words and attachments, which a row of a table has no use for.
  */
 final class TopicModerationService
 {
     /** Actions the bulk endpoint accepts. */
-    public const ACTIONS = ['set_status', 'set_stage', 'pin', 'unpin', 'lock', 'unlock', 'hide', 'restore', 'delete'];
+    public const ACTIONS = ['set_status', 'set_stage', 'lock', 'unlock', 'hide', 'restore', 'delete'];
 
     public const OUTCOME_DONE = 'done';
 
-    /** Already so — pinning a pinned topic, hiding a hidden one. */
+    /** Already so — locking a locked topic, hiding a hidden one. */
     public const OUTCOME_SKIPPED = 'skipped';
 
     public const OUTCOME_FAILED = 'failed';
@@ -150,13 +150,12 @@ final class TopicModerationService
             $terms[$param] = self::firstTerm($id, $entry['taxonomy'], false);
         }
 
-        return [
+        return ExtensionPoints::moderationRowFields([
             'id'             => $id,
             'title'          => wp_specialchars_decode((string) $post->post_title, ENT_QUOTES),
             'permalink'      => PortalLocation::topicUrl($id),
             'post_status'    => (string) $post->post_status,
             'hidden'         => $post->post_status === ContentVisibilityService::HIDDEN_STATUS,
-            'is_pinned'      => is_sticky($id),
             'is_locked'      => $post->comment_status === 'closed',
             'created_at'     => (string) $post->post_date_gmt,
             'comments_count' => (int) $post->comment_count,
@@ -169,7 +168,7 @@ final class TopicModerationService
             'stage'      => self::firstTerm($id, Taxonomies::STAGES->value, true),
             'topic_type' => self::firstTerm($id, Taxonomies::TOPIC_TYPES->value, true),
             'terms'      => $terms,
-        ];
+        ], $id);
     }
 
     /**
@@ -228,12 +227,6 @@ final class TopicModerationService
             case 'set_status':
             case 'set_stage':
                 return $this->setTerm($id, $action === 'set_status' ? 'statuses' : 'stages', (int) $termId);
-
-            case 'pin':
-            case 'unpin':
-                $pin = $action === 'pin';
-
-                return is_sticky($id) === $pin ? self::OUTCOME_SKIPPED : $this->update($id, $author, ['is_pinned' => $pin]);
 
             case 'lock':
             case 'unlock':
@@ -331,25 +324,15 @@ final class TopicModerationService
      * Records what a moderator did to somebody else's topic.
      *
      * Reads the same $updateData the service acted on, so it cannot claim a
-     * change that was dropped. Pin and lock are recorded in whichever direction
-     * they were moved, so the feed reads as a history rather than a list of
-     * "changed pinning".
+     * change that was dropped. A lock is recorded in whichever direction it
+     * was moved, so the feed reads as a history rather than a list of
+     * "changed locking".
      *
      * @param array<string, mixed> $updateData
      * @param array<string, mixed> $after
      */
     public static function recordTopicActivity(int $id, int $author, array $updateData, array $after): void
     {
-        if (isset($updateData['is_pinned'])) {
-            ActivityLogService::recordIfNotAuthor(
-                $updateData['is_pinned'] ? ActivityActions::PIN_POST : ActivityActions::UNPIN_POST,
-                ActivityLogService::TARGET_POST,
-                $id,
-                $author,
-                ['post_title' => $after['post_title'] ?? '']
-            );
-        }
-
         if (isset($updateData['is_locked'])) {
             ActivityLogService::recordIfNotAuthor(
                 $updateData['is_locked'] ? ActivityActions::LOCK_POST : ActivityActions::UNLOCK_POST,
@@ -480,7 +463,7 @@ final class TopicModerationService
     }
 
     /**
-     * Pins or locks through the topic service, and logs it.
+     * Locks or unlocks through the topic service, and logs it.
      *
      * @param array<string, bool> $updateData
      */

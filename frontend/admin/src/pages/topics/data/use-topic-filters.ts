@@ -12,11 +12,11 @@ interface TopicFiltersResponse {
 const NO_TAXONOMIES: FilterTaxonomy[] = []
 
 /** Until the server answers, offer nothing that needs a capability. */
-const NO_ABILITIES: TopicAbilities = { delete_any: false, lock: false, pin: false }
+const NO_ABILITIES: TopicAbilities = { delete_any: false, lock: false }
 
 /**
  * The taxonomies another plugin files topics under, as filters, and which of
- * the pin, lock and delete actions this moderator may take.
+ * the lock and delete actions this moderator may take.
  */
 export default function useTopicFilters() {
   const { data } = useQuery<ResponseType<TopicFiltersResponse>, Error, TopicFiltersResponse | undefined>({

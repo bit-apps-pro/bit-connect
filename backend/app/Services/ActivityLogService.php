@@ -71,10 +71,14 @@ final class ActivityLogService
     /**
      * Writes one row. Silently does nothing when there is no actor.
      *
+     * `$action` is one of this plugin's, or the slug of one another plugin
+     * named through ExtensionPoints::activityActions(); any other slug is
+     * not written.
+     *
      * @param array<string, mixed> $context free-form detail, stored as JSON
      */
     public static function record(
-        ActivityActions $action,
+        ActivityActions|string $action,
         string $targetType,
         int $targetId,
         int $targetAuthor,
@@ -102,7 +106,7 @@ final class ActivityLogService
      * @param array<string, mixed> $context
      */
     public static function recordAsSystem(
-        ActivityActions $action,
+        ActivityActions|string $action,
         string $targetType,
         int $targetId,
         int $targetAuthor,
@@ -121,7 +125,7 @@ final class ActivityLogService
      * @param array<string, mixed> $context
      */
     public static function recordIfNotAuthor(
-        ActivityActions $action,
+        ActivityActions|string $action,
         string $targetType,
         int $targetId,
         int $targetAuthor,
@@ -274,7 +278,7 @@ final class ActivityLogService
      */
     private static function write(
         int $actorId,
-        ActivityActions $action,
+        ActivityActions|string $action,
         string $targetType,
         int $targetId,
         int $targetAuthor,
@@ -285,10 +289,16 @@ final class ActivityLogService
             return;
         }
 
+        // A slug rather than a case is another plugin's action, and is written
+        // only when that plugin has named it — see ExtensionPoints::activityActions().
+        if (\is_string($action) && !isset(ExtensionPoints::activityActions()[$action])) {
+            return;
+        }
+
         ActivityLog::insert(
             [
                 'actor_id'      => $actorId,
-                'action'        => $action->value,
+                'action'        => \is_string($action) ? $action : $action->value,
                 'target_type'   => $targetType,
                 'target_id'     => $targetId,
                 'target_author' => $targetAuthor,
@@ -320,7 +330,9 @@ final class ActivityLogService
         return [
             'id'           => (int) $row->id,
             'action'       => (string) $row->action,
-            'action_label' => $action ? ActivityActions::translatedLabel($action) : (string) $row->action,
+            'action_label' => $action
+                ? ActivityActions::translatedLabel($action)
+                : (ExtensionPoints::activityActions()[(string) $row->action] ?? (string) $row->action),
             'actor'        => [
                 'id'   => (int) $row->actor_id,
                 'name' => $actor ? $actor->display_name : '',

@@ -41,7 +41,6 @@ final class TopicModerationServiceTest extends TestCase
         $GLOBALS['__wp_caps'] = [];
         $GLOBALS['__wp_current_user_id'] = 0;
         $GLOBALS['__bc_activity_log'] = [];
-        unset($GLOBALS['__wp_options']['sticky_posts']);
     }
 
     public function testHidingATopicHidesItAndLogsIt(): void
@@ -78,14 +77,6 @@ final class TopicModerationServiceTest extends TestCase
         $this->seedTopic(10, 'publish');
 
         $this->assertSame(TopicModerationService::OUTCOME_SKIPPED, (new TopicModerationService())->apply('restore', 10));
-    }
-
-    public function testPinningAPinnedTopicIsSkipped(): void
-    {
-        $this->seedTopic(10, 'publish');
-        $GLOBALS['__wp_options']['sticky_posts'] = [10];
-
-        $this->assertSame(TopicModerationService::OUTCOME_SKIPPED, (new TopicModerationService())->apply('pin', 10));
     }
 
     public function testLockingALockedTopicIsSkipped(): void

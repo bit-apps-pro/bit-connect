@@ -47,14 +47,6 @@ msgstr ""
 msgid "Deleted a comment"
 msgstr ""
 
-#: backend/app/Enum/ActivityActions.php:85
-msgid "Pinned a topic"
-msgstr ""
-
-#: backend/app/Enum/ActivityActions.php:86
-msgid "Unpinned a topic"
-msgstr ""
-
 #: backend/app/Enum/ActivityActions.php:87
 msgid "Locked a topic"
 msgstr ""
@@ -137,10 +129,6 @@ msgstr ""
 
 #: backend/app/Enum/Capabilities.php:135
 msgid "Moderate (Reports, Locked Threads)"
-msgstr ""
-
-#: backend/app/Enum/Capabilities.php:136
-msgid "Pin/Unpin Topics"
 msgstr ""
 
 #: backend/app/Enum/Capabilities.php:137

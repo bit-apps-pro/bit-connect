@@ -47,7 +47,6 @@ class UserProfileService
         'bit_connect_forum_vote_post'          => 'Voting',
         'bit_connect_forum_delete_any'         => 'Other People\'s Content',
         'bit_connect_forum_moderate'           => 'Moderation',
-        'bit_connect_forum_pin_post'           => 'Moderation',
         'bit_connect_forum_lock_post'          => 'Moderation',
         'bit_connect_forum_manage'             => 'Administration',
     ];
@@ -152,12 +151,6 @@ class UserProfileService
         $permissions = [];
 
         foreach (Capabilities::cases() as $capability) {
-            // Pinning is not part of the current release, so the panel should
-            // not promise it either way.
-            if ($capability === Capabilities::PIN_POST) {
-                continue;
-            }
-
             $permissions[] = [
                 'key'   => $capability->value,
                 'label' => Capabilities::translatedLabel($capability),
@@ -262,53 +255,6 @@ class UserProfileService
 
         return [
             'data'       => $this->hydrateFeed($rows),
-            'pagination' => $this->pagination($total, $page, $perPage),
-        ];
-    }
-
-    /**
-     * The member's topics that are currently pinned.
-     *
-     * Pinning is WordPress's `sticky_posts` option, which TopicService already
-     * reads back as `is_pinned`. There is no index on it, so this filters an
-     * explicit id list rather than querying — the sticky set is small by
-     * definition (it is a curated shortlist, not a category).
-     *
-     * @param int $userId
-     * @param int $page
-     * @param int $perPage
-     *
-     * @return array{data:array, pagination:array}
-     */
-    public function pinnedTopics($userId, $page = 1, $perPage = 10)
-    {
-        [$page, $perPage] = $this->paging($page, $perPage);
-
-        $sticky = array_map('intval', (array) get_option('sticky_posts', []));
-
-        if ($sticky === []) {
-            return [
-                'data'       => [],
-                'pagination' => $this->pagination(0, $page, $perPage),
-            ];
-        }
-
-        // Restrict to this member's own sticky topics; getAllTopics still
-        // applies the status and `perm => readable` rules.
-        $owned = $this->topicService->getAllTopics(
-            [
-                'author'           => (int) $userId,
-                'post__in'         => $sticky,
-                'numberposts'      => -1,
-                'include_comments' => false,
-            ]
-        );
-
-        $total = \count($owned);
-        $offset = ($page - 1) * $perPage;
-
-        return [
-            'data'       => \array_slice($owned, $offset, $perPage),
             'pagination' => $this->pagination($total, $page, $perPage),
         ];
     }

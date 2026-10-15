@@ -29,24 +29,15 @@ describe('lookOf', () => {
     }
   })
 
-  // Pinning changes neither availability nor content, so it sits on a
-  // decorative tone rather than borrowing a status colour it would misreport.
-  it('keeps pinning off the availability scale', () => {
-    expect(lookOf('pin_post').tint).toBe('bc-bg-tone-violet-soft bc-text-tone-violet')
-    expect(lookOf('unpin_post').tint).toBe('bc-bg-surface-raised bc-text-ink-muted')
-  })
-
   it('gives every mapped action an icon of its own', () => {
     const mapped = [
       'delete_comment',
       'delete_post',
       'hide',
       'lock_post',
-      'pin_post',
       'resolve_reports',
       'restore',
-      'unlock_post',
-      'unpin_post'
+      'unlock_post'
     ]
 
     for (const action of mapped) {

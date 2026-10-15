@@ -195,41 +195,42 @@ class TopicService
             return array_map('intval', (new WP_Query($args))->posts);
         }
 
-        // Pinned topics lead the first page — the ones in this list. WordPress
-        // would prepend every sticky post to a list like this one, whatever
-        // its taxonomy filters, so a topic pinned in one board topped every
-        // other board's list and every stage's. They are asked for through the
-        // list's own arguments instead, then kept out of its pages.
+        // The list is in its own order. WordPress would prepend every sticky
+        // post to a list like this one, whatever its taxonomy filters; this
+        // plugin does not order by stickiness, so that is switched off. Any
+        // topics another plugin has a list lead with (see
+        // ExtensionPoints::leadingTopicIds()) are asked for through the list's
+        // own arguments instead, then kept out of its pages.
         $args['ignore_sticky_posts'] = true;
         $perPage = (int) ($args['posts_per_page'] ?? -1);
         $page = max(1, (int) ($args['paged'] ?? 1));
-        $pinned = $this->leadingPinned($args, $filters);
+        $leading = $this->leadingTopics($args, $filters);
 
         if ($perPage > 0) {
-            $pinned = \array_slice($pinned, 0, $perPage);
+            $leading = \array_slice($leading, 0, $perPage);
         }
 
-        if ($pinned !== []) {
-            $args = self::withoutPosts($args, array_map(static fn (WP_Post $post): int => (int) $post->ID, $pinned));
+        if ($leading !== []) {
+            $args = self::withoutPosts($args, array_map(static fn (WP_Post $post): int => (int) $post->ID, $leading));
 
-            // The pinned take the first places of page one, so every later
-            // page starts that many places earlier in the rest.
+            // The leading topics take the first places of page one, so every
+            // later page starts that many places earlier in the rest.
             if ($perPage > 0) {
                 unset($args['paged']);
-                $args['offset'] = $page === 1 ? 0 : ($page - 1) * $perPage - \count($pinned);
-                $args['posts_per_page'] = $page === 1 ? max(1, $perPage - \count($pinned)) : $perPage;
+                $args['offset'] = $page === 1 ? 0 : ($page - 1) * $perPage - \count($leading);
+                $args['posts_per_page'] = $page === 1 ? max(1, $perPage - \count($leading)) : $perPage;
             }
         }
 
         $query = new WP_Query($args);
-        $this->lastQueryTotal = (int) $query->found_posts + \count($pinned);
+        $this->lastQueryTotal = (int) $query->found_posts + \count($leading);
 
         $posts = $query->posts;
 
-        if ($pinned !== [] && $page === 1) {
-            // A page the pinned fill on their own: the one row asked for above
-            // was only to count the rest.
-            $posts = $perPage > 0 && \count($pinned) >= $perPage ? $pinned : [...$pinned, ...$posts];
+        if ($leading !== [] && $page === 1) {
+            // A page the leading topics fill on their own: the one row asked
+            // for above was only to count the rest.
+            $posts = $perPage > 0 && \count($leading) >= $perPage ? $leading : [...$leading, ...$posts];
         }
 
         $topics = [];
@@ -545,25 +546,11 @@ class TopicService
         }
 
         // Only a change to the words counts as an edit. An update carrying just
-        // is_pinned or is_locked still calls wp_update_post() below and bumps
-        // post_modified, which is why that column cannot answer this and the
-        // meta has to be written deliberately.
+        // is_locked still calls wp_update_post() below and bumps post_modified,
+        // which is why that column cannot answer this and the meta has to be
+        // written deliberately.
         if ($contentChanged) {
             EditAttributionService::recordPost($id, get_current_user_id());
-        }
-
-        // Pin/unpin: WordPress sticky posts list
-        if (isset($data['is_pinned'])) {
-            $stickies = get_option('sticky_posts', []);
-            if ($data['is_pinned']) {
-                if (!\in_array($id, $stickies, true)) {
-                    $stickies[] = $id;
-                    update_option('sticky_posts', $stickies);
-                }
-            } else {
-                $stickies = array_values(array_diff($stickies, [$id]));
-                update_option('sticky_posts', $stickies);
-            }
         }
 
         // Lock/unlock: comment_status open/closed
@@ -853,34 +840,35 @@ class TopicService
     }
 
     /**
-     * The pinned topics a list leads with: the sticky ones among what the list
-     * itself would return, in its own order. None for a search, a single
-     * topic, one author's topics or an explicit set of ids — the lists
-     * WordPress never led with sticky posts either.
+     * The topics a list leads with: those another plugin names (see
+     * ExtensionPoints::leadingTopicIds()) among what the list itself would
+     * return, in its own order. None for a search, a single topic, one
+     * author's topics or an explicit set of ids — lists whose order is the
+     * point of asking for them.
      *
      * @param array<string, mixed> $args    the list's query, as it stands
      * @param array<string, mixed> $filters
      *
      * @return array<int, WP_Post>
      */
-    private function leadingPinned(array $args, array $filters): array
+    private function leadingTopics(array $args, array $filters): array
     {
         if (!empty($filters['s']) || !empty($filters['name']) || !empty($args['author']) || ($args['orderby'] ?? '') === 'post__in') {
             return [];
         }
 
-        $sticky = array_values(array_filter(array_map('intval', (array) get_option('sticky_posts', []))));
+        $ids = ExtensionPoints::leadingTopicIds();
 
         if (isset($args['post__in'])) {
-            $sticky = array_values(array_intersect($sticky, array_map('intval', (array) $args['post__in'])));
+            $ids = array_values(array_intersect($ids, array_map('intval', (array) $args['post__in'])));
         }
 
-        if ($sticky === []) {
+        if ($ids === []) {
             return [];
         }
 
         unset($args['paged'], $args['offset']);
-        $args['post__in'] = $sticky;
+        $args['post__in'] = $ids;
         $args['posts_per_page'] = -1;
         $args['no_found_rows'] = true;
 
@@ -984,7 +972,6 @@ class TopicService
             'guid'              => $post->guid,
             'comment_status'    => $post->comment_status,
             'is_locked'         => ($post->comment_status === 'closed'),
-            'is_pinned'         => \in_array($post->ID, (array) get_option('sticky_posts', []), true),
             'ping_status'       => $post->ping_status,
             'post_name'         => $post->post_name,
             'post_parent'       => $post->post_parent,
@@ -1001,7 +988,7 @@ class TopicService
             // here so a topic byline can badge staff without a lookup per topic.
             'author_badge' => UserBadgeService::for((int) $post->post_author),
             // Null until someone edits the words. Not derived from post_modified,
-            // which pinning and locking both bump.
+            // which locking bumps.
             'edited' => EditAttributionService::forPost((int) $post->ID),
             // True only for the two audiences that get a hidden topic served at
             // all — its author and a moderator — so the page can say why it is

@@ -2070,7 +2070,6 @@ return [
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d topics' => __('%d topics', 'bit-connect'),
 
-    'You cannot pin topics.' => __('You cannot pin topics.', 'bit-connect'),
 
     'You cannot lock topics.' => __('You cannot lock topics.', 'bit-connect'),
 
@@ -2087,9 +2086,7 @@ return [
 
     'Restore' => __('Restore', 'bit-connect'),
 
-    'Pin' => __('Pin', 'bit-connect'),
 
-    'Unpin' => __('Unpin', 'bit-connect'),
 
     'Lock' => __('Lock', 'bit-connect'),
 
@@ -2108,7 +2105,7 @@ return [
 
     'The topics could not be loaded.' => __('The topics could not be loaded.', 'bit-connect'),
 
-    'Set the status and stage of topics, pin, lock, hide or delete them — one at a time or several at once.' => __('Set the status and stage of topics, pin, lock, hide or delete them — one at a time or several at once.', 'bit-connect'),
+    'Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.' => __('Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.', 'bit-connect'),
 
     'Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.' => __('Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.', 'bit-connect'),
 

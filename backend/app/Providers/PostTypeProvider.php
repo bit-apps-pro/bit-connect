@@ -56,7 +56,7 @@ class PostTypeProvider
      * to remove content is not the thing being prevented here.
      *
      * Plugin code is unaffected — wp_update_post() performs no capability check
-     * of its own, so hiding, restoring, pinning and locking all still work.
+     * of its own, so hiding, restoring and locking all still work.
      */
     public function restrictEditingToAuthor(): void
     {

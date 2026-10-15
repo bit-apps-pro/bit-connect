@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Http\Requests\GetActivityLogRequest;
 use BitApps\BitConnect\Services\ActivityLogService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 
 /**
  * Reads the activity log.
@@ -65,6 +66,12 @@ final class ActivityLogController
     // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- see above
     public function actions(GetActivityLogRequest $request)
     {
-        return Response::success(ActivityActions::options());
+        $added = [];
+
+        foreach (ExtensionPoints::activityActions() as $value => $label) {
+            $added[] = ['value' => $value, 'label' => $label];
+        }
+
+        return Response::success([...ActivityActions::options(), ...$added]);
     }
 }

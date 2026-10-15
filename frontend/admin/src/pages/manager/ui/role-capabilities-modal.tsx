@@ -60,7 +60,7 @@ const CAP_GROUPS: CapabilityGroup[] = [
     label: __('Other People\u2019s Content')
   },
   {
-    caps: ['bit_connect_forum_moderate', 'bit_connect_forum_pin_post', 'bit_connect_forum_lock_post', 'bit_connect_forum_manage'],
+    caps: ['bit_connect_forum_moderate', 'bit_connect_forum_lock_post', 'bit_connect_forum_manage'],
     label: __('Moderation & Admin')
   }
 ]

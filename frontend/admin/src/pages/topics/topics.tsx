@@ -3,11 +3,13 @@ import { __ } from '@common/helpers/i18nWrap'
 import PageTabs, { type PageTab } from '@components/utilities/page-tabs'
 import { Alert, Modal, Typography } from 'antd'
 import { useCallback, useContext, useMemo, useState } from 'react'
-import { LuEye, LuEyeOff, LuList, LuLock, LuLockOpen, LuPin, LuPinOff, LuTrash2 } from 'react-icons/lu'
+import { LuEye, LuEyeOff, LuList, LuLock, LuLockOpen, LuTrash2 } from 'react-icons/lu'
 
 import useStages from '../stages/data/use-stages'
 import useStatuses from '../status/data/use-statuses'
 import useTopicTypes from '../topic-types/data/use-topic-types'
+import useAddedBulkActions from './data/use-added-bulk-actions'
+import useAddedColumns from './data/use-added-columns'
 import useAddedViews from './data/use-added-views'
 import useModerationTopics from './data/use-moderation-topics'
 import { type TopicPatch, useBulkTopicAction, useUpdateTopic } from './data/use-topic-actions'
@@ -30,7 +32,7 @@ function asOptions(terms: { id: number; meta?: { bit_connect_color?: string }; n
 
 /**
  * Every topic in one table, for the people who look after them: set a status
- * or a stage, pin, lock, hide or delete — one row at a time or many at once.
+ * or a stage, lock, hide or delete — one row at a time or many at once.
  *
  * Defining the statuses and stages themselves stays on their own screens.
  */
@@ -39,6 +41,8 @@ export default function Topics() {
   const [modal, modalHolder] = Modal.useModal()
 
   const addedViews = useAddedViews()
+  const addedBulkActions = useAddedBulkActions()
+  const addedColumns = useAddedColumns()
   const [view, setView] = useState('')
   const [filters, setFilters] = useState<TopicFilters>(FIRST_PAGE)
   const [selected, setSelected] = useState<number[]>([])
@@ -122,12 +126,7 @@ export default function Topics() {
   }
 
   const ownBulkActions: TopicAction[] = [
-    ...(abilities.pin
-      ? [
-          { icon: <LuPin aria-hidden />, key: 'pin', label: __('Pin'), run: bulk('pin') },
-          { icon: <LuPinOff aria-hidden />, key: 'unpin', label: __('Unpin'), run: bulk('unpin') }
-        ]
-      : []),
+    ...addedBulkActions,
     ...(abilities.lock
       ? [
           { icon: <LuLock aria-hidden />, key: 'lock', label: __('Lock'), run: bulk('lock') },
@@ -177,7 +176,7 @@ export default function Topics() {
             {__('Topics')}
           </Title>
           <Text type="secondary">
-            {__('Set the status and stage of topics, pin, lock, hide or delete them — one at a time or several at once.')}
+            {__('Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.')}
           </Text>
         </div>
       </div>
@@ -231,6 +230,7 @@ export default function Topics() {
 
       <TopicsTable
         abilities={abilities}
+        addedColumns={addedColumns}
         filters={filters}
         isLoading={isTopicsFetching}
         onEdit={edit}

@@ -101,7 +101,7 @@ Route::get('follows/state', [FollowController::class, 'state']);
 
 // The admin's Topics screen. bit_connect_forum_moderate, enforced in each
 // Request. Under `moderation/`, not `topics/`, which `topics/{id}` would
-// swallow. One row's status, stage, pin and lock go through `topics/{id}`.
+// swallow. One row's status, stage and lock go through `topics/{id}`.
 Route::get('moderation/topics', [TopicModerationController::class, 'index']);
 Route::get('moderation/topic-filters', [TopicModerationController::class, 'filters']);
 Route::post('moderation/topics/bulk', [TopicModerationController::class, 'bulk']);
@@ -136,7 +136,6 @@ Route::get('users/{id}/comments', [UserProfileController::class, 'comments']);
 Route::get('users/{id}/votes', [UserProfileController::class, 'votes']);
 Route::get('users/{id}/overview', [UserProfileController::class, 'overview']);
 Route::get('users/{id}/insights', [UserProfileController::class, 'insights']);
-Route::get('users/{id}/pinned', [UserProfileController::class, 'pinned']);
 Route::get('users/{id}/permissions', [UserProfileController::class, 'permissions']);
 
 // Self-service profile editing (owner only — see each Request's authorize()).

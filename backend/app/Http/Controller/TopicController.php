@@ -258,14 +258,7 @@ final class TopicController
             }
         }
 
-        // Pin/lock require dedicated capabilities (moderator-level actions)
-        if (isset($validatedData['is_pinned'])) {
-            if (!PermissionService::canPinPost()) {
-                return Response::error('You do not have permission to pin topics', 403);
-            }
-            $updateData['is_pinned'] = (bool) $validatedData['is_pinned'];
-        }
-
+        // Locking needs its own capability (a moderator-level action)
         if (isset($validatedData['is_locked'])) {
             if (!PermissionService::canLockPost()) {
                 return Response::error('You do not have permission to lock topics', 403);

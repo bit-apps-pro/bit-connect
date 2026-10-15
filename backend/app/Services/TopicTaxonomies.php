@@ -53,8 +53,8 @@ final class TopicTaxonomies
     private const RESERVED_PARAMS = [
         'topic-types', 'topic_types', 'stages', 'statuses', 'tags', 'attachments', 'post_title',
         'post_content', 'post_excerpt', 'post_status', 'post_name', 'search', 'name', 'sortBy',
-        'page', 'per_page', 'visibility', 'my_topics', 'slug', 'id', 'topic_id', 'seo', 'is_pinned',
-        'is_locked', 'stage',
+        'page', 'per_page', 'visibility', 'my_topics', 'slug', 'id', 'topic_id', 'seo', 'is_locked',
+        'stage',
     ];
 
     /**

@@ -81,7 +81,6 @@ final class TopicModerationController
             [
                 'taxonomies' => TopicModerationService::filterTaxonomies(),
                 'abilities'  => [
-                    'pin'        => PermissionService::canPinPost(),
                     'lock'       => PermissionService::canLockPost(),
                     'delete_any' => PermissionService::canDeleteAny(),
                 ],
@@ -95,7 +94,6 @@ final class TopicModerationController
         $action = (string) $validated['action'];
 
         $allowed = match ($action) {
-            'pin', 'unpin'   => PermissionService::canPinPost(),
             'lock', 'unlock' => PermissionService::canLockPost(),
             'delete'         => PermissionService::canDeleteAny(),
             default          => true,

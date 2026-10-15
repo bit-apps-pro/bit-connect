@@ -30,7 +30,7 @@ final class BulkTopicActionRequest extends Request
     public const MAX_IDS = 50;
 
     /**
-     * bit_connect_forum_moderate for the request. Pin, lock and delete each need
+     * bit_connect_forum_moderate for the request. Lock and delete each need
      * their own capability on top — checked in the controller, where the
      * action is known.
      */

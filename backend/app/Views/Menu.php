@@ -130,7 +130,7 @@ final class Menu
     }
 
     /**
-     * Every topic in one table, to set statuses and stages, pin, lock, hide or
+     * Every topic in one table, to set statuses and stages, lock, hide or
      * delete — several at once. bit_connect_forum_moderate: that is the work a
      * moderator does, and defining the statuses and stages stays with Manage.
      */

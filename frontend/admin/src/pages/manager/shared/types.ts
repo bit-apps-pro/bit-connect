@@ -12,7 +12,6 @@ export type ForumCapability =
   | 'bit_connect_forum_lock_post'
   | 'bit_connect_forum_manage'
   | 'bit_connect_forum_moderate'
-  | 'bit_connect_forum_pin_post'
   | 'bit_connect_forum_vote_post'
 
 export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
@@ -27,7 +26,6 @@ export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
   bit_connect_forum_lock_post: 'Lock Topics',
   bit_connect_forum_manage: 'Manage Forum',
   bit_connect_forum_moderate: 'Moderate',
-  bit_connect_forum_pin_post: 'Pin Topics',
   bit_connect_forum_vote_post: 'Vote Posts'
 }
 

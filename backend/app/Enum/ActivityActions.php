@@ -40,12 +40,6 @@ enum ActivityActions: string
     #[Label('Deleted a comment')]
     case DELETE_COMMENT = 'delete_comment';
 
-    #[Label('Pinned a topic')]
-    case PIN_POST = 'pin_post';
-
-    #[Label('Unpinned a topic')]
-    case UNPIN_POST = 'unpin_post';
-
     #[Label('Locked a topic')]
     case LOCK_POST = 'lock_post';
 
@@ -87,8 +81,6 @@ enum ActivityActions: string
         return match ($action) {
             self::DELETE_POST     => __('Deleted a topic', 'bit-connect'),
             self::DELETE_COMMENT  => __('Deleted a comment', 'bit-connect'),
-            self::PIN_POST        => __('Pinned a topic', 'bit-connect'),
-            self::UNPIN_POST      => __('Unpinned a topic', 'bit-connect'),
             self::LOCK_POST       => __('Locked a topic', 'bit-connect'),
             self::UNLOCK_POST     => __('Unlocked a topic', 'bit-connect'),
             self::HIDE            => __('Hidden after a report', 'bit-connect'),

@@ -14,9 +14,11 @@ const { Text } = Typography
 
 interface TopicsTableProps {
   abilities: TopicAbilities
+  /** Columns another plugin adds, placed before Locked. */
+  addedColumns: ColumnsType<ModerationTopicRow>
   filters: TopicFilters
   isLoading: boolean
-  onEdit: (row: ModerationTopicRow, patch: { is_locked?: boolean; is_pinned?: boolean; stages?: number; statuses?: number }) => void
+  onEdit: (row: ModerationTopicRow, patch: { is_locked?: boolean; stages?: number; statuses?: number }) => void
   onPage: (page: number, perPage: number) => void
   onSelect: (ids: number[]) => void
   onSort: (orderby: TopicFilters['orderby'], order: TopicFilters['order']) => void
@@ -36,6 +38,7 @@ function VisibilityTag({ row }: { row: ModerationTopicRow }) {
 
 export default function TopicsTable({
   abilities,
+  addedColumns,
   filters,
   isLoading,
   onEdit,
@@ -126,23 +129,7 @@ export default function TopicsTable({
       title: __('Comments'),
       width: 110
     },
-    {
-      align: 'center',
-      key: 'pinned',
-      render: (_value, row) => (
-        <Tooltip title={abilities.pin ? undefined : __('You cannot pin topics.')}>
-          <Switch
-            aria-label={__('Pinned')}
-            checked={row.is_pinned}
-            disabled={!abilities.pin}
-            onChange={checked => onEdit(row, { is_pinned: checked })}
-            size="small"
-          />
-        </Tooltip>
-      ),
-      title: __('Pinned'),
-      width: 80
-    },
+    ...addedColumns,
     {
       align: 'center',
       key: 'locked',

@@ -123,21 +123,6 @@ final class UserProfileController
         );
     }
 
-    public function pinned(GetUserContentRequest $request)
-    {
-        if ($this->profileService->profile((int) $request->id) === null) {
-            return Response::error(__('User not found.', 'bit-connect'))->httpStatus(self::HTTP_NOT_FOUND);
-        }
-
-        return Response::success(
-            $this->profileService->pinnedTopics(
-                (int) $request->id,
-                (int) ($request->page ?? 1),
-                (int) ($request->per_page ?? 10)
-            )
-        );
-    }
-
     public function permissions(GetUserPermissionsRequest $request)
     {
         $permissions = $this->profileService->permissions((int) $request->id);

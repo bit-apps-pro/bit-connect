@@ -16,7 +16,6 @@ export interface ModerationTopicRow {
   hidden: boolean
   id: number
   is_locked: boolean
-  is_pinned: boolean
   permalink: string
   post_status: string
   stage: null | RowTerm
@@ -57,12 +56,10 @@ export type BulkAction =
   | 'delete'
   | 'hide'
   | 'lock'
-  | 'pin'
   | 'restore'
   | 'set_stage'
   | 'set_status'
   | 'unlock'
-  | 'unpin'
 
 export interface BulkResult {
   counts: { done: number; failed: number; skipped: number }
@@ -73,7 +70,6 @@ export interface BulkResult {
 export interface TopicAbilities {
   delete_any: boolean
   lock: boolean
-  pin: boolean
 }
 
 /** A taxonomy another plugin files topics under, as a filter. */

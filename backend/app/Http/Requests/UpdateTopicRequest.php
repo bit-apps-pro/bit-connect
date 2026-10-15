@@ -75,7 +75,6 @@ final class UpdateTopicRequest extends Request
             'statuses'    => ['nullable', 'integer', 'min:1'],
             'tags'        => ['nullable', 'array', 'max:' . PostingLimits::TOPIC_TAGS_CEILING],
             'tags.*'      => ['nullable', new TagRefRule()],
-            'is_pinned'   => ['nullable', 'boolean'],
             'is_locked'   => ['nullable', 'boolean'],
         ];
 

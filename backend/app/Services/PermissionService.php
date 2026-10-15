@@ -157,11 +157,6 @@ final class PermissionService
         return WpCapabilities::check(Capabilities::DELETE_ANY->value);
     }
 
-    public static function canPinPost(): bool
-    {
-        return WpCapabilities::check(Capabilities::PIN_POST->value);
-    }
-
     public static function canLockPost(): bool
     {
         return WpCapabilities::check(Capabilities::LOCK_POST->value);
@@ -194,8 +189,10 @@ final class PermissionService
     {
         $capabilities = [];
 
-        foreach (Capabilities::cases() as $capability) {
-            $capabilities[$capability->value] = WpCapabilities::check($capability->value);
+        // Every slug the forum recognises, another plugin's included: a
+        // capability the portal is never told about reads as "not allowed".
+        foreach (ExtensionPoints::capabilities() as $capability) {
+            $capabilities[$capability] = WpCapabilities::check($capability);
         }
 
         return $capabilities;

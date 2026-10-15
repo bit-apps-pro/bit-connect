@@ -11,7 +11,6 @@ export const BULK_CHUNK = 50
 /** What one row's edit sends to the topic endpoint. */
 export interface TopicPatch {
   is_locked?: boolean
-  is_pinned?: boolean
   stages?: number
   statuses?: number
 }
@@ -43,14 +42,13 @@ export async function runBulk(action: BulkAction, ids: number[], termId?: number
 function patched(row: ModerationTopicRow, patch: TopicPatch): ModerationTopicRow {
   return {
     ...row,
-    ...(patch.is_pinned === undefined ? {} : { is_pinned: patch.is_pinned }),
     ...(patch.is_locked === undefined ? {} : { is_locked: patch.is_locked })
   }
 }
 
 /**
  * Changes one topic from its row, through the same endpoint the portal's topic
- * page uses. Pin and lock flip on screen at once; status and stage show the
+ * page uses. Lock flips on screen at once; status and stage show the
  * picked value through the select itself until the refetch lands.
  */
 export function useUpdateTopic() {

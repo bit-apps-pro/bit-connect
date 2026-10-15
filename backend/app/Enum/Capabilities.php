@@ -94,9 +94,6 @@ enum Capabilities: string
     #[Label('Moderate (Reports, Locked Threads)')]
     case MODERATE = 'bit_connect_forum_moderate';
 
-    #[Label('Pin/Unpin Topics')]
-    case PIN_POST = 'bit_connect_forum_pin_post';
-
     #[Label('Lock/Unlock Topics')]
     case LOCK_POST = 'bit_connect_forum_lock_post';
 
@@ -144,7 +141,6 @@ enum Capabilities: string
             self::VOTE_POST          => __('Vote on Posts', 'bit-connect'),
             self::DELETE_ANY         => __('Delete Any Content', 'bit-connect'),
             self::MODERATE           => __('Moderate (Reports, Locked Threads)', 'bit-connect'),
-            self::PIN_POST           => __('Pin/Unpin Topics', 'bit-connect'),
             self::LOCK_POST          => __('Lock/Unlock Topics', 'bit-connect'),
             self::MANAGE             => __('Manage Forum Settings', 'bit-connect'),
         };
@@ -196,7 +192,7 @@ enum Capabilities: string
         return [
             ...self::memberCaps(),
             self::DELETE_ANY,
-            self::MODERATE, self::PIN_POST, self::LOCK_POST,
+            self::MODERATE, self::LOCK_POST,
         ];
     }
 
@@ -249,7 +245,7 @@ enum Capabilities: string
             'bit_connect_post'     => [self::CREATE_POST->value, self::EDIT_OWN_POST->value, self::DELETE_OWN_POST->value],
             'bit_connect_comment'  => [self::CREATE_COMMENT->value, self::EDIT_OWN_COMMENT->value, self::DELETE_OWN_COMMENT->value],
             'bit_connect_vote'     => [self::VOTE_POST->value],
-            'bit_connect_moderate' => [self::MODERATE->value, self::PIN_POST->value, self::LOCK_POST->value],
+            'bit_connect_moderate' => [self::MODERATE->value, self::LOCK_POST->value],
             'bit_connect_manage'   => [self::MANAGE->value],
         ];
     }

@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
+use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use WP_Comment;
@@ -432,6 +433,81 @@ final class ExtensionPoints
         $offered = Hooks::applyFilter('bit_connect_topic_list_query', $args, $view);
 
         return \is_array($offered) ? $offered : $args;
+    }
+
+    /**
+     * Topics a topic list leads with, before its own order begins.
+     *
+     * This plugin lists topics in the order the reader asked for and leads
+     * with none, so nobody answering leaves every list exactly as sorted. A
+     * listener returns topic ids; only those the list would show anyway are
+     * lifted, in the list's own order, so naming a topic cannot add it to a
+     * list it does not belong in or show it to someone who may not read it.
+     *
+     * Anything that is not a positive integer is dropped.
+     *
+     * @return list<int>
+     */
+    public static function leadingTopicIds(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_leading_topic_ids', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $offered), static fn (int $id): bool => $id > 0)));
+    }
+
+    /**
+     * The fields a row of the admin's Topics table carries.
+     *
+     * The table counterpart of topicFields(): everything this plugin shows in
+     * a row is in `$fields` already, and a plugin that adds a column to the
+     * table adds the value it reads here.
+     *
+     * Trusted no further than the shape: an answer that is not an array gets
+     * this plugin's own row sent instead.
+     *
+     * @param array $fields the row as this plugin builds it
+     * @param int   $postId the topic the row is for
+     */
+    public static function moderationRowFields(array $fields, int $postId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_moderation_topic_row', $fields, $postId);
+
+        return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
+     * Actions the activity log records beyond this plugin's own.
+     *
+     * The log is written against ActivityActions, which lists what this plugin
+     * does. A plugin that does something more a moderator should see answers
+     * with `slug => label`; the slug can then be recorded and the log names it.
+     * A slug this plugin already uses is not taken over, and anything that is
+     * not a non-empty string on both sides is dropped.
+     *
+     * @return array<string, string>
+     */
+    public static function activityActions(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_activity_actions', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        $own = array_flip(ActivityActions::values());
+        $clean = [];
+
+        foreach ($offered as $slug => $label) {
+            if (\is_string($slug) && $slug !== '' && !isset($own[$slug]) && \is_string($label) && $label !== '') {
+                $clean[$slug] = $label;
+            }
+        }
+
+        return $clean;
     }
 
     /**

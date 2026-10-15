@@ -5,7 +5,7 @@ import { type BulkResult } from './types'
 /**
  * What a bulk action did, in one line: "3 updated, 1 already so".
  *
- * Skipped is not failed — pinning a topic that is already pinned did what was
+ * Skipped is not failed — locking a topic that is already locked did what was
  * asked — so the two are told apart, and only a failure makes it an error.
  */
 export default function bulkSummary({ counts }: BulkResult): { text: string; type: 'error' | 'success' } {

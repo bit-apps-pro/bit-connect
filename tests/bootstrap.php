@@ -354,14 +354,6 @@ if (!function_exists('get_post')) {
     }
 }
 
-if (!function_exists('is_sticky')) {
-    // Pinned topics are core's sticky posts: seed $GLOBALS['__wp_options']['sticky_posts'].
-    function is_sticky($postId = 0)
-    {
-        return \in_array((int) $postId, array_map('intval', (array) get_option('sticky_posts', [])), true);
-    }
-}
-
 if (!function_exists('get_post_mime_type')) {
     // Seed $GLOBALS['__wp_mime_types'][$id] for an attachment's type.
     function get_post_mime_type($postId = null)
