@@ -47,6 +47,10 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
   const { fetchSettings } = useAdminSettingsStore()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
+  // The sidebar folds into a drawer below lg, not md: on a tablet the 272px
+  // column left the topic list about 470px. The search field still has room
+  // there, so only the menu button follows the drawer (see Sidebar).
+  const hasNavDrawer = !screens.lg
 
   // Phones fold the search into a button that opens a row under the bar. A
   // results page keeps the row open, so the term being shown stays on screen.
@@ -220,7 +224,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
       >
         <div className="bc-flex bc-items-center bc-justify-between bc-gap-4">
           <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 md:bc-flex-1 md:bc-basis-0">
-            {isMobile && (
+            {hasNavDrawer && (
               <Button
                 aria-label={__('Open menu')}
                 // Pulled out by its own padding, like the Back button below, so

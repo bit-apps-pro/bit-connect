@@ -37,7 +37,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const isDarkTheme = useAtomValue($isDarkTheme)
   const fetchStages = useStagesStore(state => state.fetchStages)
   const screens = Grid.useBreakpoint()
-  const isMobile = !screens.md
+  // A drawer below lg, not md: beside a 272px column a tablet's topic list
+  // was left about 470px. The header's menu button follows the same width.
+  const isMobile = !screens.lg
 
   useEffect(() => {
     fetchStages()
