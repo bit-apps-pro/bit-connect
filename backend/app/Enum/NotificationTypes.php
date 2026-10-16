@@ -78,7 +78,7 @@ enum NotificationTypes: string
     case TOPIC_POSTED = 'topic_posted';
 
     #[Label('A new tag needs approval')]
-    #[Description('Sent to moderators only, when a member suggests a tag that is not in the list.')]
+    #[Description('Sent only to people who can manage forum settings, when a member suggests a tag that is not in the list.')]
     case TAG_SUGGESTED = 'tag_suggested';
 
     #[Label('A member asks to join')]
@@ -142,7 +142,7 @@ enum NotificationTypes: string
             self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
             self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
-            self::TAG_SUGGESTED        => __('Sent to moderators only, when a member suggests a tag that is not in the list.', 'bit-connect'),
+            self::TAG_SUGGESTED        => __('Sent only to people who can manage forum settings, when a member suggests a tag that is not in the list.', 'bit-connect'),
             self::ACCESS_REQUESTED     => __('Sent to moderators only, when a member asks to join a private space.', 'bit-connect'),
             self::ACCESS_GRANTED       => __('An admin lets you into a private space, or adds you to one.', 'bit-connect'),
         };

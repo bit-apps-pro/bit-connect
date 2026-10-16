@@ -450,8 +450,10 @@ final class NotificationService
 
             case NotificationTypes::REPORT_FILED:
             case NotificationTypes::TOPIC_POSTED:
-            case NotificationTypes::TAG_SUGGESTED:
                 return NotificationRecipients::moderatorIds();
+
+            case NotificationTypes::TAG_SUGGESTED:
+                return NotificationRecipients::tagReviewerIds();
 
             default:
                 return [];

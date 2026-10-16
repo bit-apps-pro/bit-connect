@@ -35,12 +35,12 @@ final class NotificationRecipients
     private const MODERATOR_LIMIT = 50;
 
     /**
-     * Cached for the request: a burst of comments on one page load would
-     * otherwise re-run the role scan for each.
+     * Cached for the request, per capability: a burst of comments on one page
+     * load would otherwise re-run the role scan for each.
      *
-     * @var null|array<int, int>
+     * @var array<string, array<int, int>>
      */
-    private static $moderatorCache;
+    private static $holderCache = [];
 
     /**
      * Everyone with a standing interest in a thread: its author, plus everyone
@@ -117,71 +117,25 @@ final class NotificationRecipients
     /**
      * Everyone who can act on the moderation queue.
      *
-     * Both grant paths, because either one alone is wrong: capabilities are set
-     * on roles by CapabilityService, and individual accounts can carry a
-     * per-user grant that beats their role. The role scan finds the first, the
-     * usermeta LIKE finds the second, and user_can() settles the result — it is
-     * the same question current_user_can() answers when the moderator actually
-     * opens the queue, so the notification and the permission cannot disagree.
-     *
      * @return array<int, int>
      */
     public static function moderatorIds(): array
     {
-        if (self::$moderatorCache !== null) {
-            return self::$moderatorCache;
-        }
+        return self::holdersOf(Capabilities::MODERATE->value);
+    }
 
-        $cap = Capabilities::MODERATE->value;
-        $candidates = [];
-
-        $roles = wp_roles();
-        $rolesWithCap = [];
-
-        foreach ($roles->roles as $slug => $role) {
-            if (!empty($role['capabilities'][$cap])) {
-                $rolesWithCap[] = $slug;
-            }
-        }
-
-        if ($rolesWithCap !== []) {
-            $candidates = get_users(
-                [
-                    'fields'   => 'ID',
-                    'role__in' => $rolesWithCap,
-                    'number'   => self::MODERATOR_LIMIT,
-                ]
-            );
-        }
-
-        // Per-user grants. Narrowed by a LIKE on the serialised capabilities
-        // meta rather than walking every account, the way
-        // CapabilityService::revokeEditAnyForUsers() does — on a large forum an
-        // unfiltered get_users() reads every member to find a handful.
-        $perUser = get_users(
-            [
-                'fields' => 'ID',
-                // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Narrowing on the indexed capabilities meta is what keeps this off a full user-table scan.
-                'meta_key'   => $GLOBALS['wpdb']->get_blog_prefix() . 'capabilities',
-                'meta_value' => $cap,
-                // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-                'meta_compare' => 'LIKE',
-                'number'       => self::MODERATOR_LIMIT,
-            ]
-        );
-
-        $ids = self::clean(array_merge((array) $candidates, (array) $perUser));
-
-        // The LIKE can over-match — a cap slug that contains this one as a
-        // substring would pass — and a role scan cannot see a per-user *denial*.
-        // user_can() is the authority either way.
-        $confirmed = array_values(
-            array_filter($ids, static fn (int $id): bool => user_can($id, $cap))
-        );
-
-        self::$moderatorCache = \array_slice($confirmed, 0, self::MODERATOR_LIMIT);
-
-        return self::$moderatorCache;
+    /**
+     * Everyone who can open the Tags screen, where a suggested tag is decided.
+     *
+     * Not moderatorIds(): the Tags screen sits behind the manage capability, so
+     * telling a moderator who lacks it about a pending tag hands them work they
+     * cannot reach.
+     *
+     * @return array<int, int>
+     */
+    public static function tagReviewerIds(): array
+    {
+        return self::holdersOf(Capabilities::MANAGE->value);
     }
 
     /**
@@ -232,14 +186,83 @@ final class NotificationRecipients
     }
 
     /**
-     * Drops the cached moderator list.
+     * Drops the cached moderator and tag-reviewer lists.
      *
      * Needed after a capability change inside the same request, which the
      * Manager screen does.
      */
     public static function flushModerators(): void
     {
-        self::$moderatorCache = null;
+        self::$holderCache = [];
+    }
+
+    /**
+     * Everyone holding one forum capability.
+     *
+     * Both grant paths, because either one alone is wrong: capabilities are set
+     * on roles by CapabilityService, and individual accounts can carry a
+     * per-user grant that beats their role. The role scan finds the first, the
+     * usermeta LIKE finds the second, and user_can() settles the result — it is
+     * the same question current_user_can() answers when the recipient actually
+     * opens the screen, so the notification and the permission cannot disagree.
+     *
+     * @return array<int, int>
+     */
+    private static function holdersOf(string $cap): array
+    {
+        if (isset(self::$holderCache[$cap])) {
+            return self::$holderCache[$cap];
+        }
+
+        $candidates = [];
+
+        $roles = wp_roles();
+        $rolesWithCap = [];
+
+        foreach ($roles->roles as $slug => $role) {
+            if (!empty($role['capabilities'][$cap])) {
+                $rolesWithCap[] = $slug;
+            }
+        }
+
+        if ($rolesWithCap !== []) {
+            $candidates = get_users(
+                [
+                    'fields'   => 'ID',
+                    'role__in' => $rolesWithCap,
+                    'number'   => self::MODERATOR_LIMIT,
+                ]
+            );
+        }
+
+        // Per-user grants. Narrowed by a LIKE on the serialised capabilities
+        // meta rather than walking every account, the way
+        // CapabilityService::revokeEditAnyForUsers() does — on a large forum an
+        // unfiltered get_users() reads every member to find a handful.
+        $perUser = get_users(
+            [
+                'fields' => 'ID',
+                // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Narrowing on the indexed capabilities meta is what keeps this off a full user-table scan.
+                'meta_key'   => $GLOBALS['wpdb']->get_blog_prefix() . 'capabilities',
+                'meta_value' => $cap,
+                // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+                'meta_compare' => 'LIKE',
+                'number'       => self::MODERATOR_LIMIT,
+            ]
+        );
+
+        $ids = self::clean(array_merge((array) $candidates, (array) $perUser));
+
+        // The LIKE can over-match — a cap slug that contains this one as a
+        // substring would pass — and a role scan cannot see a per-user *denial*.
+        // user_can() is the authority either way.
+        $confirmed = array_values(
+            array_filter($ids, static fn (int $id): bool => user_can($id, $cap))
+        );
+
+        self::$holderCache[$cap] = \array_slice($confirmed, 0, self::MODERATOR_LIMIT);
+
+        return self::$holderCache[$cap];
     }
 
     /**
