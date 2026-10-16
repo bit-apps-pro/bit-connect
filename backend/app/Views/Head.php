@@ -171,7 +171,13 @@ class Head
         $frontendStrings = Config::get('ROOT_DIR') . '/backend/i18n/frontend-strings.php';
 
         if (get_locale() !== 'en_US' && file_exists($frontendStrings)) {
-            $frontendVars['translations'] = include $frontendStrings;
+            // Merged, not assigned: a `bit_connect_localized_script` listener
+            // may already have added the strings of a bundle it extends this
+            // one with, and assigning would throw them away.
+            $frontendVars['translations'] = array_merge(
+                (array) include $frontendStrings,
+                \is_array($frontendVars['translations'] ?? null) ? $frontendVars['translations'] : []
+            );
         }
 
         return $frontendVars;
