@@ -16,15 +16,15 @@ import StaticValue from './static-value'
 export default function EmailWordingSection({ form }: EmailWordingSectionProps) {
   const lines = [
     { key: 'mailGreeting', label: __('Greeting'), value: form.mailGreeting },
-    { key: 'mailIntro', label: __('Instant email intro'), value: form.mailIntro },
-    { key: 'mailDigestIntro', label: __('Digest intro'), value: form.mailDigestIntro },
-    { key: 'mailFooter', label: __('Sign-off'), value: form.mailFooter }
+    { key: 'mailIntro', label: __('Intro for instant emails'), value: form.mailIntro },
+    { key: 'mailDigestIntro', label: __('Intro for summary emails'), value: form.mailDigestIntro },
+    { key: 'mailFooter', label: __('Footer'), value: form.mailFooter }
   ]
 
   return (
     <SectionCard
-      subtitle={__('The wording notification emails use around the list of what happened.')}
-      title={__('Email wording')}
+      subtitle={__('The lines before and after the notifications in each email.')}
+      title={__('Email text')}
     >
       <div className="bc-flex bc-flex-col bc-gap-4">
         {lines.map(line => (

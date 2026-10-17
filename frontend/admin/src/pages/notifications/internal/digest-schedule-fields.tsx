@@ -66,7 +66,7 @@ export default function DigestScheduleFields({
         </div>
       </div>
       <label className="bc-block">
-        <FieldLabel>{__('Digest send hour')}</FieldLabel>
+        <FieldLabel>{__('Summary email send time')}</FieldLabel>
         <Select
           className="bc-w-full"
           disabled={!enabled}

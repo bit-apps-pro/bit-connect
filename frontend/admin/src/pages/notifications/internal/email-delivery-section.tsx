@@ -28,7 +28,7 @@ export default function EmailDeliverySection({
 }: EmailDeliverySectionProps) {
   return (
     <SectionCard
-      subtitle={__('Who forum email appears to come from, and when digests go out.')}
+      subtitle={__('Who forum email appears to come from, and when summary emails go out.')}
       title={__('Email delivery')}
     >
       <div className="bc-grid bc-gap-4 sm:bc-grid-cols-2">

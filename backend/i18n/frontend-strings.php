@@ -515,9 +515,9 @@ return [
 
     'Default email frequency' => __('Default email frequency', 'bit-connect'),
 
-    'Digest send hour' => __('Digest send hour', 'bit-connect'),
+    'Summary email send time' => __('Summary email send time', 'bit-connect'),
 
-    'Who forum email appears to come from, and when digests go out.' => __('Who forum email appears to come from, and when digests go out.', 'bit-connect'),
+    'Who forum email appears to come from, and when summary emails go out.' => __('Who forum email appears to come from, and when summary emails go out.', 'bit-connect'),
 
     'Email delivery' => __('Email delivery', 'bit-connect'),
 
@@ -529,15 +529,15 @@ return [
 
     'Greeting' => __('Greeting', 'bit-connect'),
 
-    'Instant email intro' => __('Instant email intro', 'bit-connect'),
+    'Intro for instant emails' => __('Intro for instant emails', 'bit-connect'),
 
-    'Digest intro' => __('Digest intro', 'bit-connect'),
+    'Intro for summary emails' => __('Intro for summary emails', 'bit-connect'),
 
-    'Sign-off' => __('Sign-off', 'bit-connect'),
+    'Footer' => __('Footer', 'bit-connect'),
 
-    'The wording notification emails use around the list of what happened.' => __('The wording notification emails use around the list of what happened.', 'bit-connect'),
+    'The lines before and after the notifications in each email.' => __('The lines before and after the notifications in each email.', 'bit-connect'),
 
-    'Email wording' => __('Email wording', 'bit-connect'),
+    'Email text' => __('Email text', 'bit-connect'),
 
     'Send test email' => __('Send test email', 'bit-connect'),
 
