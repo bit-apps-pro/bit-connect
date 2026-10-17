@@ -30,7 +30,8 @@ final class ActivityLogController
 
         // An unknown action slug would otherwise filter to nothing and read as
         // "no activity" rather than "that is not a thing that gets recorded".
-        if ($action !== '' && ActivityActions::tryFrom($action) === null) {
+        // A listener's actions are recorded too, so they filter like our own.
+        if ($action !== '' && ActivityActions::tryFrom($action) === null && !isset(ExtensionPoints::activityActions()[$action])) {
             return Response::error('Unknown activity action: ' . $action, 422);
         }
 

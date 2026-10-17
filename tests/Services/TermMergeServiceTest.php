@@ -81,6 +81,22 @@ final class TermMergeServiceTest extends TestCase
         $this->assertNotNull(get_term(self::WORDPRESS));
     }
 
+    public function testTheMergeIsRememberedAndAChainResolvesToTheLastSurvivor(): void
+    {
+        unset($GLOBALS['__wp_options'][TermMergeService::MERGED_OPTION]);
+        $GLOBALS['__wp_terms'][] = $this->term(14, 'word-press', self::TAGS);
+
+        TermMergeService::merge(self::TAGS, 14, self::WP);
+        $this->assertSame(self::WP, TermMergeService::survivorOf(14));
+
+        TermMergeService::merge(self::TAGS, self::WP, self::WORDPRESS);
+        $this->assertSame(self::WORDPRESS, TermMergeService::survivorOf(14));
+        $this->assertSame(self::WORDPRESS, TermMergeService::survivorOf(self::WP));
+        $this->assertSame(0, TermMergeService::survivorOf(self::WORDPRESS));
+
+        unset($GLOBALS['__wp_options'][TermMergeService::MERGED_OPTION]);
+    }
+
     public function testFollowersMoveAcrossWithoutDoublingUp(): void
     {
         TermMergeService::merge(self::TAGS, self::WP, self::WORDPRESS);

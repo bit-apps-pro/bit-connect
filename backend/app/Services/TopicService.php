@@ -460,7 +460,8 @@ class TopicService
         }
 
         if (isset($data['tags']) && \is_array($data['tags'])) {
-            wp_set_post_terms($postId, $data['tags'], Taxonomies::TAGS->value);
+            // Ints: a numeric string would be read as a tag name and created.
+            wp_set_post_terms($postId, array_map('intval', $data['tags']), Taxonomies::TAGS->value);
         }
 
         // Link attachments to the topic via post_parent: the files attached
@@ -579,8 +580,8 @@ class TopicService
             wp_set_post_terms($id, $data['statuses'], Taxonomies::STATUSES->value);
         }
 
-        if (isset($data['tags'])) {
-            wp_set_post_terms($id, $data['tags'], Taxonomies::TAGS->value);
+        if (isset($data['tags']) && \is_array($data['tags'])) {
+            wp_set_post_terms($id, array_map('intval', $data['tags']), Taxonomies::TAGS->value);
         }
 
         // Update attachments: unlink old, link new. The pictures and videos in

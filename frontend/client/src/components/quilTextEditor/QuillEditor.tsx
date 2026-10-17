@@ -36,6 +36,7 @@ import './quill-clipboard-sanitizer'
 import './quill-mention'
 import useEditorExtras from './editor-extras'
 import { searchMembers } from './mention-source'
+import { codeExitBindings } from './quill-code-exit'
 import { isEmojiSource } from './quill-emoji'
 import { setImageLoadingProgress, setUploadLabel } from './quill-image-loading-blot'
 import { countCharacters, validateContent, type ValidationResult } from './quill-validation'
@@ -412,6 +413,7 @@ function QuillEditorInner({
 
     const quill = new Quill(editorContainer, {
       modules: {
+        keyboard: { bindings: codeExitBindings },
         toolbar: false,
         // Registered via side-effect import of quill-clipboard-sanitizer.ts
         clipboardSanitizer: true,

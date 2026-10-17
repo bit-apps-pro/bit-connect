@@ -315,7 +315,7 @@ return [
 
     'How your community looks to visitors: its name, its logo and where the logo links to.' => __('How your community looks to visitors: its name, its logo and where the logo links to.', 'bit-connect'),
 
-    'Shown in the browser tab, in search results and as the sender name on emails. Your site name usually works well.' => __('Shown in the browser tab, in search results and as the sender name on emails. Your site name usually works well.', 'bit-connect'),
+    'Shown beside your logo, in the browser tab, in search results and as the sender name on emails. Leave it empty to show your logo alone.' => __('Shown beside your logo, in the browser tab, in search results and as the sender name on emails. Leave it empty to show your logo alone.', 'bit-connect'),
 
     'Portal title' => __('Portal title', 'bit-connect'),
 
@@ -2096,7 +2096,7 @@ return [
     '%d updated' => __('%d updated', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d already so' => __('%d already so', 'bit-connect'),
+    '%d already done' => __('%d already done', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d could not be changed' => __('%d could not be changed', 'bit-connect'),
@@ -2144,5 +2144,9 @@ return [
     'Topic type name is required' => __('Topic type name is required', 'bit-connect'),
 
     'For example, Question' => __('For example, Question', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%s logo' => __('%s logo', 'bit-connect'),
+    'Community home' => __('Community home', 'bit-connect'),
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

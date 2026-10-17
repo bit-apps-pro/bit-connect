@@ -5,6 +5,7 @@ namespace BitApps\BitConnect\Tests\Services;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TagResolverService;
+use BitApps\BitConnect\Services\TermMergeService;
 use PHPUnit\Framework\TestCase;
 use WP_Term;
 
@@ -44,6 +45,16 @@ final class TagResolverServiceTest extends TestCase
     public function testIdsPassThroughAndDuplicatesCollapse(): void
     {
         $this->assertSame([11, 12], TagResolverService::resolve([11, '12', 11, 0], self::MEMBER, false)['ids']);
+    }
+
+    public function testATagMergedWhileTheFormWasOpenLandsOnItsSurvivor(): void
+    {
+        // 40 was merged into 11; 41 was deleted outright.
+        $GLOBALS['__wp_options'][TermMergeService::MERGED_OPTION] = [40 => 11];
+
+        $this->assertSame([11, 12], TagResolverService::resolve([40, '41', 12], self::MEMBER, false)['ids']);
+
+        unset($GLOBALS['__wp_options'][TermMergeService::MERGED_OPTION]);
     }
 
     public function testATypedNameLandsOnTheExistingTagWhateverItsCaseOrSpelling(): void

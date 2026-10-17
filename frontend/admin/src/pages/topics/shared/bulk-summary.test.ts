@@ -8,8 +8,8 @@ const result = (done: number, skipped: number, failed: number) => ({
 })
 
 describe('bulkSummary', () => {
-  it('tells apart topics changed and topics already so', () => {
-    expect(bulkSummary(result(3, 1, 0))).toEqual({ text: '3 updated, 1 already so', type: 'success' })
+  it('tells apart topics changed and topics already done', () => {
+    expect(bulkSummary(result(3, 1, 0))).toEqual({ text: '3 updated, 1 already done', type: 'success' })
   })
 
   it('is an error only when something could not be changed', () => {

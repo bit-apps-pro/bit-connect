@@ -49,7 +49,7 @@ final class TagResolverService
 
         foreach ($refs as $ref) {
             if (\is_int($ref) || (\is_string($ref) && ctype_digit($ref))) {
-                $id = (int) $ref;
+                $id = self::existingId((int) $ref);
 
                 if ($id > 0) {
                     $ids[] = $id;
@@ -115,6 +115,27 @@ final class TagResolverService
         $name = trim((string) preg_replace('/\s+/u', ' ', $name));
 
         return mb_substr($name, 0, self::MAX_NAME_LENGTH);
+    }
+
+    /**
+     * The id as a tag that exists: itself, the tag it was merged into while
+     * the member's form was open, or 0 for one deleted outright.
+     */
+    private static function existingId(int $id): int
+    {
+        if ($id <= 0) {
+            return 0;
+        }
+
+        $taxonomy = Taxonomies::TAGS->value;
+
+        if (get_term($id, $taxonomy) instanceof WP_Term) {
+            return $id;
+        }
+
+        $survivor = TermMergeService::survivorOf($id);
+
+        return $survivor > 0 && get_term($survivor, $taxonomy) instanceof WP_Term ? $survivor : 0;
     }
 
     private static function find(string $name): ?WP_Term

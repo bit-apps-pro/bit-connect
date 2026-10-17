@@ -1,5 +1,5 @@
 import { cn } from '@common/helpers/globalHelpers'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import config from '@config/config'
 import { NotificationBell } from '@features/notifications'
@@ -180,16 +180,29 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
 
   // Logo + title. On phones the title truncates to one line (and is a touch
   // smaller) instead of wrapping; desktop keeps the xl size via md:.
+  //
+  // An uploaded logo keeps its own proportions — the branding screen asks for
+  // a wide one, which a square box shrank to a sliver — and with no portal
+  // title it stands alone: a logo that already spells the name needs no
+  // "Bit Connect" beside it. Only the built-in logo falls back to that name.
+  const customLogo = config.LOGO_LIGHT
+  const title = customLogo ? config.COMMUNITY_TITLE : config.COMMUNITY_TITLE || config.PRODUCT_NAME
   const brand = (
     <>
       <img
-        alt={`${config.COMMUNITY_TITLE || config.PRODUCT_NAME} logo`}
-        className="bc-h-8 bc-w-8 bc-shrink-0 bc-object-contain md:bc-h-9 md:bc-w-9"
-        src={config.LOGO_LIGHT || logo}
+        alt={title ? sprintf(__('%s logo'), title) : __('Community home')}
+        className={
+          customLogo
+            ? 'bc-h-8 bc-w-auto bc-max-w-[160px] bc-shrink-0 bc-object-contain md:bc-h-9 md:bc-max-w-[220px]'
+            : 'bc-h-8 bc-w-8 bc-shrink-0 bc-object-contain md:bc-h-9 md:bc-w-9'
+        }
+        src={customLogo || logo}
       />
-      <span className="bc-hidden bc-truncate bc-font-bold bc-text-lg bc-text-ink md:bc-inline md:bc-text-2xl">
-        {config.COMMUNITY_TITLE || config.PRODUCT_NAME}
-      </span>
+      {title && (
+        <span className="bc-hidden bc-truncate bc-font-bold bc-text-lg bc-text-ink md:bc-inline md:bc-text-2xl">
+          {title}
+        </span>
+      )}
     </>
   )
 

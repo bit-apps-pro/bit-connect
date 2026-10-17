@@ -35,7 +35,7 @@ export default function BrandingSection({
     >
       <SettingRow
         description={__(
-          'Shown in the browser tab, in search results and as the sender name on emails. Your site name usually works well.'
+          'Shown beside your logo, in the browser tab, in search results and as the sender name on emails. Leave it empty to show your logo alone.'
         )}
         label={__('Portal title')}
       >

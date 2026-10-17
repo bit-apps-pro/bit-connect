@@ -28,6 +28,12 @@ use WP_Term;
  */
 final class TermMergeService
 {
+    /** Merged-away tag id => the tag it was merged into. */
+    public const MERGED_OPTION = 'bit_connect_merged_tags';
+
+    /** Enough to cover any form left open; the oldest entries go first. */
+    private const MERGED_KEEP = 200;
+
     public static function isMergeable(string $taxonomy): bool
     {
         return $taxonomy === Taxonomies::TAGS->value;
@@ -80,7 +86,43 @@ final class TermMergeService
             return new WP_Error('bit_connect_term_delete_failed', __('The tag could not be removed.', 'bit-connect'));
         }
 
+        self::remember($fromId, $intoId);
+
         return ['moved' => \count($postIds), 'followers' => $followers];
+    }
+
+    /**
+     * The tag a merged-away id now lives on, or 0 when it was never merged.
+     *
+     * A member may have picked the old tag in a form that was open while it
+     * was merged; their topic should land on the survivor, not lose the tag.
+     */
+    public static function survivorOf(int $fromId): int
+    {
+        $merged = get_option(self::MERGED_OPTION, []);
+
+        return \is_array($merged) ? (int) ($merged[$fromId] ?? 0) : 0;
+    }
+
+    /**
+     * Records the merge, pointing anything already merged into `$fromId` at
+     * `$intoId` too, so a chain of merges resolves in one look-up.
+     */
+    private static function remember(int $fromId, int $intoId): void
+    {
+        $merged = get_option(self::MERGED_OPTION, []);
+        $merged = \is_array($merged) ? $merged : [];
+
+        foreach ($merged as $id => $survivor) {
+            if ((int) $survivor === $fromId) {
+                $merged[$id] = $intoId;
+            }
+        }
+
+        unset($merged[$fromId]);
+        $merged[$fromId] = $intoId;
+
+        update_option(self::MERGED_OPTION, \array_slice($merged, -self::MERGED_KEEP, null, true), false);
     }
 
     /**
