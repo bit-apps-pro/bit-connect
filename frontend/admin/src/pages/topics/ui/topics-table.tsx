@@ -62,7 +62,7 @@ export default function TopicsTable({
       render: (_value, row) => (
         <div className="bc-flex bc-min-w-0 bc-flex-col bc-gap-1">
           <span className="bc-flex bc-min-w-0 bc-items-center bc-gap-2">
-            <a className="bc-truncate bc-font-medium" href={row.permalink} rel="noreferrer" target="_blank">
+            <a className="bc-truncate bc-font-medium" href={row.permalink} rel="noreferrer" target="_blank" title={row.title}>
               {row.title || __('(no title)')}
             </a>
             <VisibilityTag row={row} />
@@ -232,8 +232,11 @@ export default function TopicsTable({
       }}
       rowKey="id"
       rowSelection={{ onChange: keys => onSelect(keys.map(Number)), selectedRowKeys: selected }}
-      scroll={{ x: 1200 }}
+      // Fixed layout gives the Post column only the width the other columns leave, so a long
+      // title truncates instead of pushing them out of view; scroll keeps that width readable.
+      scroll={{ x: 1400 }}
       size="middle"
+      tableLayout="fixed"
     />
   )
 }

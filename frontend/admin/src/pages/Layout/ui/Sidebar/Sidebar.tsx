@@ -15,7 +15,7 @@ import {
   LuListFilter,
   LuMessagesSquare,
   LuSettings,
-  LuTag,
+  LuShapes,
   LuUsers
 } from 'react-icons/lu'
 import { Link } from 'react-router'
@@ -57,10 +57,10 @@ const navItems: NavItem[] = [
   { group: 'community', icon: LuChartLine, label: __('Reports'), path: '../reports', requires: 'moderate' },
   { group: 'community', icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
   { group: 'community', icon: LuUsers, label: __('Members'), path: '../manager', requires: 'manage' },
-  { group: 'organize', icon: LuHash, label: __('Topics'), path: '../topics', requires: 'manage' },
+  { group: 'organize', icon: LuShapes, label: __('Topics'), path: '../topics', requires: 'manage' },
   { group: 'organize', icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
   { group: 'organize', icon: LuCircleCheck, label: __('Statuses'), path: '../status', requires: 'manage' },
-  { group: 'organize', icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },
+  { group: 'organize', icon: LuHash, label: __('Tags'), path: '../tags', requires: 'manage' },
   { group: 'settings', icon: LuSettings, label: __('Settings'), path: '../settings', requires: 'manage' },
   // Last: it is the one screen here that is about the plugin rather than
   // about the forum.
