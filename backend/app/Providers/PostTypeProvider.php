@@ -201,7 +201,8 @@ class PostTypeProvider
         $count = wp_count_terms(['taxonomy' => Taxonomies::TOPIC_TYPES->value, 'hide_empty' => false]);
 
         if (!is_wp_error($count) && (int) $count === 0) {
-            wp_insert_term(__('Question', 'bit-connect'), Taxonomies::TOPIC_TYPES->value);
+            // A catch-all kind, so it does not repeat the name of a section.
+            wp_insert_term(__('Discussion', 'bit-connect'), Taxonomies::TOPIC_TYPES->value);
         }
 
         Config::updateOption('first_topic_type_created', 1, false);

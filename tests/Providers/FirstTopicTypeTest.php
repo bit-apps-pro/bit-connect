@@ -37,7 +37,7 @@ final class FirstTopicTypeTest extends TestCase
     {
         $this->provider()->createFirstTopicType();
 
-        $this->assertSame(['Question'], $this->topicTypeNames());
+        $this->assertSame(['Discussion'], $this->topicTypeNames());
         $this->assertSame(1, get_option(self::FLAG));
     }
 
