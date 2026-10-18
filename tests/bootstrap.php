@@ -2157,6 +2157,55 @@ if (!function_exists('get_attached_file')) {
     }
 }
 
+// Media metadata (wp-admin/includes/image.php and media.php). A test lists the
+// attachments that are images in $GLOBALS['__wp_images'] and reads what was
+// done from $GLOBALS['__wp_subsize_calls'] and $GLOBALS['__wp_attachment_meta'].
+if (!function_exists('wp_attachment_is_image')) {
+    function wp_attachment_is_image($post = null)
+    {
+        return in_array((int) $post, $GLOBALS['__wp_images'] ?? [], true);
+    }
+}
+
+if (!function_exists('wp_update_image_subsizes')) {
+    function wp_update_image_subsizes($attachmentId)
+    {
+        $GLOBALS['__wp_subsize_calls'][] = (int) $attachmentId;
+
+        return $GLOBALS['__wp_subsize_result'] ?? ['sizes' => []];
+    }
+}
+
+if (!function_exists('wp_read_video_metadata')) {
+    function wp_read_video_metadata($file)
+    {
+        return [];
+    }
+}
+
+if (!function_exists('wp_get_attachment_metadata')) {
+    function wp_get_attachment_metadata($attachmentId = 0, $unfiltered = false)
+    {
+        return $GLOBALS['__wp_attachment_meta'][(int) $attachmentId] ?? false;
+    }
+}
+
+if (!function_exists('wp_generate_attachment_metadata')) {
+    function wp_generate_attachment_metadata($attachmentId, $file)
+    {
+        return ['generated_from' => $file];
+    }
+}
+
+if (!function_exists('wp_update_attachment_metadata')) {
+    function wp_update_attachment_metadata($attachmentId, $data)
+    {
+        $GLOBALS['__wp_attachment_meta'][(int) $attachmentId] = $data;
+
+        return true;
+    }
+}
+
 if (!function_exists('wp_get_attachment_url')) {
     function wp_get_attachment_url($attachmentId = 0)
     {

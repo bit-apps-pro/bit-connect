@@ -156,6 +156,7 @@ Route::post('users/{id}/email/cancel', [AccountSecurityController::class, 'cance
 Route::post('attachments', [AttachmentController::class, 'upload']);
 Route::post('attachments/chunk', [AttachmentController::class, 'uploadChunk']);
 Route::post('attachments/chunk/abort', [AttachmentController::class, 'abortChunkedUpload']);
+Route::post('attachments/process', [AttachmentController::class, 'process']);
 Route::post('attachments/delete', [AttachmentController::class, 'delete']);
 
 // Onboarding Routes

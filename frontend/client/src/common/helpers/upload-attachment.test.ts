@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type * as RequestModule from './request'
 
-import uploadAttachment, { CHUNK_BYTES, MAX_RETRIES } from './upload-attachment'
+import uploadAttachment, { CHUNK_BYTES, MAX_PROCESS_ATTEMPTS, MAX_RETRIES, processUpload } from './upload-attachment'
 
 type RequestModule = typeof RequestModule
 
@@ -147,6 +147,41 @@ describe('uploadAttachment', () => {
     expect(request).toHaveBeenCalledWith('attachments/chunk/abort', expect.anything())
   })
 
+  // A server that loses the file at the last piece every time — PHP stopped
+  // after it moved the file — used to be sent the whole file again and again.
+  it('starts again from the first piece only once when the server loses the file', async () => {
+    uploadRequest
+      .mockResolvedValueOnce(receipt(CHUNK_BYTES))
+      .mockRejectedValueOnce(dropped())
+      .mockResolvedValueOnce(receipt(0))
+      .mockResolvedValueOnce(receipt(CHUNK_BYTES))
+      .mockRejectedValueOnce(dropped())
+      .mockResolvedValueOnce(receipt(0))
+
+    const pending = uploadAttachment(fileOf(CHUNK_BYTES + 1)).catch(error_ => error_)
+    await vi.runAllTimersAsync()
+
+    expect(await pending).toMatchObject({ data: 'The upload could not be completed. Try again.' })
+    expect(sentPieces().map(piece => piece.offset)).toEqual(['0', String(CHUNK_BYTES), String(CHUNK_BYTES), '0', String(CHUNK_BYTES), String(CHUNK_BYTES)])
+    expect(request).toHaveBeenCalledWith('attachments/chunk/abort', expect.anything())
+  })
+
+  it('asks the server to finish its work on the stored file, without waiting for it', async () => {
+    // The work is never answered, and the upload still resolves.
+    request.mockReturnValue(new Promise(Boolean))
+    uploadRequest.mockResolvedValueOnce(attachment)
+
+    await expect(uploadAttachment(fileOf(1000))).resolves.toBe(attachment)
+    expect(request).toHaveBeenCalledWith('attachments/process', { id: 9 })
+  })
+
+  it('does not ask for work on an upload that failed', async () => {
+    uploadRequest.mockRejectedValueOnce({ code: 'ERROR', data: 'File type .exe is not allowed.', status: 'error' })
+
+    await expect(uploadAttachment(fileOf(1000))).rejects.toMatchObject({ data: 'File type .exe is not allowed.' })
+    expect(request).not.toHaveBeenCalledWith('attachments/process', expect.anything())
+  })
+
   it('reports progress over the whole file, not each piece', async () => {
     const seen: number[] = []
     uploadRequest
@@ -162,5 +197,25 @@ describe('uploadAttachment', () => {
     await uploadAttachment(fileOf(CHUNK_BYTES * 2), { onProgress: percent => seen.push(percent) })
 
     expect(seen).toEqual([50, 100])
+  })
+})
+
+describe('processUpload', () => {
+  it('stops at the first request that succeeds', async () => {
+    request.mockResolvedValueOnce({ code: 'SUCCESS', data: { id: 9 }, status: 'success' })
+
+    await expect(processUpload(9)).resolves.toBe(true)
+    expect(request).toHaveBeenCalledTimes(1)
+  })
+
+  // Each request continues where the last one ran out of time.
+  it('asks again after a failure, a few times, then gives up', async () => {
+    request.mockResolvedValue({ code: 'ERROR', data: 'The server could not complete the upload (error 500).', status: 'error' })
+
+    const pending = processUpload(9)
+    await vi.runAllTimersAsync()
+
+    await expect(pending).resolves.toBe(false)
+    expect(request).toHaveBeenCalledTimes(MAX_PROCESS_ATTEMPTS)
   })
 })

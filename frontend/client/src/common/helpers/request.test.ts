@@ -369,6 +369,20 @@ describe('uploadRequest', () => {
     expect(isRetryableFailure(error)).toBe(true)
   })
 
+  // PHP out of time or memory answers with an error page of its own. The
+  // connection was not the problem, so the advice is not about it.
+  it('says the server could not complete the upload when PHP stops', async () => {
+    const pending = uploadRequest('attachments', body())
+
+    FakeXhr.last.finish(500, '<html>There has been a critical error on this website.</html>')
+
+    const error = await pending.catch(error_ => error_)
+    expect(error).toMatchObject({
+      data: 'The server could not complete the upload (error 500). Try again. If the problem continues, tell the site administrator.'
+    })
+    expect(isRetryableFailure(error)).toBe(true)
+  })
+
   it('does not offer a refusal for a retry', async () => {
     const pending = uploadRequest('attachments', body())
 
