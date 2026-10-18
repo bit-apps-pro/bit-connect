@@ -2789,18 +2789,10 @@ msgstr ""
 msgid "Across %1$d of %2$d topics"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:814
-msgid "Total Comments"
-msgstr ""
-
 #. translators: %d are value(s) inserted by the plugin. Keep them in the translation.
 #: backend/i18n/frontend-strings.php:817
 #, php-format
 msgid "%d posted for the first time"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:819
-msgid "Total Members"
 msgstr ""
 
 #. translators: %s are value(s) inserted by the plugin. Keep them in the translation.
@@ -2811,10 +2803,6 @@ msgstr ""
 
 #: backend/i18n/frontend-strings.php:824
 msgid "No votes cast yet"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:826
-msgid "Total Votes"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:828
