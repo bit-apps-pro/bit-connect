@@ -1869,17 +1869,8 @@ msgstr ""
 msgid "Across %1$d of %2$d topics"
 msgstr ""
 
-#: frontend/admin/src/pages/root/internal/stat-cards.tsx:55
-#: frontend/client/src/pages/User/ui/InsightsOverview.tsx:127
-msgid "Total Comments"
-msgstr ""
-
 #: frontend/admin/src/pages/root/internal/stat-cards.tsx:61
 msgid "%d posted for the first time"
-msgstr ""
-
-#: frontend/admin/src/pages/root/internal/stat-cards.tsx:62
-msgid "Total Members"
 msgstr ""
 
 #: frontend/admin/src/pages/root/internal/stat-cards.tsx:70
@@ -1888,10 +1879,6 @@ msgstr ""
 
 #: frontend/admin/src/pages/root/internal/stat-cards.tsx:71
 msgid "No votes cast yet"
-msgstr ""
-
-#: frontend/admin/src/pages/root/internal/stat-cards.tsx:73
-msgid "Total Votes"
 msgstr ""
 
 #: frontend/admin/src/pages/root/root.tsx:73

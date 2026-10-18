@@ -855,24 +855,16 @@ return [
 
     'No stages yet.' => __('No stages yet.', 'bit-connect'),
 
-    'Total Topics' => __('Total Topics', 'bit-connect'),
-
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
     'Across %1$d of %2$d topics' => __('Across %1$d of %2$d topics', 'bit-connect'),
 
-    'Total Comments' => __('Total Comments', 'bit-connect'),
-
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d posted for the first time' => __('%d posted for the first time', 'bit-connect'),
-
-    'Total Members' => __('Total Members', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     'Most on %s topics' => __('Most on %s topics', 'bit-connect'),
 
     'No votes cast yet' => __('No votes cast yet', 'bit-connect'),
-
-    'Total Votes' => __('Total Votes', 'bit-connect'),
 
     'Visit portal' => __('Visit portal', 'bit-connect'),
 

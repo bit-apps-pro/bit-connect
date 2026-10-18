@@ -45,21 +45,21 @@ export default function StatCards({ period, stats, topicTypes }: StatCardsProps)
       <StatCard
         delta={stats.newTopics}
         footnote={topicTypeSummary(topicTypes)}
-        label={__('Total Topics')}
+        label={__('Topics')}
         period={period}
         value={stats.totalTopics}
       />
       <StatCard
         delta={stats.newComments}
         footnote={sprintf(__('Across %1$d of %2$d topics'), stats.commentedTopics, stats.totalTopics)}
-        label={__('Total Comments')}
+        label={__('Comments')}
         period={period}
         value={stats.totalComments}
       />
       <StatCard
         delta={stats.newMembers}
         footnote={sprintf(__('%d posted for the first time'), stats.firstTimePosters)}
-        label={__('Total Members')}
+        label={__('Members')}
         period={period}
         value={stats.totalMembers}
       />
@@ -70,7 +70,7 @@ export default function StatCards({ period, stats, topicTypes }: StatCardsProps)
             ? sprintf(__('Most on %s topics'), stats.topVotedStage)
             : __('No votes cast yet')
         }
-        label={__('Total Votes')}
+        label={__('Votes')}
         period={period}
         value={stats.totalVotes}
       />
