@@ -103,18 +103,19 @@ export default function Root() {
         >
           <StatCards period={shownPeriod} stats={dashboard.stats} topicTypes={dashboard.topicTypes} />
 
-          {/* What needs doing comes first, beside how quickly members get an
-              answer. Top contributors sits beside both topic tables, in the
-              column under Stage progress. */}
+          {/* Activity comes first, beside Stage progress. What needs doing
+              follows, beside how quickly members get an answer. Top
+              contributors sits beside both topic tables, in the column under
+              Response time. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
+            <ActivityChart activity={dashboard.activity} className="xl:bc-col-span-2" period={shownPeriod} />
+            <StageProgress hues={hues} period={shownPeriod} stages={dashboard.stages} />
             <NeedsAttention
               attention={dashboard.attention}
               className="xl:bc-col-span-2"
               topics={dashboard.unanswered}
             />
             <ResponseTime className="xl:bc-self-start" period={shownPeriod} response={dashboard.response} />
-            <ActivityChart activity={dashboard.activity} className="xl:bc-col-span-2" period={shownPeriod} />
-            <StageProgress hues={hues} period={shownPeriod} stages={dashboard.stages} />
             <MostRequested
               className="xl:bc-col-span-2"
               hues={hues}
