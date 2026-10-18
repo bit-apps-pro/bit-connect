@@ -46,7 +46,7 @@ export default function Tags() {
           <Title className="bc-mb-0" level={3}>
             {__('Tags')}
           </Title>
-          <Text type="secondary">{__('Keywords that link related topics. Tags members suggest wait under Pending until you approve them.')}</Text>
+          <Text type="secondary">{__('Keywords that link related posts. When members suggest a tag, it stays under Pending until you approve it.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsCreateModalOpen(true)} type="primary">
           {__('Add tag')}

@@ -53,7 +53,7 @@ export default function TopicsFilters({
         allowClear
         className="bc-w-[240px] bc-max-w-full"
         onChange={event => setSearch(event.target.value)}
-        placeholder={__('Search topics')}
+        placeholder={__('Search posts')}
         prefix={<LuSearch aria-hidden className="bc-text-ink-subtle" />}
         value={search}
       />
@@ -77,7 +77,7 @@ export default function TopicsFilters({
         allowClear
         className="bc-min-w-[150px]"
         onChange={topicType => onChange({ topic_type: topicType })}
-        placeholder={__('Any type')}
+        placeholder={__('Any category')}
         terms={topicTypes}
         value={filters.topic_type}
       />

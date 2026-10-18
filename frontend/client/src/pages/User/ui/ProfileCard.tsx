@@ -147,7 +147,7 @@ export default function ProfileCard({
 
             {stats && (
               <div className="bc-mt-5 bc-grid bc-grid-cols-3 bc-gap-2">
-                <Stat label={__('Topics')} value={formatCount(stats.topics)} />
+                <Stat label={__('Posts')} value={formatCount(stats.topics)} />
                 <Stat label={__('Comments')} value={formatCount(stats.comments)} />
                 <Stat label={__('Upvotes')} value={formatCount(stats.votes_received)} />
               </div>

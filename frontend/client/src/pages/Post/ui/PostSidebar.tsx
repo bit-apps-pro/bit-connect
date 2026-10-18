@@ -36,14 +36,14 @@ export default function PostSidebar({ topic }: { topic: Topic }) {
             reading it — and the rail is sticky, so from here it stays with them
             for the length of the thread. Below xl there is no rail and the same
             row runs under the topic's byline instead. */}
-        <section aria-label={__('Share this topic')} className={PANEL}>
+        <section aria-label={__('Share this post')} className={PANEL}>
           <h3 className={PANEL_TITLE}>{__('Share on social media')}</h3>
           <ShareRow topicSlug={topic.post_name} topicTitle={topic.post_title} variant="panel" />
         </section>
 
         {(topicType || hasAddedTerms || tags.length > 0) && (
-          <section aria-label={__('Topic details')} className={PANEL}>
-            <h3 className={PANEL_TITLE}>{__('Topic details')}</h3>
+          <section aria-label={__('Post details')} className={PANEL}>
+            <h3 className={PANEL_TITLE}>{__('Post details')}</h3>
 
             <div className="bc-flex bc-flex-wrap bc-gap-2">
               {topicType && (

@@ -53,11 +53,11 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { group: 'home', icon: LuLayoutGrid, label: __('Dashboard'), path: '../', requires: 'manage' },
-  { group: 'community', icon: LuMessagesSquare, label: __('Topics'), path: '../topics', requires: 'moderate' },
+  { group: 'community', icon: LuMessagesSquare, label: __('Posts'), path: '../posts', requires: 'moderate' },
   { group: 'community', icon: LuChartLine, label: __('Reports'), path: '../reports', requires: 'moderate' },
   { group: 'community', icon: LuListFilter, label: __('Activity'), path: '../activity', requires: 'moderate' },
   { group: 'community', icon: LuUsers, label: __('Members'), path: '../manager', requires: 'manage' },
-  { group: 'organize', icon: LuHash, label: __('Topic Types'), path: '../topic-types', requires: 'manage' },
+  { group: 'organize', icon: LuHash, label: __('Post Categories'), path: '../post-categories', requires: 'manage' },
   { group: 'organize', icon: LuChartNoAxesColumn, label: __('Stages'), path: '../stages', requires: 'manage' },
   { group: 'organize', icon: LuCircleCheck, label: __('Statuses'), path: '../status', requires: 'manage' },
   { group: 'organize', icon: LuTag, label: __('Tags'), path: '../tags', requires: 'manage' },

@@ -35,11 +35,13 @@ return [
 
     'Cancel' => __('Cancel', 'bit-connect'),
 
+    'Can’t reach the server.' => __('Can’t reach the server.', 'bit-connect'),
+
+    'You’re offline. Changes save when the connection is back.' => __('You’re offline. Changes save when the connection is back.', 'bit-connect'),
+
     'Select Icon' => __('Select Icon', 'bit-connect'),
 
     'Preview' => __('Preview', 'bit-connect'),
-
-    'Play' => __('Play', 'bit-connect'),
 
     'Sample' => __('Sample', 'bit-connect'),
 
@@ -65,6 +67,10 @@ return [
 
     'Try the change again.' => __('Try the change again.', 'bit-connect'),
 
+    'Trying again…' => __('Trying again…', 'bit-connect'),
+
+    'Retry now' => __('Retry now', 'bit-connect'),
+
     'Not saved yet.' => __('Not saved yet.', 'bit-connect'),
 
     'Saving…' => __('Saving…', 'bit-connect'),
@@ -72,6 +78,12 @@ return [
     'All changes saved' => __('All changes saved', 'bit-connect'),
 
     'Changes save automatically' => __('Changes save automatically', 'bit-connect'),
+
+    'Reload' => __('Reload', 'bit-connect'),
+
+    'Reloading the page usually fixes this.' => __('Reloading the page usually fixes this.', 'bit-connect'),
+
+    'This screen could not be loaded' => __('This screen could not be loaded', 'bit-connect'),
 
     'Used in portal URLs. Changing it breaks links that already point here.' => __('Used in portal URLs. Changing it breaks links that already point here.', 'bit-connect'),
 
@@ -113,49 +125,51 @@ return [
 
     'Nothing recorded yet.' => __('Nothing recorded yet.', 'bit-connect'),
 
-    'Try a wider search. A topic and a comment can have the same ID, so check the type too.' => __('Try a wider search. A topic and a comment can have the same ID, so check the type too.', 'bit-connect'),
+    'Try a wider search. A post and a comment can have the same ID, so check the type too.' => __('Try a wider search. A post and a comment can have the same ID, so check the type too.', 'bit-connect'),
 
     'Rows appear when someone acts on content they did not write.' => __('Rows appear when someone acts on content they did not write.', 'bit-connect'),
 
-    'Activity' => __('Activity', 'bit-connect'),
+    'Last 7 days' => __('Last 7 days', 'bit-connect'),
 
-    'What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.' => __('What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.', 'bit-connect'),
-
-    'Anyone' => __('Anyone', 'bit-connect'),
-
-    'Any time' => __('Any time', 'bit-connect'),
+    'Last 30 days' => __('Last 30 days', 'bit-connect'),
 
     'Last 90 days' => __('Last 90 days', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     'Member #%s' => __('Member #%s', 'bit-connect'),
 
-    /* translators: 1: first row shown, 2: last row shown, 3: how many rows match. */
-    'Showing %1$s–%2$s of %3$s' => __('Showing %1$s–%2$s of %3$s', 'bit-connect'),
+    'Activity' => __('Activity', 'bit-connect'),
 
-    'Show only this member’s actions' => __('Show only this member’s actions', 'bit-connect'),
-
-    'Show this comment’s history' => __('Show this comment’s history', 'bit-connect'),
-
-    'Show this topic’s history' => __('Show this topic’s history', 'bit-connect'),
+    'What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.' => __('What was done to content by someone other than its author: hides, locks, deletions, restores and report decisions.', 'bit-connect'),
 
     'Any action' => __('Any action', 'bit-connect'),
 
-    'Topics' => __('Topics', 'bit-connect'),
+    'Posts' => __('Posts', 'bit-connect'),
 
     'Comments' => __('Comments', 'bit-connect'),
 
     'Any content type' => __('Any content type', 'bit-connect'),
 
-    'IDs are unique per type, so a topic and a comment can have the same one.' => __('IDs are unique per type, so a topic and a comment can have the same one.', 'bit-connect'),
+    'Type a name' => __('Type a name', 'bit-connect'),
 
-    'Topic or comment ID' => __('Topic or comment ID', 'bit-connect'),
+    'No members found' => __('No members found', 'bit-connect'),
+
+    'Anyone' => __('Anyone', 'bit-connect'),
+
+    'Any time' => __('Any time', 'bit-connect'),
+
+    'IDs are unique per type, so a post and a comment can have the same one.' => __('IDs are unique per type, so a post and a comment can have the same one.', 'bit-connect'),
+
+    'Post or comment ID' => __('Post or comment ID', 'bit-connect'),
 
     'Clear' => __('Clear', 'bit-connect'),
 
     'The activity log could not be loaded.' => __('The activity log could not be loaded.', 'bit-connect'),
 
     'Something went wrong' => __('Something went wrong', 'bit-connect'),
+
+    /* translators: %1$s, %2$s, %3$s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Showing %1$s–%2$s of %3$s' => __('Showing %1$s–%2$s of %3$s', 'bit-connect'),
 
     'Show all' => __('Show all', 'bit-connect'),
 
@@ -195,7 +209,13 @@ return [
 
     'Comment' => __('Comment', 'bit-connect'),
 
-    'Topic' => __('Topic', 'bit-connect'),
+    'Post' => __('Post', 'bit-connect'),
+
+    'Show only this member’s actions' => __('Show only this member’s actions', 'bit-connect'),
+
+    'Show the history of this comment' => __('Show the history of this comment', 'bit-connect'),
+
+    'Show the history of this post' => __('Show the history of this post', 'bit-connect'),
 
     'by' => __('by', 'bit-connect'),
 
@@ -203,51 +223,23 @@ return [
 
     'Sorry, the page you visited does not exist.' => __('Sorry, the page you visited does not exist.', 'bit-connect'),
 
-    'There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.' => __('There is no page at the new address yet. Create one with the shortcode in it, or rename your community page to match.', 'bit-connect'),
-
-    'Address saved, but no page is there yet' => __('Address saved, but no page is there yet', 'bit-connect'),
-
     'Portal slug is required' => __('Portal slug is required', 'bit-connect'),
-
-    'Branding' => __('Branding', 'bit-connect'),
-
-    'Location' => __('Location', 'bit-connect'),
-
-    'Access' => __('Access', 'bit-connect'),
-
-    'Sign in' => __('Sign in', 'bit-connect'),
-
-    'Send notifications' => __('Send notifications', 'bit-connect'),
-
-    'How the topic list is sorted: newest, oldest or most active.' => __('How the topic list is sorted: newest, oldest or most active.', 'bit-connect'),
-
-    'Sort' => __('Sort', 'bit-connect'),
-
-    'A row of chips over the list, one per topic type.' => __('A row of chips over the list, one per topic type.', 'bit-connect'),
-
-    'Narrow the list down to a tag.' => __('Narrow the list down to a tag.', 'bit-connect'),
-
-    'Tags' => __('Tags', 'bit-connect'),
 
     'Choose whether your community is open to everyone or only to members.' => __('Choose whether your community is open to everyone or only to members.', 'bit-connect'),
 
-    'Decide whether visitors can read topics without signing in.' => __('Decide whether visitors can read topics without signing in.', 'bit-connect'),
+    'Access' => __('Access', 'bit-connect'),
+
+    'Decide whether visitors can read posts without signing in.' => __('Decide whether visitors can read posts without signing in.', 'bit-connect'),
 
     'Who can see the portal' => __('Who can see the portal', 'bit-connect'),
 
-    'Anyone can read topics, and search engines can index them. Posting still needs an account.' => __('Anyone can read topics, and search engines can index them. Posting still needs an account.', 'bit-connect'),
+    'Anyone can read posts, and search engines can index them. To create a post, a visitor still needs an account.' => __('Anyone can read posts, and search engines can index them. To create a post, a visitor still needs an account.', 'bit-connect'),
 
     'Everyone' => __('Everyone', 'bit-connect'),
 
     'Visitors are sent to sign in first. Nothing in the portal is publicly readable or indexable.' => __('Visitors are sent to sign in first. Nothing in the portal is publicly readable or indexable.', 'bit-connect'),
 
     'Logged-in users only' => __('Logged-in users only', 'bit-connect'),
-
-    'Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.' => __('Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.', 'bit-connect'),
-
-    'Topic list filters' => __('Topic list filters', 'bit-connect'),
-
-    'Filters visitors can use' => __('Filters visitors can use', 'bit-connect'),
 
     'Choose where people sign in and create an account.' => __('Choose where people sign in and create an account.', 'bit-connect'),
 
@@ -315,6 +307,8 @@ return [
 
     'How your community looks to visitors: its name, its logo and where the logo links to.' => __('How your community looks to visitors: its name, its logo and where the logo links to.', 'bit-connect'),
 
+    'Branding' => __('Branding', 'bit-connect'),
+
     'Shown beside your logo, in the browser tab, in search results and as the sender name on emails. Leave it empty to show your logo alone.' => __('Shown beside your logo, in the browser tab, in search results and as the sender name on emails. Leave it empty to show your logo alone.', 'bit-connect'),
 
     'Portal title' => __('Portal title', 'bit-connect'),
@@ -343,22 +337,23 @@ return [
 
     'Replace' => __('Replace', 'bit-connect'),
 
+    'Your community page has been created' => __('Your community page has been created', 'bit-connect'),
+
+    'Could not create the page' => __('Could not create the page', 'bit-connect'),
+
     'The community is now your homepage' => __('The community is now your homepage', 'bit-connect'),
 
     'The community is back on its own page' => __('The community is back on its own page', 'bit-connect'),
 
     'Could not change the community address' => __('Could not change the community address', 'bit-connect'),
 
-    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    'Create a page with the slug "%s" and the shortcode in it, then try again.' => __('Create a page with the slug "%s" and the shortcode in it, then try again.', 'bit-connect'),
-
-    'Add the shortcode to a page and publish it, then try again.' => __('Add the shortcode to a page and publish it, then try again.', 'bit-connect'),
+    'Create the community page first, then turn this on.' => __('Create the community page first, then turn this on.', 'bit-connect'),
 
     'There is no community page yet' => __('There is no community page yet', 'bit-connect'),
 
-    'Your current homepage is replaced by the community, and topic links change from /slug/topic to /topic. Links people already shared will stop working.' => __('Your current homepage is replaced by the community, and topic links change from /slug/topic to /topic. Links people already shared will stop working.', 'bit-connect'),
+    'The community replaces your current homepage, and post links change from /slug/post-name to /post-name. Links that people already shared will stop working.' => __('The community replaces your current homepage, and post links change from /slug/post-name to /post-name. Links that people already shared will stop working.', 'bit-connect'),
 
-    'The community goes back to yoursite.com/slug and topic links change again. Your homepage returns to the default WordPress posts page.' => __('The community goes back to yoursite.com/slug and topic links change again. Your homepage returns to the default WordPress posts page.', 'bit-connect'),
+    'The community goes back to yoursite.com/slug and post links change again. Your homepage goes back to what it was before.' => __('The community goes back to yoursite.com/slug and post links change again. Your homepage goes back to what it was before.', 'bit-connect'),
 
     'Yes, make it my homepage' => __('Yes, make it my homepage', 'bit-connect'),
 
@@ -378,9 +373,16 @@ return [
 
     'Portal address' => __('Portal address', 'bit-connect'),
 
-    'There is no published page at this address. Create one with the shortcode in it, or change the slug below.' => __('There is no published page at this address. Create one with the shortcode in it, or change the slug below.', 'bit-connect'),
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Create page at /%s' => __('Create page at /%s', 'bit-connect'),
 
-    'No page yet. Add the shortcode below to a page and publish it to get your community started.' => __('No page yet. Add the shortcode below to a page and publish it to get your community started.', 'bit-connect'),
+    'There is no published page at this address, so your community cannot be reached. Create the page, or change the slug below to a page that contains the Bit Connect block or shortcode.' => __('There is no published page at this address, so your community cannot be reached. Create the page, or change the slug below to a page that contains the Bit Connect block or shortcode.', 'bit-connect'),
+
+    'No community page yet. Enter an address slug below and create the page, or add the Bit Connect block or shortcode to a page of your own and publish it.' => __('No community page yet. Enter an address slug below and create the page, or add the Bit Connect block or shortcode to a page of your own and publish it.', 'bit-connect'),
+
+    'Open Permalinks' => __('Open Permalinks', 'bit-connect'),
+
+    'Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.' => __('Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.', 'bit-connect'),
 
     'Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off "Serve at the site root".' => __('Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off "Serve at the site root".', 'bit-connect'),
 
@@ -392,13 +394,13 @@ return [
 
     'Your community is your homepage, so it has no slug of its own.' => __('Your community is your homepage, so it has no slug of its own.', 'bit-connect'),
 
-    'The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that contains the shortcode. Changing it changes every topic link.' => __('The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that contains the shortcode. Changing it changes every topic link.', 'bit-connect'),
+    'The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that shows the community. If you change it, every post link changes.' => __('The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that shows the community. If you change it, every post link changes.', 'bit-connect'),
 
     'Address slug' => __('Address slug', 'bit-connect'),
 
     'e.g. community' => __('e.g. community', 'bit-connect'),
 
-    'This page does not contain the [bit-connect] shortcode, so the community will not show on it.' => __('This page does not contain the [bit-connect] shortcode, so the community will not show on it.', 'bit-connect'),
+    'This page does not contain the Bit Connect block or the [bit-connect] shortcode, so the community will not show on it.' => __('This page does not contain the Bit Connect block or the [bit-connect] shortcode, so the community will not show on it.', 'bit-connect'),
 
     'Serve the portal from the site root instead of a slug, so it becomes your homepage. Use this only if the whole WordPress site is for the forum.' => __('Serve the portal from the site root instead of a slug, so it becomes your homepage. Use this only if the whole WordPress site is for the forum.', 'bit-connect'),
 
@@ -408,11 +410,17 @@ return [
 
     'Needs the page first' => __('Needs the page first', 'bit-connect'),
 
-    'Put this on any WordPress page to show the community there. If you have no community page yet, the page you publish with it becomes the community page.' => __('Put this on any WordPress page to show the community there. If you have no community page yet, the page you publish with it becomes the community page.', 'bit-connect'),
+    'Only a site administrator can change the homepage' => __('Only a site administrator can change the homepage', 'bit-connect'),
 
-    'Shortcode' => __('Shortcode', 'bit-connect'),
+    'To show the community on a page of your own, add the "Bit Connect" block to it in the block editor. In any other editor or page builder, paste this shortcode instead. If you have no community page yet, the page you publish with either one becomes the community page.' => __('To show the community on a page of your own, add the "Bit Connect" block to it in the block editor. In any other editor or page builder, paste this shortcode instead. If you have no community page yet, the page you publish with either one becomes the community page.', 'bit-connect'),
+
+    'Add to your own page' => __('Add to your own page', 'bit-connect'),
 
     'Checking…' => __('Checking…', 'bit-connect'),
+
+    'WordPress already uses this address for another part of your site. Please choose another.' => __('WordPress already uses this address for another part of your site. Please choose another.', 'bit-connect'),
+
+    'Something else on your site, such as a media file, already uses this name. Please choose another.' => __('Something else on your site, such as a media file, already uses this name. Please choose another.', 'bit-connect'),
 
     'This is already your community page.' => __('This is already your community page.', 'bit-connect'),
 
@@ -423,29 +431,45 @@ return [
     '%s is available. Your community page will be created here.' => __('%s is available. Your community page will be created here.', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    'There is no page at %s yet. Create one with the shortcode in it, or rename your community page to this slug.' => __('There is no page at %s yet. Create one with the shortcode in it, or rename your community page to this slug.', 'bit-connect'),
+    'There is no page at %s yet. Create one with the Bit Connect block or shortcode in it, or rename your community page to this slug.' => __('There is no page at %s yet. Create one with the Bit Connect block or shortcode in it, or rename your community page to this slug.', 'bit-connect'),
 
-    'A page exists here, but it does not contain the [bit-connect] shortcode yet.' => __('A page exists here, but it does not contain the [bit-connect] shortcode yet.', 'bit-connect'),
+    'A page exists here, but it does not contain the Bit Connect block or the [bit-connect] shortcode yet.' => __('A page exists here, but it does not contain the Bit Connect block or the [bit-connect] shortcode yet.', 'bit-connect'),
 
     'This is your community page.' => __('This is your community page.', 'bit-connect'),
 
-    'A page with the shortcode is ready here.' => __('A page with the shortcode is ready here.', 'bit-connect'),
+    'A page showing the community is ready here.' => __('A page showing the community is ready here.', 'bit-connect'),
+
+    'The sort order of the post list: newest, oldest or most active.' => __('The sort order of the post list: newest, oldest or most active.', 'bit-connect'),
+
+    'Sort' => __('Sort', 'bit-connect'),
+
+    'A row of chips above the list, one for each post category.' => __('A row of chips above the list, one for each post category.', 'bit-connect'),
+
+    'Post categories' => __('Post categories', 'bit-connect'),
+
+    'Narrow the list down to a tag.' => __('Narrow the list down to a tag.', 'bit-connect'),
+
+    'Tags' => __('Tags', 'bit-connect'),
+
+    'Select the filters that visitors can use to narrow the post list. If you hide a filter, links that people already shared continue to work.' => __('Select the filters that visitors can use to narrow the post list. If you hide a filter, links that people already shared continue to work.', 'bit-connect'),
+
+    'Post list filters' => __('Post list filters', 'bit-connect'),
+
+    'Filters visitors can use' => __('Filters visitors can use', 'bit-connect'),
 
     'Loading' => __('Loading', 'bit-connect'),
 
     'Dashboard' => __('Dashboard', 'bit-connect'),
 
-    'Stages' => __('Stages', 'bit-connect'),
-
-    'Topic Types' => __('Topic Types', 'bit-connect'),
-
-    'Status' => __('Status', 'bit-connect'),
-
     'Reports' => __('Reports', 'bit-connect'),
 
-    'Notifications' => __('Notifications', 'bit-connect'),
+    'Members' => __('Members', 'bit-connect'),
 
-    'SEO' => __('SEO', 'bit-connect'),
+    'Post Categories' => __('Post Categories', 'bit-connect'),
+
+    'Stages' => __('Stages', 'bit-connect'),
+
+    'Statuses' => __('Statuses', 'bit-connect'),
 
     'Settings' => __('Settings', 'bit-connect'),
 
@@ -459,9 +483,7 @@ return [
 
     'Failed to update capabilities' => __('Failed to update capabilities', 'bit-connect'),
 
-    'Capabilities updated' => __('Capabilities updated', 'bit-connect'),
-
-    'Members' => __('Members', 'bit-connect'),
+    'Everyone with an account, and what each of them may do in the forum.' => __('Everyone with an account, and what each of them may do in the forum.', 'bit-connect'),
 
     'Search by name, email or username…' => __('Search by name, email or username…', 'bit-connect'),
 
@@ -477,6 +499,8 @@ return [
 
     'Badges' => __('Badges', 'bit-connect'),
 
+    'Permissions' => __('Permissions', 'bit-connect'),
+
     'No users found.' => __('No users found.', 'bit-connect'),
 
     'No role' => __('No role', 'bit-connect'),
@@ -485,15 +509,11 @@ return [
 
     'Permissions, set by role' => __('Permissions, set by role', 'bit-connect'),
 
-    'Posts' => __('Posts', 'bit-connect'),
-
     'Voting' => __('Voting', 'bit-connect'),
 
     'Other People’s Content' => __('Other People’s Content', 'bit-connect'),
 
     'Moderation & Admin' => __('Moderation & Admin', 'bit-connect'),
-
-    'Save' => __('Save', 'bit-connect'),
 
     'Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.' => __('Set which forum actions each WordPress role can perform. Changes apply immediately to all users of that role.', 'bit-connect'),
 
@@ -562,6 +582,8 @@ return [
     'Retry' => __('Retry', 'bit-connect'),
 
     'Notification settings could not be loaded.' => __('Notification settings could not be loaded.', 'bit-connect'),
+
+    'Send notifications' => __('Send notifications', 'bit-connect'),
 
     'The master switch. Off, the forum writes no notifications and sends no email at all.' => __('The master switch. Off, the forum writes no notifications and sends no email at all.', 'bit-connect'),
 
@@ -653,7 +675,7 @@ return [
 
     'yoursite.com. Visitors land on the community first.' => __('yoursite.com. Visitors land on the community first.', 'bit-connect'),
 
-    'Your current homepage is replaced, and topic links use the site root (yoursite.com/topic-name). Best for a site that is only the community.' => __('Your current homepage is replaced, and topic links use the site root (yoursite.com/topic-name). Best for a site that is only the community.', 'bit-connect'),
+    'Your current homepage is replaced, and post links use the site root (yoursite.com/post-name). Best for a site that is only the community.' => __('Your current homepage is replaced, and post links use the site root (yoursite.com/post-name). Best for a site that is only the community.', 'bit-connect'),
 
     'This replaces your homepage' => __('This replaces your homepage', 'bit-connect'),
 
@@ -661,11 +683,7 @@ return [
 
     'This is only the page name inside WordPress. Visitors will just see yoursite.com.' => __('This is only the page name inside WordPress. Visitors will just see yoursite.com.', 'bit-connect'),
 
-    'Want to use your own page instead?' => __('Want to use your own page instead?', 'bit-connect'),
-
-    'Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community.' => __('Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community.', 'bit-connect'),
-
-    'Skip' => __('Skip', 'bit-connect'),
+    'Continue' => __('Continue', 'bit-connect'),
 
     'Create page and continue' => __('Create page and continue', 'bit-connect'),
 
@@ -681,7 +699,7 @@ return [
 
     'items removed' => __('items removed', 'bit-connect'),
 
-    'Reported topics and replies waiting for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.' => __('Reported topics and replies waiting for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.', 'bit-connect'),
+    'Reported posts and replies that wait for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.' => __('Reported posts and replies that wait for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.', 'bit-connect'),
 
     'Reviewed and left up. The reporters were told; the author was not.' => __('Reviewed and left up. The reporters were told; the author was not.', 'bit-connect'),
 
@@ -695,7 +713,7 @@ return [
 
     'Nothing here yet.' => __('Nothing here yet.', 'bit-connect'),
 
-    'When members report a topic or reply, it shows up here. Keep it if it is fine, or remove it.' => __('When members report a topic or reply, it shows up here. Keep it if it is fine, or remove it.', 'bit-connect'),
+    'When members report a post or reply, it shows here. Keep it if it is fine, or remove it.' => __('When members report a post or reply, it shows here. Keep it if it is fine, or remove it.', 'bit-connect'),
 
     'items' => __('items', 'bit-connect'),
 
@@ -739,13 +757,41 @@ return [
 
     'The reply and everything posted underneath it are deleted for good.' => __('The reply and everything posted underneath it are deleted for good.', 'bit-connect'),
 
-    'The topic and its replies are deleted for good.' => __('The topic and its replies are deleted for good.', 'bit-connect'),
+    'The post and its replies are deleted for good.' => __('The post and its replies are deleted for good.', 'bit-connect'),
 
     'Remove it' => __('Remove it', 'bit-connect'),
 
     'Delete this permanently?' => __('Delete this permanently?', 'bit-connect'),
 
     'Remove content' => __('Remove content', 'bit-connect'),
+
+    'Posts and comments published' => __('Posts and comments published', 'bit-connect'),
+
+    'Community activity' => __('Community activity', 'bit-connect'),
+
+    'Posts and comments over time' => __('Posts and comments over time', 'bit-connect'),
+
+    'Rank' => __('Rank', 'bit-connect'),
+
+    'Stage' => __('Stage', 'bit-connect'),
+
+    'Votes' => __('Votes', 'bit-connect'),
+
+    'All posts' => __('All posts', 'bit-connect'),
+
+    'Posts ranked by votes' => __('Posts ranked by votes', 'bit-connect'),
+
+    'Most upvoted posts' => __('Most upvoted posts', 'bit-connect'),
+
+    'No post has a vote yet.' => __('No post has a vote yet.', 'bit-connect'),
+
+    'Oldest waiting for a comment' => __('Oldest waiting for a comment', 'bit-connect'),
+
+    'Deleted member' => __('Deleted member', 'bit-connect'),
+
+    'Author' => __('Author', 'bit-connect'),
+
+    'Posted' => __('Posted', 'bit-connect'),
 
     'Nothing is waiting on you right now.' => __('Nothing is waiting on you right now.', 'bit-connect'),
 
@@ -759,25 +805,29 @@ return [
 
     'Comments awaiting approval' => __('Comments awaiting approval', 'bit-connect'),
 
-    'Open topics' => __('Open topics', 'bit-connect'),
+    'Open posts' => __('Open posts', 'bit-connect'),
 
-    'Topics waiting for a comment' => __('Topics waiting for a comment', 'bit-connect'),
+    'Posts that wait for a comment' => __('Posts that wait for a comment', 'bit-connect'),
 
-    'Oldest waiting for a comment' => __('Oldest waiting for a comment', 'bit-connect'),
+    'No post waits for a comment.' => __('No post waits for a comment.', 'bit-connect'),
 
-    'Posted' => __('Posted', 'bit-connect'),
+    'Date' => __('Date', 'bit-connect'),
 
-    'No topic is waiting for a comment.' => __('No topic is waiting for a comment.', 'bit-connect'),
+    'View all' => __('View all', 'bit-connect'),
+
+    'Recent posts' => __('Recent posts', 'bit-connect'),
+
+    'No posts yet.' => __('No posts yet.', 'bit-connect'),
+
+    'Posts created this week' => __('Posts created this week', 'bit-connect'),
+
+    'Posts created this year' => __('Posts created this year', 'bit-connect'),
+
+    'Posts created this month' => __('Posts created this month', 'bit-connect'),
 
     'Response time' => __('Response time', 'bit-connect'),
 
-    'Topics started this week' => __('Topics started this week', 'bit-connect'),
-
-    'Topics started this month' => __('Topics started this month', 'bit-connect'),
-
-    'Topics started this year' => __('Topics started this year', 'bit-connect'),
-
-    'No topics were started in this period.' => __('No topics were started in this period.', 'bit-connect'),
+    'Nobody created a post in this period.' => __('Nobody created a post in this period.', 'bit-connect'),
 
     'Median time to first comment' => __('Median time to first comment', 'bit-connect'),
 
@@ -786,85 +836,52 @@ return [
 
     'Commented on within a day' => __('Commented on within a day', 'bit-connect'),
 
-    'Counted once a topic is a day old.' => __('Counted once a topic is a day old.', 'bit-connect'),
+    'This counts each post when it is one day old.' => __('This counts each post when it is one day old.', 'bit-connect'),
 
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%1$d of %2$d topics at least a day old' => __('%1$d of %2$d topics at least a day old', 'bit-connect'),
+    '%1$d of %2$d posts at least a day old' => __('%1$d of %2$d posts at least a day old', 'bit-connect'),
 
-    'Community activity' => __('Community activity', 'bit-connect'),
+    /* translators: %1$s, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$s: %2$d' => __('%1$s: %2$d', 'bit-connect'),
 
-    'Topics and comments published' => __('Topics and comments published', 'bit-connect'),
+    /* translators: %d, %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d posts: %s' => __('%d posts: %s', 'bit-connect'),
 
-    'Topics and comments over time' => __('Topics and comments over time', 'bit-connect'),
-
-    'Rank' => __('Rank', 'bit-connect'),
-
-    'Request' => __('Request', 'bit-connect'),
-
-    'Stage' => __('Stage', 'bit-connect'),
-
-    'Votes' => __('Votes', 'bit-connect'),
-
-    'Replies' => __('Replies', 'bit-connect'),
-
-    'All topics' => __('All topics', 'bit-connect'),
-
-    'Topics ranked by votes' => __('Topics ranked by votes', 'bit-connect'),
-
-    'Most requested' => __('Most requested', 'bit-connect'),
-
-    'No topic has a vote yet.' => __('No topic has a vote yet.', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d members' => __('%d members', 'bit-connect'),
-
-    'upvoted' => __('upvoted', 'bit-connect'),
-
-    'posted' => __('posted', 'bit-connect'),
-
-    'replied to' => __('replied to', 'bit-connect'),
-
-    'A former member' => __('A former member', 'bit-connect'),
-
-    'Recent activity' => __('Recent activity', 'bit-connect'),
-
-    'Nothing has happened yet.' => __('Nothing has happened yet.', 'bit-connect'),
-
-    'Deleted member' => __('Deleted member', 'bit-connect'),
-
-    'Author' => __('Author', 'bit-connect'),
-
-    'Date' => __('Date', 'bit-connect'),
-
-    'View all' => __('View all', 'bit-connect'),
-
-    'Recent topics' => __('Recent topics', 'bit-connect'),
-
-    'No topics yet.' => __('No topics yet.', 'bit-connect'),
-
-    /* translators: %1$d, %%, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
-    '%1$d%% of topics are in %2$s' => __('%1$d%% of topics are in %2$s', 'bit-connect'),
-
-    /* translators: %1$d, %2$d, %3$s are value(s) inserted by the plugin. Keep them in the translation. */
-    '%1$d of %2$d topics in %3$s' => __('%1$d of %2$d topics in %3$s', 'bit-connect'),
+    'Total posts' => __('Total posts', 'bit-connect'),
 
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%1$d topics across your %2$d stages' => __('%1$d topics across your %2$d stages', 'bit-connect'),
+    '%1$d posts across your %2$d stages' => __('%1$d posts across your %2$d stages', 'bit-connect'),
 
     'Stage progress' => __('Stage progress', 'bit-connect'),
 
     'No stages yet.' => __('No stages yet.', 'bit-connect'),
 
     /* translators: %1$d, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
-    'Across %1$d of %2$d topics' => __('Across %1$d of %2$d topics', 'bit-connect'),
+    'Across %1$d of %2$d posts' => __('Across %1$d of %2$d posts', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d posted for the first time' => __('%d posted for the first time', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    'Most on %s topics' => __('Most on %s topics', 'bit-connect'),
+    'Most on %s posts' => __('Most on %s posts', 'bit-connect'),
 
     'No votes cast yet' => __('No votes cast yet', 'bit-connect'),
+
+    'Overall' => __('Overall', 'bit-connect'),
+
+    'Upvotes' => __('Upvotes', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d upvotes received' => __('%d upvotes received', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d comments' => __('%d comments', 'bit-connect'),
+
+    'Rank contributors by' => __('Rank contributors by', 'bit-connect'),
+
+    'Top contributors' => __('Top contributors', 'bit-connect'),
+
+    'Nobody has voted or commented in this period.' => __('Nobody has voted or commented in this period.', 'bit-connect'),
 
     'Visit portal' => __('Visit portal', 'bit-connect'),
 
@@ -887,28 +904,41 @@ return [
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '+%d this month' => __('+%d this month', 'bit-connect'),
 
+    '1 contributor this week' => __('1 contributor this week', 'bit-connect'),
+
+    '1 contributor this year' => __('1 contributor this year', 'bit-connect'),
+
+    '1 contributor this month' => __('1 contributor this month', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d contributors this week' => __('%d contributors this week', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d contributors this year' => __('%d contributors this year', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d contributors this month' => __('%d contributors this month', 'bit-connect'),
+
     'This week' => __('This week', 'bit-connect'),
 
     'This year' => __('This year', 'bit-connect'),
 
     'This month' => __('This month', 'bit-connect'),
 
-    'No topic types yet' => __('No topic types yet', 'bit-connect'),
+    'No post categories yet' => __('No post categories yet', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d more' => __('%d more', 'bit-connect'),
 
     'Failed to update SEO settings' => __('Failed to update SEO settings', 'bit-connect'),
 
-    'Statuses' => __('Statuses', 'bit-connect'),
-
-    'Topic types' => __('Topic types', 'bit-connect'),
-
     '{name}' => __('{name}', 'bit-connect'),
 
     'terms' => __('terms', 'bit-connect'),
 
     'What is live on the site right now, read from the site itself.' => __('What is live on the site right now, read from the site itself.', 'bit-connect'),
+
+    'Status' => __('Status', 'bit-connect'),
 
     'The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public.' => __('The portal is restricted to logged-in members, so nothing is exposed to search engines. These settings take effect once the portal is public.', 'bit-connect'),
 
@@ -926,16 +956,16 @@ return [
 
     'Sitemap' => __('Sitemap', 'bit-connect'),
 
-    'Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.' => __('Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.', 'bit-connect'),
+    'Submit this to Google Search Console. It is an index: one sitemap for the posts, then one per taxonomy shown in search. It is also announced in robots.txt.' => __('Submit this to Google Search Console. It is an index: one sitemap for the posts, then one per taxonomy shown in search. It is also announced in robots.txt.', 'bit-connect'),
 
     'In the sitemap' => __('In the sitemap', 'bit-connect'),
 
     /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
-    '1 home page · %1$s topics · %2$s archive pages' => __('1 home page · %1$s topics · %2$s archive pages', 'bit-connect'),
+    '1 home page · %1$s posts · %2$s archive pages' => __('1 home page · %1$s posts · %2$s archive pages', 'bit-connect'),
 
     'SEO settings could not be loaded.' => __('SEO settings could not be loaded.', 'bit-connect'),
 
-    'Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines won’t see them.' => __('Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines won’t see them.', 'bit-connect'),
+    'Each term gets a page that lists its posts. These pages can rank for a whole subject, not only for one question. When on, the archives of a taxonomy are indexed and added to the sitemap. When off, visitors can still open them, but search engines do not see them.' => __('Each term gets a page that lists its posts. These pages can rank for a whole subject, not only for one question. When on, the archives of a taxonomy are indexed and added to the sitemap. When off, visitors can still open them, but search engines do not see them.', 'bit-connect'),
 
     'Term archives' => __('Term archives', 'bit-connect'),
 
@@ -948,6 +978,22 @@ return [
     'Show profiles in search' => __('Show profiles in search', 'bit-connect'),
 
     'Failed to update settings' => __('Failed to update settings', 'bit-connect'),
+
+    'Let members upvote posts.' => __('Let members upvote posts.', 'bit-connect'),
+
+    'Let members comment on posts.' => __('Let members comment on posts.', 'bit-connect'),
+
+    'When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.' => __('When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.', 'bit-connect'),
+
+    'Delete data on uninstall' => __('Delete data on uninstall', 'bit-connect'),
+
+    'Choose what happens to your community’s data if the plugin is deleted.' => __('Choose what happens to your community’s data if the plugin is deleted.', 'bit-connect'),
+
+    'Data cleanup' => __('Data cleanup', 'bit-connect'),
+
+    'Turn each one on or off for the whole forum.' => __('Turn each one on or off for the whole forum.', 'bit-connect'),
+
+    'What members can do' => __('What members can do', 'bit-connect'),
 
     'Hidden' => __('Hidden', 'bit-connect'),
 
@@ -975,35 +1021,23 @@ return [
 
     'Allowed file types' => __('Allowed file types', 'bit-connect'),
 
-    'Choose what people fill in when they create a topic, besides its title and text.' => __('Choose what people fill in when they create a topic, besides its title and text.', 'bit-connect'),
+    'Choose what people fill in when they create a post, in addition to its title and text.' => __('Choose what people fill in when they create a post, in addition to its title and text.', 'bit-connect'),
 
-    'Topic form' => __('Topic form', 'bit-connect'),
+    'Post form' => __('Post form', 'bit-connect'),
 
-    'What kind of post it is, such as a question or a bug report.' => __('What kind of post it is, such as a question or a bug report.', 'bit-connect'),
+    'The category of the post, such as a question or a bug report.' => __('The category of the post, such as a question or a bug report.', 'bit-connect'),
 
-    'Topic type' => __('Topic type', 'bit-connect'),
+    'Post category' => __('Post category', 'bit-connect'),
 
-    'Let members upvote topics.' => __('Let members upvote topics.', 'bit-connect'),
-
-    'Upvotes' => __('Upvotes', 'bit-connect'),
-
-    'Let members comment on topics.' => __('Let members comment on topics.', 'bit-connect'),
-
-    'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.' => __('When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.', 'bit-connect'),
-
-    'Delete data on uninstall' => __('Delete data on uninstall', 'bit-connect'),
+    'Sign in' => __('Sign in', 'bit-connect'),
 
     'Limits' => __('Limits', 'bit-connect'),
 
+    'Notifications' => __('Notifications', 'bit-connect'),
+
+    'SEO' => __('SEO', 'bit-connect'),
+
     'Data' => __('Data', 'bit-connect'),
-
-    'Choose what happens to your community’s data if the plugin is deleted.' => __('Choose what happens to your community’s data if the plugin is deleted.', 'bit-connect'),
-
-    'Data cleanup' => __('Data cleanup', 'bit-connect'),
-
-    'Turn each one on or off for the whole forum.' => __('Turn each one on or off for the whole forum.', 'bit-connect'),
-
-    'What members can do' => __('What members can do', 'bit-connect'),
 
     'Please enter a valid Custom Login Page URL, for example https://example.com/login' => __('Please enter a valid Custom Login Page URL, for example https://example.com/login', 'bit-connect'),
 
@@ -1019,6 +1053,8 @@ return [
 
     'Stage updated successfully' => __('Stage updated successfully', 'bit-connect'),
 
+    'Save' => __('Save', 'bit-connect'),
+
     'Edit Stage' => __('Edit Stage', 'bit-connect'),
 
     'Add stage' => __('Add stage', 'bit-connect'),
@@ -1028,6 +1064,10 @@ return [
     'Stage name is required' => __('Stage name is required', 'bit-connect'),
 
     'Enter stage name' => __('Enter stage name', 'bit-connect'),
+
+    'The color of the stage badge on post cards.' => __('The color of the stage badge on post cards.', 'bit-connect'),
+
+    'Color' => __('Color', 'bit-connect'),
 
     'Enter stage description (optional)' => __('Enter stage description (optional)', 'bit-connect'),
 
@@ -1040,6 +1080,8 @@ return [
     'Stage icon for dark mode' => __('Stage icon for dark mode', 'bit-connect'),
 
     'No description' => __('No description', 'bit-connect'),
+
+    'No color' => __('No color', 'bit-connect'),
 
     'Icon' => __('Icon', 'bit-connect'),
 
@@ -1055,6 +1097,8 @@ return [
 
     'Actions' => __('Actions', 'bit-connect'),
 
+    'The sections of your forum, like Questions or Bug Reports. Each post goes in one section.' => __('The sections of your forum, like Questions or Bug Reports. Each post goes in one section.', 'bit-connect'),
+
     'Failed to delete status' => __('Failed to delete status', 'bit-connect'),
 
     'Status deleted successfully' => __('Status deleted successfully', 'bit-connect'),
@@ -1064,6 +1108,8 @@ return [
     'Failed to update status' => __('Failed to update status', 'bit-connect'),
 
     'Status updated successfully' => __('Status updated successfully', 'bit-connect'),
+
+    'The progress of a post, like Open, Planned or Resolved. Moderators change it when the work continues.' => __('The progress of a post, like Open, Planned or Resolved. Moderators change it when the work continues.', 'bit-connect'),
 
     'Add status' => __('Add status', 'bit-connect'),
 
@@ -1079,8 +1125,6 @@ return [
 
     'Write a status here' => __('Write a status here', 'bit-connect'),
 
-    'Color' => __('Color', 'bit-connect'),
-
     'Status icon' => __('Status icon', 'bit-connect'),
 
     'Status icon for dark mode' => __('Status icon for dark mode', 'bit-connect'),
@@ -1090,8 +1134,6 @@ return [
     'Write a description here' => __('Write a description here', 'bit-connect'),
 
     'Default' => __('Default', 'bit-connect'),
-
-    'No color' => __('No color', 'bit-connect'),
 
     'Edit status' => __('Edit status', 'bit-connect'),
 
@@ -1119,9 +1161,18 @@ return [
 
     'About' => __('About', 'bit-connect'),
 
+    'Failed to approve the tag' => __('Failed to approve the tag', 'bit-connect'),
+
+    'Tag approved' => __('Tag approved', 'bit-connect'),
+
     'Failed to delete tag' => __('Failed to delete tag', 'bit-connect'),
 
     'Tag deleted successfully' => __('Tag deleted successfully', 'bit-connect'),
+
+    'Failed to merge the tag' => __('Failed to merge the tag', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Tag merged. %s posts moved to the new tag.' => __('Tag merged. %s posts moved to the new tag.', 'bit-connect'),
 
     'Tag created successfully' => __('Tag created successfully', 'bit-connect'),
 
@@ -1129,7 +1180,18 @@ return [
 
     'Tag updated successfully' => __('Tag updated successfully', 'bit-connect'),
 
+    'All tags' => __('All tags', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Pending (%s)' => __('Pending (%s)', 'bit-connect'),
+
+    'Pending' => __('Pending', 'bit-connect'),
+
+    'Keywords that link related posts. When members suggest a tag, it stays under Pending until you approve it.' => __('Keywords that link related posts. When members suggest a tag, it stays under Pending until you approve it.', 'bit-connect'),
+
     'Add tag' => __('Add tag', 'bit-connect'),
+
+    'Search tags…' => __('Search tags…', 'bit-connect'),
 
     'Edit Tag' => __('Edit Tag', 'bit-connect'),
 
@@ -1141,61 +1203,199 @@ return [
 
     'Enter description' => __('Enter description', 'bit-connect'),
 
+    /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$s (%2$s posts)' => __('%1$s (%2$s posts)', 'bit-connect'),
+
+    'Merge' => __('Merge', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Merge “%s” into…' => __('Merge “%s” into…', 'bit-connect'),
+
+    'Merge tag' => __('Merge tag', 'bit-connect'),
+
+    /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    'The %1$s posts with the tag “%2$s” will move to the tag that you select. Followers of “%2$s” will follow that tag instead. Then “%2$s” will be deleted.' => __('The %1$s posts with the tag “%2$s” will move to the tag that you select. Followers of “%2$s” will follow that tag instead. Then “%2$s” will be deleted.', 'bit-connect'),
+
+    'Merge into' => __('Merge into', 'bit-connect'),
+
+    'Choose the tag to merge into' => __('Choose the tag to merge into', 'bit-connect'),
+
+    'There is no other tag to merge into' => __('There is no other tag to merge into', 'bit-connect'),
+
+    'Choose a tag' => __('Choose a tag', 'bit-connect'),
+
+    'No post uses this tag.' => __('No post uses this tag.', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%s posts use this tag. They will keep their other tags. To keep them together, merge instead.' => __('%s posts use this tag. They will keep their other tags. To keep them together, merge instead.', 'bit-connect'),
+
+    /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Rejects the tag that %1$s suggested. The %2$s posts with this tag keep their other tags. To combine it with an existing tag, merge instead.' => __('Rejects the tag that %1$s suggested. The %2$s posts with this tag keep their other tags. To combine it with an existing tag, merge instead.', 'bit-connect'),
+
+    'a member' => __('a member', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'No tag matches “%s”.' => __('No tag matches “%s”.', 'bit-connect'),
+
+    'No suggested tags are waiting for review.' => __('No suggested tags are waiting for review.', 'bit-connect'),
+
+    'No tags yet.' => __('No tags yet.', 'bit-connect'),
+
+    'Pending review' => __('Pending review', 'bit-connect'),
+
+    'Suggested by' => __('Suggested by', 'bit-connect'),
+
+    'Approve tag' => __('Approve tag', 'bit-connect'),
+
+    'Approve: offer this tag to everyone' => __('Approve: offer this tag to everyone', 'bit-connect'),
+
     'Edit tag' => __('Edit tag', 'bit-connect'),
+
+    'Merge tag into another' => __('Merge tag into another', 'bit-connect'),
+
+    'Merge into another tag' => __('Merge into another tag', 'bit-connect'),
+
+    'Reject' => __('Reject', 'bit-connect'),
+
+    'Reject suggested tag' => __('Reject suggested tag', 'bit-connect'),
 
     'Delete Tag' => __('Delete Tag', 'bit-connect'),
 
+    'Reject tag' => __('Reject tag', 'bit-connect'),
+
     'Delete tag' => __('Delete tag', 'bit-connect'),
 
-    'Failed to delete topic type' => __('Failed to delete topic type', 'bit-connect'),
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%s tags' => __('%s tags', 'bit-connect'),
 
-    'Topic type deleted successfully' => __('Topic type deleted successfully', 'bit-connect'),
+    'Failed to delete post category' => __('Failed to delete post category', 'bit-connect'),
 
-    'Topic type created successfully' => __('Topic type created successfully', 'bit-connect'),
+    'Post category deleted successfully' => __('Post category deleted successfully', 'bit-connect'),
 
-    'Failed to update topic type' => __('Failed to update topic type', 'bit-connect'),
+    'Post category created successfully' => __('Post category created successfully', 'bit-connect'),
 
-    'Topic type updated successfully' => __('Topic type updated successfully', 'bit-connect'),
+    'Failed to update post category' => __('Failed to update post category', 'bit-connect'),
 
-    'Add topic type' => __('Add topic type', 'bit-connect'),
+    'Post category updated successfully' => __('Post category updated successfully', 'bit-connect'),
 
-    'Edit Topic Type' => __('Edit Topic Type', 'bit-connect'),
+    'The category of each post, like a question or a bug report. Authors select one when they create a post.' => __('The category of each post, like a question or a bug report. Authors select one when they create a post.', 'bit-connect'),
 
-    'Topic Type Name' => __('Topic Type Name', 'bit-connect'),
+    'Add post category' => __('Add post category', 'bit-connect'),
 
-    'Write Topic Title here' => __('Write Topic Title here', 'bit-connect'),
+    'Edit Post Category' => __('Edit Post Category', 'bit-connect'),
+
+    'Category Name' => __('Category Name', 'bit-connect'),
+
+    'Category name is required' => __('Category name is required', 'bit-connect'),
+
+    'For example, Question' => __('For example, Question', 'bit-connect'),
 
     'Write Description here' => __('Write Description here', 'bit-connect'),
 
-    'Create Topic Type' => __('Create Topic Type', 'bit-connect'),
+    'Create Post Category' => __('Create Post Category', 'bit-connect'),
 
-    'Edit topic type' => __('Edit topic type', 'bit-connect'),
+    'Edit post category' => __('Edit post category', 'bit-connect'),
 
-    'Delete Topic Type' => __('Delete Topic Type', 'bit-connect'),
+    'Delete Post Category' => __('Delete Post Category', 'bit-connect'),
 
-    'Delete topic type' => __('Delete topic type', 'bit-connect'),
+    'Delete post category' => __('Delete post category', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d updated' => __('%d updated', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d already done' => __('%d already done', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d could not be changed' => __('%d could not be changed', 'bit-connect'),
+
+    'Nothing changed.' => __('Nothing changed.', 'bit-connect'),
+
+    'Only moderators and the authors can see hidden posts in the portal. You can restore them later.' => __('Only moderators and the authors can see hidden posts in the portal. You can restore them later.', 'bit-connect'),
+
+    'Hide' => __('Hide', 'bit-connect'),
+
+    'Restore' => __('Restore', 'bit-connect'),
+
+    'Delete removes the posts and all their comments. You cannot undo this.' => __('Delete removes the posts and all their comments. You cannot undo this.', 'bit-connect'),
+
+    'Lock' => __('Lock', 'bit-connect'),
+
+    'Unlock' => __('Unlock', 'bit-connect'),
+
+    'Set the status and stage of posts. Lock, hide or delete posts one at a time or many at the same time.' => __('Set the status and stage of posts. Lock, hide or delete posts one at a time or many at the same time.', 'bit-connect'),
+
+    'The posts did not load.' => __('The posts did not load.', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d selected' => __('%d selected', 'bit-connect'),
+
+    'Set…' => __('Set…', 'bit-connect'),
+
+    'Choose' => __('Choose', 'bit-connect'),
+
+    'Apply' => __('Apply', 'bit-connect'),
+
+    'Clear selection' => __('Clear selection', 'bit-connect'),
+
+    'Search posts' => __('Search posts', 'bit-connect'),
+
+    'Any status' => __('Any status', 'bit-connect'),
+
+    'Any stage' => __('Any stage', 'bit-connect'),
+
+    'Any category' => __('Any category', 'bit-connect'),
+
+    'Public' => __('Public', 'bit-connect'),
+
+    'Private' => __('Private', 'bit-connect'),
+
+    'Any visibility' => __('Any visibility', 'bit-connect'),
+
+    'Any author' => __('Any author', 'bit-connect'),
+
+    '(no title)' => __('(no title)', 'bit-connect'),
+
+    'No status' => __('No status', 'bit-connect'),
+
+    'No stage' => __('No stage', 'bit-connect'),
+
+    'You cannot lock posts.' => __('You cannot lock posts.', 'bit-connect'),
+
+    'Locked' => __('Locked', 'bit-connect'),
+
+    'Created' => __('Created', 'bit-connect'),
+
+    'Open in the portal' => __('Open in the portal', 'bit-connect'),
+
+    'More actions' => __('More actions', 'bit-connect'),
+
+    'No posts match.' => __('No posts match.', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d posts' => __('%d posts', 'bit-connect'),
 
     'Ask a site administrator if you think you should be able to.' => __('Ask a site administrator if you think you should be able to.', 'bit-connect'),
 
     'Your account does not have permission to do this.' => __('Your account does not have permission to do this.', 'bit-connect'),
 
-    'Word document' => __('Word document', 'bit-connect'),
+    'Videos cannot be added here.' => __('Videos cannot be added here.', 'bit-connect'),
 
-    'GIF image' => __('GIF image', 'bit-connect'),
+    'Files cannot be attached here.' => __('Files cannot be attached here.', 'bit-connect'),
 
-    'JPEG image' => __('JPEG image', 'bit-connect'),
+    'You can add only 1 video.' => __('You can add only 1 video.', 'bit-connect'),
 
-    'PDF document' => __('PDF document', 'bit-connect'),
+    'You can attach only 1 file.' => __('You can attach only 1 file.', 'bit-connect'),
 
-    'PNG image' => __('PNG image', 'bit-connect'),
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'You can add up to %s videos.' => __('You can add up to %s videos.', 'bit-connect'),
 
-    'WebP image' => __('WebP image', 'bit-connect'),
-
-    'Maximum' => __('Maximum', 'bit-connect'),
-
-    'Only' => __('Only', 'bit-connect'),
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'You can attach up to %s files.' => __('You can attach up to %s files.', 'bit-connect'),
 
     'Add Files' => __('Add Files', 'bit-connect'),
+
+    'No more files can be added.' => __('No more files can be added.', 'bit-connect'),
 
     'Processing…' => __('Processing…', 'bit-connect'),
 
@@ -1210,6 +1410,30 @@ return [
     'Login required' => __('Login required', 'bit-connect'),
 
     'You need to be logged in to perform this action. Please log in or create an account to continue.' => __('You need to be logged in to perform this action. Please log in or create an account to continue.', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Follow %s' => __('Follow %s', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'New posts under “%s” will appear in your notifications.' => __('New posts under “%s” will appear in your notifications.', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'New posts under “%s” will no longer notify you.' => __('New posts under “%s” will no longer notify you.', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Following “%s”' => __('Following “%s”', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Unfollowed “%s”' => __('Unfollowed “%s”', 'bit-connect'),
+
+    'Could not change your follow setting.' => __('Could not change your follow setting.', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'You get notified about new posts here. Click to stop following this %s.' => __('You get notified about new posts here. Click to stop following this %s.', 'bit-connect'),
+
+    'Get notified when someone creates a new post here.' => __('Get notified when someone creates a new post here.', 'bit-connect'),
+
+    'Following' => __('Following', 'bit-connect'),
 
     'Mark all read' => __('Mark all read', 'bit-connect'),
 
@@ -1237,9 +1461,9 @@ return [
 
     'How often emails arrive. This only changes when they are sent, not what you are notified about.' => __('How often emails arrive. This only changes when they are sent, not what you are notified about.', 'bit-connect'),
 
-    'Tell me about every new topic' => __('Tell me about every new topic', 'bit-connect'),
+    'Tell me about every new post' => __('Tell me about every new post', 'bit-connect'),
 
-    'Get a notification for every topic posted anywhere on the portal, not only under what you follow.' => __('Get a notification for every topic posted anywhere on the portal, not only under what you follow.', 'bit-connect'),
+    'Get a notification for every new post on the portal, not only under what you follow.' => __('Get a notification for every new post on the portal, not only under what you follow.', 'bit-connect'),
 
     'Changes save as you make them. Hover a notification to see when it is sent.' => __('Changes save as you make them. Hover a notification to see when it is sent.', 'bit-connect'),
 
@@ -1255,7 +1479,14 @@ return [
 
     'Someone' => __('Someone', 'bit-connect'),
 
-    'a topic' => __('a topic', 'bit-connect'),
+    'a post' => __('a post', 'bit-connect'),
+
+    'You can now read' => __('You can now read', 'bit-connect'),
+
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    '%d people' => __('%d people', 'bit-connect'),
+
+    'asked to join' => __('asked to join', 'bit-connect'),
 
     'You were given the' => __('You were given the', 'bit-connect'),
 
@@ -1271,14 +1502,15 @@ return [
 
     'A moderator reviewed something you reported' => __('A moderator reviewed something you reported', 'bit-connect'),
 
-    'posted a new topic:' => __('posted a new topic:', 'bit-connect'),
+    'suggested a new tag' => __('suggested a new tag', 'bit-connect'),
+
+    'on' => __('on', 'bit-connect'),
+
+    'created a new post:' => __('created a new post:', 'bit-connect'),
 
     'commented on' => __('commented on', 'bit-connect'),
 
     'The status changed on' => __('The status changed on', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d people' => __('%d people', 'bit-connect'),
 
     'upvoted your post in' => __('upvoted your post in', 'bit-connect'),
 
@@ -1286,15 +1518,13 @@ return [
 
     'You will be notified about new replies.' => __('You will be notified about new replies.', 'bit-connect'),
 
-    'You will no longer be notified about this topic.' => __('You will no longer be notified about this topic.', 'bit-connect'),
-
-    'Could not change your follow setting.' => __('Could not change your follow setting.', 'bit-connect'),
+    'You will no longer be notified about this post.' => __('You will no longer be notified about this post.', 'bit-connect'),
 
     'You are following this because you took part.' => __('You are following this because you took part.', 'bit-connect'),
 
-    'You chose to follow this topic.' => __('You chose to follow this topic.', 'bit-connect'),
+    'You chose to follow this post.' => __('You chose to follow this post.', 'bit-connect'),
 
-    'You muted this topic.' => __('You muted this topic.', 'bit-connect'),
+    'You muted this post.' => __('You muted this post.', 'bit-connect'),
 
     'Notify me when someone replies.' => __('Notify me when someone replies.', 'bit-connect'),
 
@@ -1324,7 +1554,7 @@ return [
 
     'Share this reply' => __('Share this reply', 'bit-connect'),
 
-    'Share this topic' => __('Share this topic', 'bit-connect'),
+    'Share this post' => __('Share this post', 'bit-connect'),
 
     'Links straight to this reply in' => __('Links straight to this reply in', 'bit-connect'),
 
@@ -1339,22 +1569,35 @@ return [
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     'Share on %s' => __('Share on %s', 'bit-connect'),
 
-    'Could not save the topic. Please check your connection and try again.' => __('Could not save the topic. Please check your connection and try again.', 'bit-connect'),
+    'Could not save the post. Please check your connection and try again.' => __('Could not save the post. Please check your connection and try again.', 'bit-connect'),
 
     'Only you and the moderators can see it until a moderator has reviewed it.' => __('Only you and the moderators can see it until a moderator has reviewed it.', 'bit-connect'),
 
-    'Topic submitted for review' => __('Topic submitted for review', 'bit-connect'),
+    'Post submitted for review' => __('Post submitted for review', 'bit-connect'),
 
-    'Topic created successfully' => __('Topic created successfully', 'bit-connect'),
+    'Post created successfully' => __('Post created successfully', 'bit-connect'),
 
-    'Could not update topic' => __('Could not update topic', 'bit-connect'),
+    'Could not update post' => __('Could not update post', 'bit-connect'),
 
-    'Topic updated successfully' => __('Topic updated successfully', 'bit-connect'),
+    'Post updated successfully' => __('Post updated successfully', 'bit-connect'),
 
-    'Public Topic' => __('Public Topic', 'bit-connect'),
+    'Public Post' => __('Public Post', 'bit-connect'),
+
+    'Please wait for the upload to finish' => __('Please wait for the upload to finish', 'bit-connect'),
+
+    'Please enter a description, or add an image or a video' => __('Please enter a description, or add an image or a video', 'bit-connect'),
+
+    'Please enter a description or add an image' => __('Please enter a description or add an image', 'bit-connect'),
+
+    'Please enter a description or add a video' => __('Please enter a description or add a video', 'bit-connect'),
+
+    'Please enter a description' => __('Please enter a description', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    'The link you chose was already taken, so this topic is at /%s' => __('The link you chose was already taken, so this topic is at /%s', 'bit-connect'),
+    'Description cannot exceed %s characters' => __('Description cannot exceed %s characters', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'The link you chose was already taken, so this post is at /%s' => __('The link you chose was already taken, so this post is at /%s', 'bit-connect'),
 
     'Set a custom permalink' => __('Set a custom permalink', 'bit-connect'),
 
@@ -1362,11 +1605,11 @@ return [
 
     'Edit' => __('Edit', 'bit-connect'),
 
-    'topic-slug' => __('topic-slug', 'bit-connect'),
+    'post-slug' => __('post-slug', 'bit-connect'),
 
     'Done' => __('Done', 'bit-connect'),
 
-    'Links that already point at this topic will stop working.' => __('Links that already point at this topic will stop working.', 'bit-connect'),
+    'Links that already point at this post will stop working.' => __('Links that already point at this post will stop working.', 'bit-connect'),
 
     'Leave blank to build one from the title.' => __('Leave blank to build one from the title.', 'bit-connect'),
 
@@ -1374,25 +1617,23 @@ return [
 
     'Available' => __('Available', 'bit-connect'),
 
-    'That one is taken, so this topic will be saved as' => __('That one is taken, so this topic will be saved as', 'bit-connect'),
-
-    'Uploading files...' => __('Uploading files...', 'bit-connect'),
+    'That one is taken, so this post will be saved as' => __('That one is taken, so this post will be saved as', 'bit-connect'),
 
     'Submit' => __('Submit', 'bit-connect'),
 
-    'Create New Topic' => __('Create New Topic', 'bit-connect'),
+    'Uploading files...' => __('Uploading files...', 'bit-connect'),
+
+    'Create New Post' => __('Create New Post', 'bit-connect'),
 
     'Update' => __('Update', 'bit-connect'),
 
-    'Edit Topic' => __('Edit Topic', 'bit-connect'),
+    'Edit Post' => __('Edit Post', 'bit-connect'),
 
-    'Failed to upload image' => __('Failed to upload image', 'bit-connect'),
+    'Post title' => __('Post title', 'bit-connect'),
 
-    'Topic Title' => __('Topic Title', 'bit-connect'),
+    'Please enter a post title' => __('Please enter a post title', 'bit-connect'),
 
-    'Please enter a topic title' => __('Please enter a topic title', 'bit-connect'),
-
-    'Topic title cannot exceed 200 characters' => __('Topic title cannot exceed 200 characters', 'bit-connect'),
+    'Post title cannot exceed 200 characters' => __('Post title cannot exceed 200 characters', 'bit-connect'),
 
     'Write a post title' => __('Write a post title', 'bit-connect'),
 
@@ -1402,37 +1643,29 @@ return [
 
     'Slug must contain at least one letter or number' => __('Slug must contain at least one letter or number', 'bit-connect'),
 
-    'Topic Type' => __('Topic Type', 'bit-connect'),
+    'Please select a post category' => __('Please select a post category', 'bit-connect'),
 
-    'Please select a topic type' => __('Please select a topic type', 'bit-connect'),
+    'Select a Post Category' => __('Select a Post Category', 'bit-connect'),
 
-    'Select a Topic Type' => __('Select a Topic Type', 'bit-connect'),
+    'Write your post description...' => __('Write your post description...', 'bit-connect'),
 
-    'Write Your Topic Description Here' => __('Write Your Topic Description Here', 'bit-connect'),
+    'Not in the list? Type a new tag and press Enter. It is reviewed by a moderator before others can pick it.' => __('Not in the list? Type a new tag and press Enter. It is reviewed by a moderator before others can pick it.', 'bit-connect'),
 
-    'Please enter a description or add an image' => __('Please enter a description or add an image', 'bit-connect'),
+    'Select or type tags…' => __('Select or type tags…', 'bit-connect'),
 
-    'Please enter a description, or add an image or a video' => __('Please enter a description, or add an image or a video', 'bit-connect'),
+    'Select tags…' => __('Select tags…', 'bit-connect'),
 
-    'Please enter a description or add a video' => __('Please enter a description or add a video', 'bit-connect'),
+    'You can add only one video here.' => __('You can add only one video here.', 'bit-connect'),
 
-    'Please enter a description' => __('Please enter a description', 'bit-connect'),
-
-    'Please wait for the upload to finish' => __('Please wait for the upload to finish', 'bit-connect'),
-
-    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    'Description cannot exceed %s characters' => __('Description cannot exceed %s characters', 'bit-connect'),
-
-    'Write your topic description...' => __('Write your topic description...', 'bit-connect'),
-
-    'Tag' => __('Tag', 'bit-connect'),
-
-    'Select tags..' => __('Select tags..', 'bit-connect'),
+    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
+    'You can add up to %d videos here.' => __('You can add up to %d videos here.', 'bit-connect'),
 
     'You can add only one image here.' => __('You can add only one image here.', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     'You can add up to %d images here.' => __('You can add up to %d images here.', 'bit-connect'),
+
+    'Uploading video…' => __('Uploading video…', 'bit-connect'),
 
     'Normal text' => __('Normal text', 'bit-connect'),
 
@@ -1458,9 +1691,11 @@ return [
 
     'Underline' => __('Underline', 'bit-connect'),
 
-    'Apply link' => __('Apply link', 'bit-connect'),
+    'Type or paste a link' => __('Type or paste a link', 'bit-connect'),
 
     'Cancel link' => __('Cancel link', 'bit-connect'),
+
+    'Apply link' => __('Apply link', 'bit-connect'),
 
     'Insert link' => __('Insert link', 'bit-connect'),
 
@@ -1474,46 +1709,38 @@ return [
 
     'Edited by' => __('Edited by', 'bit-connect'),
 
-    'Search topic, tag, etc.' => __('Search topic, tag, etc.', 'bit-connect'),
-
-    'Search topics' => __('Search topics', 'bit-connect'),
-
-    'Close search' => __('Close search', 'bit-connect'),
-
-    'Search suggestions' => __('Search suggestions', 'bit-connect'),
-
     'Recent searches' => __('Recent searches', 'bit-connect'),
-
-    /* translators: %s: a past search term */
-    'Remove “%s” from recent searches' => __('Remove “%s” from recent searches', 'bit-connect'),
-
-    /* translators: %s: what the visitor typed into the search box */
-    'Search for “%s”' => __('Search for “%s”', 'bit-connect'),
-
-    /* translators: 1: what the visitor typed into the search box, 2: the board, tag or other term searched in */
-    'Search for “%1$s” in %2$s' => __('Search for “%1$s” in %2$s', 'bit-connect'),
-
-    '%1$s | Page %2$s' => __('%1$s | Page %2$s', 'bit-connect'),
-
-    /* translators: %s: the board, tag or other term the search is limited to */
-    'Search in %s' => __('Search in %s', 'bit-connect'),
-
-    /* translators: %s: the board, tag or other term the search is limited to */
-    'Search everywhere, not only in %s' => __('Search everywhere, not only in %s', 'bit-connect'),
-
-    'Searching…' => __('Searching…', 'bit-connect'),
 
     'Browse' => __('Browse', 'bit-connect'),
 
     'People' => __('People', 'bit-connect'),
 
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Search everywhere, not only in %s' => __('Search everywhere, not only in %s', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Search in %s' => __('Search in %s', 'bit-connect'),
+
+    'Search post, tag, etc.' => __('Search post, tag, etc.', 'bit-connect'),
+
+    /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Search for “%1$s” in %2$s' => __('Search for “%1$s” in %2$s', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Search for “%s”' => __('Search for “%s”', 'bit-connect'),
+
+    'Search suggestions' => __('Search suggestions', 'bit-connect'),
+
+    'Searching…' => __('Searching…', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Remove “%s” from recent searches' => __('Remove “%s” from recent searches', 'bit-connect'),
+
     'Newest' => __('Newest', 'bit-connect'),
 
     'Oldest' => __('Oldest', 'bit-connect'),
 
-    'Private' => __('Private', 'bit-connect'),
-
-    'My Topics' => __('My Topics', 'bit-connect'),
+    'My Posts' => __('My Posts', 'bit-connect'),
 
     'Filter by tag' => __('Filter by tag', 'bit-connect'),
 
@@ -1550,11 +1777,11 @@ return [
 
     'Password' => __('Password', 'bit-connect'),
 
-    'Forgot password?' => __('Forgot password?', 'bit-connect'),
-
     'Please enter your password' => __('Please enter your password', 'bit-connect'),
 
     'Enter your password' => __('Enter your password', 'bit-connect'),
+
+    'Forgot password?' => __('Forgot password?', 'bit-connect'),
 
     'Remember me' => __('Remember me', 'bit-connect'),
 
@@ -1640,19 +1867,45 @@ return [
 
     'We can’t find that page' => __('We can’t find that page', 'bit-connect'),
 
-    'The link may be broken, or the topic could have been moved or removed. Everything else in the community is still here.' => __('The link may be broken, or the topic could have been moved or removed. Everything else in the community is still here.', 'bit-connect'),
+    'The link is possibly broken, or someone moved or removed the post. Everything else in the community is still here.' => __('The link is possibly broken, or someone moved or removed the post. Everything else in the community is still here.', 'bit-connect'),
 
     'Back to the community' => __('Back to the community', 'bit-connect'),
+
+    'Posts and tags you follow. You get a notification when they have new activity.' => __('Posts and tags you follow. You get a notification when they have new activity.', 'bit-connect'),
+
+    'Sign in to see the posts and tags you follow.' => __('Sign in to see the posts and tags you follow.', 'bit-connect'),
+
+    'Failed to vote on post' => __('Failed to vote on post', 'bit-connect'),
+
+    'Browse posts' => __('Browse posts', 'bit-connect'),
+
+    'You do not follow any posts yet. Follow a post from its page, or take part in it.' => __('You do not follow any posts yet. Follow a post from its page, or take part in it.', 'bit-connect'),
+
+    'You do not follow any tags yet. Open a tag and follow it to get notified about its new posts.' => __('You do not follow any tags yet. Open a tag and follow it to get notified about its new posts.', 'bit-connect'),
+
+    '1 post' => __('1 post', 'bit-connect'),
+
+    'View posts' => __('View posts', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Unfollow %s' => __('Unfollow %s', 'bit-connect'),
 
     'My Profile' => __('My Profile', 'bit-connect'),
 
     'Log Out' => __('Log Out', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%s logo' => __('%s logo', 'bit-connect'),
+
+    'Community home' => __('Community home', 'bit-connect'),
 
     'Open menu' => __('Open menu', 'bit-connect'),
 
     'New' => __('New', 'bit-connect'),
 
     'Account menu' => __('Account menu', 'bit-connect'),
+
+    'Close search' => __('Close search', 'bit-connect'),
 
     'Main navigation' => __('Main navigation', 'bit-connect'),
 
@@ -1666,10 +1919,8 @@ return [
     'That is everything.' => __('That is everything.', 'bit-connect'),
 
     'Please log in to upload images.' => __('Please log in to upload images.', 'bit-connect'),
-    'Please log in to upload videos.' => __('Please log in to upload videos.', 'bit-connect'),
 
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    'Attachment limit reached (maximum %d files).' => __('Attachment limit reached (maximum %d files).', 'bit-connect'),
+    'Please log in to upload videos.' => __('Please log in to upload videos.', 'bit-connect'),
 
     'Your account does not have permission to comment.' => __('Your account does not have permission to comment.', 'bit-connect'),
 
@@ -1683,15 +1934,11 @@ return [
 
     'Pinned' => __('Pinned', 'bit-connect'),
 
-    'Singled out by the author of this topic' => __('Singled out by the author of this topic', 'bit-connect'),
+    'Singled out by the author of this post' => __('Singled out by the author of this post', 'bit-connect'),
 
     'Out of public view while a moderator reviews a report about it' => __('Out of public view while a moderator reviews a report about it', 'bit-connect'),
 
     'Reply' => __('Reply', 'bit-connect'),
-
-    'More actions' => __('More actions', 'bit-connect'),
-
-    'Hide' => __('Hide', 'bit-connect'),
 
     'Loading more...' => __('Loading more...', 'bit-connect'),
 
@@ -1704,8 +1951,6 @@ return [
     'Failed to load post' => __('Failed to load post', 'bit-connect'),
 
     'Failed to load settings' => __('Failed to load settings', 'bit-connect'),
-
-    'Failed to vote on post' => __('Failed to vote on post', 'bit-connect'),
 
     'Comment posted successfully' => __('Comment posted successfully', 'bit-connect'),
 
@@ -1723,7 +1968,9 @@ return [
 
     'Failed to delete comment' => __('Failed to delete comment', 'bit-connect'),
 
-    'This topic is locked. New comments are closed.' => __('This topic is locked. New comments are closed.', 'bit-connect'),
+    'This post is locked. Only moderators can comment.' => __('This post is locked. Only moderators can comment.', 'bit-connect'),
+
+    'This post is locked. New comments are closed.' => __('This post is locked. New comments are closed.', 'bit-connect'),
 
     'Log in to post a comment.' => __('Log in to post a comment.', 'bit-connect'),
 
@@ -1739,21 +1986,23 @@ return [
 
     'Delete Post' => __('Delete Post', 'bit-connect'),
 
-    'Topic locked. New comments are closed.' => __('Topic locked. New comments are closed.', 'bit-connect'),
+    'Post locked. New comments are closed.' => __('Post locked. New comments are closed.', 'bit-connect'),
 
-    'Topic unlocked. Members can comment again.' => __('Topic unlocked. Members can comment again.', 'bit-connect'),
+    'Post unlocked. Members can comment again.' => __('Post unlocked. Members can comment again.', 'bit-connect'),
 
-    'Failed to update the topic' => __('Failed to update the topic', 'bit-connect'),
+    'Failed to update the post' => __('Failed to update the post', 'bit-connect'),
 
-    'Unlock topic' => __('Unlock topic', 'bit-connect'),
+    'Unlock post' => __('Unlock post', 'bit-connect'),
 
-    'Lock topic' => __('Lock topic', 'bit-connect'),
+    'Lock post' => __('Lock post', 'bit-connect'),
 
-    'Topic stage' => __('Topic stage', 'bit-connect'),
+    'Post stage' => __('Post stage', 'bit-connect'),
 
-    'Topic status' => __('Topic status', 'bit-connect'),
+    'Post status' => __('Post status', 'bit-connect'),
 
     'Download' => __('Download', 'bit-connect'),
+
+    'Play' => __('Play', 'bit-connect'),
 
     'Open' => __('Open', 'bit-connect'),
 
@@ -1779,9 +2028,23 @@ return [
 
     'Share on social media' => __('Share on social media', 'bit-connect'),
 
-    'Topic details' => __('Topic details', 'bit-connect'),
+    'Post details' => __('Post details', 'bit-connect'),
 
-    'Related topics' => __('Related topics', 'bit-connect'),
+    'Related posts' => __('Related posts', 'bit-connect'),
+
+    'awaiting review' => __('awaiting review', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%s video player' => __('%s video player', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Play %s video' => __('Play %s video', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Loads the player from %s' => __('Loads the player from %s', 'bit-connect'),
+
+    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
+    'Open on %s' => __('Open on %s', 'bit-connect'),
 
     'Remove your upvote' => __('Remove your upvote', 'bit-connect'),
 
@@ -1789,25 +2052,24 @@ return [
 
     'Voting is not available to you' => __('Voting is not available to you', 'bit-connect'),
 
-    'All stages' => __('All stages', 'bit-connect'),
+    'Loading posts...' => __('Loading posts...', 'bit-connect'),
+
+    /* translators: %1$s, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$s | Page %2$s' => __('%1$s | Page %2$s', 'bit-connect'),
 
     'Failed to load posts' => __('Failed to load posts', 'bit-connect'),
 
     'Failed to load more posts' => __('Failed to load more posts', 'bit-connect'),
 
-    'Filters' => __('Filters', 'bit-connect'),
-
     'Remove filter' => __('Remove filter', 'bit-connect'),
+
+    'Clear all' => __('Clear all', 'bit-connect'),
 
     'Reset' => __('Reset', 'bit-connect'),
 
-    'Sort by' => __('Sort by', 'bit-connect'),
-
-    'Loading posts...' => __('Loading posts...', 'bit-connect'),
-
     'No posts found' => __('No posts found', 'bit-connect'),
 
-    '🎉 You\'re all caught up. That\'s every topic!' => __('🎉 You\'re all caught up. That\'s every topic!', 'bit-connect'),
+    '🎉 You saw all the posts.' => __('🎉 You saw all the posts.', 'bit-connect'),
 
     'Back to top' => __('Back to top', 'bit-connect'),
 
@@ -1893,6 +2155,8 @@ return [
 
     'Change profile picture' => __('Change profile picture', 'bit-connect'),
 
+    'replied to' => __('replied to', 'bit-connect'),
+
     'Could not update your cover' => __('Could not update your cover', 'bit-connect'),
 
     'Cover image updated' => __('Cover image updated', 'bit-connect'),
@@ -1906,8 +2170,6 @@ return [
 
     'Cover image' => __('Cover image', 'bit-connect'),
 
-    'Total Upvotes' => __('Total Upvotes', 'bit-connect'),
-
     'Top Liked Posts' => __('Top Liked Posts', 'bit-connect'),
 
     'Their most upvoted posts in this period' => __('Their most upvoted posts in this period', 'bit-connect'),
@@ -1916,13 +2178,15 @@ return [
 
     'Post Title' => __('Post Title', 'bit-connect'),
 
+    'Category' => __('Category', 'bit-connect'),
+
     'Likes' => __('Likes', 'bit-connect'),
 
-    '(no title)' => __('(no title)', 'bit-connect'),
+    'Replies' => __('Replies', 'bit-connect'),
 
-    'Topics Breakdown' => __('Topics Breakdown', 'bit-connect'),
+    'Posts by Category' => __('Posts by Category', 'bit-connect'),
 
-    'How their posts split across topic types' => __('How their posts split across topic types', 'bit-connect'),
+    'How their posts split across post categories' => __('How their posts split across post categories', 'bit-connect'),
 
     'No categorised posts in this period.' => __('No categorised posts in this period.', 'bit-connect'),
 
@@ -1941,13 +2205,13 @@ return [
 
     'not allowed' => __('not allowed', 'bit-connect'),
 
-    'Permissions' => __('Permissions', 'bit-connect'),
-
     'Set by your role and any per-member overrides an admin has applied.' => __('Set by your role and any per-member overrides an admin has applied.', 'bit-connect'),
 
     'What you can do' => __('What you can do', 'bit-connect'),
 
     'What this member can do' => __('What this member can do', 'bit-connect'),
+
+    'Please enter a valid URL' => __('Please enter a valid URL', 'bit-connect'),
 
     'Website' => __('Website', 'bit-connect'),
 
@@ -1983,8 +2247,6 @@ return [
 
     'Links' => __('Links', 'bit-connect'),
 
-    'Please enter a valid URL' => __('Please enter a valid URL', 'bit-connect'),
-
     'Profile' => __('Profile', 'bit-connect'),
 
     'Joined' => __('Joined', 'bit-connect'),
@@ -1995,11 +2257,7 @@ return [
 
     'No comments yet.' => __('No comments yet.', 'bit-connect'),
 
-    'No upvoted topics yet.' => __('No upvoted topics yet.', 'bit-connect'),
-
-    'Last 7 days' => __('Last 7 days', 'bit-connect'),
-
-    'Last 30 days' => __('Last 30 days', 'bit-connect'),
+    'No upvoted posts yet.' => __('No upvoted posts yet.', 'bit-connect'),
 
     'Last 12 months' => __('Last 12 months', 'bit-connect'),
 
@@ -2015,130 +2273,6 @@ return [
 
     'Profile sections' => __('Profile sections', 'bit-connect'),
 
-    'Period' => __('Period', 'bit-connect'),
-
-    'Used for the stage badge on topic cards.' => __('Used for the stage badge on topic cards.', 'bit-connect'),
-
-    'Clear all' => __('Clear all', 'bit-connect'),
-
-    /* translators: %d: how many comments the topic has. */
-    '%d comments' => __('%d comments', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    'See all %d' => __('See all %d', 'bit-connect'),
-
-    'You can now read' => __('You can now read', 'bit-connect'),
-
-    'asked to join' => __('asked to join', 'bit-connect'),
-
-    'Any status' => __('Any status', 'bit-connect'),
-
-    'Any stage' => __('Any stage', 'bit-connect'),
-
-    'Any type' => __('Any type', 'bit-connect'),
-
-    'Any visibility' => __('Any visibility', 'bit-connect'),
-
-    'Any author' => __('Any author', 'bit-connect'),
-
-    'Public' => __('Public', 'bit-connect'),
-
-    'Type a name' => __('Type a name', 'bit-connect'),
-
-    'No members found' => __('No members found', 'bit-connect'),
-
-    'Locked' => __('Locked', 'bit-connect'),
-
-    'Created' => __('Created', 'bit-connect'),
-
-    'No status' => __('No status', 'bit-connect'),
-
-    'No stage' => __('No stage', 'bit-connect'),
-
-    'Open in the portal' => __('Open in the portal', 'bit-connect'),
-
-    'No topics match.' => __('No topics match.', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d topics' => __('%d topics', 'bit-connect'),
-
-
-    'You cannot lock topics.' => __('You cannot lock topics.', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d selected' => __('%d selected', 'bit-connect'),
-
-    'Set…' => __('Set…', 'bit-connect'),
-
-    'Choose' => __('Choose', 'bit-connect'),
-
-    'Apply' => __('Apply', 'bit-connect'),
-
-    'Clear selection' => __('Clear selection', 'bit-connect'),
-
-    'Restore' => __('Restore', 'bit-connect'),
-
-
-
-    'Lock' => __('Lock', 'bit-connect'),
-
-    'Unlock' => __('Unlock', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d updated' => __('%d updated', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d already done' => __('%d already done', 'bit-connect'),
-
-    /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d could not be changed' => __('%d could not be changed', 'bit-connect'),
-
-    'Nothing changed.' => __('Nothing changed.', 'bit-connect'),
-
-    'The topics could not be loaded.' => __('The topics could not be loaded.', 'bit-connect'),
-
-    'Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.' => __('Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.', 'bit-connect'),
-
-    'Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.' => __('Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.', 'bit-connect'),
-
-    'Deleting removes the topics and every comment on them. This cannot be undone.' => __('Deleting removes the topics and every comment on them. This cannot be undone.', 'bit-connect'),
-
-    'Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.' => __('Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.', 'bit-connect'),
-
-    'What kind of post a topic is, like a question or a bug report. Authors pick one when they post.' => __('What kind of post a topic is, like a question or a bug report. Authors pick one when they post.', 'bit-connect'),
-
-    'The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.' => __('The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.', 'bit-connect'),
-
-    'Keywords that link related topics. Tags members suggest wait under Pending until you approve them.' => __('Keywords that link related topics. Tags members suggest wait under Pending until you approve them.', 'bit-connect'),
-
-    'Everyone with an account, and what each of them may do in the forum.' => __('Everyone with an account, and what each of them may do in the forum.', 'bit-connect'),
-
-    '%s tags' => __('%s tags', 'bit-connect'),
-
-    'Type or paste a link' => __('Type or paste a link', 'bit-connect'),
-
-    'Reload' => __('Reload', 'bit-connect'),
-
-    'Reloading the page usually fixes this.' => __('Reloading the page usually fixes this.', 'bit-connect'),
-
-    'This screen could not be loaded' => __('This screen could not be loaded', 'bit-connect'),
-
-    'Topic title' => __('Topic title', 'bit-connect'),
-
-    'Write a topic title' => __('Write a topic title', 'bit-connect'),
-
-    'Select or type tags…' => __('Select or type tags…', 'bit-connect'),
-
-    'Select tags…' => __('Select tags…', 'bit-connect'),
-
-    'This topic is locked. Only moderators can comment.' => __('This topic is locked. Only moderators can comment.', 'bit-connect'),
-
-    'Topic type name is required' => __('Topic type name is required', 'bit-connect'),
-
-    'For example, Question' => __('For example, Question', 'bit-connect'),
-
-    /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
-    '%s logo' => __('%s logo', 'bit-connect'),
-    'Community home' => __('Community home', 'bit-connect'),
+    'Period' => __('Period', 'bit-connect')
 ];
 /* THIS IS THE END OF THE GENERATED FILE */

@@ -167,7 +167,7 @@ export default function InsightsOverview({
                       {__('Post Title')}
                     </th>
                     <th className="bc-whitespace-nowrap bc-px-4 bc-py-3.5 bc-font-medium" scope="col">
-                      {__('Topic')}
+                      {__('Category')}
                     </th>
                     <th
                       className="bc-whitespace-nowrap bc-px-4 bc-py-3.5 bc-text-right bc-font-medium"
@@ -219,10 +219,10 @@ export default function InsightsOverview({
           )}
         </section>
 
-        <section aria-label={__('Topics Breakdown')} className={CARD}>
+        <section aria-label={__('Posts by Category')} className={CARD}>
           <SectionHeader
-            subtitle={__('How their posts split across topic types')}
-            title={__('Topics Breakdown')}
+            subtitle={__('How their posts split across post categories')}
+            title={__('Posts by Category')}
           />
 
           <div className="bc-flex bc-flex-col bc-gap-5 bc-px-5 bc-pb-5">

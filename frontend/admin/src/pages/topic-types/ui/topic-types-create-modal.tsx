@@ -51,11 +51,11 @@ export default function TopicTypesCreateModal() {
       // close, so the Form instance created above is always connected to a
       // <Form>; antd warns otherwise when fields are reset while it is closed.
       forceRender
-      okText={__('Create Topic Type')}
+      okText={__('Create Post Category')}
       onCancel={handleCancel}
       onOk={handleOk}
       open={isTopicTypeModalOpen}
-      title={__('Create Topic Type')}
+      title={__('Create Post Category')}
     >
       <ProductForm form={form} open={isTopicTypeModalOpen} />
       {errorMessage && <Alert message={errorMessage} type="error" />}

@@ -21,7 +21,7 @@ export default function StageProgress({ className, hues, period, stages }: Stage
       className={className}
       flush
       link={{ label: __('Stages'), to: 'stages' }}
-      subtitle={sprintf(__('%1$d topics across your %2$d stages'), total, stages.length)}
+      subtitle={sprintf(__('%1$d posts across your %2$d stages'), total, stages.length)}
       title={__('Stage progress')}
     >
       <div className="bc-flex bc-flex-1 bc-flex-col bc-px-6 bc-pb-4 bc-pt-6">

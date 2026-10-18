@@ -16,12 +16,12 @@ export default function TopicTypes() {
       <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
         <div className="bc-min-w-0">
           <Title className="bc-mb-0" level={3}>
-            {__('Topic Types')}
+            {__('Post Categories')}
           </Title>
-          <Text type="secondary">{__('What kind of post a topic is, like a question or a bug report. Authors pick one when they post.')}</Text>
+          <Text type="secondary">{__('The category of each post, like a question or a bug report. Authors select one when they create a post.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsTopicTypeCreateModalOpen(true)} type="primary">
-          {__('Add topic type')}
+          {__('Add post category')}
         </Button>
       </div>
 

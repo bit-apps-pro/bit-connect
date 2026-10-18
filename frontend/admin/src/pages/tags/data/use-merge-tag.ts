@@ -37,8 +37,8 @@ export default function useMergeTag() {
     onSuccess: response => {
       const moved = response?.data?.moved ?? 0
       messageApi?.success(
-        // translators: %s: number of topics
-        sprintf(__('Tag merged. %s topics were re-filed.'), String(moved))
+        // translators: %s: number of posts
+        sprintf(__('Tag merged. %s posts moved to the new tag.'), String(moved))
       )
       queryClient.invalidateQueries({ queryKey: ['tags'] })
     }

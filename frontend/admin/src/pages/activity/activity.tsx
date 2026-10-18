@@ -65,7 +65,7 @@ function EmptyLog({ isFiltered }: { isFiltered: boolean }) {
       </Text>
       <Text className="bc-max-w-md bc-text-sm" type="secondary">
         {isFiltered
-          ? __('Try a wider search. A topic and a comment can have the same ID, so check the type too.')
+          ? __('Try a wider search. A post and a comment can have the same ID, so check the type too.')
           : __('Rows appear when someone acts on content they did not write.')}
       </Text>
     </div>
@@ -136,7 +136,7 @@ export default function Activity() {
           className="bc-min-w-[160px]"
           onChange={value => setFilter({ target_type: value })}
           options={[
-            { label: __('Topics'), value: 'post' },
+            { label: __('Posts'), value: 'post' },
             { label: __('Comments'), value: 'comment' }
           ]}
           placeholder={__('Any content type')}
@@ -174,7 +174,7 @@ export default function Activity() {
             topic by a phrase nobody can look up any more. The id is stable, it
             is printed on every row, and it is the handle a moderator already has
             when someone asks what happened to their post. */}
-        <Tooltip title={__('IDs are unique per type, so a topic and a comment can have the same one.')}>
+        <Tooltip title={__('IDs are unique per type, so a post and a comment can have the same one.')}>
           <Input
             allowClear
             className="bc-max-w-[200px]"
@@ -183,7 +183,7 @@ export default function Activity() {
               const digits = event.target.value.replaceAll(/\D/g, '')
               setFilter({ target_id: digits === '' ? undefined : Number(digits) })
             }}
-            placeholder={__('Topic or comment ID')}
+            placeholder={__('Post or comment ID')}
             prefix={<LuSearch aria-hidden className="bc-text-ink-subtle" />}
             value={filters.target_id ?? ''}
           />

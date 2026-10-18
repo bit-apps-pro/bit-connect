@@ -50,10 +50,10 @@ final class UpdateTopicRequest extends Request
     public function failedAuthorizationMessage(): string
     {
         if (!is_user_logged_in()) {
-            return 'You must be logged in to edit this topic.';
+            return 'You must be logged in to edit this post.';
         }
 
-        return 'You do not have permission to edit this topic.';
+        return 'You do not have permission to edit this post.';
     }
 
     public function rules()
@@ -90,20 +90,20 @@ final class UpdateTopicRequest extends Request
     public function messages()
     {
         return [
-            'id.required'           => 'The topic ID is required.',
-            'id.integer'            => 'The topic ID must be a valid integer.',
-            'id.min'                => 'The topic ID must be at least 1.',
-            'post_title.max'        => 'The topic title cannot exceed 200 characters.',
-            'post_name.string'      => 'The topic slug must be a string.',
-            'post_name.max'         => 'The topic slug cannot exceed 200 characters.',
-            'post_content.max'      => 'The topic description is too long.',
-            'topic-types.*.integer' => 'Each topic type must be a valid ID.',
-            'topic-types.*.min'     => 'Each topic type ID must be at least 1.',
+            'id.required'           => 'The post ID is required.',
+            'id.integer'            => 'The post ID must be a valid integer.',
+            'id.min'                => 'The post ID must be at least 1.',
+            'post_title.max'        => 'The post title cannot exceed 200 characters.',
+            'post_name.string'      => 'The post slug must be a string.',
+            'post_name.max'         => 'The post slug cannot exceed 200 characters.',
+            'post_content.max'      => 'The post description is too long.',
+            'topic-types.*.integer' => 'Each post category must be a valid ID.',
+            'topic-types.*.min'     => 'Each post category ID must be at least 1.',
             'stages.*.integer'      => 'Each stage must be a valid ID.',
             'stages.*.min'          => 'Each stage ID must be at least 1.',
             'statuses.*.integer'    => 'Each status must be a valid ID.',
             'statuses.*.min'        => 'Each status ID must be at least 1.',
-            'tags.max'              => \sprintf('A topic may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING),
+            'tags.max'              => \sprintf('A post may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING),
             'tags.*.integer'        => \sprintf('Each tag must be a tag from the list or a name of up to %d characters.', TagResolverService::MAX_NAME_LENGTH),
         ];
     }

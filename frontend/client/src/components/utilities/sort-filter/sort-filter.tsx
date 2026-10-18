@@ -1,5 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useHasPrivateTopics from '@features/topic-modal/data/use-private-topics-available'
+import { deleteFilter, readFilter, urlParam } from '@utils/portal-query'
 import { Select } from 'antd'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
@@ -35,7 +36,7 @@ export default function SortFilter({
     // Only a list this control offers: a stale `?view=` must not show as a raw value.
     const view = searchParams.get('view')
     if (view && views.some(offered => offered.value === view)) return VIEW_PREFIX + view
-    if (searchParams.get('my_topics') === 'true') return 'my_topics'
+    if (readFilter(searchParams, 'my_topics') === 'true') return 'my_topics'
     if (searchParams.get('visibility') === 'private') return 'private'
     return searchParams.get('sort') ?? 'newest'
   })()
@@ -47,7 +48,7 @@ export default function SortFilter({
       }
 
       for (const key of FILTER_KEYS) {
-        prev.delete(key)
+        deleteFilter(prev, key)
       }
 
       if (value.startsWith(VIEW_PREFIX)) {
@@ -55,7 +56,7 @@ export default function SortFilter({
       } else if (value === 'private') {
         prev.set('visibility', 'private')
       } else if (value === 'my_topics') {
-        prev.set('my_topics', 'true')
+        prev.set(urlParam('my_topics'), 'true')
       } else if (value === 'oldest') {
         prev.set('sort', 'oldest')
       }
@@ -77,7 +78,7 @@ export default function SortFilter({
       ...(isLoggedIn && (hasPrivateTopics || currentValue === 'private')
         ? [{ label: __('Private'), value: 'private' }]
         : []),
-      ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : []),
+      ...(isLoggedIn ? [{ label: __('My Posts'), value: 'my_topics' }] : []),
       ...views.map(view => ({ label: view.label, value: VIEW_PREFIX + view.value }))
     ],
     [isLoggedIn, hasPrivateTopics, currentValue, views]

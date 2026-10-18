@@ -58,7 +58,7 @@ final class ContentVisibilityService
                 'exclude_from_search'       => true,
                 'show_in_admin_all_list'    => false,
                 'show_in_admin_status_list' => true,
-                // translators: %s: number of hidden topics
+                // translators: %s: number of hidden posts
                 'label_count' => _n_noop(
                     'Hidden pending review <span class="count">(%s)</span>',
                     'Hidden pending review <span class="count">(%s)</span>',

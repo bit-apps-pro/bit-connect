@@ -200,11 +200,12 @@ const promo = getServerVariable('promo', {}) ?? {}
 
 // This plugin's own archives. Missing from the server variables only during
 // the SSR prerender, where these stand in.
+// Keyed by URL segment, as PortalTaxonomies::slugFor() serves them.
 const ownArchives: Record<string, PortalArchive> = {
+  'post-category': { filter: 'topic-types', follow: '', label: 'Post Category', taxonomy: 'bit-connect-topic-types' },
   stage: { filter: 'stages', follow: '', label: 'Stage', taxonomy: 'bit-connect-stages' },
   status: { filter: 'statuses', follow: '', label: 'Status', taxonomy: 'bit-connect-statuses' },
-  tag: { filter: 'tags', follow: 'tag', label: 'Tag', taxonomy: 'bit-connect-tags' },
-  topic: { filter: 'topic-types', follow: '', label: 'Topic Type', taxonomy: 'bit-connect-topic-types' }
+  tag: { filter: 'tags', follow: 'tag', label: 'Tag', taxonomy: 'bit-connect-tags' }
 }
 
 const config = {

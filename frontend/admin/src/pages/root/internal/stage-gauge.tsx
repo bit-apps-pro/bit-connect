@@ -103,7 +103,7 @@ export default function StageGauge({ hues, stages }: StageGaugeProps) {
     <div className="bc-mx-auto bc-w-full bc-max-w-80">
       <svg
         aria-label={sprintf(
-          __('%d topics: %s'),
+          __('%d posts: %s'),
           total,
           stages.map(stage => `${stage.name} ${stage.count}`).join(', ')
         )}
@@ -128,7 +128,7 @@ export default function StageGauge({ hues, stages }: StageGaugeProps) {
             narrow card. */}
         <g aria-hidden className="bc-fill-current" textAnchor="middle">
           <text className="bc-text-ink-muted" fontSize={12} x={CX} y={66}>
-            {__('Total topics')}
+            {__('Total posts')}
           </text>
           <text className="bc-font-bold bc-text-ink" fontSize={38} x={CX} y={CY - 4}>
             {total.toLocaleString()}

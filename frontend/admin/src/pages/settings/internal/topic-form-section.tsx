@@ -20,14 +20,14 @@ interface TopicFormSectionProps {
 export default function TopicFormSection({ disabled = false, onChange, value }: TopicFormSectionProps) {
   return (
     <SectionCard
-      subtitle={__('Choose what people fill in when they create a topic, besides its title and text.')}
-      title={__('Topic form')}
+      subtitle={__('Choose what people fill in when they create a post, in addition to its title and text.')}
+      title={__('Post form')}
     >
       <div className="bc-flex bc-flex-col bc-gap-3">
         <FieldModeRow
-          description={__('What kind of post it is, such as a question or a bug report.')}
+          description={__('The category of the post, such as a question or a bug report.')}
           disabled={disabled}
-          label={__('Topic type')}
+          label={__('Post category')}
           onChange={mode => onChange('topicType', mode)}
           value={value.topicType}
         />

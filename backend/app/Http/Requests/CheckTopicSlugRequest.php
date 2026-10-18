@@ -35,10 +35,10 @@ final class CheckTopicSlugRequest extends Request
     public function failedAuthorizationMessage(): string
     {
         if (!is_user_logged_in()) {
-            return 'You must be logged in to check a topic slug.';
+            return 'You must be logged in to check a post slug.';
         }
 
-        return 'You do not have permission to check a topic slug.';
+        return 'You do not have permission to check a post slug.';
     }
 
     /**
@@ -58,11 +58,11 @@ final class CheckTopicSlugRequest extends Request
     public function messages()
     {
         return [
-            'slug.required'    => 'The topic slug is required.',
-            'slug.string'      => 'The topic slug must be a string.',
-            'slug.max'         => 'The topic slug cannot exceed 200 characters.',
-            'topic_id.integer' => 'The topic ID must be a valid integer.',
-            'topic_id.min'     => 'The topic ID must be at least 1.',
+            'slug.required'    => 'The post slug is required.',
+            'slug.string'      => 'The post slug must be a string.',
+            'slug.max'         => 'The post slug cannot exceed 200 characters.',
+            'topic_id.integer' => 'The post ID must be a valid integer.',
+            'topic_id.min'     => 'The post ID must be at least 1.',
         ];
     }
 }

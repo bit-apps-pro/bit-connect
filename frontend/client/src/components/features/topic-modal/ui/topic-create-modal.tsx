@@ -124,7 +124,7 @@ export default function TopicCreateModal() {
         },
         mask: TOPIC_MODAL_MASK
       }}
-      title={__('Create New Topic')}
+      title={__('Create New Post')}
       width={TOPIC_MODAL_WIDTH}
     >
       {isFormShown && <TopicForm form={form} taxonomies={taxonomies} />}

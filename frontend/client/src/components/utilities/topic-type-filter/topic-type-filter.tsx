@@ -1,5 +1,6 @@
 import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
+import { deleteFilter, readFilter, urlParam } from '@utils/portal-query'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
@@ -39,7 +40,7 @@ export default function TopicTypeFilter({
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const allTypes = useTaxonomiesStoreSelect()?.['bit-connect-topic-types'] || []
-  const current = searchParams.get('topic-types') || ''
+  const current = readFilter(searchParams, 'topic-types')
   const used = useTopicTypesUsed(scope)
   const topicTypes = used ? allTypes.filter(type => used.includes(type.slug) || type.slug === current) : allTypes
 
@@ -73,11 +74,10 @@ export default function TopicTypeFilter({
 
   const select = (slug: string) =>
     setSearchParams(prev => {
-      if (slug) {
-        prev.set('topic-types', slug)
-      } else {
-        prev.delete('topic-types')
-      }
+      // Both names cleared first, so an old `?topic-types=` link does not keep
+      // a second value beside the new one.
+      deleteFilter(prev, 'topic-types')
+      if (slug) prev.set(urlParam('topic-types'), slug)
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -95,7 +95,7 @@ export default function TopicTypeFilter({
   // since a scrolling box clips anything past its edges.
   return (
     <div
-      aria-label={__('Topic type')}
+      aria-label={__('Post category')}
       className={cn([
         'bc-flex bc-items-center bc-gap-2',
         isStrip

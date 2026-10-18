@@ -345,7 +345,7 @@ final class PortalSitemapPagingTest extends TestCase
         }
 
         $this->assertSame(
-            [['loc' => 'https://example.com/community/topic/billing']],
+            [['loc' => 'https://example.com/community/post-category/billing']],
             PortalSitemap::urls('topic', 1)
         );
     }

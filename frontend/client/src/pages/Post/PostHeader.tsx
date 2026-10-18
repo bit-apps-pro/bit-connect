@@ -243,12 +243,12 @@ export default function PostHeader({
       setPost({ ...post, is_locked: updatedTopic?.is_locked ?? nextLocked })
       notificationApi?.success({
         message: nextLocked
-          ? __('Topic locked. New comments are closed.')
-          : __('Topic unlocked. Members can comment again.')
+          ? __('Post locked. New comments are closed.')
+          : __('Post unlocked. Members can comment again.')
       })
     } catch (error_) {
       notificationApi?.error({
-        message: (error_ as { message?: string })?.message ?? __('Failed to update the topic')
+        message: (error_ as { message?: string })?.message ?? __('Failed to update the post')
       })
     } finally {
       setIsLocking(false)
@@ -306,7 +306,7 @@ export default function PostHeader({
       items.push({
         icon: post.is_locked ? <LuLockOpen /> : <LuLock />,
         key: 'lock',
-        label: post.is_locked ? __('Unlock topic') : __('Lock topic'),
+        label: post.is_locked ? __('Unlock post') : __('Lock post'),
         onClick: handleToggleLock
       })
     }
@@ -382,7 +382,7 @@ export default function PostHeader({
     <div className="bc-flex bc-max-w-full bc-flex-wrap bc-items-center bc-gap-2">
       {canModerate && (
         <Select
-          aria-label={__('Topic stage')}
+          aria-label={__('Post stage')}
           className="bc-max-w-full"
           disabled={isUpdatingStage}
           loading={isStageLoading}
@@ -390,14 +390,14 @@ export default function PostHeader({
           options={stageOptions}
           popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
-          title={__('Topic stage')}
+          title={__('Post stage')}
           value={post.terms.stages?.term_id}
           variant="filled"
         />
       )}
       {canModerate ? (
         <Select
-          aria-label={__('Topic status')}
+          aria-label={__('Post status')}
           className="bc-max-w-full"
           disabled={isUpdatingStatus}
           loading={isLoading}
@@ -405,7 +405,7 @@ export default function PostHeader({
           options={statusOptions}
           popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
-          title={__('Topic status')}
+          title={__('Post status')}
           value={post.terms.statuses?.term_id}
           variant="filled"
         />

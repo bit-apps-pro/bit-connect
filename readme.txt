@@ -8,67 +8,67 @@ Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Build a community, forum, feedback portal and public roadmap with topics, profiles, votes, discussions, notifications and moderation.
+Build a community, forum, feedback portal and public roadmap with posts, profiles, votes, discussions, notifications and moderation.
 
 == Description ==
 
 **Bit Connect is a community plugin and forum plugin for building discussion forums, customer communities, feedback portals and public roadmaps directly on your WordPress website.**
 
-Members can create topics, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap by organizing topics with topic types, tags, stages and statuses.
+Members can create posts, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap. They can organize posts with post categories, tags, stages and statuses.
 
 = Bit Connect Features =
 
 * **Front-end community portal:** Create a dedicated community or discussion forum on your own website.
 * **Public or members-only community:** Allow everyone to view the portal or limit access to logged-in members.
-* **Topics and discussions:** Members can create topics and, when permitted, edit or delete their own posts.
+* **Posts and discussions:** Members can create posts. If permitted, they can edit or delete their own posts.
 * **Comments and threaded replies:** Keep conversations organized with nested replies.
-* **@mentions:** Mention other members inside topics and replies.
-* **Topic upvotes:** Let members vote on ideas, questions and feature requests.
-* **Feature requests and roadmap:** Collect ideas and feedback and move topics through stages and statuses.
-* **Topic organization:** Use topic types, tags, stages and statuses.
+* **@mentions:** Mention other members inside posts and replies.
+* **Post upvotes:** Let members vote on ideas, questions and feature requests.
+* **Feature requests and roadmap:** Collect ideas and feedback and move posts through stages and statuses.
+* **Post organization:** Use post categories, tags, stages and statuses.
 * **Search, sorting and filters:** Help members find relevant community discussions.
-* **Attachments:** Allow supported files on topics and replies.
-* **Following:** Members can follow topics, tags or the whole community.
+* **Attachments:** Allow supported files on posts and replies.
+* **Following:** Members can follow posts, tags or the whole community.
 * **Member profiles:** Profile photo, cover image, display name, profile URL, bio and supported social/profile links.
-* **Member activity:** Surface topics, comments and upvoted content from profile areas.
+* **Member activity:** Surface posts, comments and upvoted content from profile areas.
 * **In-app and email notifications:** Keep members updated on supported community events and let them manage available notification preferences.
 * **Authentication:** Built-in login, signup, email verification, password recovery, password changes and email changes.
 * **Custom authentication URLs:** Use an existing login or registration page when needed.
-* **Content reporting:** Let logged-in members report inappropriate topics or replies.
+* **Content reporting:** Let logged-in members report inappropriate posts or replies.
 * **Moderation queue:** Review reports and take action on community content.
-* **Moderation controls:** Remove content, pin useful topics, lock discussions and review moderation activity.
+* **Moderation controls:** Remove content, pin useful posts, lock discussions and review moderation activity.
 * **Role-based permissions:** Control who can post, reply, vote, moderate, pin, lock or manage the community.
-* **Community dashboard:** Track topics, comments, members, votes, monthly activity, top topics and recent topics.
+* **Community dashboard:** Track posts, comments, members, votes, monthly activity, top posts and recent posts.
 * **Community branding:** Set the community title, logo and portal options.
 * **Community SEO:** Server-rendered portal content, titles, descriptions, canonical URLs, social tags, structured data, archive controls and community sitemaps.
 
 = Easy Community Management =
 
-Run your community from one place. Manage topics, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress.
+Run your community from one place. Manage posts, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress.
 
 = User-Friendly Community Dashboard =
 
-See what is happening across your community from a simple dashboard. Track total topics, comments, members and votes, review monthly activity, find top discussions and check recent topics so you can understand how your community forum is growing and where members engage most.
+See what is happening across your community from a simple dashboard. Track total posts, comments, members and votes, review monthly activity, find top discussions and check recent posts so you can understand how your community forum is growing and where members engage most.
 
 = Member Profiles =
 
-Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their topics, comments and activity across the community forum in one place.
+Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their posts, comments and activity across the community forum in one place.
 
 = Organized Discussions and Engagement =
 
-Create an easy-to-follow discussion forum with topics, threaded replies, @mentions, attachments, search, filters and topic upvotes. Members can ask questions, share ideas and join conversations, while the most popular topics rise to the top and good discussions stay easier to find, follow and revisit.
+Create an easy-to-follow discussion forum with posts, threaded replies, @mentions, attachments, search, filters and post upvotes. Members can ask questions, share ideas and join conversations, while the most popular posts rise to the top and good discussions stay easier to find, follow and revisit.
 
 = Feature Requests and Public Roadmaps =
 
-Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote topics, while you organize feedback by type, tag, stage and status so everyone can follow progress clearly.
+Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote posts, while you organize feedback by category, tag, stage and status so everyone can follow progress clearly.
 
 = Following and Notifications =
 
-Keep members connected to the conversations that matter. Users can follow topics, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, topic activity and other relevant community updates automatically.
+Keep members connected to the conversations that matter. Users can follow posts, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, post activity and other relevant community updates automatically.
 
 = Moderation and Role Permissions =
 
-Keep your forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content, pin useful topics and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community.
+Keep your forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content, pin useful posts and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community.
 
 = SEO-Ready Community Content =
 
@@ -149,11 +149,11 @@ Alternatively, you can download the plugin zip file from [its WordPress.org page
 
 = Is Bit Connect a forum plugin or community plugin? =
 
-Both. Bit Connect includes forum-style topics, comments and threaded replies while also supporting customer communities, product discussions, feature requests, feedback and public roadmaps.
+Both. Bit Connect includes forum-style posts, comments and threaded replies while also supporting customer communities, product discussions, feature requests, feedback and public roadmaps.
 
 = Can I use Bit Connect for feature requests and a public roadmap? =
 
-Yes. Members can submit ideas and feedback, discuss requests and upvote topics. You can organize them with topic types, tags, stages and statuses.
+Yes. Members can submit ideas and feedback, discuss requests and upvote posts. You can organize them with post categories, tags, stages and statuses.
 
 = Can I use Bit Connect for a SaaS or product community? =
 
@@ -165,7 +165,7 @@ Yes. Bit Connect can be used as a discussion and community area for learners, me
 
 = Can I make the community members-only? =
 
-Yes. The portal can be public or limited to logged-in users. Role-based capabilities control who can create topics, reply, vote, moderate or manage the community.
+Yes. The portal can be public or limited to logged-in users. Role-based capabilities control who can create posts, reply, vote, moderate or manage the community.
 
 = Does Bit Connect include member profiles and notifications? =
 

@@ -17,11 +17,11 @@ const PAGE_SIZE = 20
 
 /** What deleting this tag does to the topics under it. */
 const deleteWarning = (tag: Tag) => {
-  if (tag.count === 0) return __('No topic uses this tag.')
+  if (tag.count === 0) return __('No post uses this tag.')
 
   return sprintf(
-    // translators: %s: number of topics
-    __('%s topics use this tag. They will keep their other tags. To keep them together, merge instead.'),
+    // translators: %s: number of posts
+    __('%s posts use this tag. They will keep their other tags. To keep them together, merge instead.'),
     String(tag.count)
   )
 }
@@ -29,9 +29,9 @@ const deleteWarning = (tag: Tag) => {
 /** Deleting a suggestion is how it is turned down. */
 const rejectWarning = (tag: Tag) =>
   sprintf(
-    // translators: 1: who suggested the tag, 2: number of topics
+    // translators: 1: who suggested the tag, 2: number of posts
     __(
-      'Turns down the tag %1$s suggested. The %2$s topics carrying it keep their other tags. To fold it into an existing tag instead, merge.'
+      'Rejects the tag that %1$s suggested. The %2$s posts with this tag keep their other tags. To combine it with an existing tag, merge instead.'
     ),
     tag.created_by || __('a member'),
     String(tag.count)
@@ -127,7 +127,7 @@ export default function TagsTable({ search = '', view = 'all' }: { search?: stri
       dataIndex: 'count',
       key: 'count',
       sorter: (a, b) => a.count - b.count,
-      title: __('Topics'),
+      title: __('Posts'),
       width: 100
     },
     {

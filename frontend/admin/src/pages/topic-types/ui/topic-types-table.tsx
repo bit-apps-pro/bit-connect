@@ -43,7 +43,7 @@ export default function TopicTypesTable() {
       ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
-      title: __('Topic Type Name')
+      title: __('Category Name')
     },
     {
       dataIndex: 'color',
@@ -83,7 +83,7 @@ export default function TopicTypesTable() {
       render: (_, record) => (
         <div className="bc-flex bc-gap-2 bc-justify-center bc-items-center">
           <Button
-            aria-label={__('Edit topic type')}
+            aria-label={__('Edit post category')}
             className="hover:bc-text-blue-600"
             icon={<LuPencilLine />}
             onClick={() => handleEdit(record.id)}
@@ -95,10 +95,10 @@ export default function TopicTypesTable() {
             okButtonProps={{ danger: true }}
             okText={__('Delete')}
             onConfirm={() => handleDelete(record.id)}
-            title={__('Delete Topic Type')}
+            title={__('Delete Post Category')}
           >
             <Button
-              aria-label={__('Delete topic type')}
+              aria-label={__('Delete post category')}
               danger
               disabled={isDeletingTopicType}
               icon={<LuTrash2 />}

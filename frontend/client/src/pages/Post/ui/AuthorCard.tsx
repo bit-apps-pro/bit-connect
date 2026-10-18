@@ -90,7 +90,7 @@ export default function AuthorCard({ topic }: { topic: Topic }) {
           // Tinted strip so the numbers read as a unit rather than three
           // floating figures, with hairline separators between them.
           <div className="bc-mt-4 bc-flex bc-items-stretch bc-rounded-lg bc-bg-surface-sunken bc-py-3">
-            <Stat label={__('Topics')} value={formatCount(stats.topics)} />
+            <Stat label={__('Posts')} value={formatCount(stats.topics)} />
             <span className="bc-w-px bc-self-center bc-bg-surface-raised" style={{ height: 26 }} />
             <Stat label={__('Comments')} value={formatCount(stats.comments)} />
             <span className="bc-w-px bc-self-center bc-bg-surface-raised" style={{ height: 26 }} />

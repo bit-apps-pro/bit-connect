@@ -93,8 +93,8 @@
           box(
             'toolbar',
             {},
-            box('search', {}, __('Search topics…', 'bit-connect')),
-            box('button', {}, __('New topic', 'bit-connect'))
+            box('search', {}, __('Search posts…', 'bit-connect')),
+            box('button', {}, __('New post', 'bit-connect'))
           ),
           box(
             'types',

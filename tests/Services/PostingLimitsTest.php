@@ -116,7 +116,7 @@ final class PostingLimitsTest extends TestCase
         $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['attachments' => 5]];
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('You can attach up to 5 files to a topic.');
+        $this->expectExceptionMessage('You can attach up to 5 files to a post.');
 
         PostingLimits::assertWithin('topic', '', [1, 2, 3, 4, 5, 6]);
     }
@@ -125,7 +125,7 @@ final class PostingLimitsTest extends TestCase
     {
         $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['images' => 1]];
 
-        $this->expectExceptionMessage('You can add only 1 image to a topic.');
+        $this->expectExceptionMessage('You can add only 1 image to a post.');
 
         PostingLimits::assertWithin('topic', '<img src="a.png"><img src="b.png">', []);
     }
@@ -134,7 +134,7 @@ final class PostingLimitsTest extends TestCase
     {
         $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['attachments' => 0]];
 
-        $this->expectExceptionMessage('Files cannot be attached to a topic.');
+        $this->expectExceptionMessage('Files cannot be attached to a post.');
 
         PostingLimits::assertWithin('topic', '', [1]);
     }
@@ -197,7 +197,7 @@ final class PostingLimitsTest extends TestCase
         // One in the text and one attached: two, within the limit.
         PostingLimits::assertWithin('topic', $inline, [1, 2]);
 
-        $this->expectExceptionMessage('You can add up to 2 videos to a topic.');
+        $this->expectExceptionMessage('You can add up to 2 videos to a post.');
         PostingLimits::assertWithin('topic', $inline . '<VIDEO src="b.mp4"></VIDEO>', [1, 2]);
     }
 
@@ -214,7 +214,7 @@ final class PostingLimitsTest extends TestCase
         $GLOBALS['__wp_filters']['bit_connect_posting_limits'] = ['topic' => ['videos' => 0]];
         $GLOBALS['__wp_mime_types'] = [1 => 'video/quicktime'];
 
-        $this->expectExceptionMessage('Videos cannot be added to a topic.');
+        $this->expectExceptionMessage('Videos cannot be added to a post.');
         PostingLimits::assertWithin('topic', null, [1]);
     }
 
