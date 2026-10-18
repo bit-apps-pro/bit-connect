@@ -7,9 +7,9 @@ import DashboardCard from './dashboard-card'
 
 /** One whole string per period, as the other period labels are. */
 function startedLabel(period: DashboardPeriod): string {
-  if (period === '7d') return __('Topics started this week')
-  if (period === '12m') return __('Topics started this year')
-  return __('Topics started this month')
+  if (period === '7d') return __('Posts created this week')
+  if (period === '12m') return __('Posts created this year')
+  return __('Posts created this month')
 }
 
 interface ResponseTimeProps {
@@ -36,7 +36,7 @@ export default function ResponseTime({ className, period, response }: ResponseTi
     >
       {response.topics === 0 ? (
         <p className="bc-m-0 bc-py-6 bc-text-center bc-text-sm bc-text-ink-subtle">
-          {__('No topics were started in this period.')}
+          {__('Nobody created a post in this period.')}
         </p>
       ) : (
         <div className="bc-flex bc-flex-col bc-gap-5">
@@ -65,8 +65,8 @@ export default function ResponseTime({ className, period, response }: ResponseTi
             />
             <div className="bc-text-xs bc-text-ink-subtle">
               {promptShare === undefined
-                ? __('Counted once a topic is a day old.')
-                : sprintf(__('%1$d of %2$d topics at least a day old'), response.answeredPromptly, response.promptEligible)}
+                ? __('This counts each post when it is one day old.')
+                : sprintf(__('%1$d of %2$d posts at least a day old'), response.answeredPromptly, response.promptEligible)}
             </div>
           </div>
         </div>

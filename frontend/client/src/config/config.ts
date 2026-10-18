@@ -204,7 +204,7 @@ const ownArchives: Record<string, PortalArchive> = {
   stage: { filter: 'stages', follow: '', label: 'Stage', taxonomy: 'bit-connect-stages' },
   status: { filter: 'statuses', follow: '', label: 'Status', taxonomy: 'bit-connect-statuses' },
   tag: { filter: 'tags', follow: 'tag', label: 'Tag', taxonomy: 'bit-connect-tags' },
-  topic: { filter: 'topic-types', follow: '', label: 'Topic Type', taxonomy: 'bit-connect-topic-types' }
+  topic: { filter: 'topic-types', follow: '', label: 'Topic', taxonomy: 'bit-connect-topic-types' }
 }
 
 const config = {

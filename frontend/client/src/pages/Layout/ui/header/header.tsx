@@ -279,7 +279,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
               // field's end, where the eye already is.
               <Button
                 aria-expanded={searchRowOpen}
-                aria-label={__('Search topics')}
+                aria-label={__('Search posts')}
                 className={searchRowOpen ? 'bc-text-primary' : undefined}
                 icon={<LuSearch size={22} strokeLinecap="round" strokeWidth={2.25} />}
                 onClick={toggleSearch}
@@ -312,14 +312,14 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                     Lucide draws 2px at every size, so a glyph thins out as it
                     grows. */}
                 <Button
-                  aria-label={__('Create New Topic')}
+                  aria-label={__('Create New Post')}
                   className="bc-hidden sm:bc-inline-flex sm:bc-rounded-[10px] sm:bc-px-4 md:bc-px-5"
                   icon={<LuPlus size={18} strokeLinecap="round" strokeWidth={2.5} />}
                   onClick={openCreate}
                   size="middle"
                   type="primary"
                 >
-                  <span className="bc-hidden md:bc-inline">{__('Create New Topic')}</span>
+                  <span className="bc-hidden md:bc-inline">{__('Create New Post')}</span>
                   <span className="bc-hidden sm:bc-inline md:bc-hidden">{__('New')}</span>
                 </Button>
 
@@ -331,7 +331,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
                     indicator. Below the sidebar drawer (z-40), which covers
                     it while open. */}
                 <Button
-                  aria-label={__('Create New Topic')}
+                  aria-label={__('Create New Post')}
                   className="bc-fixed bc-bottom-[calc(1rem+env(safe-area-inset-bottom))] bc-right-4 bc-z-30 bc-h-14 bc-w-14 bc-rounded-[14px] bc-shadow-lg sm:bc-hidden"
                   icon={<LuPlus size={26} strokeLinecap="round" strokeWidth={2.5} />}
                   onClick={openCreate}

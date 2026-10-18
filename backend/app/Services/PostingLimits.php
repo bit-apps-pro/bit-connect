@@ -255,11 +255,11 @@ final class PostingLimits
         $noun = self::noun($context);
 
         if ($limit === 0) {
-            // translators: %s: "a topic" or "a comment"
+            // translators: %s: "a post" or "a comment"
             return \sprintf(__('Videos cannot be added to %s.', 'bit-connect'), $noun);
         }
 
-        // translators: 1: the most videos allowed, 2: "a topic" or "a comment"
+        // translators: 1: the most videos allowed, 2: "a post" or "a comment"
         return \sprintf(_n('You can add only %1$d video to %2$s.', 'You can add up to %1$d videos to %2$s.', $limit, 'bit-connect'), $limit, $noun);
     }
 
@@ -267,7 +267,7 @@ final class PostingLimits
     {
         $message = $context === 'topic'
             // translators: %s: the most characters allowed, formatted
-            ? __('A topic can be up to %s characters long.', 'bit-connect')
+            ? __('A post can be up to %s characters long.', 'bit-connect')
             // translators: %s: the most characters allowed, formatted
             : __('A comment can be up to %s characters long.', 'bit-connect');
 
@@ -279,11 +279,11 @@ final class PostingLimits
         $noun = self::noun($context);
 
         if ($limit === 0) {
-            // translators: %s: "a topic" or "a comment"
+            // translators: %s: "a post" or "a comment"
             return \sprintf(__('Images cannot be added to %s.', 'bit-connect'), $noun);
         }
 
-        // translators: 1: the most images allowed, 2: "a topic" or "a comment"
+        // translators: 1: the most images allowed, 2: "a post" or "a comment"
         return \sprintf(_n('You can add only %1$d image to %2$s.', 'You can add up to %1$d images to %2$s.', $limit, 'bit-connect'), $limit, $noun);
     }
 
@@ -292,16 +292,16 @@ final class PostingLimits
         $noun = self::noun($context);
 
         if ($limit === 0) {
-            // translators: %s: "a topic" or "a comment"
+            // translators: %s: "a post" or "a comment"
             return \sprintf(__('Files cannot be attached to %s.', 'bit-connect'), $noun);
         }
 
-        // translators: 1: the most files allowed, 2: "a topic" or "a comment"
+        // translators: 1: the most files allowed, 2: "a post" or "a comment"
         return \sprintf(_n('You can attach only %1$d file to %2$s.', 'You can attach up to %1$d files to %2$s.', $limit, 'bit-connect'), $limit, $noun);
     }
 
     private static function noun(string $context): string
     {
-        return $context === 'topic' ? __('a topic', 'bit-connect') : __('a comment', 'bit-connect');
+        return $context === 'topic' ? __('a post', 'bit-connect') : __('a comment', 'bit-connect');
     }
 }

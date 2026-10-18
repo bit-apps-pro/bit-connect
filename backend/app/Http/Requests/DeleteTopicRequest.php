@@ -24,10 +24,10 @@ final class DeleteTopicRequest extends Request
     public function failedAuthorizationMessage(): string
     {
         if (!is_user_logged_in()) {
-            return 'You must be logged in to delete this topic.';
+            return 'You must be logged in to delete this post.';
         }
 
-        return 'You do not have permission to delete this topic.';
+        return 'You do not have permission to delete this post.';
     }
 
     public function rules()
@@ -40,9 +40,9 @@ final class DeleteTopicRequest extends Request
     public function messages()
     {
         return [
-            'id.required' => 'The topic ID is required.',
-            'id.integer'  => 'The topic ID must be a valid integer.',
-            'id.min'      => 'The topic ID must be at least 1.',
+            'id.required' => 'The post ID is required.',
+            'id.integer'  => 'The post ID must be a valid integer.',
+            'id.min'      => 'The post ID must be at least 1.',
         ];
     }
 }

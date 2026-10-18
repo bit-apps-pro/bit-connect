@@ -48,7 +48,7 @@ export default function ActivityChart({ activity, className, period }: ActivityC
           borderRadius: { bottomLeft: 0, bottomRight: 0, topLeft: 6, topRight: 6 },
           borderSkipped: false as const,
           data: activity.map(bucket => bucket.topics),
-          label: __('Topics'),
+          label: __('Posts'),
           maxBarThickness: 48
         }
       ],
@@ -91,11 +91,11 @@ export default function ActivityChart({ activity, className, period }: ActivityC
       className={className}
       extra={
         <div className="bc-flex bc-items-center bc-gap-5">
-          <LegendDot color={token.colorPrimary} label={__('Topics')} />
+          <LegendDot color={token.colorPrimary} label={__('Posts')} />
           <LegendDot color={COMMENTS_COLOR} label={__('Comments')} />
         </div>
       }
-      subtitle={__('Topics and comments published')}
+      subtitle={__('Posts and comments published')}
       title={__('Community activity')}
     >
       {/* Grows to the height of the row, which Stage progress usually sets.
@@ -103,7 +103,7 @@ export default function ActivityChart({ activity, className, period }: ActivityC
           box Chart.js measures, which would grow it on every resize. */}
       <div className="bc-relative bc-min-h-80 bc-flex-1">
         <div className="bc-absolute bc-inset-0">
-          <Bar aria-label={__('Topics and comments over time')} data={data} options={options} role="img" />
+          <Bar aria-label={__('Posts and comments over time')} data={data} options={options} role="img" />
         </div>
       </div>
     </DashboardCard>

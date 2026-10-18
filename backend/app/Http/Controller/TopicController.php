@@ -200,7 +200,7 @@ final class TopicController
         }
 
         if (!$topic) {
-            return Response::error('Failed to create topic', self::HTTP_SERVER_ERROR);
+            return Response::error('Failed to create post', self::HTTP_SERVER_ERROR);
         }
 
         $this->notifyNewTopic($topic);
@@ -217,7 +217,7 @@ final class TopicController
         $topic = $this->topicService->getReadableTopicById($id);
 
         if (!$topic) {
-            return Response::error('Topic not found', self::HTTP_NOT_FOUND);
+            return Response::error('Post not found', self::HTTP_NOT_FOUND);
         }
 
         return Response::success($topic);
@@ -231,7 +231,7 @@ final class TopicController
         $existingTopic = $this->topicService->getTopicById($id);
 
         if (!$existingTopic) {
-            return Response::error('Topic not found', self::HTTP_NOT_FOUND);
+            return Response::error('Post not found', self::HTTP_NOT_FOUND);
         }
 
         $currentUser = wp_get_current_user();
@@ -242,7 +242,7 @@ final class TopicController
         $canModerate = PermissionService::canModerate();
 
         if (!$canModerate && !$isOwner) {
-            return Response::error(__('You are not allowed to edit this topic.', 'bit-connect'), 403);
+            return Response::error(__('You are not allowed to edit this post.', 'bit-connect'), 403);
         }
 
         $updateData = [];
@@ -260,7 +260,7 @@ final class TopicController
         // Locking needs its own capability (a moderator-level action)
         if (isset($validatedData['is_locked'])) {
             if (!PermissionService::canLockPost()) {
-                return Response::error('You do not have permission to lock topics', 403);
+                return Response::error('You do not have permission to lock posts', 403);
             }
             $updateData['is_locked'] = (bool) $validatedData['is_locked'];
         }
@@ -345,7 +345,7 @@ final class TopicController
         }
 
         if (!$topic) {
-            return Response::error('Failed to update topic', self::HTTP_SERVER_ERROR);
+            return Response::error('Failed to update post', self::HTTP_SERVER_ERROR);
         }
 
         TopicModerationService::recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
@@ -363,7 +363,7 @@ final class TopicController
 
         $existingTopic = $this->topicService->getTopicById($id);
         if (!$existingTopic) {
-            return Response::error('Topic not found', self::HTTP_NOT_FOUND);
+            return Response::error('Post not found', self::HTTP_NOT_FOUND);
         }
 
         $currentUser = wp_get_current_user();
@@ -371,16 +371,16 @@ final class TopicController
         $isOwner = (int) $existingTopic['post_author'] === $currentUser->ID;
 
         if (!$canModerate && !$isOwner) {
-            return Response::error('You are not allowed to delete this topic', 403);
+            return Response::error('You are not allowed to delete this post', 403);
         }
 
         if (!(new TopicModerationService($this->topicService))->deleteWithRecord((int) $id, $existingTopic)) {
-            return Response::error('Failed to delete topic', self::HTTP_SERVER_ERROR);
+            return Response::error('Failed to delete post', self::HTTP_SERVER_ERROR);
         }
 
         return Response::success(
             [
-                'message'  => 'Topic deleted successfully',
+                'message'  => 'Post deleted successfully',
                 'topic_id' => $id,
             ]
         );

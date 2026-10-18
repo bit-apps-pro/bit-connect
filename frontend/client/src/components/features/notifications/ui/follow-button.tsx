@@ -86,9 +86,9 @@ function FollowControl({
         notificationApi?.success({
           description: follow
             ? // translators: %s: the tag's name.
-              sprintf(__('New topics under “%s” will appear in your notifications.'), subject)
+              sprintf(__('New posts under “%s” will appear in your notifications.'), subject)
             : // translators: %s: the tag's name.
-              sprintf(__('New topics under “%s” will no longer notify you.'), subject),
+              sprintf(__('New posts under “%s” will no longer notify you.'), subject),
           message: follow ? sprintf(__('Following “%s”'), subject) : sprintf(__('Unfollowed “%s”'), subject)
         })
       },
@@ -110,8 +110,8 @@ function FollowControl({
       title={
         following
           ? // translators: %s: what is being followed — "tag", "department".
-            sprintf(__('You get notified about new topics here. Click to stop following this %s.'), kind.toLowerCase())
-          : __('Get notified when a new topic is posted here.')
+            sprintf(__('You get notified about new posts here. Click to stop following this %s.'), kind.toLowerCase())
+          : __('Get notified when someone creates a new post here.')
       }
       type={following ? 'primary' : 'default'}
     >

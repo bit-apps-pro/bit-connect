@@ -55,7 +55,7 @@ function humanizeType(type: string): string {
 function describe(item: NotificationItem) {
   const who = item.actor.is_system ? __('The forum') : item.actor.name || __('Someone')
   const title = item.context.topic_title
-  const named = title ? `"${title}"` : __('a topic')
+  const named = title ? `"${title}"` : __('a post')
 
   const name = <span className="bc-font-semibold bc-text-ink">{who}</span>
   const subject = <span className="bc-font-medium bc-text-ink">{named}</span>
@@ -133,7 +133,7 @@ function describe(item: NotificationItem) {
     case 'topic_posted': {
       return (
         <>
-          {name} {__('posted a new topic:')} {subject}
+          {name} {__('created a new post:')} {subject}
         </>
       )
     }

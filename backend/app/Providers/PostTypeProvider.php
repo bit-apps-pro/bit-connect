@@ -150,8 +150,8 @@ class PostTypeProvider
     {
         $this->registerTaxonomy(
             Taxonomies::TOPIC_TYPES->value,
-            _x('Topic Type', 'Taxonomy Singular Name', 'bit-connect'),
-            _x('Topic Types', 'Taxonomy General Name', 'bit-connect'),
+            _x('Topic', 'Taxonomy Singular Name', 'bit-connect'),
+            _x('Topics', 'Taxonomy General Name', 'bit-connect'),
             true
         );
         $this->registerTaxonomy(

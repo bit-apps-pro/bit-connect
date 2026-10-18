@@ -85,7 +85,7 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
               </a>
               <p className="bc-mb-0 bc-mt-1 bc-text-xs bc-text-ink-subtle">
                 {__(
-                  'Submit this to Google Search Console. It is an index: one sitemap for the topics, then one per taxonomy shown in search. It is also announced in robots.txt.'
+                  'Submit this to Google Search Console. It is an index: one sitemap for the posts, then one per taxonomy shown in search. It is also announced in robots.txt.'
                 )}
               </p>
             </>
@@ -98,8 +98,8 @@ export default function SeoStatus({ diagnostics }: { diagnostics: SeoDiagnostics
           <StatusRow label={__('In the sitemap')}>
             <span className="bc-font-medium">
               {sprintf(
-                // translators: 1: number of topics, 2: number of archive pages.
-                __('1 home page · %1$s topics · %2$s archive pages'),
+                // translators: 1: number of posts, 2: number of archive pages.
+                __('1 home page · %1$s posts · %2$s archive pages'),
                 diagnostics.publishedTopics,
                 archivePageCount
               )}

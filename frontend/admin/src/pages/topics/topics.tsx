@@ -109,7 +109,7 @@ export default function Topics() {
   }
 
   const hide: TopicAction = {
-    confirm: __('Hidden topics leave the portal for everyone but moderators and their authors. You can restore them later.'),
+    confirm: __('Only moderators and the authors can see hidden posts in the portal. You can restore them later.'),
     icon: <LuEyeOff aria-hidden />,
     key: 'hide',
     label: __('Hide'),
@@ -117,7 +117,7 @@ export default function Topics() {
   }
   const restore: TopicAction = { icon: <LuEye aria-hidden />, key: 'restore', label: __('Restore'), run: bulk('restore') }
   const remove: TopicAction = {
-    confirm: __('Deleting removes the topics and every comment on them. This cannot be undone.'),
+    confirm: __('Delete removes the posts and all their comments. You cannot undo this.'),
     danger: true,
     icon: <LuTrash2 aria-hidden />,
     key: 'delete',
@@ -154,7 +154,7 @@ export default function Topics() {
 
   const tabs: PageTab[] = useMemo(
     () => [
-      { icon: <LuList aria-hidden className="bc-shrink-0" size={16} />, key: '', label: __('All topics') },
+      { icon: <LuList aria-hidden className="bc-shrink-0" size={16} />, key: '', label: __('All posts') },
       ...addedViews.map(added => ({
         icon: added.icon ?? <LuList aria-hidden className="bc-shrink-0" size={16} />,
         key: added.value,
@@ -173,10 +173,10 @@ export default function Topics() {
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-end bc-justify-between bc-gap-4">
         <div className="bc-min-w-0">
           <Title className="bc-mb-1" level={3}>
-            {__('Topics')}
+            {__('Posts')}
           </Title>
           <Text type="secondary">
-            {__('Set the status and stage of topics, lock, hide or delete them — one at a time or several at once.')}
+            {__('Set the status and stage of posts. Lock, hide or delete posts one at a time or many at the same time.')}
           </Text>
         </div>
       </div>
@@ -212,7 +212,7 @@ export default function Topics() {
       {isTopicsError && (
         <Alert
           className="bc-mb-4"
-          description={__('The topics could not be loaded.')}
+          description={__('The posts did not load.')}
           message={__('Something went wrong')}
           showIcon
           type="error"

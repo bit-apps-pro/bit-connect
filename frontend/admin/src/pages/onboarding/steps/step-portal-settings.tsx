@@ -114,7 +114,7 @@ export default function StepPortalSettings({ onNext }: Props) {
                 <Alert
                   className="bc-mt-3"
                   description={__(
-                    'Your current homepage is replaced, and topic links use the site root (yoursite.com/topic-name). Best for a site that is only the community.'
+                    'Your current homepage is replaced, and post links use the site root (yoursite.com/post-name). Best for a site that is only the community.'
                   )}
                   message={__('This replaces your homepage')}
                   showIcon

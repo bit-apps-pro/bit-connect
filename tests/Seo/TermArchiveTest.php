@@ -296,7 +296,7 @@ final class TermArchiveTest extends TestCase
         $html = SeoContent::forArchive($term, []);
 
         $this->assertStringContainsString('Billing', $html);
-        $this->assertStringContainsString('No topics here yet.', $html);
+        $this->assertStringContainsString('No posts here yet.', $html);
     }
 
     public function testDraftTopicsNeverReachAnArchive(): void

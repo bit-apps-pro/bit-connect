@@ -708,10 +708,10 @@ final class SeoMeta
 
         if (empty($titles)) {
             // translators: %s: community name.
-            return \sprintf(__('Discussions and topics from the %s community.', 'bit-connect'), $title);
+            return \sprintf(__('Discussions and posts from the %s community.', 'bit-connect'), $title);
         }
 
-        // translators: 1: community name, 2: comma-separated list of recent topic titles.
+        // translators: 1: community name, 2: comma-separated list of recent post titles.
         return \sprintf(__('Recent discussions in %1$s: %2$s', 'bit-connect'), $title, implode(', ', $titles));
     }
 

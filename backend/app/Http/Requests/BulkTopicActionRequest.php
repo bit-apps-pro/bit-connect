@@ -42,10 +42,10 @@ final class BulkTopicActionRequest extends Request
     public function failedAuthorizationMessage(): string
     {
         if (!is_user_logged_in()) {
-            return 'You must be logged in to moderate topics.';
+            return 'You must be logged in to moderate posts.';
         }
 
-        return 'You do not have permission to moderate topics.';
+        return 'You do not have permission to moderate posts.';
     }
 
     public function rules()
@@ -61,10 +61,10 @@ final class BulkTopicActionRequest extends Request
     public function messages()
     {
         return [
-            'ids.required'    => 'Choose at least one topic.',
-            'ids.max'         => \sprintf('At most %d topics can be changed at once.', self::MAX_IDS),
-            'ids.*.integer'   => 'Each topic must be a valid ID.',
-            'action.required' => 'Choose what to do with the topics.',
+            'ids.required'    => 'Choose at least one post.',
+            'ids.max'         => \sprintf('At most %d posts can be changed at once.', self::MAX_IDS),
+            'ids.*.integer'   => 'Each post must be a valid ID.',
+            'action.required' => 'Choose what to do with the posts.',
             'term_id.integer' => 'The status or stage must be a valid ID.',
         ];
     }

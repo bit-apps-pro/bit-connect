@@ -15,7 +15,7 @@ describe('slugDisclosure', () => {
 
   it('names the slug the topic actually ended up at', () => {
     expect(slugDisclosure('getting-started', 'getting-started-2')).toBe(
-      'The link you chose was already taken, so this topic is at /getting-started-2'
+      'The link you chose was already taken, so this post is at /getting-started-2'
     )
   })
 
@@ -34,7 +34,7 @@ describe('slugDisclosure', () => {
 
   it('reports the readable form rather than the escaped octets', () => {
     expect(slugDisclosure('আমার', `${encodeURIComponent('আমার')}-2`)).toBe(
-      'The link you chose was already taken, so this topic is at /আমার-2'
+      'The link you chose was already taken, so this post is at /আমার-2'
     )
   })
 })

@@ -60,7 +60,7 @@ export function stageHues(stages: StageProgress[]): Map<string, string> {
 
 /** "Feature Request, Bug Report, Feedback and 4 more". */
 export function topicTypeSummary(names: string[]): string {
-  if (names.length === 0) return __('No topic types yet')
+  if (names.length === 0) return __('No topics yet')
 
   const shown = names.slice(0, 3)
   const rest = names.length - shown.length

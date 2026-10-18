@@ -27,7 +27,7 @@ const { Title } = Typography
 
 // Ordered as an admin sets a forum up: the portal and how people get in, what
 // they may do there, then what reaches them and search engines. Data last.
-const TAB_KEYS = ['portal', 'sign-in', 'topics', 'moderation', 'limits', 'notifications', 'seo', 'data'] as const
+const TAB_KEYS = ['portal', 'sign-in', 'posts', 'moderation', 'limits', 'notifications', 'seo', 'data'] as const
 
 type TabKey = (typeof TAB_KEYS)[number]
 
@@ -55,7 +55,7 @@ export default function Settings() {
     () => [
       { icon: <LuGlobe aria-hidden className="bc-shrink-0" size={16} />, key: 'portal', label: __('Portal') },
       { icon: <LuLogIn aria-hidden className="bc-shrink-0" size={16} />, key: 'sign-in', label: __('Sign in') },
-      { icon: <LuMessageSquare aria-hidden className="bc-shrink-0" size={16} />, key: 'topics', label: __('Topics') },
+      { icon: <LuMessageSquare aria-hidden className="bc-shrink-0" size={16} />, key: 'posts', label: __('Posts') },
       { icon: <LuShieldCheck aria-hidden className="bc-shrink-0" size={16} />, key: 'moderation', label: __('Moderation') },
       { icon: <LuGauge aria-hidden className="bc-shrink-0" size={16} />, key: 'limits', label: __('Limits') },
       { icon: <LuBell aria-hidden className="bc-shrink-0" size={16} />, key: 'notifications', label: __('Notifications') },
@@ -71,9 +71,9 @@ export default function Settings() {
     moderation: <ForumSettings section="moderation" />,
     notifications: <Notifications />,
     portal: <General section="portal" />,
+    posts: <ForumSettings section="topics" />,
     seo: <Seo />,
-    'sign-in': <General section="sign-in" />,
-    topics: <ForumSettings section="topics" />
+    'sign-in': <General section="sign-in" />
   }
 
   return (

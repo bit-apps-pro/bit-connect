@@ -150,7 +150,7 @@ export default function TopicEditModal() {
         },
         mask: TOPIC_MODAL_MASK
       }}
-      title={__('Edit Topic')}
+      title={__('Edit Post')}
       width={TOPIC_MODAL_WIDTH}
     >
       {isEditModalOpen && (

@@ -271,14 +271,14 @@ export default function TopicForm({
           title rather than standing off it as a field of its own. */}
       <Form.Item
         className={isPermalinkOpen ? 'bc-mb-4' : 'bc-mb-1'}
-        label={__('Topic title')}
+        label={__('Post title')}
         name="post_title"
         rules={[
-          { message: __('Please enter a topic title'), required: true },
-          { max: 200, message: __('Topic title cannot exceed 200 characters') }
+          { message: __('Please enter a post title'), required: true },
+          { max: 200, message: __('Post title cannot exceed 200 characters') }
         ]}
       >
-        <Input maxLength={200} onChange={handleTitleChange} placeholder={__('Write a topic title')} />
+        <Input maxLength={200} onChange={handleTitleChange} placeholder={__('Write a post title')} />
       </Form.Item>
 
       {/* The slug is a power-user control: nothing but a link to open it until
@@ -326,14 +326,14 @@ export default function TopicForm({
           {showTopicType && (
             <Form.Item
               className="bc-mb-0"
-              label={__('Topic type')}
+              label={__('Topic')}
               name="topic-types"
-              rules={[{ message: __('Please select a topic type'), required: topicTypeMode === 'required' }]}
+              rules={[{ message: __('Please select a topic'), required: topicTypeMode === 'required' }]}
             >
               <Select
                 allowClear={topicTypeMode === 'optional'}
                 options={topicTypeOptions}
-                placeholder={__('Select a Topic Type')}
+                placeholder={__('Select a Topic')}
               />
             </Form.Item>
           )}
@@ -373,7 +373,7 @@ export default function TopicForm({
           // Only where the forum takes video files at all: the control would
           // otherwise open a picker that refuses everything.
           onVideoInsert={canAddVideo ? handleVideoInsert : undefined}
-          placeholder={__('Write your topic description...')}
+          placeholder={__('Write your post description...')}
           showHeadings={true}
           showToolbar={true}
         />

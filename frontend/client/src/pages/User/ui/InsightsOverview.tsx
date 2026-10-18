@@ -219,10 +219,10 @@ export default function InsightsOverview({
           )}
         </section>
 
-        <section aria-label={__('Topics Breakdown')} className={CARD}>
+        <section aria-label={__('Posts by Topic')} className={CARD}>
           <SectionHeader
-            subtitle={__('How their posts split across topic types')}
-            title={__('Topics Breakdown')}
+            subtitle={__('How their posts split across topics')}
+            title={__('Posts by Topic')}
           />
 
           <div className="bc-flex bc-flex-col bc-gap-5 bc-px-5 bc-pb-5">
@@ -230,7 +230,7 @@ export default function InsightsOverview({
 
             {!isLoading && breakdown.length === 0 && (
               <p className="bc-m-0 bc-py-4 bc-text-center bc-text-[13px] bc-text-ink-subtle">
-                {__('No categorised posts in this period.')}
+                {__('No posts with a topic in this period.')}
               </p>
             )}
 
