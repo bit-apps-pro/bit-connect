@@ -18,7 +18,9 @@
  * What remains is auto-hide, the shape the rest were meant to have — the free
  * plugin queues reports and a listener decides — plus the three mail filters,
  * which supply a value rather than unlock one and so are uninstalled here but
- * never installed.
+ * never installed. Pinning a reply has the same shape as the mail filters: the
+ * free plugin reads a pinned id and lifts that reply, and the add-on is what
+ * writes one, so bc_test_pro_pin_comment() below plays the writer.
  *
  * Seeding $GLOBALS['__wp_filters'] is how the bootstrap's apply_filters() stub
  * takes an answer, and a seeded callable is invoked with the filter's arguments
@@ -59,10 +61,34 @@ function bc_test_uninstall_pro_addon(): void
             'bit_connect_mail_from_name',
             'bit_connect_mail_from_email',
             'bit_connect_mail_template',
+            'bit_connect_pinned_comment',
         ] as $tag
     ) {
         unset($GLOBALS['__wp_filters'][$tag]);
     }
+}
+
+/**
+ * Pin a reply to a topic, the way the add-on's service does.
+ *
+ * The add-on stores the pin as post meta on the topic and answers the
+ * `bit_connect_pinned_comment` filter from it. Reproduced rather than answered
+ * with a fixed id so a test can pin, unpin and re-pin and watch the free side
+ * follow, which is the behaviour that actually matters.
+ *
+ * @param int $topicId   the topic being pinned in
+ * @param int $commentId the reply, or 0 to clear the pin
+ */
+function bc_test_pro_pin_comment(int $topicId, int $commentId): void
+{
+    if ($commentId > 0) {
+        update_post_meta($topicId, '_bit_connect_pinned_comment', $commentId);
+    } else {
+        delete_post_meta($topicId, '_bit_connect_pinned_comment');
+    }
+
+    $GLOBALS['__wp_filters']['bit_connect_pinned_comment']
+        = static fn ($pinned, $topic) => (int) get_post_meta((int) $topic, '_bit_connect_pinned_comment', true);
 }
 
 /**

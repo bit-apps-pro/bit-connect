@@ -5,6 +5,7 @@ namespace BitApps\BitConnect\Tests\Services;
 use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\FollowService;
 use PHPUnit\Framework\TestCase;
+use WP_Post;
 
 /**
  * Pins down what following, unfollowing and muting actually do.
@@ -35,6 +36,12 @@ final class FollowServiceTest extends TestCase
         $GLOBALS['wpdb']->failWrites = false;
 
         unset($GLOBALS['__bc_follow_insert_fails']);
+
+        // A topic is followed only when the member may read it, so the ids
+        // these tests follow are real, published topics.
+        foreach (range(1, 11) as $topicId) {
+            $GLOBALS['__wp_posts'][$topicId] = self::publishedTopic($topicId);
+        }
     }
 
     protected function tearDown(): void
@@ -44,6 +51,49 @@ final class FollowServiceTest extends TestCase
         $GLOBALS['wpdb']->failWrites = false;
 
         unset($GLOBALS['__bc_follow_insert_fails']);
+
+        foreach (range(1, 11) as $topicId) {
+            unset($GLOBALS['__wp_posts'][$topicId]);
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // Readability
+    // -----------------------------------------------------------------------
+
+    public function testATopicTheMemberCannotReadCannotBeFollowed(): void
+    {
+        $private = self::publishedTopic(self::TOPIC);
+        $private->post_status = 'private';
+        $private->post_author = self::MEMBER + 1;
+        $GLOBALS['__wp_posts'][self::TOPIC] = $private;
+
+        $this->assertFalse(FollowService::follow(self::MEMBER, Follow::TARGET_TOPIC, self::TOPIC));
+    }
+
+    public function testATopicThatDoesNotExistCannotBeFollowed(): void
+    {
+        unset($GLOBALS['__wp_posts'][self::TOPIC]);
+
+        $this->assertFalse(FollowService::follow(self::MEMBER, Follow::TARGET_TOPIC, self::TOPIC));
+    }
+
+    public function testAThreadCanStillBeMutedAfterAccessIsLost(): void
+    {
+        unset($GLOBALS['__wp_posts'][self::TOPIC]);
+
+        $this->assertTrue(FollowService::unfollow(self::MEMBER, Follow::TARGET_TOPIC, self::TOPIC));
+    }
+
+    private static function publishedTopic(int $id): WP_Post
+    {
+        $post = new WP_Post();
+        $post->ID = $id;
+        $post->post_type = 'bit-connect';
+        $post->post_status = 'publish';
+        $post->post_author = 1;
+
+        return $post;
     }
 
     // -----------------------------------------------------------------------
@@ -190,14 +240,29 @@ final class FollowServiceTest extends TestCase
     // What counts as a target
     // -----------------------------------------------------------------------
 
-    public function testTheFourThingsAMemberMayFollow(): void
+    public function testTheThreeThingsAMemberMayFollow(): void
     {
-        foreach ([Follow::TARGET_TOPIC, Follow::TARGET_DEPARTMENT, Follow::TARGET_TAG, Follow::TARGET_FORUM] as $type) {
+        foreach ([Follow::TARGET_TOPIC, Follow::TARGET_TAG, Follow::TARGET_FORUM] as $type) {
             $this->assertTrue(FollowService::isValidTargetType($type), $type . ' should be followable');
         }
 
         $this->assertFalse(FollowService::isValidTargetType('comment'));
         $this->assertFalse(FollowService::isValidTargetType(''));
+    }
+
+    public function testATermOfAnAddedTaxonomyMayBeFollowedByTheTypeItNames(): void
+    {
+        $this->assertFalse(FollowService::isValidTargetType('team'));
+
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'follow' => 'team'],
+        ];
+
+        $this->assertTrue(FollowService::isValidTargetType('team'));
+
+        $GLOBALS['__wp_taxonomies'] = [];
+        unset($GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']);
     }
 
     /**

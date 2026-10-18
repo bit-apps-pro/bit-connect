@@ -12,21 +12,16 @@ use WP_User;
  * Pins down the badge shown beside a member's name.
  *
  * Three surfaces name a member — the comment byline, the topic byline and the
- * profile card — and they used to disagree. The comment byline asked a helper
- * that answers manage_options || bit_connect_forum_manage, so the colleague who holds
- * bit_connect_forum_moderate alone carried no badge on their comments while their profile
- * page called them a Moderator. One resolver is what stops that recurring.
+ * profile card — and one resolver answers all three so they cannot disagree.
+ *
+ * This plugin labels nobody on its own: badges arrive through the
+ * `bit_connect_assigned_member_badges` filter, and with nobody answering a
+ * member's name is shown bare, whatever their capabilities. The cases below
+ * stand in for a filter where they need a badge to exist.
  *
  * The other rule worth guarding: a badge is not authority. isStaff() reads
  * capabilities and ignores badges entirely, because the report queue exempts
- * staff from auto-hide — and once an admin can hand out a Developer badge, the
- * older reading would have let a cosmetic label grant immunity from reports.
- *
- * Authored badges are the add-on's, so nothing here assigns one: this plugin
- * resolves them through the `bit_connect_assigned_member_badges` filter and
- * answers empty on its own, which is what these cases pin down. What changes
- * once a catalog exists is covered by UserBadgeServiceProTest, which ships with
- * the add-on.
+ * staff from auto-hide — a cosmetic label must not grant immunity from reports.
  *
  * @internal
  *
@@ -53,36 +48,42 @@ final class UserBadgeServiceTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Standing, read from capabilities
+    // Nobody is labelled unless a filter says so
     // -----------------------------------------------------------------------
 
-    public function testSomeoneWhoManagesTheForumIsAnAdmin(): void
-    {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
-
-        $badge = UserBadgeService::for(self::MEMBER);
-
-        $this->assertSame('Admin', $badge['label']);
-        $this->assertSame(BadgeTone::ADMIN->value, $badge['tone']);
-        $this->assertNull($badge['id']);
-    }
-
     /**
-     * The case the shared resolver exists for: bit_connect_forum_moderate alone used to
-     * carry no badge on comments.
+     * Capabilities grant authority, not a badge: with nobody answering the
+     * filter, the people who run the forum are shown by name like everyone else.
      */
-    public function testSomeoneWhoOnlyModeratesIsAModerator(): void
-    {
-        $this->seedUser(self::MEMBER, [Capabilities::MODERATE->value]);
-
-        $this->assertSame('Moderator', UserBadgeService::for(self::MEMBER)['label']);
-    }
-
-    public function testAnAdminHoldingBothIsShownAsTheHigherOfTheTwo(): void
+    public function testStaffCarryNoBadgeOfTheirOwn(): void
     {
         $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value, Capabilities::MODERATE->value]);
 
-        $this->assertSame('Admin', UserBadgeService::for(self::MEMBER)['label']);
+        $this->assertNull(UserBadgeService::for(self::MEMBER));
+        $this->assertSame([], UserBadgeService::all(self::MEMBER));
+    }
+
+    public function testTheFilterSuppliesTheBadgesInPriorityOrder(): void
+    {
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([
+            ['id' => 'developer', 'label' => 'Developer', 'tone' => 'green'],
+            ['id' => 'support', 'label' => 'Support', 'tone' => 'teal'],
+        ]);
+
+        $this->assertSame('Developer', UserBadgeService::for(self::MEMBER)['label']);
+        $this->assertSame(['developer', 'support'], array_column(UserBadgeService::all(self::MEMBER), 'id'));
+    }
+
+    public function testMalformedBadgesFromTheFilterAreDropped(): void
+    {
+        $this->seedUser(self::MEMBER, []);
+        $this->assign(['Team', ['label' => '  '], ['label' => 'Support', 'tone' => 'chartreuse']]);
+
+        $badges = UserBadgeService::all(self::MEMBER);
+
+        $this->assertCount(1, $badges);
+        $this->assertSame(BadgeTone::MODERATOR->value, $badges[0]['tone']);
     }
 
     /**
@@ -122,9 +123,10 @@ final class UserBadgeServiceTest extends TestCase
 
     public function testTheLabelHelperAnswersTheBadgeWhenThereIsOne(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
 
-        $this->assertSame('Admin', UserBadgeService::label(self::MEMBER));
+        $this->assertSame('Developer', UserBadgeService::label(self::MEMBER));
     }
 
     // -----------------------------------------------------------------------
@@ -135,7 +137,17 @@ final class UserBadgeServiceTest extends TestCase
     {
         $this->seedUser(self::MEMBER, [Capabilities::MODERATE->value]);
 
+        $this->assertNull(UserBadgeService::for(self::MEMBER));
         $this->assertTrue(UserBadgeService::isStaff(self::MEMBER));
+    }
+
+    public function testABadgeDoesNotMakeSomeoneStaff(): void
+    {
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
+
+        $this->assertNotNull(UserBadgeService::for(self::MEMBER));
+        $this->assertFalse(UserBadgeService::isStaff(self::MEMBER));
     }
 
     public function testNobodyAndTheDeletedAreNotStaff(): void
@@ -149,24 +161,24 @@ final class UserBadgeServiceTest extends TestCase
     // -----------------------------------------------------------------------
 
     /**
-     * Lets a site call its people Team or Staff without touching the capability
-     * that earned the badge.
+     * Lets a site call its people Team or Staff.
      */
-    public function testAFilterMayRenameTheBadgeWithoutTouchingTheCapability(): void
+    public function testAFilterMayRenameTheBadge(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MODERATE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Moderator', 'tone' => 'blue']]);
         $GLOBALS['__wp_filters']['bit_connect_member_badge'] = ['id' => null, 'label' => 'Team', 'tone' => 'teal'];
 
         $badge = UserBadgeService::for(self::MEMBER);
 
         $this->assertSame('Team', $badge['label']);
         $this->assertSame('teal', $badge['tone']);
-        $this->assertTrue(UserBadgeService::isStaff(self::MEMBER));
     }
 
     public function testAFilterMayTakeTheBadgeAway(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
         $GLOBALS['__wp_filters']['bit_connect_member_badge'] = null;
 
         $this->assertNull(UserBadgeService::for(self::MEMBER));
@@ -186,7 +198,8 @@ final class UserBadgeServiceTest extends TestCase
      */
     public function testAFilterReturningSomethingElseIsIgnored(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
         $GLOBALS['__wp_filters']['bit_connect_member_badge'] = 'Team';
 
         $this->assertNull(UserBadgeService::for(self::MEMBER));
@@ -194,7 +207,8 @@ final class UserBadgeServiceTest extends TestCase
 
     public function testAFilteredBadgeWithNoLabelIsIgnored(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
         $GLOBALS['__wp_filters']['bit_connect_member_badge'] = ['label' => '   ', 'tone' => 'green'];
 
         $this->assertNull(UserBadgeService::for(self::MEMBER));
@@ -206,7 +220,8 @@ final class UserBadgeServiceTest extends TestCase
      */
     public function testAFilteredBadgeWithAnUnknownToneIsStyledAnyway(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
         $GLOBALS['__wp_filters']['bit_connect_member_badge'] = ['label' => 'Team', 'tone' => 'chartreuse'];
 
         $this->assertSame(BadgeTone::MODERATOR->value, UserBadgeService::for(self::MEMBER)['tone']);
@@ -222,12 +237,23 @@ final class UserBadgeServiceTest extends TestCase
      */
     public function testABadgeIsResolvedOncePerRequest(): void
     {
-        $this->seedUser(self::MEMBER, [Capabilities::MANAGE->value]);
+        $this->seedUser(self::MEMBER, []);
+        $this->assign([['label' => 'Developer', 'tone' => 'green']]);
 
         UserBadgeService::for(self::MEMBER);
-        $GLOBALS['__wp_user_caps'][self::MEMBER] = [];
+        $this->assign([]);
 
-        $this->assertSame('Admin', UserBadgeService::for(self::MEMBER)['label']);
+        $this->assertSame('Developer', UserBadgeService::for(self::MEMBER)['label']);
+    }
+
+    /**
+     * Stands in for whatever answers the badge filter.
+     *
+     * @param list<mixed> $badges
+     */
+    private function assign(array $badges): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_assigned_member_badges'] = $badges;
     }
 
     /**

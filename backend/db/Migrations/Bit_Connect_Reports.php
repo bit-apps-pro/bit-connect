@@ -116,7 +116,7 @@ final class Bit_Connect_Reports extends Migration
         if ($result === false) {
             $error = Connection::prop('last_error');
 
-            throw new RuntimeException(esc_html("Reports migration failed: {$error} — while running: {$sql}"));
+            throw new RuntimeException(esc_html("Reports migration failed: {$error} (while running: {$sql})"));
         }
     }
 

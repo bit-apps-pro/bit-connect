@@ -1,7 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { Typography } from 'antd'
 
-const { Text, Title } = Typography
+import SectionCard from './section-card'
+
+const { Text } = Typography
 
 /**
  * What happens to a reported post, stated.
@@ -13,19 +15,12 @@ const { Text, Title } = Typography
  */
 export default function ModerationSection() {
   return (
-    <div className="bc-bg-surface bc-p-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-mb-6">
-      <div className="bc-mb-4">
-        <Title className="bc-mb-1" level={4}>
-          {__('Moderation')}
-        </Title>
-        <Text type="secondary">{__('What happens to reported content')}</Text>
-      </div>
-
+    <SectionCard subtitle={__('What happens to reported content')} title={__('Moderation')}>
       <Text className="bc-text-sm" type="secondary">
         {__(
           'Reported content stays visible until a moderator reviews the report and decides what to do with it.'
         )}
       </Text>
-    </div>
+    </SectionCard>
   )
 }

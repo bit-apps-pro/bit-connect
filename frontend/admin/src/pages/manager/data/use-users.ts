@@ -12,11 +12,11 @@ interface UseUsersParams {
 }
 
 export default function useUsers({ page = 1, perPage = 20, search = '' }: UseUsersParams = {}) {
-  const params = new URLSearchParams({
-    page: String(page),
-    per_page: String(perPage),
+  const queryParam = {
+    page,
+    per_page: perPage,
     ...(search ? { search } : {})
-  })
+  }
 
   const { data, isError, isFetching, isPending } = useQuery<
     ResponseType<UsersResponse>,
@@ -24,7 +24,7 @@ export default function useUsers({ page = 1, perPage = 20, search = '' }: UseUse
     UsersResponse
   >({
     queryFn: ({ signal }) =>
-      request<never, UsersResponse>(`users?${params.toString()}`, { method: 'GET', signal }),
+      request<never, UsersResponse>('users', { method: 'GET', queryParam, signal }),
     queryKey: managerKeys.usersPage(page, perPage, search),
     retry: false,
     select: response => response?.data

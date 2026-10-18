@@ -1,21 +1,16 @@
-import { type Transition, type Variants } from 'framer-motion'
+import { type Variants } from 'framer-motion'
 
 /**
  * The page's motion vocabulary, in one place.
  *
- * Every animation here is either telling you where something came from (a panel
- * arriving, a card revealed by a switch) or holding your eye on something that
- * changed under it (the selected choice, the phrase in the promo preview).
- * Nothing moves for decoration — a settings screen that bounces is a settings
- * screen you stop trusting.
+ * Every animation here tells you where something came from: a panel arriving,
+ * a card revealed by a switch. Nothing moves for decoration — a settings screen
+ * that bounces is a settings screen you stop trusting.
  *
  * `MotionConfig reducedMotion="user"` wraps the page, so everything below
  * degrades to a plain opacity change for anyone who asked their system for less
  * motion.
  */
-
-/** The one spring on this page. Soft, barely overshooting, over in ~0.4s. */
-export const SOFT_SPRING: Transition = { bounce: 0.2, duration: 0.4, type: 'spring' }
 
 /**
  * Nothing animates a tab panel's arrival, and that is deliberate.
@@ -38,6 +33,16 @@ export const SOFT_SPRING: Transition = { bounce: 0.2, duration: 0.4, type: 'spri
 export const swapVariants: Variants = {
   in: { opacity: 1, transition: { duration: 0.18, ease: 'easeOut' }, y: 0 },
   out: { opacity: 0, transition: { duration: 0.12, ease: 'easeIn' }, y: 6 }
+}
+
+/**
+ * One tab's panel giving way to the next. Softer than swapVariants: a whole
+ * form changes here, so it drifts in on a long ease-out over a small distance
+ * rather than popping, and leaves quickly so the two never overlap for long.
+ */
+export const panelVariants: Variants = {
+  in: { opacity: 1, transition: { duration: 0.32, ease: [0.32, 0.72, 0, 1] }, y: 0 },
+  out: { opacity: 0, transition: { duration: 0.14, ease: 'easeIn' }, y: 4 }
 }
 
 /** A block a switch just revealed: it opens from nothing to its own height. */

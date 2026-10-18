@@ -1,5 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { Button, Result, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useSearchParams } from 'react-router'
@@ -16,6 +18,7 @@ type VerifyState = 'error' | 'loading' | 'success'
 const verifiedTokens = new Set<string>()
 
 export default function VerifyEmailPage() {
+  usePageTitle(__('Verify email'))
   const [searchParams] = useSearchParams()
   const { pathname, search } = useLocation()
   const { checkAuth, isLoggedIn, setUser } = useAuthStore()
@@ -134,7 +137,7 @@ export default function VerifyEmailPage() {
             // Registering again is the way out of a failed signup, but it is
             // nonsense advice to someone whose account already exists.
             isEmailChange ? undefined : (
-              <Link to="/register">
+              <Link to={routePath('/register')}>
                 <Button type="primary">{__('Register again')}</Button>
               </Link>
             )

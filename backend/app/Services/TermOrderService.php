@@ -38,12 +38,19 @@ final class TermOrderService
      */
     public static function orderableTaxonomies(): array
     {
-        return [
+        $orderable = [
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
             Taxonomies::TOPIC_TYPES->value,
-            Taxonomies::DEPARTMENTS->value,
         ];
+
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['orderable']) {
+                $orderable[] = $entry['taxonomy'];
+            }
+        }
+
+        return $orderable;
     }
 
     public static function isOrderable(string $taxonomy): bool

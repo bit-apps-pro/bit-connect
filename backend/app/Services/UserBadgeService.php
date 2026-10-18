@@ -10,34 +10,21 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\BadgeTone;
 use BitApps\BitConnect\Enum\Capabilities;
-use WP_User;
 
 /**
  * The badges shown beside a member's name.
  *
  * One resolver for every surface that names a member — the comment byline, the
  * topic byline and the profile card — so the three cannot disagree about who a
- * person is. They did: the comment byline asked AuthService::hasModeratorRole(),
- * which answers manage_options || bit_connect_forum_manage, so a member holding
- * bit_connect_forum_moderate alone (the colleague who corrects a teammate's reply) carried
- * no badge on their comments while their profile page called them a Moderator.
+ * person is.
  *
- * Two sources feed it, and they answer different questions:
+ * This plugin labels nobody on its own. Badges arrive through the
+ * `bit_connect_assigned_member_badges` filter, and with nobody answering there
+ * are none: a byline is a name and a timestamp. Whatever answers the filter decides
+ * what a member wears and in what order.
  *
- * - Authored badges, handed out by an admin — Developer, Support, Group Expert.
- *   These say what someone *does*, and a forum needs to say it about people
- *   whose permissions are ordinary. This plugin has no screen for authoring
- *   them, so they arrive through the `bit_connect_assigned_member_badges`
- *   filter, and with nobody answering there are none.
- * - Capabilities answer standing — Admin, Moderator — read from capabilities
- *   rather than role slugs, because caps are granted per role in Manager and
- *   overridable per user, so a moderator can hold bit_connect_forum_moderate under any role
- *   slug and an administrator can have it taken away.
- *
- * An assigned badge wins. Someone given a Developer badge is being described
- * deliberately, and the automatic standing badge would be the less specific of
- * the two; the standing badge is what a member falls back to when nobody has
- * described them.
+ * Authority is a separate question and is never read from a badge — see
+ * isStaff(), which asks capabilities directly.
  */
 final class UserBadgeService
 {
@@ -150,22 +137,16 @@ final class UserBadgeService
         }
 
         /**
-         * Filter the badges an admin authored and handed to this member.
+         * Filter the badges this member wears.
          *
-         * This plugin keeps no badge *catalog* (Developer, Support, Group
-         * Expert and the like), so with nobody answering this stays empty.
-         * What follows below does not depend on it: a member's standing
-         * (Admin, Moderator) is read from capabilities, not from a catalog.
+         * This plugin hands out none, so with nobody answering this stays empty
+         * and the member's name is shown bare.
          *
-         * @param list<array{id: null|string, label: string, tone: string}> $badges assigned badges, highest priority first
+         * @param list<array{id: null|string, label: string, tone: string}> $badges the member's badges, highest priority first
          * @param int                                                       $userId the member being labelled
          */
         $badges = Hooks::applyFilter('bit_connect_assigned_member_badges', [], $userId);
         $badges = self::sanitizeList($badges);
-
-        if ($badges === []) {
-            $badges = self::standing($user);
-        }
 
         $primary = $badges[0] ?? null;
 
@@ -173,12 +154,9 @@ final class UserBadgeService
          * Filter the badge shown beside a member's name.
          *
          * Lets a site rename the badge to whatever it calls its people — Team,
-         * Staff, Support — without touching the capability that earned it.
-         * Return null to show no badge.
+         * Staff, Support. Return null to show no badge.
          *
-         * Only the first badge is passed: it is the one a byline prints, and
-         * the filter predates the badge catalog, where renaming is now an admin
-         * screen rather than a code change.
+         * Only the first badge is passed: it is the one a byline prints.
          *
          * @param null|array{id: null|string, label: string, tone: string} $badge  the resolved badge
          * @param int                                                     $userId the member being labelled
@@ -199,28 +177,6 @@ final class UserBadgeService
         $badges[0] = $filtered;
 
         return $badges;
-    }
-
-    /**
-     * The automatic standing badge, from capabilities.
-     *
-     * @param WP_User $user
-     *
-     * @return list<array{id: null|string, label: string, tone: string}>
-     */
-    private static function standing($user): array
-    {
-        // Ordered by authority: bit_connect_forum_manage outranks bit_connect_forum_moderate, and an
-        // admin holds both, so the first match wins.
-        if (user_can($user, Capabilities::MANAGE->value)) {
-            return [['id' => null, 'label' => __('Admin', 'bit-connect'), 'tone' => BadgeTone::ADMIN->value]];
-        }
-
-        if (user_can($user, Capabilities::MODERATE->value)) {
-            return [['id' => null, 'label' => __('Moderator', 'bit-connect'), 'tone' => BadgeTone::MODERATOR->value]];
-        }
-
-        return [];
     }
 
     /**

@@ -203,15 +203,15 @@ final class EditAttributionServiceTest extends TestCase
     }
 
     /**
-     * Pinning or locking a topic calls wp_update_post(), which bumps
-     * post_modified without a word of the topic changing. A pinned topic must
-     * not come out of it claiming to have been edited.
+     * Locking a topic calls wp_update_post(), which bumps post_modified
+     * without a word of the topic changing. A locked topic must not come out
+     * of it claiming to have been edited.
      */
-    public function testPinningOrLockingATopicIsNotAnEdit(): void
+    public function testLockingATopicIsNotAnEdit(): void
     {
         $existing = $this->makePost('Original', 'Body', 'Excerpt');
 
-        $this->assertFalse(EditAttributionService::postContentChanged($existing, ['is_pinned' => true, 'is_locked' => true]));
+        $this->assertFalse(EditAttributionService::postContentChanged($existing, ['is_locked' => true]));
     }
 
     public function testResendingTheSameWordsIsNotAnEdit(): void

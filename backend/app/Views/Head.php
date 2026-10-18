@@ -7,6 +7,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Helpers\DateTimeHelper;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Services\PostingLimits;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -23,9 +24,9 @@ class Head
     /**
      * Load the asset libraries.
      *
-     * The Outfit typeface is not enqueued here: it ships inside the built
-     * stylesheet (frontend/shared/fonts), so nothing is fetched from a third
-     * party on any page this plugin draws.
+     * The Inter and Outfit typefaces are not enqueued here: they ship inside
+     * the built stylesheet (frontend/shared/fonts), so nothing is fetched
+     * from a third party on any page this plugin draws.
      *
      * @param string $currentScreen $top_level_page variable for current page
      */
@@ -157,6 +158,8 @@ class Head
                     'maxUploadBytes'      => wp_max_upload_size(),
                     'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),
                 ],
+                // The limits the Settings screen states. See PostingLimits.
+                'postingLimits' => PostingLimits::all(),
             ]
         );
 
@@ -168,7 +171,13 @@ class Head
         $frontendStrings = Config::get('ROOT_DIR') . '/backend/i18n/frontend-strings.php';
 
         if (get_locale() !== 'en_US' && file_exists($frontendStrings)) {
-            $frontendVars['translations'] = include $frontendStrings;
+            // Merged, not assigned: a `bit_connect_localized_script` listener
+            // may already have added the strings of a bundle it extends this
+            // one with, and assigning would throw them away.
+            $frontendVars['translations'] = array_merge(
+                (array) include $frontendStrings,
+                \is_array($frontendVars['translations'] ?? null) ? $frontendVars['translations'] : []
+            );
         }
 
         return $frontendVars;

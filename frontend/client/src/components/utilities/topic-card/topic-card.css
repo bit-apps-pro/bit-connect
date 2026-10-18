@@ -10,6 +10,28 @@
   border-color: var(--bc-line-strong);
 }
 
+/* The topic its author was just sent to the list to see: a brand tint and ring
+   that ease in as the list settles, hold, and ease back to the ordinary card.
+   A ring rather than the border, which the card's !important utility owns and
+   an animation cannot move. */
+.topic-card--created {
+  animation: topic-card-created 3.2s ease-in-out 0.15s both;
+}
+
+@keyframes topic-card-created {
+  0%,
+  100% {
+    background-color: var(--bc-surface);
+    box-shadow: 0 0 0 2px transparent;
+  }
+
+  15%,
+  55% {
+    background-color: color-mix(in srgb, var(--bc-brand) 8%, var(--bc-surface));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--bc-brand) 70%, transparent);
+  }
+}
+
 /* Whole-card target: the title link stretches over the card, so the click area
    is the row rather than one line of text. Anything that needs its own
    destination (the vote box, the author and tag links) is lifted above it. */
@@ -37,23 +59,65 @@
      equivalent with support outside Chromium; line-clamp is still prefixed. */
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+
+  /* A word longer than the card (a pasted URL, an unbroken name) breaks
+     rather than running under the clip with no ellipsis. */
+  overflow-wrap: anywhere;
 }
 
 .topic-card__meta {
   position: relative;
   z-index: 10;
 
-  /* The row is a flex container, so its width is the card's; without this the
-     overlay under it stays clickable everywhere except the links themselves. */
-  width: fit-content;
-  max-width: 100%;
+  /* The row spans the card so the tags can sit at its right end. It lets
+     clicks through to the card overlay under it; only what it holds takes
+     them. */
+  pointer-events: none;
+}
+
+.topic-card__meta > :not(.topic-card__tags),
+.topic-card__tags > * {
+  pointer-events: auto;
+}
+
+/* The tags fill what the row leaves, right-aligned, one line high. A basis of
+   0 means the box never pushes the rest of the row onto another line; a tag
+   that does not fit wraps below that line and is clipped, so a card shows the
+   tags it has room for, whole, or none. */
+.topic-card__tags {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+  height: 1.25rem;
+  overflow: hidden;
+  line-height: 1.25rem;
+  pointer-events: none;
+}
+
+/* A wrapped line always keeps its first item, however wide. This empty one
+   takes that place, so even the first tag wraps away when it does not fit
+   instead of showing cut in half. It is a full line tall, or that first line
+   would be no height at all and the next one — the tag that did not fit —
+   would start at the top, in view. The gap is a margin for the same reason: a
+   column-gap would sit beside the spacer and count against the first tag. */
+.topic-card__tags::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.25rem;
+}
+
+.topic-card__tags > * {
+  margin-left: 0.75rem;
 }
 
 /* Keyboard parity with hover: tabbing to the card link has to show where focus
    landed, and the stretched ::after has no box of its own to outline. */
 .topic-card:focus-within {
   border-color: var(--bc-brand);
-  box-shadow: 0 0 0 2px rgb(50 102 234 / 25%);
+  box-shadow: 0 0 0 2px rgba(50, 102, 234, 25%);
 }
 
 .topic-card a:focus:not(:focus-visible) {

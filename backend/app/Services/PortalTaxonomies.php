@@ -30,7 +30,23 @@ use WP_Term;
 final class PortalTaxonomies
 {
     /**
-     * URL segment => taxonomy name.
+     * Term meta holding each slug a term's archive was once served at.
+     */
+    public const PREVIOUS_SLUG_META = 'bit_connect_previous_slug';
+
+    /**
+     * Segments the portal already routes besides its archives, which an
+     * archive segment would shadow or be shadowed by: the list's own
+     * pagination, member profiles, and the notifications and following pages.
+     */
+    private const ROUTED_SEGMENTS = ['page', 'user', 'notifications', 'following'];
+
+    /**
+     * Archive key => taxonomy name.
+     *
+     * The key is what SEO settings and sitemap names store, so it never
+     * changes. It is also the URL segment, except for an archive a plugin
+     * names otherwise through TopicTaxonomies — see slugFor().
      *
      * Built in a method rather than a class constant: these are backed enum
      * cases, and reading `->value` is not a constant expression.
@@ -39,38 +55,43 @@ final class PortalTaxonomies
      */
     public static function map(): array
     {
-        $map = [
-            'topic'      => Taxonomies::TOPIC_TYPES->value,
-            'department' => Taxonomies::DEPARTMENTS->value,
-            'tag'        => Taxonomies::TAGS->value,
-            'stage'      => Taxonomies::STAGES->value,
-            'status'     => Taxonomies::STATUSES->value,
-        ];
+        // Every segment is always served: the sidebar links to stage archives
+        // and topic pages link to their terms, so an archive that 404s strands
+        // the portal's own links. Whether search sees one is isIndexable().
+        $map = self::builtIn();
 
-        // A segment switched off in the SEO settings loses its route, not just
-        // its index entry — a hub nobody wants crawled is not a page worth
-        // serving either, and leaving the URL live would strand the links that
-        // point at it. Dropping it here also changes the rewrite pattern, which
-        // is what makes the rule rebuild itself.
-        return array_filter(
-            $map,
-            static fn ($segment) => SeoSettings::archiveEnabled($segment),
-            ARRAY_FILTER_USE_KEY
-        );
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] !== '' && !isset($map[$entry['archive']])) {
+                $map[$entry['archive']] = $entry['taxonomy'];
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Whether a URL segment is one an added archive may not take.
+     */
+    public static function isReservedSegment(string $segment): bool
+    {
+        return isset(self::builtIn()[$segment]) || \in_array($segment, self::ROUTED_SEGMENTS, true);
     }
 
     /**
      * Whether a segment's archives belong in the index.
      *
      * Set per segment on the SEO screen. The shipped defaults index the subject
-     * taxonomies — topic type, department, tag — because those are what people
+     * taxonomies — topic type and tag — because those are what people
      * search for and their archives are the cluster pages worth ranking, and
-     * leave the workflow ones (stage, status) out: nobody searches "in progress"
-     * or "needs approval", and an archive per workflow state is a thin,
-     * constantly-churning listing of topics already indexed individually.
+     * stage, because the sidebar navigates by it: those archives are the pages
+     * every other page in the portal links to, so they carry the internal
+     * linking that makes a page rankable in the first place. `status` stays
+     * out — nobody searches "needs approval", and nothing links to it, so an
+     * archive per status is a thin, constantly-churning listing of topics
+     * already indexed individually.
      *
-     * Every archive still works for visitors either way — indexing is a separate
-     * switch from whether the route is served.
+     * Every archive still works for visitors either way; one kept out of the
+     * index is marked noindex and left out of the sitemap.
      */
     public static function isIndexable(string $segment): bool
     {
@@ -82,7 +103,42 @@ final class PortalTaxonomies
     }
 
     /**
-     * Every archive segment, for building rewrite rules and route patterns.
+     * Whether one term's archive may be indexed.
+     *
+     * Its segment's answer, refined per term through
+     * `bit_connect_archive_term_indexable` — a taxonomy whose terms differ
+     * from each other (some open to anyone, some not) answers for each one.
+     * Read by both the page's robots tag and the sitemap, so the two agree.
+     */
+    public static function isTermIndexable(WP_Term $term): bool
+    {
+        $segment = self::segmentFor($term->taxonomy);
+
+        return (bool) Hooks::applyFilter(
+            'bit_connect_archive_term_indexable',
+            self::isIndexable($segment),
+            $term,
+            $segment
+        );
+    }
+
+    /**
+     * Whether a segment's archives belong in the sitemap.
+     *
+     * Exactly the indexable ones, read *filtered*, so the two answers cannot
+     * disagree: a site that opens stage archives through
+     * `bit_connect_archive_indexable` gets them advertised as well as indexed,
+     * and one that closes a subject taxonomy through the same filter drops out
+     * of the sitemap instead of being listed as a URL the head marks noindex.
+     * An indexable page left out of the sitemap would only be found later.
+     */
+    public static function isSitemapListed(string $segment): bool
+    {
+        return self::isIndexable($segment);
+    }
+
+    /**
+     * Every archive key.
      *
      * @return array<int, string>
      */
@@ -92,11 +148,149 @@ final class PortalTaxonomies
     }
 
     /**
-     * A regex alternation of the segments, e.g. `topic|department|stage`.
+     * The URL segment an archive key is served under, e.g. `tag`.
+     */
+    public static function slugFor(string $segment): string
+    {
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] === $segment) {
+                return $entry['slug'];
+            }
+        }
+
+        return $segment;
+    }
+
+    /**
+     * What an archive's terms are called, plural, e.g. `Tags`.
+     */
+    public static function labelFor(string $segment): string
+    {
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] === $segment) {
+                return $entry['plural'];
+            }
+        }
+
+        $taxonomy = get_taxonomy(self::taxonomyFor($segment));
+
+        return $taxonomy ? (string) $taxonomy->labels->name : $segment;
+    }
+
+    /**
+     * The archive key a URL segment addresses, or '' when it addresses none.
+     */
+    public static function segmentForSlug(string $slug): string
+    {
+        foreach (self::segments() as $segment) {
+            if (self::slugFor($segment) === $slug) {
+                return $segment;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * A regex alternation of the URL segments, e.g. `topic|tag|stage`, for
+     * building rewrite rules and route patterns.
      */
     public static function segmentPattern(): string
     {
-        return implode('|', array_map('preg_quote', self::segments()));
+        $slugs = array_map([self::class, 'slugFor'], self::segments());
+
+        // An archive served under a segment other than its key stays routable
+        // at the key, so its old URLs reach renamedArchiveUrl() and redirect
+        // instead of 404ing.
+        $slugs = [...$slugs, ...self::segments()];
+
+        return implode('|', array_map('preg_quote', array_unique($slugs)));
+    }
+
+    /**
+     * Where `/{key}/{slug}` now lives when that archive is served under a
+     * segment of its own, or '' when that URL is not one.
+     *
+     * Search engines and shared links keep pointing at the segment the archive
+     * started under, so a rename redirects them rather than 404ing each one.
+     * Only that original segment is remembered: a later rename of a rename
+     * leaves the intermediate name unrouted.
+     */
+    public static function renamedArchiveUrl(string $urlSegment, string $termSlug): string
+    {
+        if (self::taxonomyFor($urlSegment) !== '' && self::slugFor($urlSegment) !== $urlSegment) {
+            return self::resolve(self::slugFor($urlSegment), $termSlug) === null ? '' : self::url($urlSegment, $termSlug);
+        }
+
+        return self::renamedTermUrl($urlSegment, $termSlug);
+    }
+
+    /**
+     * Where `/{urlSegment}/{slug}` now lives when the term once had that slug,
+     * or '' when no term did.
+     *
+     * A term's archive URL is its slug, so editing the slug would otherwise
+     * 404 every link and search result pointing at the old one. The term's
+     * current URL wins: a slug some other term holds now is that term's page.
+     * Answered through resolve(), so a term this reader may not see is never
+     * named by a redirect either.
+     */
+    public static function renamedTermUrl(string $urlSegment, string $termSlug): string
+    {
+        $segment = self::segmentForSlug($urlSegment);
+        $taxonomy = self::taxonomyFor($segment);
+
+        if ($taxonomy === '' || $termSlug === '' || self::resolve($urlSegment, $termSlug) !== null) {
+            return '';
+        }
+
+        $terms = get_terms(
+            [
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => false,
+                'number'     => 1,
+                'meta_key'   => self::PREVIOUS_SLUG_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+                'meta_value' => sanitize_title($termSlug), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+            ]
+        );
+
+        $term = \is_array($terms) ? ($terms[0] ?? null) : null;
+
+        if (!$term instanceof WP_Term || self::resolve($urlSegment, $term->slug) === null) {
+            return '';
+        }
+
+        return self::url($segment, $term->slug);
+    }
+
+    /**
+     * Remembers a portal term's slug when an edit changes it, for
+     * renamedTermUrl() (`wp_update_term_data`).
+     *
+     * @param mixed $data
+     * @param mixed $termId
+     * @param mixed $taxonomy
+     *
+     * @return mixed
+     */
+    public static function rememberPreviousSlug($data, $termId, $taxonomy)
+    {
+        if (!\is_array($data) || !\is_string($taxonomy) || self::segmentFor($taxonomy) === '') {
+            return $data;
+        }
+
+        $term = get_term((int) $termId, $taxonomy);
+
+        if (
+            $term instanceof WP_Term
+            && isset($data['slug'])
+            && $data['slug'] !== $term->slug
+            && !\in_array($term->slug, get_term_meta((int) $termId, self::PREVIOUS_SLUG_META), true)
+        ) {
+            add_term_meta((int) $termId, self::PREVIOUS_SLUG_META, $term->slug);
+        }
+
+        return $data;
     }
 
     /**
@@ -118,14 +312,16 @@ final class PortalTaxonomies
     }
 
     /**
-     * The term behind `/{segment}/{slug}`, or null when nothing matches.
+     * The term behind `/{urlSegment}/{slug}`, or null when nothing matches.
+     *
+     * Takes the segment as it appears in the URL, not the archive key.
      *
      * Returning null is what keeps a mistyped archive URL a genuine 404 rather
      * than an empty page answering 200 — the same rule the topic routes follow.
      */
-    public static function resolve(string $segment, string $termSlug): ?WP_Term
+    public static function resolve(string $urlSegment, string $termSlug): ?WP_Term
     {
-        $taxonomy = self::taxonomyFor($segment);
+        $taxonomy = self::taxonomyFor(self::segmentForSlug($urlSegment));
 
         if ($taxonomy === '' || $termSlug === '') {
             return null;
@@ -133,7 +329,13 @@ final class PortalTaxonomies
 
         $term = get_term_by('slug', $termSlug, $taxonomy);
 
-        return $term instanceof WP_Term ? $term : null;
+        if (!$term instanceof WP_Term) {
+            return null;
+        }
+
+        // A term the portal would not list to this reader has no archive for
+        // them either: its page would name it. Answered as missing.
+        return ExtensionPoints::portalTerms([$term], $taxonomy) === [] ? null : $term;
     }
 
     /**
@@ -141,7 +343,10 @@ final class PortalTaxonomies
      */
     public static function url(string $segment, string $termSlug): string
     {
-        return PortalLocation::url($segment . '/' . $termSlug);
+        // In the site's permalink form, like SeoContent::portalUrl(): this is
+        // the archive's canonical, sitemap entry and redirect target, and a
+        // missing trailing slash would make each of them a 301.
+        return user_trailingslashit(PortalLocation::url(self::slugFor($segment) . '/' . $termSlug));
     }
 
     /**
@@ -152,5 +357,20 @@ final class PortalTaxonomies
         $segment = self::segmentFor($term->taxonomy);
 
         return $segment === '' ? '' : self::url($segment, $term->slug);
+    }
+
+    /**
+     * This plugin's own archives.
+     *
+     * @return array<string, string>
+     */
+    private static function builtIn(): array
+    {
+        return [
+            'topic'  => Taxonomies::TOPIC_TYPES->value,
+            'tag'    => Taxonomies::TAGS->value,
+            'stage'  => Taxonomies::STAGES->value,
+            'status' => Taxonomies::STATUSES->value,
+        ];
     }
 }

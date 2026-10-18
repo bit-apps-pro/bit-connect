@@ -1,30 +1,41 @@
 import { StyleProvider } from '@ant-design/cssinjs'
+import { FOLLOWING_PATH } from '@pages/following/following-path'
 import Topics from '@pages/topics'
 import TopicArchive from '@pages/topics/archive'
 import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
+import MotionProvider from '@shared/motion/motion-provider'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { createAntDesignStyleContainer } from '@utils/themeUtils'
-import { ConfigProvider, notification, theme } from 'antd'
+import { App as AntApp, ConfigProvider, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
-import { useEffect, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router'
 
+import addedPortalRoutes from './added-portal-routes'
 import NotifyContext from './common/context/NotifyContext'
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
 import { useNotificationConfig, useResponsiveNotification } from './common/hooks/useNotificationConfig'
 import config from './config/config'
 import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
-import { ForgotPassword, Login, Register as Signup, VerifyEmail } from './pages/Auth'
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
-import NotificationsPage from './pages/Notifications'
-import PostDetailsPage from './pages/Post/PostDetailsPage'
-import UserProfilePage from './pages/User'
 
-// const Root = lazy(() => import('./pages/root/Root'))
-// const Root = lazy(() => startTransition(import('./pages/root/Root')))
+// The topic list is the portal's front door and loads with the app. Every other
+// page is its own chunk, fetched on first visit, so a reader landing on the
+// list does not also download the topic page, profile, notifications and the
+// sign-in screens. Layout's <Suspense> covers the pages inside it; the auth
+// pages sit outside it and get their own below.
+const PostDetailsPage = lazy(() => import('./pages/Post/PostDetailsPage'))
+const UserProfilePage = lazy(() => import('./pages/User'))
+const NotificationsPage = lazy(() => import('./pages/Notifications'))
+const FollowingPage = lazy(() => import('./pages/following'))
+const Login = lazy(() => import('./pages/Auth/LoginPage'))
+const Signup = lazy(() => import('./pages/Auth/RegisterPage'))
+const VerifyEmail = lazy(() => import('./pages/Auth/VerifyEmailPage'))
+const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
 
 const { darkAlgorithm, defaultAlgorithm } = theme
 
@@ -56,6 +67,14 @@ export const routeList: {
     index: false,
     path: '/notifications'
   },
+  // What the member follows. Static, and as private as the notifications page.
+  {
+    element: <FollowingPage />,
+    index: false,
+    path: FOLLOWING_PATH
+  },
+  // Pages plugins draw, each a static segment the server serves the shell at.
+  ...addedPortalRoutes.map(route => ({ element: route.element, index: false, path: route.path })),
   // Term archives (`/tag/api`, `/topic/question`). Also two segments, but React
   // Router ranks the static `/user` prefix above this dynamic one, so the
   // profile route above still wins. Unknown segments render 404 here, matching
@@ -69,6 +88,15 @@ export const routeList: {
     element: <PostDetailsPage />,
     index: false,
     path: '/:postName'
+  },
+  // A link to one reply: the topic page, scrolled to it. Three segments, so it
+  // competes with neither route above. The id is not constrained to digits here —
+  // React Router has no syntax for it — so the page treats a malformed one the
+  // same as a reply that no longer exists.
+  {
+    element: <PostDetailsPage />,
+    index: false,
+    path: '/:postName/comment/:commentId'
   },
 
   {
@@ -85,7 +113,8 @@ function VerifyEmailRedirect() {
   const emailToken = params.get('bit_connect_email_token')
   const uid = params.get('bit_connect_uid')
 
-  if (pathname === '/verify-email') return
+  // Either permalink form — see utils/route-path.ts.
+  if (pathname.replace(/\/+$/, '') === '/verify-email') return
 
   // An email *change* confirmation. Handled by the same page but a different
   // endpoint, so the token is forwarded under its own name rather than being
@@ -94,7 +123,9 @@ function VerifyEmailRedirect() {
     return (
       <Navigate
         replace
-        to={`/verify-email?email_token=${encodeURIComponent(emailToken)}&uid=${encodeURIComponent(uid)}`}
+        to={routePath(
+          `/verify-email?email_token=${encodeURIComponent(emailToken)}&uid=${encodeURIComponent(uid)}`
+        )}
       />
     )
   }
@@ -103,7 +134,7 @@ function VerifyEmailRedirect() {
     const destination = uid
       ? `/verify-email?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}`
       : `/verify-email?token=${encodeURIComponent(token)}`
-    return <Navigate replace to={destination} />
+    return <Navigate replace to={routePath(destination)} />
   }
 }
 
@@ -120,7 +151,7 @@ function PortalAccessGuard({ children }: { children: React.ReactNode }) {
       return
     }
     const redirect = encodeURIComponent(redirectPath)
-    return <Navigate replace to={`/login?redirect_to=${redirect}`} />
+    return <Navigate replace to={routePath(`/login?redirect_to=${redirect}`)} />
   }
   return <>{children}</>
 }
@@ -143,10 +174,20 @@ export default function AppRoutes() {
 
   useEffect(() => {
     if (navigateUrl && navigateUrl !== '') {
-      navigate(navigateUrl, { replace: true })
+      navigate(routePath(navigateUrl), { replace: true })
       setNavigateUrl('')
     }
   }, [navigate, navigateUrl, setNavigateUrl])
+
+  // Every link the app builds goes through routePath(), but a path can still
+  // arrive in the other form — a notification target, a link an extension
+  // builds. Settle it here, without a history entry, so the address bar always
+  // names the URL the server treats as canonical.
+  const { hash, pathname, search } = useLocation()
+  useEffect(() => {
+    const settled = routePath(pathname)
+    if (settled !== pathname) navigate(`${settled}${search}${hash}`, { replace: true })
+  }, [hash, navigate, pathname, search])
 
   return (
     <ConfigProvider
@@ -169,15 +210,21 @@ export default function AppRoutes() {
             variables the portal never injects, and rendering them only dragged
             the admin app's config into the public bundle. */}
         {/* // TODO: separate the context providers into different component for performance */}
+        {/* Gives the imperative dialogs (modal.confirm in the post and comment
+            menus) the theme above; antd's static Modal.confirm cannot see a
+            ConfigProvider and warns about it. component={false} so no wrapper
+            element lands between StyleProvider and the routes. */}
+        <AntApp component={false}>
+        <MotionProvider>
         <NotifyContext.Provider value={notifyContextValue}>
           {contextHolderNotification}
           <VerifyEmailRedirect />
           <Routes>
             {/* Auth routes (outside layout) */}
-            <Route element={<Login />} path="/login" />
-            <Route element={<Signup />} path="/register" />
-            <Route element={<VerifyEmail />} path="/verify-email" />
-            <Route element={<ForgotPassword />} path="/forgot-password" />
+            <Route element={<Suspense><Login /></Suspense>} path="/login" />
+            <Route element={<Suspense><Signup /></Suspense>} path="/register" />
+            <Route element={<Suspense><VerifyEmail /></Suspense>} path="/verify-email" />
+            <Route element={<Suspense><ForgotPassword /></Suspense>} path="/forgot-password" />
 
             {/* Main routes (inside layout, guarded by portal access) */}
             <Route
@@ -194,6 +241,8 @@ export default function AppRoutes() {
             </Route>
           </Routes>
         </NotifyContext.Provider>
+        </MotionProvider>
+        </AntApp>
       </StyleProvider>
     </ConfigProvider>
   )

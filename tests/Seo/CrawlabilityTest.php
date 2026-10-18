@@ -280,6 +280,31 @@ final class CrawlabilityTest extends TestCase
         $this->assertSame('Try the forgot password link.', $data['comment'][0]['text']);
     }
 
+    public function testTopicBreadcrumbRunsFromTheCommunityToTheTopic(): void
+    {
+        SeoMeta::forTopic($this->topic);
+        $items = $this->breadcrumbItems(SeoMeta::head());
+
+        $this->assertSame(['Acme Community', 'How do I reset my password'], array_column($items, 'name'));
+        $this->assertSame([1, 2], array_column($items, 'position'));
+    }
+
+    public function testTopicBreadcrumbTakesThePlacesAFilterNames(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_breadcrumb'] = static fn (): array => [
+            ['name' => 'Gear Talk', 'url' => 'https://example.com/community/group/gear-talk'],
+            ['name' => '', 'url' => 'https://example.com/dropped'],
+            'not an item',
+        ];
+
+        SeoMeta::forTopic($this->topic);
+        $items = $this->breadcrumbItems(SeoMeta::head());
+
+        $this->assertSame(['Acme Community', 'Gear Talk', 'How do I reset my password'], array_column($items, 'name'));
+        $this->assertSame([1, 2, 3], array_column($items, 'position'));
+        $this->assertSame('https://example.com/community/group/gear-talk', $items[1]['item']);
+    }
+
     public function testTopicListEmitsCollectionPageStructuredData(): void
     {
         SeoMeta::forTopics([$this->topic, $this->makeTopic(2, 'Second topic', 'second-topic')]);
@@ -315,8 +340,30 @@ final class CrawlabilityTest extends TestCase
         $this->assertSame('', SeoContent::forTopics([$this->topic]));
         $this->assertSame('', SeoContent::forTopic($this->topic));
 
+        // Described rather than left bare: an undescribed route leaves the
+        // site's SEO plugin printing the portal page's `index` robots onto it.
         SeoMeta::forTopic($this->topic);
-        $this->assertSame('', SeoMeta::head());
+        $head = SeoMeta::head();
+
+        $this->assertStringContainsString('<meta name="robots" content="noindex,nofollow" />', $head);
+        $this->assertStringNotContainsString($this->topic['post_title'], $head);
+        $this->assertStringNotContainsString('application/ld+json', $head);
+        $this->assertStringNotContainsString('canonical', $head);
+    }
+
+    public function testRestrictedPortalKeepsEveryContentRouteOutOfTheIndex(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('general_settings')]['portalAccess'] = 'logged_in';
+
+        SeoMeta::forTopics([$this->topic]);
+        $this->assertStringContainsString('content="noindex,nofollow"', SeoMeta::head());
+
+        // A member's name must not reach the title of a page the portal refuses.
+        SeoMeta::forProfile('Jane Member', 'https://example.com/community/user/jane');
+        $head = SeoMeta::head();
+        $this->assertStringContainsString('content="noindex,nofollow"', $head);
+        $this->assertStringNotContainsString('Jane Member', $head);
+        $this->assertSame('Acme Community', SeoMeta::meta()['title']);
     }
 
     public function testDraftTopicIsNeverRendered(): void
@@ -505,22 +552,32 @@ final class CrawlabilityTest extends TestCase
         );
     }
 
-    public function testDeeperPagesAreCrawledButNotIndexed(): void
+    public function testDeeperPagesAreIndexable(): void
     {
         SeoMeta::forTopics([$this->topic], 3);
         $head = SeoMeta::head();
 
-        // `follow` is the whole point: the page exists so the topics it links to
-        // are reachable, not so the listing itself ranks.
-        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', $head);
+        // Google's pagination guidance: each page indexable in its own right. A
+        // page left noindex is crawled less until its links stop being
+        // followed, which defeats the page's purpose of reaching older topics.
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString('<meta name="description"', $head);
+    }
+
+    public function testAWithdrawnPaginationSettingIsIgnored(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexPagination' => false];
+        SeoMeta::forTopics([$this->topic], 3);
+
+        $this->assertStringNotContainsString('noindex', SeoMeta::head());
     }
 
     public function testDeeperPagesAreSelfCanonicalNotPointedAtPageOne(): void
     {
         SeoMeta::forTopics([$this->topic], 3);
 
-        // Pointing a noindex page's canonical at page 1 is the pairing that can
-        // carry the noindex across to page 1.
+        // Canonical to page 1 would disown the page, and with it the topics
+        // only it links to.
         $this->assertStringContainsString(
             '<link rel="canonical" href="https://example.com/community/page/3" />',
             SeoMeta::head()
@@ -532,7 +589,7 @@ final class CrawlabilityTest extends TestCase
         SeoMeta::forTopics([$this->topic], 2);
 
         $this->assertSame(
-            ['title' => 'Acme Community — page 2'],
+            ['title' => 'Acme Community | Page 2'],
             SeoMeta::filterTitle(['title' => 'Community — Acme', 'page' => 'Page 2'])
         );
     }
@@ -630,9 +687,32 @@ final class CrawlabilityTest extends TestCase
         $this->assertStringNotContainsString('noindex,nofollow', $head);
     }
 
+    public function testAnIndexedProfileCarriesItsOwnCanonicalAndDescription(): void
+    {
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexProfiles' => true];
+        SeoMeta::forProfile('Casey', 'https://example.com/community/user/casey');
+        $head = SeoMeta::head();
+
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString(
+            '<link rel="canonical" href="https://example.com/community/user/casey" />',
+            $head
+        );
+        $this->assertStringContainsString('Casey’s profile and discussions', $head);
+    }
+
+    public function testAProfileWithNoAddressStaysNoindexEvenWhenProfilesAreIndexed(): void
+    {
+        // An indexable page with no canonical of its own is the thing to avoid.
+        $GLOBALS['__wp_options'][Config::withPrefix('seo_settings')] = ['indexProfiles' => true];
+        SeoMeta::forProfile('Casey');
+
+        $this->assertStringContainsString('noindex,follow', SeoMeta::head());
+    }
+
     public function testProfileRouteDoesNotClaimThePortalsCanonical(): void
     {
-        SeoMeta::forProfile('Casey');
+        SeoMeta::forProfile('Casey', 'https://example.com/community/user/casey');
 
         // Previously the profile inherited the portal page's canonical, making
         // every member URL a duplicate of the community landing page.
@@ -644,7 +724,7 @@ final class CrawlabilityTest extends TestCase
         SeoMeta::forProfile('Casey');
 
         $this->assertSame(
-            ['title' => 'Casey — Acme Community'],
+            ['title' => 'Casey | Acme Community'],
             SeoMeta::filterTitle(['title' => 'Community — Acme'])
         );
     }
@@ -655,7 +735,7 @@ final class CrawlabilityTest extends TestCase
 
         $parts = SeoMeta::filterTitle(['title' => 'Community — Acme']);
 
-        $this->assertSame('Member profile — Acme Community', $parts['title']);
+        $this->assertSame('Member profile | Acme Community', $parts['title']);
     }
 
     /**
@@ -732,6 +812,28 @@ final class CrawlabilityTest extends TestCase
         $this->assertNotEmpty($matches, 'No JSON-LD block was emitted.');
 
         return json_decode($matches[1], true);
+    }
+
+    /**
+     * The BreadcrumbList's items, wherever among the head's JSON-LD it sits.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function breadcrumbItems(string $head): array
+    {
+        preg_match_all('#<script type="application/ld\+json">(.*?)</script>#s', $head, $matches);
+
+        foreach ($matches[1] as $json) {
+            $data = json_decode($json, true);
+
+            foreach ((isset($data['@type']) ? [$data] : ($data['@graph'] ?? $data)) as $document) {
+                if (\is_array($document) && ($document['@type'] ?? '') === 'BreadcrumbList') {
+                    return $document['itemListElement'];
+                }
+            }
+        }
+
+        $this->fail('No BreadcrumbList was emitted.');
     }
 
     /**

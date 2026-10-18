@@ -6,6 +6,8 @@
  * their own way before this file existed.
  */
 
+import { formatSiteTime, FULL_DATE_TIME, siteDaysAgo } from './site-time'
+
 /**
  * Parses a timestamp that is GMT but does not say so.
  *
@@ -49,16 +51,14 @@ export function timeAgo(value: string): string {
 export function fullDate(value: string): string {
   const at = parseGmt(value)
 
-  return Number.isNaN(at.getTime()) ? '' : at.toLocaleString()
+  return Number.isNaN(at.getTime()) ? '' : formatSiteTime(at, FULL_DATE_TIME)
 }
 
 /** Just the clock, for a row already filed under a day heading. */
 export function clockTime(value: string): string {
   const at = parseGmt(value)
 
-  return Number.isNaN(at.getTime())
-    ? ''
-    : at.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  return Number.isNaN(at.getTime()) ? '' : formatSiteTime(at, { hour: '2-digit', minute: '2-digit' })
 }
 
 /**
@@ -73,22 +73,60 @@ export function dayLabel(value: string, todayText: string, yesterdayText: string
 
   if (Number.isNaN(at.getTime())) return ''
 
-  const midnight = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const days = Math.round((midnight(new Date()).getTime() - midnight(at).getTime()) / 86_400_000)
+  // Counted on the site's calendar, so "Today" turns over at the site's
+  // midnight and matches the clock time printed beside each row.
+  const { days, sameYear } = siteDaysAgo(at)
 
   if (days === 0) return todayText
   if (days === 1) return yesterdayText
 
-  return at.toLocaleDateString(undefined, {
+  return formatSiteTime(at, {
     day: 'numeric',
     month: 'long',
     // A year only once it is not this one. "6 August 2026" in 2026 is noise.
-    year: at.getFullYear() === new Date().getFullYear() ? undefined : 'numeric'
+    year: sameYear ? undefined : 'numeric'
   })
 }
 
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  hellip: '…',
+  laquo: '«',
+  ldquo: '“',
+  lsquo: '‘',
+  lt: '<',
+  mdash: '—',
+  nbsp: ' ',
+  ndash: '–',
+  quot: '"',
+  raquo: '»',
+  rdquo: '”',
+  rsquo: '’'
+}
+
 /**
- * Strips tags: excerpts are stored HTML, shown here as plain text.
+ * Decodes character references once.
+ *
+ * One pass on purpose: `&amp;gt;` is someone who typed "&gt;", and decoding the
+ * result again would turn their text into ">".
+ */
+const decodeEntities = (value: string) =>
+  value.replaceAll(/&(#x[\da-f]+|#\d+|[a-z]+);/gi, (entity, ref: string) => {
+    if (ref[0] !== '#') return NAMED_ENTITIES[ref.toLowerCase()] ?? entity
+
+    const hex = ref[1] === 'x' || ref[1] === 'X'
+    const code = Number.parseInt(ref.slice(hex ? 2 : 1), hex ? 16 : 10)
+
+    return code > 0 && code <= 0x10_ff_ff ? String.fromCodePoint(code) : entity
+  })
+
+/**
+ * Stored HTML as plain text: tags out, entities decoded.
+ *
+ * Decoding is not optional — the editor writes `>` as `&gt;`, and React prints
+ * a string verbatim, so a comment saying "man>>" would read "man&gt;&gt;".
  *
  * Takes `unknown` because half its callers read out of an activity row's
  * free-form context blob, where a field is whatever the action that wrote it
@@ -96,8 +134,7 @@ export function dayLabel(value: string, todayText: string, yesterdayText: string
  */
 export const plain = (html: unknown) =>
   typeof html === 'string'
-    ? html
-        .replaceAll(/<[^>]*>/g, ' ')
+    ? decodeEntities(html.replaceAll(/<[^>]*>/g, ' '))
         .replaceAll(/\s+/g, ' ')
         .trim()
     : ''

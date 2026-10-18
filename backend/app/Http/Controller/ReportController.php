@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\ContentRemovalService;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\ReportService;
 use InvalidArgumentException;
 
@@ -203,7 +204,10 @@ final class ReportController
         // Destroy first, close second. The other way round, a delete that failed
         // would leave an empty queue and content still standing, with nothing
         // left to click.
-        if ($isRemoval && !ContentRemovalService::remove($targetType, $targetId)) {
+        if (
+            $isRemoval
+            && !ReportService::removingFor($targetType, $targetId, static fn (): bool => ContentRemovalService::remove($targetType, $targetId))
+        ) {
             return Response::error([], 500)
                 ->message(__('That could not be removed, so the reports are still open.', 'bit-connect'));
         }
@@ -300,7 +304,7 @@ final class ReportController
             return [
                 'topic_id'    => (int) $comment->comment_post_ID,
                 'topic_title' => $topic ? (string) $topic->post_title : '',
-                'excerpt'     => ActivityLogService::excerpt($comment->comment_content),
+                'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $comment->comment_content)),
                 'url'         => (string) get_comment_link($comment),
             ];
         }
@@ -314,8 +318,8 @@ final class ReportController
         return [
             'topic_id'    => $targetId,
             'topic_title' => (string) $post->post_title,
-            'excerpt'     => ActivityLogService::excerpt($post->post_content),
-            'url'         => (string) get_permalink($post),
+            'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $post->post_content)),
+            'url'         => PortalLocation::topicUrl($post),
         ];
     }
 

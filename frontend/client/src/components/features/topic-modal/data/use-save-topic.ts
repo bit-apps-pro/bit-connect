@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormInstance } from 'antd'
 import { useContext } from 'react'
 
-import { usePostsStore } from '@/store/posts.zustand'
+import { TOPIC_LIST_QUERY_KEY } from '@/store/data/fetch-all-posts-api'
 
 import { slugDisclosure } from '../shared/slug-disclosure'
 import { type SaveTopicPayload, type Topic } from '../shared/type'
@@ -13,7 +13,6 @@ import useTopicRequest from './use-topic-request'
 
 export default function useSaveTopic(form: FormInstance) {
   const { notificationApi } = useContext(NotifyContext)
-  const fetchAllPosts = usePostsStore(state => state.fetchAllPosts)
   const queryClient = useQueryClient()
   // Which endpoint a topic goes to depends on the visibility it was given.
   // See use-topic-request.
@@ -46,12 +45,25 @@ export default function useSaveTopic(form: FormInstance) {
       notificationApi?.error({ message: msg })
     },
     onSuccess: (response, payload) => {
-      notificationApi?.success({
-        description: slugDisclosure(payload.post_name, response.data?.post_name),
-        message: __('Topic created successfully')
-      })
-      // Reload the list (page 1) with the currently active filters.
-      void fetchAllPosts(usePostsStore.getState().filters)
+      // A topic can come back hidden — a site may hold new topics for a
+      // moderator — and then the list reloaded below will not show it. Said
+      // here, or its author is told it was created and cannot find it.
+      notificationApi?.success(
+        response.data?.hidden
+          ? {
+              description: __(
+                'Only you and the moderators can see it until a moderator has reviewed it.'
+              ),
+              message: __('Topic submitted for review')
+            }
+          : {
+              description: slugDisclosure(payload.post_name, response.data?.post_name),
+              message: __('Topic created successfully')
+            }
+      )
+      // The new topic belongs at the top of the lists it fits; the one on screen
+      // refetches now, the others the next time they are opened.
+      void queryClient.invalidateQueries({ queryKey: TOPIC_LIST_QUERY_KEY })
       // This save just consumed a slug; a cached verdict from before it would
       // still call that slug free.
       queryClient.invalidateQueries({ queryKey: ['topic-slug-check'] })

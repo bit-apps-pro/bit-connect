@@ -10,7 +10,7 @@ const defaultGeneralSettings: GeneralSettings = {
   logoPermalinkCustom: '',
   logoPermalinkMode: 'default',
   portalAccess: 'everyone',
-  portalFilters: { product: true, sort: true, tags: true },
+  portalFilters: { sort: true, tags: true, types: true },
   promo: { cta: '', enabled: false, eyebrow: '', headline: '', phrases: [], prefix: '', url: '' }
 }
 
@@ -36,9 +36,10 @@ export default function useGeneralSettings() {
         // setting existed returns no portalFilters at all, and a partial object
         // must not blank out the keys it happens to omit.
         portalFilters: {
-          product: d.portalFilters?.product ?? defaultGeneralSettings.portalFilters.product,
           sort: d.portalFilters?.sort ?? defaultGeneralSettings.portalFilters.sort,
-          tags: d.portalFilters?.tags ?? defaultGeneralSettings.portalFilters.tags
+          tags: d.portalFilters?.tags ?? defaultGeneralSettings.portalFilters.tags,
+          // The chips followed Sort before they had a switch of their own.
+          types: d.portalFilters?.types ?? d.portalFilters?.sort ?? defaultGeneralSettings.portalFilters.types
         },
         promo: {
           cta: d.promo?.cta ?? '',

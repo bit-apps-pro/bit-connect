@@ -273,7 +273,7 @@ final class NotificationMailer
             case NotificationTypes::REPORT_RESOLVED:
                 return \sprintf(
                     // translators: %1$s: the moderator's decision, e.g. "Dismissed"
-                    __('A moderator reviewed something you reported — %1$s', 'bit-connect'),
+                    __('A moderator reviewed something you reported: %1$s', 'bit-connect'),
                     (string) ($context['decision_label'] ?? '')
                 );
 
@@ -294,6 +294,30 @@ final class NotificationMailer
             case NotificationTypes::REPORT_FILED:
                 return __('A new report is waiting in the moderation queue', 'bit-connect');
 
+            case NotificationTypes::TAG_SUGGESTED:
+                return \sprintf(
+                    // translators: 1: member name, 2: tag name, 3: topic title
+                    __('%1$s suggested a new tag "%2$s" on %3$s', 'bit-connect'),
+                    $who,
+                    (string) ($context['tag_name'] ?? ''),
+                    $named
+                );
+
+            case NotificationTypes::ACCESS_REQUESTED:
+                return \sprintf(
+                    // translators: 1: member name, 2: the space they asked to join
+                    __('%1$s asked to join %2$s', 'bit-connect'),
+                    $who,
+                    (string) ($context['space_name'] ?? '')
+                );
+
+            case NotificationTypes::ACCESS_GRANTED:
+                return \sprintf(
+                    // translators: %s: the private space the member can now open
+                    __('You can now read %s', 'bit-connect'),
+                    (string) ($context['space_name'] ?? '')
+                );
+
             default:
                 return __('Something happened in the forum', 'bit-connect');
         }
@@ -308,7 +332,7 @@ final class NotificationMailer
     {
         // May be empty: a site that never set a title has no blogname, and
         // fromName() has nothing to fall back to. Every branch below therefore
-        // has a version without it — a subject ending in a dangling "— " looks
+        // has a version without it — a subject ending in a dangling "| " looks
         // like the mail was cut off mid-send.
         $site = trim(NotificationSettings::fromName(NotificationPreferences::settings()));
 
@@ -340,7 +364,7 @@ final class NotificationMailer
         }
 
         // translators: 1: what happened, 2: site name
-        return \sprintf(__('%1$s — %2$s', 'bit-connect'), $label, $site);
+        return \sprintf(__('%1$s | %2$s', 'bit-connect'), $label, $site);
     }
 
     /**

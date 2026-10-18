@@ -11,16 +11,26 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
+use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\FollowService;
+use BitApps\BitConnect\Services\ForumUploadsInLibrary;
+use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\ProfileSlugService;
+use BitApps\BitConnect\Services\ReportService;
+use BitApps\BitConnect\Services\StageHistoryService;
+use BitApps\BitConnect\Services\TagApprovalService;
+use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\UserStatsService;
 use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\Seo\SeoPluginBridge;
+use BitApps\BitConnect\Views\PortalBlock;
 
 class HookProvider
 {
@@ -35,6 +45,16 @@ class HookProvider
         new PostTypeProvider();
 
         Hooks::addAction('rest_api_init', [$this, 'loadAppApiHooks']);
+
+        // A term whose slug is edited keeps its old archive URL as a redirect —
+        // see PortalTaxonomies::renamedTermUrl().
+        Hooks::addFilter('wp_update_term_data', [PortalTaxonomies::class, 'rememberPreviousSlug'], 10, 3);
+
+        // A deleted tag takes its follows with it — see FollowService.
+        Hooks::addAction('delete_term', [FollowService::class, 'onTermDeleted'], 10, 3);
+
+        // Who suggested a tag, beside it in the admin's list — see TagApprovalService.
+        Hooks::addFilter('rest_prepare_' . Taxonomies::TAGS->value, [TagApprovalService::class, 'restFields'], 10, 2);
 
         // Computes the derived "may open the admin menu" capability. Registered
         // here because this provider runs on init:8, before admin_menu asks.
@@ -53,6 +73,14 @@ class HookProvider
         // Sitemap: list portal routes instead of the CPT's own permalinks, and
         // 301 the CPT permalink to its portal equivalent.
         PortalSitemap::register();
+
+        // A members-only forum stays closed on the routes core serves topics
+        // through by itself — REST, feeds, search, taxonomy archives, oEmbed.
+        MembersOnlyGuard::register();
+
+        // What members upload in the forum stays out of the Media Library and
+        // the media picker, under a "Bit Connect uploads" view of its own.
+        ForumUploadsInLibrary::register();
 
         // Same correction for links to a single comment, which core builds from
         // the CPT permalink the sitemap just excluded. Global rather than on the
@@ -77,6 +105,17 @@ class HookProvider
         // API never sees.
         UserStatsService::registerHooks();
 
+        // Pending reports close when their topic or comment is deleted, from
+        // the portal or from wp-admin.
+        ReportService::registerHooks();
+
+        // When a topic last moved stage, sent with each topic.
+        // Global for the same reason: an admin moves topics from wp-admin.
+        StageHistoryService::register();
+
+        // Topic lists ordered by votes — see TopicService::voteOrderClauses().
+        Hooks::addFilter('posts_clauses', [TopicService::class, 'voteOrderClauses'], 10, 2);
+
         // Instant notification email. Registered globally rather than on the API
         // request alone: a notification can be raised from wp-admin or WP-CLI,
         // and the member who asked to be emailed immediately does not care which
@@ -96,6 +135,11 @@ class HookProvider
         // Register the portal page template so the REST API accepts it
         Hooks::addFilter('theme_page_templates', [$this, 'registerPortalPageTemplate']);
         Hooks::addFilter('template_include', [$this, 'loadPortalPageTemplate']);
+
+        // The portal as a block: found in the inserter under "Bit Connect",
+        // and able to draw a preview of itself where a shortcode shows as text.
+        // This provider runs on init, which is when blocks register.
+        PortalBlock::register();
 
         if (Config::getEnv('CLI_ACTIVE')) {
             include_once __DIR__ . '/../../../cli/RegisterCommands.php';

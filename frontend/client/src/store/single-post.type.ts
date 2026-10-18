@@ -43,6 +43,14 @@ export interface SinglePostStore {
   setCommentVote: (commentId: number, vote: Vote) => void
   setError: (error: string | undefined) => void
   setLoading: (isLoading: boolean) => void
+  /**
+   * Move the topic's pin to this comment, or clear it with `undefined`/0.
+   *
+   * Local only — it records a change the server has already accepted, it does
+   * not ask for one. Nothing in the free plugin calls it; see the note on the
+   * implementation.
+   */
+  setPinnedComment: (commentId: number | undefined) => void
   setPost: (post: Topic) => void
   setSortOption: (sortOption: SortOption) => void
   sortOption: SortOption

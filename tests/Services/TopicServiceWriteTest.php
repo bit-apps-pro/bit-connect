@@ -4,6 +4,7 @@ namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\UploadClaims;
 use PHPUnit\Framework\TestCase;
 use WP_Comment;
 use WP_Post;
@@ -105,7 +106,6 @@ final class TopicServiceWriteTest extends TestCase
     public function testANewTopicIsFiledUnderTheTermsItWasGiven(): void
     {
         $created = $this->topics->createTopic([
-            'departments' => [11],
             'post_title'  => 'Hello',
             'stages'      => [12],
             'tags'        => [13, 14],
@@ -115,9 +115,23 @@ final class TopicServiceWriteTest extends TestCase
         $filed = $GLOBALS['__wp_post_terms'][$created['ID']];
 
         $this->assertSame([10], $filed[Taxonomies::TOPIC_TYPES->value]);
-        $this->assertSame([11], $filed[Taxonomies::DEPARTMENTS->value]);
         $this->assertSame([12], $filed[Taxonomies::STAGES->value]);
         $this->assertSame([13, 14], $filed[Taxonomies::TAGS->value]);
+    }
+
+    public function testANewTopicIsFiledUnderAnAddedTaxonomyByItsParameter(): void
+    {
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'singular' => 'Team'],
+        ];
+
+        $created = $this->topics->createTopic(['post_title' => 'Hello', 'teams' => [11]]);
+
+        $this->assertSame([11], $GLOBALS['__wp_post_terms'][$created['ID']]['example-teams']);
+
+        $GLOBALS['__wp_taxonomies'] = [];
+        unset($GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']);
     }
 
     public function testANewTopicAdoptsTheFilesUploadedWithIt(): void
@@ -199,18 +213,9 @@ final class TopicServiceWriteTest extends TestCase
     }
 
     /**
-     * Both call wp_update_post() and bump post_modified without a word
+     * It calls wp_update_post() and bumps post_modified without a word
      * changing, which is why that column cannot answer this.
      */
-    public function testPinningATopicIsNotAnEdit(): void
-    {
-        $this->seedTopic(20, ['post_title' => 'Cannot log in']);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-
-        $this->assertSame([], $GLOBALS['__wp_post_meta'][20] ?? []);
-    }
-
     public function testLockingATopicIsNotAnEdit(): void
     {
         $this->seedTopic(20, ['post_title' => 'Cannot log in']);
@@ -230,38 +235,8 @@ final class TopicServiceWriteTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Pinning and locking
+    // Locking
     // -----------------------------------------------------------------------
-
-    public function testPinningPutsTheTopicOnTheStickyList(): void
-    {
-        $this->seedTopic(20, []);
-
-        $this->assertTrue($this->topics->updateTopic(20, ['is_pinned' => true])['is_pinned']);
-        $this->assertSame([20], get_option('sticky_posts', []));
-    }
-
-    public function testPinningATopicTwiceListsItOnce(): void
-    {
-        $this->seedTopic(20, []);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-
-        $this->assertSame([20], get_option('sticky_posts', []));
-    }
-
-    public function testUnpinningTakesItOffAgainAndLeavesTheOthers(): void
-    {
-        $this->seedTopic(20, []);
-        $this->seedTopic(21, []);
-
-        $this->topics->updateTopic(20, ['is_pinned' => true]);
-        $this->topics->updateTopic(21, ['is_pinned' => true]);
-        $this->topics->updateTopic(20, ['is_pinned' => false]);
-
-        $this->assertSame([21], get_option('sticky_posts', []));
-    }
 
     public function testLockingClosesCommentsAndUnlockingOpensThem(): void
     {
@@ -274,14 +249,17 @@ final class TopicServiceWriteTest extends TestCase
         $this->assertSame('open', $GLOBALS['__wp_posts'][20]->comment_status);
     }
 
-    public function testAnUpdateThatSaysNothingAboutPinningLeavesItAlone(): void
+    /**
+     * This plugin keeps no list of pinned topics, so a request carrying the
+     * flag changes nothing it stores.
+     */
+    public function testAnUpdateCarryingAPinFlagTouchesNoStickyList(): void
     {
         $this->seedTopic(20, []);
+
         $this->topics->updateTopic(20, ['is_pinned' => true]);
 
-        $this->topics->updateTopic(20, ['post_title' => 'Renamed']);
-
-        $this->assertSame([20], get_option('sticky_posts', []));
+        $this->assertSame([], get_option('sticky_posts', []));
     }
 
     // -----------------------------------------------------------------------
@@ -313,6 +291,71 @@ final class TopicServiceWriteTest extends TestCase
         $this->topics->updateTopic(20, ['attachments' => [90]]);
 
         $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
+    }
+
+    /**
+     * A picture or video placed in the text belongs to the topic as much as a
+     * file below it does: linked to it, so it goes when the topic goes, and
+     * no longer waiting for the cleanup of unused uploads.
+     */
+    public function testAnUploadPlacedInTheTextIsLinkedToTheTopicAndClaimed(): void
+    {
+        $this->seedTopic(20, []);
+        $this->seedAttachment(90, 0, self::AUTHOR);
+        UploadClaims::recordUpload(90);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+
+        $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
+        $this->assertSame('', get_post_meta(90, UploadClaims::PENDING_META, true));
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** Linking another member's upload would let a topic take it over. */
+    public function testAnotherMembersUploadInTheTextIsNotTaken(): void
+    {
+        $this->seedTopic(20, []);
+        $this->seedAttachment(90, 0, self::EDITOR);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+
+        $this->assertSame(0, $GLOBALS['__wp_posts'][90]->post_parent);
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** Saving the file list must not unlink what the text still shows. */
+    public function testAnUploadStillInTheTextStaysLinkedWhenTheFileListIsSaved(): void
+    {
+        $this->seedTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+        $this->seedAttachment(90, 20, self::AUTHOR);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['attachments' => []]);
+
+        $this->assertSame(20, $GLOBALS['__wp_posts'][90]->post_parent);
+
+        unset($GLOBALS['__wp_attachment_urls']);
+    }
+
+    /** One taken out of the text goes back to the cleanup, as a removed file does. */
+    public function testAnUploadTakenOutOfTheTextIsHandedToTheCleanup(): void
+    {
+        $this->seedTopic(20, ['post_content' => '<video src="https://example.com/uploads/90.mp4"></video>']);
+        $this->seedAttachment(90, 20, self::AUTHOR);
+        UploadClaims::recordUpload(90);
+        UploadClaims::claim([90]);
+        $GLOBALS['__wp_attachment_urls'] = ['https://example.com/uploads/90.mp4' => 90];
+
+        $this->topics->updateTopic(20, ['post_content' => '<p>No video after all</p>']);
+
+        $this->assertSame(0, $GLOBALS['__wp_posts'][90]->post_parent);
+        $this->assertNotSame('', get_post_meta(90, UploadClaims::PENDING_META, true));
+
+        unset($GLOBALS['__wp_attachment_urls']);
     }
 
     public function testAnUpdateThatSaysNothingAboutFilesLeavesThemAlone(): void
@@ -455,11 +498,12 @@ final class TopicServiceWriteTest extends TestCase
         $GLOBALS['__wp_posts'][$postId] = $post;
     }
 
-    private function seedAttachment(int $attachmentId, int $parentId = 0): void
+    private function seedAttachment(int $attachmentId, int $parentId = 0, int $authorId = 0): void
     {
         $attachment = new WP_Post();
         $attachment->ID = $attachmentId;
         $attachment->post_type = 'attachment';
+        $attachment->post_author = $authorId;
         $attachment->post_parent = $parentId;
         $attachment->post_mime_type = 'image/png';
         $attachment->guid = 'https://example.com/uploads/' . $attachmentId . '.png';

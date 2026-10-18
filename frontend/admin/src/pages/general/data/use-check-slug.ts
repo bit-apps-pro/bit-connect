@@ -4,12 +4,16 @@ import { type ResponseType } from '@common/request/types'
 import { useQuery } from '@tanstack/react-query'
 
 export interface SlugCheck {
+  /** Nothing is here and a new page can be created under exactly this slug. */
+  available: boolean
   /** A published page answers to this slug. */
   exists: boolean
   /** …and it contains the [bit-connect] shortcode. */
   hasShortcode: boolean
   /** …and it is the page carrying the portal today. */
   isPortal: boolean
+  /** WordPress routes on this slug itself (`category`, `author`, `wp-json`…), so no portal may use it. */
+  reserved: boolean
   slug: string
   url: string
 }
@@ -26,8 +30,11 @@ export default function useCheckSlug(slug: string) {
   const { data, isFetching } = useQuery<ResponseType<SlugCheck>, Error, SlugCheck>({
     enabled: isEnabled,
     queryFn: ({ signal }) =>
-      request<never, SlugCheck>(`portal-page/check?slug=${encodeURIComponent(settled)}`, {
+      // The slug goes in queryParam, not the path: on plain permalinks the base is
+      // `?rest_route=…`, and a second `?` turns the whole query into the route.
+      request<never, SlugCheck>('portal-page/check', {
         method: 'GET',
+        queryParam: { slug: settled },
         signal
       }),
     queryKey: ['portal-slug-check', settled],

@@ -3,76 +3,82 @@
 namespace BitApps\BitConnect\SSR\Seo;
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use BitApps\BitConnect\Enum\SeoSettings;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
 /**
- * Hands the matched portal route's metadata to whichever SEO plugin owns the head.
+ * Stands the site's SEO plugin down on portal routes, keeping only its title.
  *
  * Yoast, Rank Math, SEOPress and All in One SEO all describe the *portal page*,
  * because that is the only thing WordPress's main query tells them about — the
  * topic routes are served by the portal's own router and are invisible to them.
- * Left alone they stamp the portal page's title and, far worse, its canonical
- * onto every topic URL, collapsing the entire community to a single indexable
- * page while the sitemap advertises the topic URLs the canonical then disowns.
+ * Left alone they stamp the portal page's canonical, robots, social tags and
+ * schema graph onto every topic URL, collapsing the community into one
+ * indexable page while the sitemap advertises the URLs that canonical disowns.
  *
- * Yielding to them is not an option either: they cannot describe a route they
- * cannot see. So instead of competing with the active plugin or standing aside
- * for it, this feeds it — the same values SeoMeta would have printed, pushed
- * through the plugin's own filters so it prints them in its own format. Site
- * owners keep one SEO plugin managing their whole site, and portal routes stop
- * being the hole in it.
+ * Feeding them the route's values through their own filters was tried and
+ * could not be made whole: SEOPress's social and canonical filters carry
+ * complete HTML tags rather than values, an image the portal page lacks is
+ * never offered for replacement, robots and the JSON-LD graph are built from
+ * the page and not from any filter, and a route with no canonical of its own
+ * inherits the page's. So on a route SeoMeta has described, the plugin prints
+ * nothing but the document title — fed the route's — and SeoMeta prints the
+ * rest. Everywhere else the plugin runs untouched, and site verification tags
+ * survive on every page, since a portal served at the site root is the front
+ * page Search Console checks.
  *
- * Every callback is a no-op unless a route described itself this request, so a
- * filter firing on a normal page or post passes its value straight through.
+ * `bit_connect_seo_plugin_stand_down` returns false to leave the plugin's own
+ * output in place; SeoMeta's tags then print alongside it unless
+ * `bit_connect_seo_social_tags` silences them.
  */
 final class SeoPluginBridge
 {
     /**
-     * Wire every supported plugin's filters.
+     * Wire every supported plugin's hooks.
      *
      * Registered unconditionally rather than behind a detection check: this runs
      * while plugins are still loading, so an SEO plugin that loads after this one
-     * would not yet be detectable. A filter added for a plugin that is not
+     * would not yet be detectable. A hook added for a plugin that is not
      * installed simply never fires, which costs nothing.
      */
     public static function register(): void
     {
+        // The title is the one thing each plugin keeps printing, so it is the
+        // one value it is fed. SEOPress needs no feed: its title is unhooked
+        // below, and WordPress's own title carries SeoMeta's.
+        foreach (['wpseo_title', 'rank_math/frontend/title', 'aioseo_title'] as $filter) {
+            Hooks::addFilter($filter, [self::class, 'title']);
+        }
+
         self::registerYoast();
-        self::registerRankMath();
-        self::registerSeoPress();
         self::registerAioseo();
+
+        // Rank Math prints everything from its own `rank_math/head` action and
+        // SEOPress from two `wp_head` callbacks at priority 0; both are
+        // unhooked here, ahead of either.
+        Hooks::addAction('wp_head', [self::class, 'standDownHeadOutput'], -1);
+
+        // SEOPress's newer title and description classes defer to the legacy
+        // path unhooked above whenever these answer true.
+        Hooks::addFilter('seopress_old_pre_get_document_title', [self::class, 'keepTrueOnRoute']);
+        Hooks::addFilter('seopress_old_wp_head_description', [self::class, 'keepTrueOnRoute']);
     }
 
     /**
-     * Whether an SEO plugin is printing this route's tags on our behalf.
+     * Whether the SEO plugin stands down for this request.
      *
-     * SeoMeta consults this to decide whether to print its own social tags —
-     * exactly one component may own them. Detection runs at call time (during
-     * `wp_head`), by which point every plugin is loaded.
+     * Only on a route SeoMeta described: a normal page or post belongs to the
+     * plugin entirely.
      */
-    public static function isBridged(): bool
+    public static function standsDown(): bool
     {
-        $owner = SeoSettings::metaOwner();
-
-        if ($owner === SeoSettings::OWNER_PLUGIN) {
-            // Bit Connect prints the tags itself even where an SEO plugin is
-            // installed. It still receives the route data through the filters
-            // below, so if it prints anything of its own it is at least correct.
-            $bridged = false;
-        } elseif ($owner === SeoSettings::OWNER_SEO_PLUGIN) {
-            // Hand the head over whether or not a supported plugin was detected.
-            // For an unsupported one this means no route tags at all, which is
-            // what "let my SEO plugin own this" asks for.
-            $bridged = true;
-        } else {
-            $bridged = self::detect() !== '';
+        if (SeoMeta::meta() === null) {
+            return false;
         }
 
-        return (bool) Hooks::applyFilter('bit_connect_seo_plugin_bridge', $bridged);
+        return (bool) Hooks::applyFilter('bit_connect_seo_plugin_stand_down', true);
     }
 
     /**
@@ -100,158 +106,156 @@ final class SeoPluginBridge
     }
 
     /**
-     * Yoast SEO.
-     */
-    private static function registerYoast(): void
-    {
-        $map = [
-            'wpseo_title'               => 'title',
-            'wpseo_metadesc'            => 'description',
-            'wpseo_canonical'           => 'canonical',
-            'wpseo_opengraph_title'     => 'title',
-            'wpseo_opengraph_desc'      => 'description',
-            'wpseo_opengraph_url'       => 'canonical',
-            'wpseo_opengraph_image'     => 'image',
-            'wpseo_opengraph_type'      => 'type',
-            'wpseo_twitter_title'       => 'title',
-            'wpseo_twitter_description' => 'description',
-            'wpseo_twitter_image'       => 'image',
-        ];
-
-        foreach ($map as $filter => $key) {
-            Hooks::addFilter($filter, static fn ($value) => self::override($value, $key));
-        }
-    }
-
-    /**
-     * Rank Math.
-     */
-    private static function registerRankMath(): void
-    {
-        $map = [
-            'rank_math/frontend/title'                        => 'title',
-            'rank_math/frontend/description'                  => 'description',
-            'rank_math/frontend/canonical'                    => 'canonical',
-            'rank_math/opengraph/facebook/og_title'           => 'title',
-            'rank_math/opengraph/facebook/og_description'     => 'description',
-            'rank_math/opengraph/facebook/og_url'             => 'canonical',
-            'rank_math/opengraph/facebook/og_image'           => 'image',
-            'rank_math/opengraph/facebook/og_type'            => 'type',
-            'rank_math/opengraph/twitter/twitter_title'       => 'title',
-            'rank_math/opengraph/twitter/twitter_description' => 'description',
-            'rank_math/opengraph/twitter/twitter_image'       => 'image',
-        ];
-
-        foreach ($map as $filter => $key) {
-            Hooks::addFilter($filter, static fn ($value) => self::override($value, $key));
-        }
-    }
-
-    /**
-     * SEOPress.
-     */
-    private static function registerSeoPress(): void
-    {
-        $map = [
-            'seopress_titles_title'              => 'title',
-            'seopress_titles_desc'               => 'description',
-            'seopress_titles_canonical'          => 'canonical',
-            'seopress_social_og_title'           => 'title',
-            'seopress_social_og_desc'            => 'description',
-            'seopress_social_og_url'             => 'canonical',
-            'seopress_social_og_thumb'           => 'image',
-            'seopress_social_twitter_card_title' => 'title',
-            'seopress_social_twitter_card_desc'  => 'description',
-            'seopress_social_twitter_card_thumb' => 'image',
-        ];
-
-        foreach ($map as $filter => $key) {
-            Hooks::addFilter($filter, static fn ($value) => self::override($value, $key));
-        }
-    }
-
-    /**
-     * All in One SEO.
-     *
-     * Its social tags arrive as one associative array per network rather than a
-     * filter per tag, so those are patched key by key.
-     */
-    private static function registerAioseo(): void
-    {
-        $map = [
-            'aioseo_title'         => 'title',
-            'aioseo_description'   => 'description',
-            'aioseo_canonical_url' => 'canonical',
-        ];
-
-        foreach ($map as $filter => $key) {
-            Hooks::addFilter($filter, static fn ($value) => self::override($value, $key));
-        }
-
-        $facebook = [
-            'og:title'       => 'title',
-            'og:description' => 'description',
-            'og:url'         => 'canonical',
-            'og:image'       => 'image',
-            'og:type'        => 'type',
-        ];
-
-        $twitter = [
-            'twitter:title'       => 'title',
-            'twitter:description' => 'description',
-            'twitter:image'       => 'image',
-        ];
-
-        Hooks::addFilter('aioseo_facebook_tags', static fn ($tags) => self::overrideTagArray($tags, $facebook));
-        Hooks::addFilter('aioseo_twitter_tags', static fn ($tags) => self::overrideTagArray($tags, $twitter));
-    }
-
-    /**
-     * Replace a plugin's value with the route's, when there is one.
-     *
-     * An empty route value is not an override — a topic with no featured image
-     * should fall back to whatever the site configured, not blank the tag.
+     * The route's title in place of the plugin's, when a route has one.
      *
      * @param mixed $value
      *
      * @return mixed
      */
-    private static function override($value, string $key)
+    public static function title($value)
     {
         $meta = SeoMeta::meta();
 
-        if ($meta === null || !isset($meta[$key]) || $meta[$key] === '') {
+        if ($meta === null || empty($meta['title'])) {
             return $value;
         }
 
-        return $meta[$key];
+        return $meta['title'];
     }
 
     /**
-     * Patch the keys we own inside a plugin's tag array, leaving the rest alone.
+     * Unhook Rank Math's and SEOPress's head output on a portal route.
      *
-     * Defensive by design: if a future version changes the shape, the array is
-     * returned untouched rather than corrupted.
-     *
-     * @param mixed                 $tags
-     * @param array<string, string> $map  tag name => meta key
+     * Runs on `wp_head` at priority -1, before Rank Math's action fires at 1 and
+     * SEOPress's loaders at 0.
+     */
+    public static function standDownHeadOutput(): void
+    {
+        if (!self::standsDown()) {
+            return;
+        }
+
+        // Rank Math moved core's title tag into its own action, so emptying the
+        // action would take the title with it. Put that one back. Its
+        // verification tags are added to the action at `wp_head` priority 0 —
+        // after this — so they survive.
+        if (class_exists('RankMath')) {
+            remove_all_actions('rank_math/head');
+            add_action('rank_math/head', '_wp_render_title_tag', 1);
+        }
+
+        // Verification and analytics are separate callbacks at later
+        // priorities and are left in place.
+        remove_action('wp_head', 'seopress_load_titles_options', 0);
+        remove_action('wp_head', 'seopress_load_social_options', 0);
+    }
+
+    /**
+     * @param mixed $value
      *
      * @return mixed
      */
-    private static function overrideTagArray($tags, array $map)
+    public static function keepTrueOnRoute($value)
     {
-        if (!\is_array($tags) || SeoMeta::meta() === null) {
-            return $tags;
+        return self::standsDown() ? true : $value;
+    }
+
+    /**
+     * Yoast's head output, down to its title and verification tags.
+     *
+     * @param mixed $presenters
+     *
+     * @return mixed
+     */
+    public static function yoastPresenters($presenters)
+    {
+        if (!\is_array($presenters) || !self::standsDown()) {
+            return $presenters;
         }
 
-        foreach ($map as $tag => $key) {
-            if (!\array_key_exists($tag, $tags)) {
-                continue;
+        return array_values(array_filter($presenters, static function ($presenter) {
+            if (!\is_object($presenter)) {
+                return false;
             }
 
-            $tags[$tag] = self::override($tags[$tag], $key);
+            $class = \get_class($presenter);
+
+            // Removing the title presenter would leave no <title> at all: Yoast
+            // has already unhooked core's.
+            // Matched by name: Yoast's classes are not loaded on every site. The
+            // Open Graph and Twitter title presenters end in `\Open_Graph\…`
+            // and `\Twitter\…`, so only the document title matches this.
+            return str_ends_with($class, '\Presenters\Title_Presenter')
+                || str_contains($class, '\Presenters\Webmaster\\')
+                || str_contains($class, '\Presenters\Debug\\');
+        }));
+    }
+
+    /**
+     * All in One SEO's head output, down to its verification tags.
+     *
+     * Its social and schema views go entirely. The meta view also carries the
+     * site verification tags, so it stays, with every route-describing value
+     * in it blanked — each of which it omits when empty.
+     *
+     * @param mixed $views
+     *
+     * @return mixed
+     */
+    public static function aioseoViews($views)
+    {
+        if (!\is_array($views) || !self::standsDown()) {
+            return $views;
         }
 
-        return $tags;
+        unset($views['social'], $views['schema']);
+
+        return $views;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    public static function blankOnRoute($value)
+    {
+        return self::standsDown() ? '' : $value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    public static function emptyArrayOnRoute($value)
+    {
+        return self::standsDown() ? [] : $value;
+    }
+
+    /**
+     * Yoast SEO.
+     *
+     * Its robots values are merged into core's `wp_robots` output by a separate
+     * integration, outside the presenters, so they are emptied on their own.
+     */
+    private static function registerYoast(): void
+    {
+        Hooks::addFilter('wpseo_frontend_presenters', [self::class, 'yoastPresenters']);
+        Hooks::addFilter('wpseo_robots_array', [self::class, 'emptyArrayOnRoute']);
+    }
+
+    /**
+     * All in One SEO.
+     */
+    private static function registerAioseo(): void
+    {
+        Hooks::addFilter('aioseo_meta_views', [self::class, 'aioseoViews']);
+
+        foreach (['aioseo_description', 'aioseo_canonical_url', 'aioseo_prev_link', 'aioseo_next_link'] as $filter) {
+            Hooks::addFilter($filter, [self::class, 'blankOnRoute']);
+        }
+
+        Hooks::addFilter('aioseo_robots_meta', [self::class, 'emptyArrayOnRoute']);
     }
 }

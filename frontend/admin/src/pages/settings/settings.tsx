@@ -1,241 +1,108 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Button, Descriptions, Typography } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-
-import useSettings from './data/use-settings'
-import useUpdateSettings from './data/use-update-settings'
-import { type ErrorResponse } from './data/use-update-settings'
-import ModerationSection from './internal/moderation-section'
-import SettingsSection from './internal/settings-section'
-import TopicAccessExtras from './internal/topic-access-extras'
+import { combineSaves, flushAll, PageSaveContext, usePageSaves } from '@common/hooks/page-save'
+import useRouteTab from '@common/hooks/use-route-tab'
+import PageTabs, { type PageTab } from '@utilities/page-tabs'
+import SaveStatus from '@utilities/save-status'
+import { Typography } from 'antd'
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { type ReactNode, useMemo } from 'react'
 import {
-  type CleanupSettings,
-  type SettingsFormData,
-  type TopicAccessSettings,
-  type TopicFormFieldsSettings
-} from './shared/types'
+  LuBell,
+  LuDatabase,
+  LuGauge,
+  LuGlobe,
+  LuLogIn,
+  LuMessageSquare,
+  LuShieldCheck,
+  LuTrendingUp
+} from 'react-icons/lu'
+
+import General from '../general/general'
+import { panelVariants } from '../general/internal/motion'
+import Notifications from '../notifications'
+import Seo from '../seo'
+import ForumSettings from './forum-settings'
 
 const { Title } = Typography
 
-interface WpMediaSettings {
-  bigImageThresholdPx: number
-  maxUploadBytes: number
-}
+// Ordered as an admin sets a forum up: the portal and how people get in, what
+// they may do there, then what reaches them and search engines. Data last.
+const TAB_KEYS = ['portal', 'sign-in', 'topics', 'moderation', 'limits', 'notifications', 'seo', 'data'] as const
 
-function getWpMediaSettings(): undefined | WpMediaSettings {
-  return (window as unknown as { bit_connect_?: { wpMediaSettings?: WpMediaSettings } }).bit_connect_
-    ?.wpMediaSettings
-}
+type TabKey = (typeof TAB_KEYS)[number]
 
-function formatBytes(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(0)} MB`
-  if (bytes >= 1024) return `${(bytes / 1024).toFixed(0)} KB`
-  return `${bytes} B`
-}
-
-function MediaLimitsInfo() {
-  const media = getWpMediaSettings()
-  const maxSize = media ? formatBytes(media.maxUploadBytes) : '—'
-  const maxPx = media ? `${media.bigImageThresholdPx} px` : '—'
-
-  return (
-    <div className="bc-mt-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-p-5">
-      <Title className="bc-mb-1" level={5}>
-        {__('WordPress Media Limits')}
-      </Title>
-      <p className="bc-mb-4 bc-text-sm bc-text-ink-muted">
-        {__(
-          'These limits are controlled by your server and WordPress. Pasted images that exceed them are automatically resized before upload.'
-        )}
-      </p>
-      <Descriptions bordered column={1} size="small">
-        <Descriptions.Item label={__('Max upload size')}>
-          <span className="bc-font-medium">{maxSize}</span>
-          <span className="bc-ml-2 bc-text-xs bc-text-ink-subtle">
-            {__('(set by server php.ini via wp_max_upload_size)')}
-          </span>
-        </Descriptions.Item>
-        <Descriptions.Item label={__('Max image dimensions')}>
-          <span className="bc-font-medium">{maxPx}</span>
-          <span className="bc-ml-2 bc-text-xs bc-text-ink-subtle">
-            {__('(WordPress big_image_size_threshold filter, default 2560 px)')}
-          </span>
-        </Descriptions.Item>
-        <Descriptions.Item label={__('Allowed file types')}>
-          <span className="bc-font-medium">JPEG, PNG, GIF, WebP, PDF, DOC, DOCX</span>
-        </Descriptions.Item>
-      </Descriptions>
-    </div>
-  )
-}
-
-const getErrorMessage = (error: ErrorResponse | null, isError: boolean) => {
-  if (isError) {
-    return error?.errors?.message ?? undefined
-  }
-  return
-}
-
+/**
+ * Every setting the forum has, on one screen.
+ *
+ * They were four screens — General, Settings, Notifications and SEO — and an
+ * admin had to guess which held a switch: who may read the portal sat under
+ * General, whether new topics wait for approval under Settings. One screen
+ * with a tab per subject leaves nothing to guess.
+ *
+ * Each tab saves as it changes and reports here under its own key, so the one
+ * status line beside the title speaks for every tab, the ones not open
+ * included.
+ */
 export default function Settings() {
-  const { settings } = useSettings()
-  const { error, isError, isUpdatingSettings, updateSettings } = useUpdateSettings()
-  const errorMessage = getErrorMessage(error, isError)
+  // In the address, so a refresh keeps the open tab and a tab can be linked to.
+  const { activeTab, setActiveTab } = useRouteTab('/settings', TAB_KEYS)
+  const { report, states } = usePageSaves()
+  const pageSave = combineSaves(states)
+  // Leaving any field saves at once, rather than waiting out the delay.
+  const saveAll = () => flushAll(states)
 
-  const [form, setForm] = useState<SettingsFormData>()
-
-  useEffect(() => {
-    if (settings) {
-      setForm({
-        cleanup: { ...settings.cleanup },
-        topicAccess: { ...settings.topicAccess },
-        topicFormFields: { ...settings.topicFormFields }
-      })
-    }
-  }, [settings])
-
-  const handleSettingChange = useCallback(
-    (
-      section: 'cleanup' | 'topicAccess' | 'topicFormFields',
-      key: keyof CleanupSettings | keyof TopicAccessSettings | keyof TopicFormFieldsSettings,
-      value: boolean
-    ) => {
-      setForm(prev => {
-        if (!prev) return prev
-        const updated: SettingsFormData = {
-          cleanup: { ...prev.cleanup },
-          topicAccess: { ...prev.topicAccess },
-          topicFormFields: { ...prev.topicFormFields }
-        }
-        if (section === 'topicAccess') {
-          updated.topicAccess[key as keyof TopicAccessSettings] = value
-        } else if (section === 'topicFormFields') {
-          updated.topicFormFields[key as keyof TopicFormFieldsSettings] = value
-        } else {
-          updated.cleanup[key as keyof CleanupSettings] = value
-        }
-        return updated
-      })
-    },
+  const tabs = useMemo<PageTab[]>(
+    () => [
+      { icon: <LuGlobe aria-hidden className="bc-shrink-0" size={16} />, key: 'portal', label: __('Portal') },
+      { icon: <LuLogIn aria-hidden className="bc-shrink-0" size={16} />, key: 'sign-in', label: __('Sign in') },
+      { icon: <LuMessageSquare aria-hidden className="bc-shrink-0" size={16} />, key: 'topics', label: __('Topics') },
+      { icon: <LuShieldCheck aria-hidden className="bc-shrink-0" size={16} />, key: 'moderation', label: __('Moderation') },
+      { icon: <LuGauge aria-hidden className="bc-shrink-0" size={16} />, key: 'limits', label: __('Limits') },
+      { icon: <LuBell aria-hidden className="bc-shrink-0" size={16} />, key: 'notifications', label: __('Notifications') },
+      { icon: <LuTrendingUp aria-hidden className="bc-shrink-0" size={16} />, key: 'seo', label: __('SEO') },
+      { icon: <LuDatabase aria-hidden className="bc-shrink-0" size={16} />, key: 'data', label: __('Data') }
+    ],
     []
   )
 
-  const handleSave = useCallback(async () => {
-    if (!form) return
-    try {
-      await updateSettings(form)
-    } catch {
-      // error handled via hook
-    }
-  }, [form, updateSettings])
-
-  const topicAccessSettings = useMemo(() => {
-    if (!form?.topicAccess) return []
-    return [
-      {
-        description: __('On/off your Topic Upvote'),
-        key: 'upvote',
-        label: __('Upvote'),
-        value: form.topicAccess.upvote ?? false
-      },
-      {
-        description: __('On/off your Comment'),
-        key: 'comment',
-        label: __('Comment'),
-        value: form.topicAccess.comment ?? false
-      },
-      // Neither comment upvoting nor private topics is here, for the same
-      // reason: both settings are the add-on's, stored in the add-on's
-      // options and rendered by the add-on's own section, because the
-      // features they switch are entirely over there. A switch here for
-      // either would be a control with nothing behind it.
-    ]
-  }, [form])
-
-  const cleanupSettings = useMemo(() => {
-    if (!form?.cleanup) return []
-    return [
-      {
-        description: __('Delete all plugin settings, terms and posts when uninstalling this plugin'),
-        key: 'deleteDataOnUninstall',
-        label: __('Delete Data on Uninstall'),
-        value: form.cleanup.deleteDataOnUninstall ?? false
-      }
-    ]
-  }, [form])
-
-  const topicFormFieldsSettings = useMemo(() => {
-    if (!form?.topicFormFields) return []
-    return [
-      {
-        description: __('Show and require Topic Type when creating a topic'),
-        key: 'requireTopicType',
-        label: __('Require Topic Type'),
-        value: form.topicFormFields.requireTopicType ?? true
-      },
-      {
-        description: __('Show and require Products/Department when creating a topic'),
-        key: 'requireDepartment',
-        label: __('Require Products/Department'),
-        value: form.topicFormFields.requireDepartment ?? true
-      }
-    ]
-  }, [form])
+  const panels: Record<TabKey, ReactNode> = {
+    data: <ForumSettings section="data" />,
+    limits: <ForumSettings section="limits" />,
+    moderation: <ForumSettings section="moderation" />,
+    notifications: <Notifications />,
+    portal: <General section="portal" />,
+    seo: <Seo />,
+    'sign-in': <General section="sign-in" />,
+    topics: <ForumSettings section="topics" />
+  }
 
   return (
-    <div>
-      <div className="bc-py-6 bc-px-5 bc-flex bc-items-center bc-justify-between">
-        <Title className="bc-mb-0" level={2}>
-          {__('Settings')}
-        </Title>
-        <Button
-          disabled={isUpdatingSettings}
-          loading={isUpdatingSettings}
-          onClick={handleSave}
-          type="primary"
-        >
-          {__('Save')}
-        </Button>
-      </div>
+    // `reducedMotion="user"` rather than a per-component check: everything on
+    // this page keeps its opacity fades but stops moving for anyone whose
+    // system asks for that.
+    <PageSaveContext.Provider value={report}>
+      <MotionConfig reducedMotion="user">
+        <div className="bc-px-6 bc-pb-6" onBlur={saveAll}>
+          <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
+            <Title className="bc-mb-0" level={3}>
+              {__('Settings')}
+            </Title>
+            <SaveStatus {...pageSave} onRetry={saveAll} />
+          </div>
 
-      {errorMessage && (
-        <div className="bc-px-5 bc-mb-4">
-          <Alert message={errorMessage} type="error" />
+          <div className="bc-mb-4">
+            <PageTabs onChange={setActiveTab} tabs={tabs} value={activeTab} />
+          </div>
+
+          {/* One panel out before the next comes in, in the same place: two
+              forms crossing over each other read as one broken one. */}
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div animate="in" exit="out" initial="out" key={activeTab} variants={panelVariants}>
+              {panels[activeTab]}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      )}
-
-      <div className="bc-px-5">
-        <SettingsSection
-          disabled={isUpdatingSettings}
-          note={TopicAccessExtras && <TopicAccessExtras />}
-          onChange={(key, value) =>
-            handleSettingChange('topicAccess', key as keyof TopicAccessSettings, value)
-          }
-          settings={topicAccessSettings}
-          subtitle={__('Choose what members can do on a topic')}
-          title={__('Topic Access Settings')}
-        />
-        <SettingsSection
-          disabled={isUpdatingSettings}
-          onChange={(key, value) =>
-            handleSettingChange('topicFormFields', key as keyof TopicFormFieldsSettings, value)
-          }
-          settings={topicFormFieldsSettings}
-          subtitle={__('Control which fields are shown and required when creating a topic')}
-          title={__('Topic Form Fields')}
-        />
-        {/* Takes nothing from this form: this plugin stores no moderation
-            setting. Another plugin's section would read and save its own. */}
-        <ModerationSection />
-        <SettingsSection
-          disabled={isUpdatingSettings}
-          onChange={(key, value) => handleSettingChange('cleanup', key as keyof CleanupSettings, value)}
-          settings={cleanupSettings}
-          subtitle={__('Manage what data is removed when the plugin is uninstalled')}
-          title={__('Data Cleanup')}
-        />
-
-        <MediaLimitsInfo />
-      </div>
-    </div>
+      </MotionConfig>
+    </PageSaveContext.Provider>
   )
 }

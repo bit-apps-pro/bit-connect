@@ -8,18 +8,21 @@ import {
 } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
-import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers/request'
+import queryRequest, { extractUploadError } from '@common/helpers/request'
+import uploadAttachment from '@common/helpers/upload-attachment'
 import { notificationOptions } from '@common/hooks/useNotificationConfig'
-import { validateAttachment } from '@components/features/file-uploader/attachment-validation'
-import QuillEditor from '@components/quilTextEditor'
 import {
-  COMMENT_LIMITS,
-  formatCommentForWordPress,
-  getCommentPlainTextLength
-} from '@components/quilTextEditor/quill-comment-formatter'
+  acceptsVideo,
+  noRoomFor,
+  validateAttachment
+} from '@components/features/file-uploader/attachment-validation'
+import QuillEditor from '@components/quilTextEditor'
+import { formatCommentForWordPress } from '@components/quilTextEditor/quill-comment-formatter'
 import { resizeImageIfNeeded } from '@components/quilTextEditor/quill-image-resizer'
+import { countCharacters } from '@components/quilTextEditor/quill-validation'
+import config from '@config/config'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
-import { Button, List, Progress, Space, Typography } from 'antd'
+import { Alert, Button, List, Progress, Space, Typography } from 'antd'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
@@ -47,6 +50,7 @@ interface CommentEditorProps {
   initialAttachments?: WPAttachmentData[]
   initialContent?: string
   maxAttachments?: number
+  maxVideos?: number
   onCancel?: () => void
   onSubmit?: (content: string, attachments?: WPAttachmentData[]) => void
   placeholder?: string
@@ -54,7 +58,6 @@ interface CommentEditorProps {
   submitButtonText?: string
 }
 
-const MAX_ATTACHMENTS_DEFAULT = 5
 
 const generateFileId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -141,14 +144,15 @@ const toLocalFileItems = (attachments?: WPAttachmentData[]): LocalFileItem[] =>
 export default function CommentEditor({
   initialAttachments,
   initialContent,
-  maxAttachments = MAX_ATTACHMENTS_DEFAULT,
+  maxAttachments = config.POSTING_LIMITS.comment.attachments,
+  maxVideos = config.POSTING_LIMITS.comment.videos,
   onCancel,
   onSubmit,
   placeholder = 'Write comment here...',
   replyTo,
   submitButtonText
 }: CommentEditorProps) {
-  const { isLoggedIn } = useAuthStore()
+  const { can, isLoggedIn } = useAuthStore()
   const { open: openLoginWarning } = useLoginWarningStore()
   const { notificationApi } = useContext(NotifyContext)
   const [key, setKey] = useState(0)
@@ -159,6 +163,7 @@ export default function CommentEditor({
   onSubmitRef.current = onSubmit
 
   const isUploading = files.some(f => f.isUploading)
+  const { characters: maxLength, images: maxImages } = config.POSTING_LIMITS.comment
 
   const uploadFile = useCallback(async (fileItem: LocalFileItem) => {
     if (!fileItem.file) return
@@ -172,10 +177,7 @@ export default function CommentEditor({
     )
 
     try {
-      const formData = new FormData()
-      formData.append('file', fileItem.file)
-
-      const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
+      const response = await uploadAttachment<WPAttachmentData>(fileItem.file, {
         onProgress: percent =>
           setFiles(prev =>
             prev.map(f => (f.fileId === fileItem.fileId ? { ...f, progress: percent } : f))
@@ -209,7 +211,12 @@ export default function CommentEditor({
   }, [])
 
   const handleImagePaste = useCallback(
-    async (file: File, insertImage: (url: string) => void, onProgress?: (n: number) => void) => {
+    async (
+      file: File,
+      insertImage: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
       try {
         // Same gate the attach button uses. Without it a logged-out visitor
         // picks a file, the upload 400s on the nonce check, and the image just
@@ -230,21 +237,54 @@ export default function CommentEditor({
         const validation = validateAttachment(resized)
         if (!validation.valid) throw new Error(validation.error)
 
-        const formData = new FormData()
-        formData.append('file', resized)
-        const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
-          onProgress
-        })
+        const response = await uploadAttachment<WPAttachmentData>(resized, { onProgress, signal })
         insertImage(response.data.url)
       } catch (error_) {
         // The editor's own message is a tooltip on the submit button that clears
         // on the next keystroke, so a failed image could go unnoticed. Report it
-        // the way every other failure in the app is reported, then rethrow so the
-        // editor still removes its loading placeholder.
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to upload image'),
-          ...notificationOptions('error')
-        })
+        // the way every other failure in the app is reported — in the server's
+        // own words when it gave any — then rethrow so the editor still removes
+        // its loading placeholder. A cancelled upload is not a failure.
+        if (!signal?.aborted) {
+          notificationApi?.error({
+            message: extractUploadError(error_),
+            ...notificationOptions('error')
+          })
+        }
+        throw error_
+      }
+    },
+    [isLoggedIn, notificationApi, openLoginWarning]
+  )
+
+  // A video goes up as it is and is placed in the text where the caret was,
+  // like a picture. It counts against the same videos limit as one attached
+  // below the comment, and a large one is sent in pieces (uploadAttachment).
+  const handleVideoInsert = useCallback(
+    async (
+      file: File,
+      insertVideo: (url: string) => void,
+      onProgress?: (n: number) => void,
+      signal?: AbortSignal
+    ) => {
+      try {
+        if (!isLoggedIn) {
+          openLoginWarning()
+          throw new Error(__('Please log in to upload videos.'))
+        }
+
+        const validation = validateAttachment(file)
+        if (!validation.valid) throw new Error(validation.error)
+
+        const response = await uploadAttachment<WPAttachmentData>(file, { onProgress, signal })
+        if (response.data.url) insertVideo(response.data.url)
+      } catch (error_) {
+        if (!signal?.aborted) {
+          notificationApi?.error({
+            message: extractUploadError(error_),
+            ...notificationOptions('error')
+          })
+        }
         throw error_
       }
     },
@@ -259,7 +299,14 @@ export default function CommentEditor({
       }
       // Dropping the file silently read as the picker being broken; surface the
       // limit the same way every other rejection is surfaced.
-      if (filesRef.current.length >= maxAttachments) {
+      // Videos and other files are counted apart; one that failed to upload
+      // is not on the comment, so it takes no room.
+      const noRoom = noRoomFor(
+        file,
+        filesRef.current.filter(f => !f.uploadError).map(f => ({ mime: f.mime, name: f.fileName })),
+        { attachments: maxAttachments, videos: maxVideos }
+      )
+      if (noRoom) {
         setFiles(prev => [
           ...prev,
           {
@@ -269,10 +316,7 @@ export default function CommentEditor({
             fileSizeInBytes: file.size,
             fileUrl: '',
             mime: file.type,
-            uploadError: __('Attachment limit reached (maximum %d files).').replace(
-              '%d',
-              String(maxAttachments)
-            )
+            uploadError: noRoom
           }
         ])
         return
@@ -307,7 +351,7 @@ export default function CommentEditor({
       setFiles(prev => [...prev, fileItem])
       uploadFile(fileItem)
     },
-    [isLoggedIn, maxAttachments, openLoginWarning, uploadFile]
+    [isLoggedIn, maxAttachments, maxVideos, openLoginWarning, uploadFile]
   )
 
   const removeFile = useCallback((fileId: string) => {
@@ -353,7 +397,8 @@ export default function CommentEditor({
 
       // Format to WordPress comment-compatible HTML and enforce length limit
       const formatted = formatCommentForWordPress(html)
-      if (!formatted || getCommentPlainTextLength(formatted) > COMMENT_LIMITS.MAX_TEXT_CHARS) return
+      // The editor has already said why when this holds; this is the backstop.
+      if (!formatted || countCharacters(formatted) > maxLength) return
 
       const attachments: WPAttachmentData[] = filesRef.current
         .filter(f => f.wpId)
@@ -371,7 +416,7 @@ export default function CommentEditor({
       setFiles([])
       setKey(prev => prev + 1)
     },
-    [revokeAllUrls]
+    [maxLength, revokeAllUrls]
   )
 
   const handleCancel = useCallback(() => {
@@ -385,6 +430,16 @@ export default function CommentEditor({
     }
   }, [revokeAllUrls])
 
+  // The server refuses the comment anyway; an editor shown to a member the role
+  // settings deny only sets up a 400 after they have written their reply.
+  if (isLoggedIn && !can('bit_connect_forum_create_comment')) {
+    return (
+      <div className={styles.commentEditorWrapper}>
+        <Alert message={__('Your account does not have permission to comment.')} showIcon type="info" />
+      </div>
+    )
+  }
+
   return (
     <div className={styles.commentEditorWrapper}>
       {replyTo && (
@@ -394,11 +449,18 @@ export default function CommentEditor({
       )}
       <div key={key}>
         <QuillEditor
+          className="bc-mb-6"
           defaultValue={initialContent}
-          onAttachment={handleAttachment}
-          onImageInsert={handleImagePaste}
-          onImagePaste={handleImagePaste}
+          maxImages={maxImages}
+          maxLength={maxLength}
+          maxVideos={maxVideos}
+          // A limit of zero takes the control away rather than leaving one
+          // that only ever refuses. The server enforces the same numbers.
+          onAttachment={maxAttachments > 0 || (maxVideos > 0 && acceptsVideo()) ? handleAttachment : undefined}
+          onImageInsert={maxImages > 0 ? handleImagePaste : undefined}
+          onImagePaste={maxImages > 0 ? handleImagePaste : undefined}
           onSubmit={handleSubmit}
+          onVideoInsert={maxVideos > 0 && acceptsVideo() ? handleVideoInsert : undefined}
           placeholder={placeholder}
           showToolbar={true}
           submitButtonText={isUploading ? 'Uploading...' : (submitButtonText ?? 'Comment')}

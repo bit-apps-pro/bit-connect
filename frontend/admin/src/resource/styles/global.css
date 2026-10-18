@@ -46,6 +46,14 @@ html {
   text-rendering: optimizelegibility;
 }
 
+#bit-apps-root .ant-input-affix-wrapper-focused,
+#bit-apps-root .ant-input-affix-wrapper:focus-within,
+#bit-apps-root .ant-select-focused .ant-select-selector {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--bc-line-strong) !important;
+}
+
 #bit-apps-root button:focus:not(:focus-visible),
 #bit-apps-root input:focus:not(:focus-visible),
 #bit-apps-root select:focus:not(:focus-visible),
@@ -58,12 +66,18 @@ html {
   box-shadow: none !important;
 }
 
-#bit-apps-root .ant-input-affix-wrapper-focused,
-#bit-apps-root .ant-input-affix-wrapper:focus-within,
-#bit-apps-root .ant-select-focused .ant-select-selector {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: var(--bc-line-strong) !important;
+/* WP admin's input[type=text] sets a min-height antd never resets (30px before
+   WP 7.0, 40px since), so it applies through the layers. On WP 7 that made every
+   input 40px beside 32px buttons and selects. Inside a prefix/allowClear wrapper
+   the bare input also takes WP's line-height, which pushed it taller still. */
+#bit-apps-root input.ant-input,
+#bit-apps-root input.ant-input-number-input {
+  min-height: 0;
+}
+
+#bit-apps-root .ant-input-affix-wrapper > input.ant-input {
+  min-height: 0;
+  line-height: inherit;
 }
 
 svg {
@@ -93,6 +107,16 @@ svg {
   font-size: 16px;
   overflow: auto;
   isolation: isolate;
+}
+
+/* The shared WordPress reset sets the media modal in Montserrat, a font this
+   plugin never loads, so the picker fell back to the system sans. Set it in
+   the plugin's own font; `body` outranks the reset's `.media-modal *`, which
+   is also !important. The modal mounts outside #bit-apps-root, so the
+   `#bit-apps-root *` rule above never meets it. */
+/* stylelint-disable-next-line no-descending-specificity */
+body .media-modal * {
+  font-family: var(--font-family) !important;
 }
 
 a:focus {
@@ -216,6 +240,14 @@ a:focus {
   .scroller {
     scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
     scrollbar-width: var(--scrollbar-width);
+  }
+
+  /* The hover-only thumb below is `::-webkit-scrollbar` styling, which any
+     browser that supports `scrollbar-color` ignores — Chrome included — so the
+     thumb was always painted. `.reveal` hides it here until the pointer or
+     keyboard focus is inside. The lane stays reserved, so nothing shifts. */
+  .scroller.reveal:not(:hover, :focus-within) {
+    scrollbar-color: transparent transparent;
   }
 }
 

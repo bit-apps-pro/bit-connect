@@ -1,6 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useFileStore from '@features/file-uploader/state/use-file-store'
-import { normalizeAttachments } from '@features/topic-modal/shared/type'
+import { addedTerms, normalizeAttachments, type Topic } from '@features/topic-modal/shared/type'
 import { decodeSlug, slugRedirectPath } from '@utils/slug'
 import { Button, Form, Modal } from 'antd'
 import { useEffect, useRef } from 'react'
@@ -10,8 +10,18 @@ import { useSinglePostStore } from '@/store/single-post.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
 import useUpdateTopic from '../data/use-update-topic'
+import { TOPIC_MODAL_MASK, TOPIC_MODAL_WIDTH } from '../shared/modal-width'
 import useTopicModalStore from '../state/use-topic-modal-store'
 import TopicForm from './topic-form'
+
+/**
+ * The term a topic carries in each taxonomy a plugin adds, as the form field
+ * of the same name — the server returns it under the parameter that sets it,
+ * so a field the plugin draws is filled in without this form knowing it.
+ */
+function addedTermFields(terms: Topic['terms'] | undefined) {
+  return Object.fromEntries(Object.entries(addedTerms(terms)).map(([param, term]) => [param, term.term_id]))
+}
 
 export default function TopicEditModal() {
   const [form] = Form.useForm()
@@ -83,13 +93,13 @@ export default function TopicEditModal() {
     if (post && isEditModalOpen && populatedForId.current !== editTopicId) {
       populatedForId.current = editTopicId
       form.setFieldsValue({
-        departments: post.terms?.departments?.term_id,
+        ...addedTermFields(post.terms),
         post_content: post.post_content,
         // Stored percent-encoded for non-Latin slugs; show the readable form.
         post_name: decodeSlug(post.post_name ?? ''),
         post_status: post.post_status,
         post_title: post.post_title,
-        tags: post.terms?.tags?.map(tag => tag.term_id) || [],
+        tags: post.terms?.tags?.map(tag => String(tag.term_id)) || [],
         'topic-types': post.terms?.topic_types?.term_id
       })
       const normalized = normalizeAttachments(post.attachments)
@@ -137,9 +147,11 @@ export default function TopicEditModal() {
           maxHeight: '70vh',
           overflowY: 'auto',
           paddingInline: '22px'
-        }
+        },
+        mask: TOPIC_MODAL_MASK
       }}
       title={__('Edit Topic')}
+      width={TOPIC_MODAL_WIDTH}
     >
       {isEditModalOpen && (
         <TopicForm form={form} isEditMode taxonomies={taxonomies} topicId={editTopicId} />

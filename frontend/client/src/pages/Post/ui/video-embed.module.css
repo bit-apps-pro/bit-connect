@@ -1,0 +1,120 @@
+/**
+ * A 16:9 box the column sizes, so a player never runs wider than the writing
+ * around it and keeps its shape on a phone.
+ *
+ * A width of its own rather than 100%: a comment bubble hugs its content, and
+ * a percentage of a box sized by its content is no width at all — the player
+ * collapsed to a 196px sliver there. 560px is what it asks for; the max-width
+ * lets the bubble or the column take it back down.
+ */
+.frame {
+  position: relative;
+  overflow: hidden;
+  width: 560px;
+  max-width: 100%;
+  margin: 0.75em 0;
+  aspect-ratio: 16 / 9;
+  background: #0f0f0f;
+  border-radius: 8px;
+  container-type: inline-size;
+}
+
+.frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.poster {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  /* The bottom keeps the centred text clear of the "Open on" link. */
+  padding: 16px 16px 32px;
+  color: #fff;
+  cursor: pointer;
+  background: radial-gradient(circle at center, #2a2a2a 0%, #0f0f0f 70%);
+  border: 0;
+}
+
+.poster:focus-visible {
+  outline: 2px solid var(--bc-focus-ring, #fff);
+  outline-offset: -4px;
+}
+
+.play {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  padding-left: 4px;
+  background: rgba(255, 255, 255, 16%);
+  border-radius: 50%;
+  transition: background 150ms ease;
+}
+
+.poster:hover .play {
+  background: rgba(255, 255, 255, 28%);
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 70%);
+}
+
+/*
+ * A comment on a phone leaves the player about 220px wide and 125px tall, which
+ * the full poster does not fit: the button was squeezed to an oval. A smaller
+ * button and no note there; the link in the corner still names the host.
+ */
+@container (max-width: 320px) {
+  .poster {
+    gap: 4px;
+    padding: 8px 8px 24px;
+  }
+
+  .play {
+    width: 40px;
+    height: 40px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .note {
+    display: none;
+  }
+}
+
+/*
+ * The body colours every link blue through an important Tailwind utility, which
+ * only an important rule at least as specific as its `.body a` can beat; on a
+ * near-black poster that blue is unreadable.
+ */
+.frame .source {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 12px;
+  /* stylelint-disable-next-line declaration-no-important -- see the note above */
+  color: rgba(255, 255, 255, 80%) !important;
+}
+
+.frame .source:hover {
+  /* stylelint-disable-next-line declaration-no-important -- see the note above */
+  color: #fff !important;
+}

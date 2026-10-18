@@ -6,18 +6,19 @@ import { ShareButton } from '@features/share'
 import { type Topic } from '@features/topic-modal/shared/type'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import EditIcon from '@icons/EditIcon'
-import { pickThemedIcon } from '@shared/theme/themed-icon'
+import { pickThemedIcon, type ThemedIconMeta } from '@shared/theme/themed-icon'
 import EditedNote from '@utilities/edited-note'
 import UserLink from '@utilities/user-link'
-import { Button, Dropdown, Flex, type MenuProps, Modal, Select, Space, Tag, Typography } from 'antd'
+import { App as AntApp, Button, Dropdown, Flex, type MenuProps, Modal, Select, Tag, Typography } from 'antd'
 import { useAtomValue } from 'jotai'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
-import { LuClock, LuEllipsisVertical, LuEyeOff, LuFlag, LuTrash } from 'react-icons/lu'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { LuClock, LuEllipsisVertical, LuFlag, LuLock, LuLockOpen, LuTrash } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 
 import { $isDarkTheme } from '@/common/globalStates/$appConfig'
 import useLoginWarningStore from '@/components/features/login-warning-modal/state/use-login-warning-store'
 import { useAuthStore } from '@/store/auth.zustand'
+import { updatePostLockApi } from '@/store/data/update-post-lock-api'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { useStagesStore } from '@/store/stages.zustand'
 import { useStatusesStore } from '@/store/statuses.zustand'
@@ -25,8 +26,13 @@ import { toEditAttribution } from '@/types/edit-attribution'
 import useChipProps from '@/utils/use-chip-props'
 
 import ContentBox from './ContentBox'
+import useTopicPinItem from './data/use-topic-pin-item'
 import { formattedDate } from './PostDetailsPage'
+import HiddenTopicNotice from './ui/hidden-topic-notice'
 import TagChips from './ui/tag-chips'
+import TopicBodyExtras from './ui/topic-body-extras'
+
+const STATUS_MENU_WIDTH = 180
 
 export default function PostHeader({
   post,
@@ -38,7 +44,7 @@ export default function PostHeader({
   voteBox?: React.ReactNode
 }) {
   const {
-    terms: { statuses, topic_types: topicTypes }
+    terms: { statuses, stages: postStage, topic_types: topicTypes }
   } = post
   const postDate = formattedDate(post.post_date_gmt)
   const { chipTagProps } = useChipProps()
@@ -63,6 +69,7 @@ export default function PostHeader({
   const { openEditModal } = useTopicModalStore()
   const { open: openReport } = useReportModalStore()
   const { open: openLoginWarning } = useLoginWarningStore()
+  const app = AntApp.useApp()
   const navigate = useNavigate()
 
   // These are capabilities, not roles: Manager can grant any of them to any
@@ -81,6 +88,9 @@ export default function PostHeader({
   // still correct it afterwards.
   const canEditPost = Boolean(isOwner && can('bit_connect_forum_edit_own_post'))
   const canDeletePost = canDeleteAny || Boolean(isOwner && can('bit_connect_forum_delete_own_post'))
+  const canLock = can('bit_connect_forum_lock_post')
+  const [isLocking, setIsLocking] = useState(false)
+  const pinItem = useTopicPinItem(post)
 
   useEffect(() => {
     if (allStatuses.length === 0) {
@@ -100,43 +110,76 @@ export default function PostHeader({
   // same information as plain text in a grey dropdown, so the one group that
   // acts on status had the weakest signal of what it currently is. The colour
   // and icon are already on the term — they were simply never rendered here.
-  const statusOptions = useMemo(
-    () =>
-      allStatuses.map(status => ({
+  // While `allStatuses`/`stages` are still loading, the current term's own
+  // name and colour already sit on `post.terms` — synthesizing an option from
+  // them keeps the select's label matching its value on the very first
+  // render, instead of falling back to the raw numeric id until the full
+  // list arrives.
+  const statusOptions = useMemo(() => {
+    const options = allStatuses.map(status => ({
+      label: (
+        <span className="bc-flex bc-items-center bc-gap-2">
+          <span
+            aria-hidden
+            className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
+            style={{ backgroundColor: status.meta?.bit_connect_color || '#d9d9d9' }}
+          />
+          <span className="bc-min-w-0 bc-truncate">{status.name}</span>
+        </span>
+      ),
+      value: status.id
+    }))
+
+    if (statuses && !options.some(option => option.value === statuses.term_id)) {
+      options.unshift({
         label: (
           <span className="bc-flex bc-items-center bc-gap-2">
             <span
               aria-hidden
               className="bc-h-2 bc-w-2 bc-shrink-0 bc-rounded-full"
-              style={{ backgroundColor: status.meta?.bit_connect_color || '#d9d9d9' }}
+              style={{ backgroundColor: statuses.meta?.color || '#d9d9d9' }}
             />
-            {status.name}
+            <span className="bc-min-w-0 bc-truncate">{statuses.name}</span>
           </span>
         ),
-        value: status.id
-      })),
-    [allStatuses]
-  )
+        value: statuses.term_id
+      })
+    }
 
-  const stageOptions = useMemo(
-    () =>
-      stages.map(stage => {
-        const icon = pickThemedIcon(stage.meta, isDarkTheme)
+    return options
+  }, [allStatuses, statuses])
 
-        return {
-          label: (
-            <span className="bc-flex bc-items-center bc-gap-2">
-              {icon && (
-                <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />
-              )}
-              {stage.name}
-            </span>
-          ),
-          value: stage.id
-        }
-      }),
-    [stages, isDarkTheme]
-  )
+  const stageOptions = useMemo(() => {
+    const options = stages.map(stage => {
+      const icon = pickThemedIcon(stage.meta, isDarkTheme)
+
+      return {
+        label: (
+          <span className="bc-flex bc-items-center bc-gap-2">
+            {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
+            <span className="bc-min-w-0 bc-truncate">{stage.name}</span>
+          </span>
+        ),
+        value: stage.id
+      }
+    })
+
+    if (postStage && !options.some(option => option.value === postStage.term_id)) {
+      const icon = pickThemedIcon(postStage.meta as ThemedIconMeta | undefined, isDarkTheme)
+
+      options.unshift({
+        label: (
+          <span className="bc-flex bc-items-center bc-gap-2">
+            {icon && <img alt="" className="bc-h-3.5 bc-w-3.5 bc-shrink-0 bc-object-contain" src={icon} />}
+            <span className="bc-min-w-0 bc-truncate">{postStage.name}</span>
+          </span>
+        ),
+        value: postStage.term_id
+      })
+    }
+
+    return options
+  }, [stages, isDarkTheme, postStage])
 
   const handleStatusChange = async (termId: number) => {
     try {
@@ -163,7 +206,9 @@ export default function PostHeader({
   }
 
   const handleDelete = useCallback(() => {
-    Modal.confirm({
+    // See CommentItem: the context-aware modal follows the portal theme.
+    const confirm = app.modal?.confirm ?? Modal.confirm
+    confirm({
       cancelText: __('Cancel'),
       content: __('This action cannot be undone. Are you sure you want to delete this post?'),
       okButtonProps: { danger: true, loading: isDeleting },
@@ -182,7 +227,33 @@ export default function PostHeader({
       title: __('Delete Post'),
       type: 'warning'
     })
-  }, [deletePost, isDeleting, navigate, post.ID])
+  }, [app.modal, deletePost, isDeleting, navigate, post.ID])
+
+  const handleToggleLock = useCallback(async () => {
+    if (isLocking) return
+
+    const nextLocked = !post.is_locked
+    setIsLocking(true)
+
+    try {
+      const updatedTopic = await updatePostLockApi(post.ID, nextLocked)
+      // Only the flag is taken from the reply: the update response is the bare
+      // topic and leaves out what the page read alongside it, such as follow
+      // state.
+      setPost({ ...post, is_locked: updatedTopic?.is_locked ?? nextLocked })
+      notificationApi?.success({
+        message: nextLocked
+          ? __('Topic locked. New comments are closed.')
+          : __('Topic unlocked. Members can comment again.')
+      })
+    } catch (error_) {
+      notificationApi?.error({
+        message: (error_ as { message?: string })?.message ?? __('Failed to update the topic')
+      })
+    } finally {
+      setIsLocking(false)
+    }
+  }, [isLocking, notificationApi, post, setPost])
 
   const handleEdit = useCallback(() => {
     openEditModal(post.ID)
@@ -231,6 +302,17 @@ export default function PostHeader({
       })
     }
 
+    if (canLock) {
+      items.push({
+        icon: post.is_locked ? <LuLockOpen /> : <LuLock />,
+        key: 'lock',
+        label: post.is_locked ? __('Unlock topic') : __('Lock topic'),
+        onClick: handleToggleLock
+      })
+    }
+
+    if (pinItem) items.push(pinItem)
+
     if (canDeletePost) {
       items.push({
         danger: true,
@@ -253,7 +335,18 @@ export default function PostHeader({
     }
 
     return items
-  }, [canDeletePost, canEditPost, handleDelete, handleEdit, handleReport, isOwner])
+  }, [
+    canDeletePost,
+    canEditPost,
+    canLock,
+    handleDelete,
+    handleEdit,
+    handleReport,
+    handleToggleLock,
+    isOwner,
+    pinItem,
+    post.is_locked
+  ])
 
   // A rule between the two groups: "stop mailing me about this" and "delete
   // this" are not neighbours, and the gap is what stops a hand aiming for the
@@ -270,7 +363,7 @@ export default function PostHeader({
 
   // Read-only status chip, shown to everyone who cannot change the status.
   const statusTag = statuses && (
-    <Tag className="bc-m-0" {...chipTagProps(statuses.meta.color)}>
+    <Tag className="bc-m-0 bc-max-w-full bc-truncate" title={statuses.name} {...chipTagProps(statuses.meta.color)}>
       {statuses.name}
     </Tag>
   )
@@ -280,15 +373,22 @@ export default function PostHeader({
   // title they were two controls competing with the heading for the same line,
   // and the heading lost: a title of any length wrapped early to leave them
   // room. Under it they have the full width and cost the title nothing.
+  // A plain wrapping row rather than antd's Space, whose items have no width
+  // cap: a long stage or status name grew its select past the screen edge.
+  // The menus get a fixed width rather than the trigger's: the trigger is only
+  // as wide as the current value, so a short one ("Open") squeezed the menu
+  // until every other option was truncated.
   const statusControls = (
-    <Space size="small" wrap>
+    <div className="bc-flex bc-max-w-full bc-flex-wrap bc-items-center bc-gap-2">
       {canModerate && (
         <Select
           aria-label={__('Topic stage')}
+          className="bc-max-w-full"
           disabled={isUpdatingStage}
           loading={isStageLoading}
           onChange={handleStageChange}
           options={stageOptions}
+          popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Topic stage')}
           value={post.terms.stages?.term_id}
@@ -298,10 +398,12 @@ export default function PostHeader({
       {canModerate ? (
         <Select
           aria-label={__('Topic status')}
+          className="bc-max-w-full"
           disabled={isUpdatingStatus}
           loading={isLoading}
           onChange={handleStatusChange}
           options={statusOptions}
+          popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Topic status')}
           value={post.terms.statuses?.term_id}
@@ -310,7 +412,7 @@ export default function PostHeader({
       ) : (
         statusTag
       )}
-    </Space>
+    </div>
   )
 
   return (
@@ -432,6 +534,8 @@ export default function PostHeader({
               track back to the start of the next line. */}
           <ContentBox className="bc-max-w-[54ch]" content={post.post_content} />
 
+          <TopicBodyExtras post={post} />
+
           {/* <Paragraph className="bc-mb-4 bc-text-[15px] bc-leading-[1.6]">{post.description}</Paragraph> */}
 
           {/* Tags follow the author meta inline rather than being pushed to the
@@ -453,15 +557,19 @@ export default function PostHeader({
                 avatarSize={24}
                 badge={post.author_badge}
                 name={post.author_name}
-                nameClassName="bc-whitespace-nowrap"
+                // Its own colour, as on the topic card: left to inherit, the
+                // name took the theme's link colour — #111 in a block theme,
+                // invisible in dark mode.
+                nameClassName="bc-whitespace-nowrap bc-text-sm bc-text-ink-muted"
                 slug={post.author_slug}
               />
-              <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap={'small'}>
+              <Flex align="center" className="bc-text-sm bc-text-ink-muted" gap={4}>
                 {/* Decoration beside a self-explanatory "2mo ago", and on a
                     phone its 28px was the difference between the byline holding
                     one line and the chips after it wrapping onto a third. Same
-                    call the topic card makes at the same width. */}
-                <LuClock className="bc-hidden sm:bc-block" size={20} />
+                    call the topic card makes at the same width. Sized in em, a
+                    step above its text, like the card's, so the two match. */}
+                <LuClock className="bc-hidden bc-shrink-0 sm:bc-block" size="1.15em" />
                 <span className="bc-whitespace-nowrap">{postDate}</span>
               </Flex>
 
@@ -502,46 +610,10 @@ export default function PostHeader({
                   below this row and already name every file. */}
             </div>
 
-            {/* Only the author and a moderator are ever served a hidden topic,
-                so this is the one place either of them can be told why nobody
-                else can find it — without it the author watched their topic
-                disappear from the portal, from their own profile and from its
-                own URL, with nothing saying it had been reported rather than
-                deleted.
-
-                Under the byline and at the byline's own size, because it belongs
-                to the same set of facts as the date and the edited note: who can
-                see this, and since when. A banner above the title said it three
-                times louder and read as an accusation levelled at the author
-                over a report somebody else filed.
-
-                On its own row rather than inside the Space above: sharing that
+            {/* On its own row rather than inside the Space above: sharing that
                 row, it was allotted a fraction of the width and wrapped a single
-                sentence over three lines.
-
-                A chip carries the state and the sentence carries the
-                consequence. One long bolded sentence said both at once and read
-                as a wall; the chip is scannable at byline size, and the
-                explanation earns its place by answering the only question the
-                author actually has — is my post gone?
-
-                One text flow rather than a flex row: as flex items the sentence
-                claimed the full width and shouldered the chip onto a line of its
-                own, leaving a label stranded above a paragraph. Inline, the chip
-                simply starts the sentence. */}
-            {post.hidden && (
-              <div className="bc-max-w-[54ch] bc-text-sm bc-leading-relaxed bc-text-ink-muted">
-                <span className="bc-mr-1.5 bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-2 bc-py-0.5 bc-align-[-2px] bc-text-xs bc-font-medium bc-text-ink">
-                  <LuEyeOff size={13} />
-                  {__('Hidden')}
-                </span>
-                {isOwner
-                  ? __(
-                      'Only you and the moderators can see this while a report is reviewed. Nothing has been deleted.'
-                    )
-                  : __('Out of public view while a report is reviewed.')}
-              </div>
-            )}
+                sentence over three lines. */}
+            <HiddenTopicNotice isOwner={Boolean(isOwner)} post={post} />
 
             {/* From xl the rail carries the tag list; below xl there is no rail,
                 so it lives here — and now as the same component, so the two

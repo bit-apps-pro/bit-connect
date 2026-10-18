@@ -10,6 +10,7 @@ export default {
   rules: {
     'at-rule-no-deprecated': [true, { ignoreAtRules: ['apply'] }],
     'at-rule-no-unknown': [true, { ignoreAtRules: ['/^keyframes/', 'value', 'tailwind'] }],
+    'at-rule-prelude-no-invalid': [true, { ignoreAtRules: ['apply'] }],
     'color-function-notation': 'legacy',
     'property-no-unknown': [true, { ignoreProperties: ['composes', 'compose-with'] }],
     'scss/at-if-no-null': [true, { ignoreAtRules: ['/^keyframes/'] }],

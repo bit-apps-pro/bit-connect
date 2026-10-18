@@ -10,7 +10,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Services\PortalAccess;
 
 /**
- * The stages, statuses, departments, topic types and tags the portal filters
+ * The stages, statuses, topic types and tags the portal filters
  * and the topic form are built from.
  *
  * This existed with no Request at all, so it answered anyone — which on a

@@ -1,6 +1,7 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import { NotificationPreferencesForm } from '@features/notifications'
+import SettingsCard from '@utilities/settings-card'
 import { Avatar, Button, Progress } from 'antd'
 import { useContext, useRef } from 'react'
 import { LuTrash2, LuUpload } from 'react-icons/lu'
@@ -60,83 +61,80 @@ export default function ManageSection({
 
   return (
     <div className="bc-flex bc-flex-col bc-gap-4">
-      <section
-        aria-label={__('Profile picture')}
-        className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
-      >
-        <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-          {__('Profile picture')}
-        </h2>
-        <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-          {/* One format string rather than concatenated fragments — translators
-              need the whole sentence to reorder it. */}
-          {sprintf(
+      {/* The two images side by side where there is room: each is a short card,
+          and stacked they pushed the forms below the fold for no reason. */}
+      <div className="bc-grid bc-grid-cols-1 bc-gap-4 xl:bc-grid-cols-2">
+        <SettingsCard
+          // One format string rather than concatenated fragments — translators
+          // need the whole sentence to reorder it.
+          subtitle={sprintf(
             __('Shown beside everything you post. JPG, PNG, GIF or WebP, up to %s MB.'),
             String(maxMb)
           )}
-        </p>
+          title={__('Profile picture')}
+        >
+          <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-4">
+            <div className="bc-relative">
+              <Avatar
+                alt={profile?.display_name}
+                className="bc-bg-surface-sunken bc-ring-2 bc-ring-surface-sunken"
+                size={72}
+                src={profile?.avatar}
+              >
+                {profile?.display_name?.charAt(0)?.toUpperCase()}
+              </Avatar>
+              {isUploading && (
+                <div className="bc-absolute bc-inset-0 bc-flex bc-items-center bc-justify-center bc-rounded-full bc-bg-black/55">
+                  <Progress
+                    format={percent => (
+                      <span className="bc-text-[11px] bc-font-semibold bc-text-white">{percent}%</span>
+                    )}
+                    percent={progress}
+                    size={50}
+                    strokeColor="#fff"
+                    trailColor="rgba(255,255,255,0.3)"
+                    type="circle"
+                  />
+                </div>
+              )}
+            </div>
 
-        <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-4">
-          <div className="bc-relative">
-            <Avatar
-              alt={profile?.display_name}
-              className="bc-bg-surface-sunken bc-ring-2 bc-ring-surface-sunken"
-              size={72}
-              src={profile?.avatar}
-            >
-              {profile?.display_name?.charAt(0)?.toUpperCase()}
-            </Avatar>
-            {isUploading && (
-              <div className="bc-absolute bc-inset-0 bc-flex bc-items-center bc-justify-center bc-rounded-full bc-bg-black/55">
-                <Progress
-                  format={percent => (
-                    <span className="bc-text-[11px] bc-font-semibold bc-text-white">{percent}%</span>
-                  )}
-                  percent={progress}
-                  size={50}
-                  strokeColor="#fff"
-                  trailColor="rgba(255,255,255,0.3)"
-                  type="circle"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="bc-flex bc-flex-wrap bc-gap-2">
-            <Button
-              disabled={busy}
-              icon={<LuUpload size={14} />}
-              onClick={() => inputRef.current?.click()}
-              type="primary"
-            >
-              {profile?.has_custom_avatar ? __('Replace') : __('Upload')}
-            </Button>
-            {/* Only offered when there is a custom picture to remove; removing
-                a Gravatar fallback would do nothing. */}
-            {profile?.has_custom_avatar && (
-              <Button danger disabled={busy} icon={<LuTrash2 size={14} />} onClick={handleRemove}>
-                {__('Remove')}
+            <div className="bc-flex bc-flex-wrap bc-gap-2">
+              <Button
+                disabled={busy}
+                icon={<LuUpload size={14} />}
+                onClick={() => inputRef.current?.click()}
+                type="primary"
+              >
+                {profile?.has_custom_avatar ? __('Replace') : __('Upload')}
               </Button>
-            )}
+              {/* Only offered when there is a custom picture to remove; removing
+                a Gravatar fallback would do nothing. */}
+              {profile?.has_custom_avatar && (
+                <Button danger disabled={busy} icon={<LuTrash2 size={14} />} onClick={handleRemove}>
+                  {__('Remove')}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
 
-        <input
-          accept={accept}
-          className="bc-hidden"
-          onChange={event => {
-            const file = event.target.files?.[0]
-            // Cleared through the ref so picking the same file twice still
-            // fires a change event and a failed upload can be retried.
-            if (inputRef.current) inputRef.current.value = ''
-            void handleFile(file)
-          }}
-          ref={inputRef}
-          type="file"
-        />
-      </section>
+          <input
+            accept={accept}
+            className="bc-hidden"
+            onChange={event => {
+              const file = event.target.files?.[0]
+              // Cleared through the ref so picking the same file twice still
+              // fires a change event and a failed upload can be retried.
+              if (inputRef.current) inputRef.current.value = ''
+              void handleFile(file)
+            }}
+            ref={inputRef}
+            type="file"
+          />
+        </SettingsCard>
 
-      <CoverImageSection profile={profile} />
+        <CoverImageSection profile={profile} />
+      </div>
 
       <ProfileDetailsForm profile={profile} />
 
@@ -144,19 +142,9 @@ export default function ManageSection({
 
       {/* After the account settings and before permissions: this is a choice
           the member makes, where permissions are a statement of what they have
-          been given. */}
-      <section
-        aria-label={__('Notifications')}
-        className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
-      >
-        <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-          {__('Notifications')}
-        </h2>
-        <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-          {__('Choose what the forum tells you about, and whether it also emails you.')}
-        </p>
-        <NotificationPreferencesForm />
-      </section>
+          been given. The form is a stack of cards of its own, the same ones
+          the Notifications page shows. */}
+      <NotificationPreferencesForm />
 
       <PermissionsPanel isLoading={isLoadingPermissions} isOwnProfile permissions={permissions} />
     </div>

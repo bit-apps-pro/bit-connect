@@ -12,10 +12,10 @@ import {
 const EMPTY_DIAGNOSTICS: SeoDiagnostics = {
   archives: {},
   crawlerContent: false,
-  isBridged: false,
   portalIsPublic: false,
   portalUrl: '',
   publishedTopics: 0,
+  searchEnginesDiscouraged: false,
   seoPlugin: '',
   sitemapUrl: ''
 }
@@ -29,7 +29,9 @@ export default function useSeoSettings() {
     queryFn: ({ signal }) =>
       request<never, SeoSettingsResponse>('seo-settings', { method: 'GET', signal }),
     queryKey: ['seo-settings'],
-    retry: false,
+    // Retried quietly behind the skeleton: a dev-server reload or a slow
+    // request should not put an error on screen that a second try would clear.
+    retry: 2,
     select: response => {
       const payload = response?.data ?? (response as unknown as SeoSettingsResponse)
 
@@ -40,18 +42,9 @@ export default function useSeoSettings() {
         settings: {
           ...DEFAULT_SEO_SETTINGS,
           ...payload?.settings,
-          archives: { ...DEFAULT_SEO_SETTINGS.archives, ...payload?.settings?.archives },
           indexArchives: {
             ...DEFAULT_SEO_SETTINGS.indexArchives,
             ...payload?.settings?.indexArchives
-          },
-          sitemap: {
-            ...DEFAULT_SEO_SETTINGS.sitemap,
-            ...payload?.settings?.sitemap,
-            archives: {
-              ...DEFAULT_SEO_SETTINGS.sitemap.archives,
-              ...payload?.settings?.sitemap?.archives
-            }
           }
         } as SeoSettings
       }
@@ -60,6 +53,8 @@ export default function useSeoSettings() {
 
   return {
     diagnostics: data?.diagnostics ?? EMPTY_DIAGNOSTICS,
+    /** Whether real settings have arrived, rather than the empty defaults. */
+    hasSeoSettings: data !== undefined,
     isSeoSettingsError: isError,
     isSeoSettingsFetching: isFetching,
     isSeoSettingsPending: isPending,

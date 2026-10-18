@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\DeleteCoverRequest;
 use BitApps\BitConnect\Http\Requests\UploadCoverRequest;
 use BitApps\BitConnect\Services\CoverImageService;
+use BitApps\BitConnect\Services\UploadClaims;
 
 /**
  * Profile cover image upload and removal.
@@ -78,6 +79,7 @@ final class CoverController
             wp_generate_attachment_metadata($attachmentId, $uploaded['file'])
         );
 
+        UploadClaims::markPortal((int) $attachmentId);
         CoverImageService::setCover($userId, $attachmentId);
 
         return Response::success(

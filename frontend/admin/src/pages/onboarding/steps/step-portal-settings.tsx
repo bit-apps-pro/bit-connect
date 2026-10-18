@@ -22,6 +22,11 @@ interface Props {
  * the slug from the URL. The slug is checked live so the administrator sees
  * a conflict before pressing Next, and the page is only created here, once:
  * from then on the settings screen treats the slug as a pointer.
+ *
+ * The step cannot be skipped: the rest of the wizard, and the portal itself,
+ * assume a portal page exists. An administrator who left the wizard after this
+ * step and came back finds their slug already marked as the community page,
+ * and continues past it without creating a second one.
  */
 const cardClass = (active: boolean) =>
   `bc-cursor-pointer bc-transition-all ${active ? 'bc-border-blue-500 bc-shadow-sm' : ''}`
@@ -35,19 +40,26 @@ export default function StepPortalSettings({ onNext }: Props) {
   const { createPortalPage, isCreatingPortalPage } = useCreatePortalPage()
   const { isUpdatingPortalRoot, updatePortalRoot } = useUpdatePortalRoot()
 
-  const taken = check?.exists === true
+  const isExistingPortal = check?.isPortal === true
+  // Not only an existing page: a reserved address, or a name WordPress would
+  // quietly store as `name-2`, cannot carry the portal either.
+  const taken =
+    !isExistingPortal &&
+    (check?.exists === true || check?.reserved === true || check?.available === false)
   const isNextDisabled = slug.trim().length < 1 || isChecking || !check || taken
 
   const handleNext = async () => {
     const trimmed = slug.trim()
 
-    try {
-      await createPortalPage(trimmed)
-    } catch (error_: unknown) {
-      setError(
-        (error_ as { message?: string })?.message ?? __('Could not create the page. Please try again.')
-      )
-      return
+    if (!isExistingPortal) {
+      try {
+        await createPortalPage(trimmed)
+      } catch (error_: unknown) {
+        setError(
+          (error_ as { message?: string })?.message ?? __('Could not create the page. Please try again.')
+        )
+        return
+      }
     }
 
     if (placement === 'site_root') {
@@ -84,7 +96,7 @@ export default function StepPortalSettings({ onNext }: Props) {
             <div>
               <Text strong>{__('On its own page')}</Text>
               <Text className="bc-mt-0.5 bc-block bc-text-sm" type="secondary">
-                {__('yoursite.com/community — the rest of your website stays as it is. Recommended.')}
+                {__('yoursite.com/community. The rest of your website stays as it is. Recommended.')}
               </Text>
             </div>
           </div>
@@ -96,7 +108,7 @@ export default function StepPortalSettings({ onNext }: Props) {
             <div className="bc-w-full">
               <Text strong>{__('As the homepage')}</Text>
               <Text className="bc-mt-0.5 bc-block bc-text-sm" type="secondary">
-                {__('yoursite.com — the community is the first thing visitors see.')}
+                {__('yoursite.com. Visitors land on the community first.')}
               </Text>
               {placement === 'site_root' && (
                 <Alert
@@ -138,35 +150,19 @@ export default function StepPortalSettings({ onNext }: Props) {
         )}
         {placement === 'site_root' && (
           <Text className="bc-block bc-text-sm" type="secondary">
-            {__('Only used as the page name in WordPress — visitors see yoursite.com.')}
+            {__('This is only the page name inside WordPress. Visitors will just see yoursite.com.')}
           </Text>
         )}
       </div>
 
-      <div className="bc-flex bc-flex-col bc-gap-2">
-        <Text strong>{__('Want to use your own page instead?')}</Text>
-        <Input.Search
-          enterButton={__('Copy')}
-          onSearch={e => navigator.clipboard?.writeText(e)}
-          readOnly
-          value="[bit-connect]"
-        />
-        <Text className="bc-block bc-text-sm" type="secondary">
-          {__(
-            'Skip this step, paste the shortcode into any page you like, and publish it. That page becomes your community.'
-          )}
-        </Text>
-      </div>
-
       <Space className="bc-justify-end">
-        <Button onClick={onNext}>{__('Skip')}</Button>
         <Button
           disabled={isNextDisabled}
           loading={isCreatingPortalPage || isUpdatingPortalRoot}
           onClick={handleNext}
           type="primary"
         >
-          {__('Create page and continue')}
+          {isExistingPortal ? __('Continue') : __('Create page and continue')}
         </Button>
       </Space>
     </div>

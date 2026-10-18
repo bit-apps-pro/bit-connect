@@ -8,37 +8,19 @@ use PHPUnit\Framework\TestCase;
 use WP_Comment;
 use WP_Post;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class PermissionServiceTest extends TestCase
 {
     protected function setUp(): void
     {
-        $GLOBALS['__wp_caps']            = [];
+        $GLOBALS['__wp_caps'] = [];
         $GLOBALS['__wp_current_user_id'] = 0;
-        $GLOBALS['__wp_posts']           = [];
-        $GLOBALS['__wp_comments']        = [];
-    }
-
-    private function grant(string ...$caps): void
-    {
-        foreach ($caps as $cap) {
-            $GLOBALS['__wp_caps'][$cap] = true;
-        }
-    }
-
-    private function makePost(int $author): WP_Post
-    {
-        $post              = new WP_Post();
-        $post->post_author = $author;
-
-        return $post;
-    }
-
-    private function makeComment(int $userId): WP_Comment
-    {
-        $comment          = new WP_Comment();
-        $comment->user_id = $userId;
-
-        return $comment;
+        $GLOBALS['__wp_posts'] = [];
+        $GLOBALS['__wp_comments'] = [];
     }
 
     public function testCanCreatePostReflectsCapability(): void
@@ -66,7 +48,7 @@ class PermissionServiceTest extends TestCase
         ));
 
         $GLOBALS['__wp_current_user_id'] = 999; // not the author
-        $GLOBALS['__wp_posts'][7]        = $this->makePost(1);
+        $GLOBALS['__wp_posts'][7] = $this->makePost(1);
 
         $this->assertFalse(PermissionService::canEditPost(7));
     }
@@ -79,7 +61,7 @@ class PermissionServiceTest extends TestCase
     {
         $this->grant(Capabilities::MODERATE->value, Capabilities::DELETE_ANY->value);
         $GLOBALS['__wp_current_user_id'] = 999;
-        $GLOBALS['__wp_comments'][3]     = $this->makeComment(1);
+        $GLOBALS['__wp_comments'][3] = $this->makeComment(1);
 
         $this->assertTrue(PermissionService::canDeleteComment(3));
         $this->assertFalse(PermissionService::canEditComment(3));
@@ -97,7 +79,7 @@ class PermissionServiceTest extends TestCase
     {
         $this->grant(Capabilities::EDIT_OWN_POST->value);
         $GLOBALS['__wp_current_user_id'] = 5;
-        $GLOBALS['__wp_posts'][7]        = $this->makePost(5);
+        $GLOBALS['__wp_posts'][7] = $this->makePost(5);
 
         $this->assertTrue(PermissionService::canEditPost(7));
     }
@@ -106,7 +88,7 @@ class PermissionServiceTest extends TestCase
     {
         $this->grant(Capabilities::EDIT_OWN_POST->value);
         $GLOBALS['__wp_current_user_id'] = 5;
-        $GLOBALS['__wp_posts'][7]        = $this->makePost(5);
+        $GLOBALS['__wp_posts'][7] = $this->makePost(5);
 
         $this->assertTrue(PermissionService::canEditPost(7));
     }
@@ -115,7 +97,7 @@ class PermissionServiceTest extends TestCase
     {
         $this->grant(Capabilities::EDIT_OWN_POST->value);
         $GLOBALS['__wp_current_user_id'] = 5;
-        $GLOBALS['__wp_posts'][7]        = $this->makePost(99); // owned by someone else
+        $GLOBALS['__wp_posts'][7] = $this->makePost(99); // owned by someone else
 
         $this->assertFalse(PermissionService::canEditPost(7));
     }
@@ -123,7 +105,7 @@ class PermissionServiceTest extends TestCase
     public function testEditPostWithoutEditOwnCapabilityIsDenied(): void
     {
         $GLOBALS['__wp_current_user_id'] = 5;
-        $GLOBALS['__wp_posts'][7]        = $this->makePost(5); // owns it, but lacks the cap
+        $GLOBALS['__wp_posts'][7] = $this->makePost(5); // owns it, but lacks the cap
 
         $this->assertFalse(PermissionService::canEditPost(7));
     }
@@ -132,7 +114,7 @@ class PermissionServiceTest extends TestCase
     {
         $this->grant(Capabilities::DELETE_OWN_COMMENT->value);
         $GLOBALS['__wp_current_user_id'] = 8;
-        $GLOBALS['__wp_comments'][3]     = $this->makeComment(8);
+        $GLOBALS['__wp_comments'][3] = $this->makeComment(8);
 
         $this->assertTrue(PermissionService::canDeleteComment(3));
 
@@ -177,5 +159,28 @@ class PermissionServiceTest extends TestCase
         $this->assertTrue($capabilities[Capabilities::VOTE_POST->value]);
         $this->assertFalse($capabilities[Capabilities::MANAGE->value]);
         $this->assertFalse($capabilities[Capabilities::CREATE_POST->value]);
+    }
+
+    private function grant(string ...$caps): void
+    {
+        foreach ($caps as $cap) {
+            $GLOBALS['__wp_caps'][$cap] = true;
+        }
+    }
+
+    private function makePost(int $author): WP_Post
+    {
+        $post = new WP_Post();
+        $post->post_author = $author;
+
+        return $post;
+    }
+
+    private function makeComment(int $userId): WP_Comment
+    {
+        $comment = new WP_Comment();
+        $comment->user_id = $userId;
+
+        return $comment;
     }
 }

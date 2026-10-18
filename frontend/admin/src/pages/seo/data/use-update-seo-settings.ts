@@ -29,8 +29,8 @@ export default function useUpdateSeoSettings() {
     onError: () => {
       messageApi?.error(__('Failed to update SEO settings'))
     },
+    // No success toast: the screen's status line reports each save.
     onSuccess: () => {
-      messageApi?.success(__('SEO settings updated'))
       // Refetches the diagnostics too — several of them (indexable archives,
       // whether an SEO plugin is bridged) change as a direct result of a save.
       queryClient.invalidateQueries({ queryKey: ['seo-settings'] })

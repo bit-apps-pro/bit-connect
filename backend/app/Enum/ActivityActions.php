@@ -40,12 +40,6 @@ enum ActivityActions: string
     #[Label('Deleted a comment')]
     case DELETE_COMMENT = 'delete_comment';
 
-    #[Label('Pinned a topic')]
-    case PIN_POST = 'pin_post';
-
-    #[Label('Unpinned a topic')]
-    case UNPIN_POST = 'unpin_post';
-
     #[Label('Locked a topic')]
     case LOCK_POST = 'lock_post';
 
@@ -57,6 +51,11 @@ enum ActivityActions: string
 
     #[Label('Restored after review')]
     case RESTORE = 'restore';
+
+    // A moderator hiding a topic by hand, from the admin's Topics screen. Not
+    // HIDE, whose label says a report caused it.
+    #[Label('Hidden by a moderator')]
+    case HIDE_POST = 'hide_post';
 
     #[Label('Reports resolved')]
     case RESOLVE_REPORTS = 'resolve_reports';
@@ -82,12 +81,11 @@ enum ActivityActions: string
         return match ($action) {
             self::DELETE_POST     => __('Deleted a topic', 'bit-connect'),
             self::DELETE_COMMENT  => __('Deleted a comment', 'bit-connect'),
-            self::PIN_POST        => __('Pinned a topic', 'bit-connect'),
-            self::UNPIN_POST      => __('Unpinned a topic', 'bit-connect'),
             self::LOCK_POST       => __('Locked a topic', 'bit-connect'),
             self::UNLOCK_POST     => __('Unlocked a topic', 'bit-connect'),
             self::HIDE            => __('Hidden after a report', 'bit-connect'),
             self::RESTORE         => __('Restored after review', 'bit-connect'),
+            self::HIDE_POST       => __('Hidden by a moderator', 'bit-connect'),
             self::RESOLVE_REPORTS => __('Reports resolved', 'bit-connect'),
         };
     }

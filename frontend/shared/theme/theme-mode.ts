@@ -21,6 +21,19 @@ export type ThemeMode = 'dark' | 'light' | 'system'
 
 const THEME_MODES: ThemeMode[] = ['light', 'dark', 'system']
 
+/**
+ * The mode a browser starts in before anyone picks one: a fresh install, a new
+ * visitor, or a blob too damaged to read.
+ *
+ * Light rather than "system" because light is what the plugin is designed and
+ * screenshotted in, and a first look — onboarding, the admin, the portal — should
+ * show that, not whatever the OS happens to prefer. "system" is still one click
+ * away on the toggle and, once picked, is stored and honoured like any other mode.
+ *
+ * `ThemeBoot.php` hard-codes the same value in its pre-paint script.
+ */
+export const DEFAULT_THEME_MODE: ThemeMode = 'light'
+
 /** The class Tailwind's `darkMode: 'class'` looks for (see tailwind.config.mjs). */
 export const DARK_CLASS = 'dark'
 
@@ -89,24 +102,24 @@ export function applyThemeToDocument(isDark: boolean, root?: HTMLElement): void 
  *
  * The blob is shared with unrelated preferences and is written by
  * `atomWithStorage`, so it can be absent, malformed, or from a build before
- * this field existed. Every one of those means "system".
+ * this field existed. Every one of those means `DEFAULT_THEME_MODE`.
  *
  * `isDarkTheme` is read as a fallback for exactly that last case: installs that
  * persisted the old boolean keep the theme they chose instead of being silently
  * reset the first time they load a build with modes in it.
  */
 export function readStoredMode(raw: null | string | undefined): ThemeMode {
-  if (!raw) return 'system'
+  if (!raw) return DEFAULT_THEME_MODE
 
   try {
     const parsed: unknown = JSON.parse(raw)
-    if (typeof parsed !== 'object' || parsed === null) return 'system'
+    if (typeof parsed !== 'object' || parsed === null) return DEFAULT_THEME_MODE
 
     const { isDarkTheme, themeMode } = parsed as { isDarkTheme?: unknown; themeMode?: unknown }
     if (isThemeMode(themeMode)) return themeMode
     if (typeof isDarkTheme === 'boolean') return isDarkTheme ? 'dark' : 'light'
-    return 'system'
+    return DEFAULT_THEME_MODE
   } catch {
-    return 'system'
+    return DEFAULT_THEME_MODE
   }
 }

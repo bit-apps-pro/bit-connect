@@ -12,8 +12,10 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
+use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
+use BitApps\BitConnect\Http\Controller\PortalPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
 use BitApps\BitConnect\Http\Controller\TopicDetailsController;
 use BitApps\BitConnect\Http\Controller\TopicsController;
@@ -164,6 +166,22 @@ final class RootRouter
             return;
         }
 
+        // What the member follows. Claimed outright like the notifications page,
+        // and for the same reason: it is whoever is logged in's own list.
+        if ($path === 'following') {
+            $this->claim($portal, static fn () => (new FollowingPageController())->show(new Request()));
+
+            return;
+        }
+
+        // A page a plugin draws, claimed the same way. Before topics: such a
+        // path is the plugin's, as `following` is this plugin's.
+        if (PortalPageController::isPage($path)) {
+            $this->claim($portal, static fn () => (new PortalPageController())->show(new Request(), $path));
+
+            return;
+        }
+
         if (preg_match('~^user/([^/]+)$~', $path, $matches)) {
             $userId = $matches[1];
 
@@ -188,7 +206,7 @@ final class RootRouter
             $segment = $matches[1];
             $termSlug = $matches[2];
 
-            if (PortalTaxonomies::resolve($segment, $termSlug) !== null) {
+            if (PortalTaxonomies::resolve($segment, $termSlug) !== null || PortalTaxonomies::renamedArchiveUrl($segment, $termSlug) !== '') {
                 $this->claim(
                     $portal,
                     static fn () => (new TopicArchiveController())->show(new Request(), $segment, $termSlug)
@@ -198,12 +216,18 @@ final class RootRouter
             }
         }
 
-        $topic = strpos($path, '/') === false
-            ? get_page_by_path($path, OBJECT, PostTypes::BIT_CONNECT->value)
+        // A link to one reply, e.g. `/how-do-i/comment/42`, is its topic's page.
+        // Resolved on the topic alone: the reply may since have been deleted,
+        // and the portal says so above the thread rather than 404ing a visitor
+        // who can still read the discussion it was part of.
+        $topicSlug = preg_match('~^([^/]+)/comment/[0-9]+$~', $path, $matches) ? $matches[1] : $path;
+
+        $topic = strpos($topicSlug, '/') === false
+            ? get_page_by_path($topicSlug, OBJECT, PostTypes::BIT_CONNECT->value)
             : null;
 
         if ($topic instanceof WP_Post && $this->isReadable($topic)) {
-            $this->claim($portal, static fn () => (new TopicDetailsController())->show(new Request(), $path));
+            $this->claim($portal, static fn () => (new TopicDetailsController())->show(new Request(), $topicSlug));
 
             return;
         }
@@ -350,25 +374,16 @@ final class RootRouter
     /**
      * Whether this reader should be given the topic page at all.
      *
-     * Published is the ordinary answer. A hidden topic is the exception: its
-     * author and the moderators are served it — marked, and still absent from
-     * every listing — and everyone else falls through to the not-found screen
-     * as before.
-     *
-     * The status check has to happen here as well as in TopicService. This runs
-     * on the WordPress route, which decided the request was a 404 long before
-     * any service was asked, so letting the author through downstream while
-     * this line still tested for 'publish' gave them a 404 on their own topic
-     * and an API that cheerfully returned it.
+     * The check has to happen here as well as downstream: this runs on the
+     * WordPress route, which decided the request was a 404 long before any
+     * service was asked. It asks TopicService rather than keeping rules of its
+     * own — a private copy here once admitted only published and hidden topics,
+     * so the author of a private one got a 404 on its page while the API
+     * returned it, and it would have ignored whatever a plugin holds back.
      */
     private function isReadable(WP_Post $topic): bool
     {
-        if ($topic->post_status === 'publish') {
-            return true;
-        }
-
-        return $topic->post_status === ContentVisibilityService::HIDDEN_STATUS
-            && ContentVisibilityService::isPostViewableWhileHidden((int) $topic->post_author);
+        return TopicService::isReadable($topic);
     }
 
     /**

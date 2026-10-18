@@ -49,11 +49,6 @@ export default function TopicTypeEditModal() {
       form.setFieldsValue({
         color: topicType.meta?.bit_connect_color,
         description: topicType.description,
-        icon_dark_id: topicType.meta?.bit_connect_icon_dark_id || 0,
-        icon_dark_url: topicType.meta?.bit_connect_icon_dark_url,
-        icon_file_name: topicType.iconFileName,
-        icon_id: topicType.meta?.bit_connect_icon_id || 0,
-        icon_url: topicType.meta?.bit_connect_icon_url,
         name: topicType.name,
         slug: topicType.slug
       })
@@ -72,11 +67,7 @@ export default function TopicTypeEditModal() {
       const formattedBody = {
         description: values.description,
         meta: {
-          bit_connect_color: values.color,
-          bit_connect_icon_dark_id: values.icon_dark_id || 0,
-          bit_connect_icon_dark_url: values.icon_dark_url,
-          bit_connect_icon_id: values.icon_id || 0,
-          bit_connect_icon_url: values.icon_url
+          bit_connect_color: values.color
         },
         name: values.name,
         ...(values.slug ? { slug: slugify(values.slug) } : {})
@@ -94,6 +85,10 @@ export default function TopicTypeEditModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isUpdatingTopicType}
+      // Mount the body before the first open, and keep it mounted after a
+      // close, so the Form instance created above is always connected to a
+      // <Form>; antd warns otherwise when fields are reset while it is closed.
+      forceRender
       loading={isTopicTypeFetching}
       okText={__('Save Changes')}
       onCancel={handleCancel}

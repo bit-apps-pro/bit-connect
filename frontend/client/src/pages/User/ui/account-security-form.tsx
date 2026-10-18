@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import SettingsCard from '@utilities/settings-card'
 import { Alert, Button, Form, Input } from 'antd'
 import { useEffect, useRef } from 'react'
 import { LuLock, LuMail } from 'react-icons/lu'
@@ -6,7 +7,7 @@ import { LuLock, LuMail } from 'react-icons/lu'
 import { useAuthStore } from '@/store/auth.zustand'
 
 import useCancelEmailChange from '../data/use-cancel-email-change'
-import useChangePassword,{ type ChangePasswordPayload } from '../data/use-change-password'
+import useChangePassword, { type ChangePasswordPayload } from '../data/use-change-password'
 import useRequestEmailChange, { type RequestEmailChangePayload } from '../data/use-request-email-change'
 import useSendPasswordReset from '../data/use-send-password-reset'
 
@@ -83,17 +84,10 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
   }
 
   return (
-    <section
-      aria-label={__('Account and security')}
-      className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
+    <SettingsCard
+      subtitle={__('Only you can see these. They are never shown on your profile.')}
+      title={__('Account and security')}
     >
-      <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-        {__('Account and security')}
-      </h2>
-      <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-        {__('Only you can see these. They are never shown on your profile.')}
-      </p>
-
       <Form<EmailFormValues>
         className="[&_.ant-form-item-label>label]:bc-font-semibold"
         form={emailForm}
@@ -161,7 +155,7 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
         <Alert
           className="bc-mb-4"
           description={__(
-            'You signed in without one, so there is nothing to confirm — just choose a password below.'
+            'You signed in without one, so there is nothing to confirm. Just choose a password below.'
           )}
           message={__('Your account has no password yet')}
           showIcon
@@ -243,6 +237,6 @@ export default function AccountSecurityForm({ userId }: { userId: number | undef
           </Button>
         </Form.Item>
       </Form>
-    </section>
+    </SettingsCard>
   )
 }

@@ -7,8 +7,14 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Http\Rules\AssignableTermRule;
 use BitApps\BitConnect\Http\Rules\InRule;
+use BitApps\BitConnect\Http\Rules\LengthAtMostRule;
+use BitApps\BitConnect\Http\Rules\TagRefRule;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PostingLimits;
+use BitApps\BitConnect\Services\TagResolverService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
  * Provides validation for updating a topic.
@@ -20,10 +26,10 @@ use BitApps\BitConnect\Services\PermissionService;
  * @property null|string $post_status
  * @property null|array $attachments
  * @property null|array $topic-types
- * @property null|array $departments
  * @property null|array $stages
  * @property null|array $statuses
  * @property null|array $tags
+ * @property null|array $seo
  */
 final class UpdateTopicRequest extends Request
 {
@@ -52,12 +58,12 @@ final class UpdateTopicRequest extends Request
 
     public function rules()
     {
-        return [
+        $rules = [
             'id'           => ['required', 'integer', 'min:1'],
             'post_title'   => ['nullable', 'string', 'sanitize:text', 'max:200'],
-            'post_content' => ['nullable', 'string', 'max:10000'],
+            'post_content' => ['nullable', 'string', 'max:' . PostingLimits::TOPIC_HTML_CEILING],
             // See CreateTopicRequest — omitted, the topic keeps the slug it has.
-            'post_name'   => ['nullable', 'string', 'sanitize:title', 'max:200'],
+            'post_name' => ['nullable', 'string', 'sanitize:title', new LengthAtMostRule(200)],
             // Publish is the only status this endpoint sets. Sending it for a
             // topic that is currently private makes it public, the same way
             // clearing a capability override is always available. Omitting the
@@ -66,14 +72,19 @@ final class UpdateTopicRequest extends Request
             'post_status' => ['nullable', 'string', new InRule(['publish'])],
             'attachments' => ['nullable', 'array'],
             'topic-types' => ['nullable', 'integer', 'min:1'],
-            'departments' => ['nullable', 'integer', 'min:1'],
             'stages'      => ['nullable', 'min:1'],
             'statuses'    => ['nullable', 'integer', 'min:1'],
-            'tags'        => ['nullable', 'array'],
-            'tags.*'      => ['nullable', 'integer'],
-            'is_pinned'   => ['nullable', 'boolean'],
+            'tags'        => ['nullable', 'array', 'max:' . PostingLimits::TOPIC_TAGS_CEILING],
+            'tags.*'      => ['nullable', new TagRefRule()],
             'is_locked'   => ['nullable', 'boolean'],
         ];
+
+        // A taxonomy another plugin files topics under — see TopicTaxonomies.
+        foreach (array_keys(TopicTaxonomies::all()) as $param) {
+            $rules[$param] = ['nullable', 'integer', 'min:1', new AssignableTermRule($param)];
+        }
+
+        return $rules;
     }
 
     public function messages()
@@ -85,18 +96,15 @@ final class UpdateTopicRequest extends Request
             'post_title.max'        => 'The topic title cannot exceed 200 characters.',
             'post_name.string'      => 'The topic slug must be a string.',
             'post_name.max'         => 'The topic slug cannot exceed 200 characters.',
-            'post_content.max'      => 'The topic description cannot exceed 10000 characters.',
-            'attachments.*.max'     => 'Each attachment file cannot exceed 10MB.',
+            'post_content.max'      => 'The topic description is too long.',
             'topic-types.*.integer' => 'Each topic type must be a valid ID.',
             'topic-types.*.min'     => 'Each topic type ID must be at least 1.',
-            'departments.*.integer' => 'Each department must be a valid ID.',
-            'departments.*.min'     => 'Each department ID must be at least 1.',
             'stages.*.integer'      => 'Each stage must be a valid ID.',
             'stages.*.min'          => 'Each stage ID must be at least 1.',
             'statuses.*.integer'    => 'Each status must be a valid ID.',
             'statuses.*.min'        => 'Each status ID must be at least 1.',
-            'tags.*.integer'        => 'Each tag must be a valid ID.',
-            'tags.*.min'            => 'Each tag ID must be at least 1.',
+            'tags.max'              => \sprintf('A topic may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING),
+            'tags.*.integer'        => \sprintf('Each tag must be a tag from the list or a name of up to %d characters.', TagResolverService::MAX_NAME_LENGTH),
         ];
     }
 }

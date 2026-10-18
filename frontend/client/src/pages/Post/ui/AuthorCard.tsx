@@ -1,8 +1,12 @@
+import { parseMaybeGmt } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import { type Topic } from '@features/topic-modal/shared/type'
+import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
 import { Avatar, Skeleton } from 'antd'
 import { Link } from 'react-router'
+
+import { formatSiteTime } from '@/utils/site-time'
 
 import useUserStats from '../data/use-user-stats'
 import { PANEL } from './panel-styles'
@@ -11,16 +15,17 @@ const formatCount = (value: number) =>
   value >= 1000 ? `${(value / 1000).toFixed(value >= 10_000 ? 0 : 1)}k` : String(value)
 
 const memberSince = (iso: string) => {
-  const date = new Date(iso.replace(' ', 'T'))
+  // `user_registered` is GMT with no zone marker.
+  const date = parseMaybeGmt(iso)
   if (Number.isNaN(date.getTime())) return
-  return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+  return formatSiteTime(date, { month: 'short', year: 'numeric' })
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bc-flex bc-flex-1 bc-flex-col bc-items-center bc-gap-1">
       <span className="bc-text-[17px] bc-font-semibold bc-leading-none bc-text-ink">{value}</span>
-      <span className="bc-text-[10px] bc-uppercase bc-tracking-[0.04em] bc-leading-tight bc-text-ink-subtle">
+      <span className="bc-text-[10px] bc-leading-tight bc-text-ink-subtle">
         {label}
       </span>
     </div>
@@ -60,12 +65,16 @@ export default function AuthorCard({ topic }: { topic: Topic }) {
           </Avatar>
         </Link>
         <div className="bc-min-w-0">
-          <Link
-            className="bc-block bc-truncate bc-text-[15px] bc-font-semibold bc-leading-tight bc-text-ink bc-no-underline hover:bc-text-primary"
-            to={userProfilePath(topic.author_slug)}
-          >
-            {topic.author_name}
-          </Link>
+          <div className="bc-flex bc-min-w-0 bc-items-center bc-gap-1.5">
+            <Link
+              className="bc-block bc-truncate bc-text-[15px] bc-font-semibold bc-leading-tight bc-text-ink bc-no-underline hover:bc-text-primary"
+              to={userProfilePath(topic.author_slug)}
+            >
+              {topic.author_name}
+            </Link>
+            {/* Same badge the byline shows, so the two cannot disagree. */}
+            <MemberBadge badge={topic.author_badge} />
+          </div>
           {joined && (
             <div className="bc-mt-0.5 bc-text-[11px] bc-text-ink-subtle">
               {__('Member since')} {joined}

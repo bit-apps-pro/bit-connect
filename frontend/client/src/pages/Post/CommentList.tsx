@@ -11,7 +11,7 @@ import styles from './CommentThread.module.css'
 
 interface CommentListProps {
   comments: Comment[]
-  /** The comment a `#comment-N` link asked for, if the page was opened with one. */
+  /** The comment a link asked for, if the page was opened with one. */
   focusedCommentId?: number
   hasMore?: boolean
   isLoadingMore?: boolean
@@ -22,6 +22,8 @@ interface CommentListProps {
   /** Draws the upvote control for a reply, when the forum offers one. See use-comment-vote. */
   renderVote?: (comment: Comment) => ReactNode
   sortOption: SortOption
+  /** Who opened the topic — the only member who may pin a reply in it. */
+  topicAuthorId: number
   topicSlug: string
   topicTitle: string
 }
@@ -37,6 +39,7 @@ export default function CommentList({
   onReply,
   renderVote,
   sortOption,
+  topicAuthorId,
   topicSlug,
   topicTitle
 }: CommentListProps) {
@@ -88,6 +91,7 @@ export default function CommentList({
               onEdit={onEdit}
               onReply={onReply}
               renderVote={renderVote}
+              topicAuthorId={topicAuthorId}
               topicSlug={topicSlug}
               topicTitle={topicTitle}
             />
@@ -106,7 +110,7 @@ export default function CommentList({
 
       {hasPaginated && !hasMore && !isLoadingMore && topLevelComments.length > 0 && (
         <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
-          <span>{__("🎉 You're all caught up — no more comments")}</span>
+          <span>{__("🎉 You're all caught up. That's every comment!")}</span>
         </div>
       )}
     </div>

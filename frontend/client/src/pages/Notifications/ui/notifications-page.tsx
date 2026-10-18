@@ -1,4 +1,6 @@
+import { ArrowLeftOutlined } from '@ant-design/icons'
 import { __, sprintf } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import {
   ignoreBadgeFailure,
   NotificationPreferencesForm,
@@ -14,6 +16,7 @@ import TabNav from '@utilities/tab-nav'
 import { Button, Spin, Typography } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { LuCheckCheck } from 'react-icons/lu'
+import { useNavigate } from 'react-router'
 
 import config from '@/config/config'
 
@@ -38,6 +41,7 @@ type Tab = 'all' | 'settings' | 'unread'
  * while they are staring at a notification they would rather not have had.
  */
 export default function NotificationsPage() {
+  usePageTitle(__('Notifications'))
   const [tab, setTab] = useState<Tab>('all')
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -49,6 +53,7 @@ export default function NotificationsPage() {
   // a hook called after it would run on some renders and not others — which
   // React treats as a different component each time.
   const handleSelect = useOpenNotification()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const node = sentinelRef.current
@@ -82,8 +87,22 @@ export default function NotificationsPage() {
     )
   }
 
+  // On a phone the bell opens this page rather than a dropdown, so it needs a
+  // way back of its own. Inside the app when there is history to go back to;
+  // a page opened from an email link goes to the topics instead of leaving.
+  const goBack = () => {
+    if (window.history.state?.idx > 0) {
+      navigate(-1)
+      return
+    }
+    navigate('/', { replace: true })
+  }
+
   return (
     <div className="bc-mx-auto bc-w-full bc-max-w-3xl bc-px-4 bc-py-6">
+      <Button className="bc--ml-2 bc-mb-2 bc-px-2" icon={<ArrowLeftOutlined />} onClick={goBack} type="text">
+        {__('Back')}
+      </Button>
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3">
         <div className="bc-min-w-0">
           <Title className="bc-mb-0" level={3}>
@@ -135,9 +154,8 @@ export default function NotificationsPage() {
       </div>
 
       {isSettings ? (
-        <div className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5">
-          <NotificationPreferencesForm />
-        </div>
+        // No card around it: the form is a stack of its own settings cards.
+        <NotificationPreferencesForm />
       ) : (
         /* Separate cards with a gap, matching the topic list every other page
            of the portal is built from — same radius, same border, same rhythm.

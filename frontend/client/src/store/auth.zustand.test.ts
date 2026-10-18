@@ -254,17 +254,17 @@ describe('signing out', () => {
 
 describe('setting the member directly', () => {
   it('recomputes what they may do', () => {
-    useAuthStore.getState().setUser(member(['bit_connect_forum_pin_post']) as never)
+    useAuthStore.getState().setUser(member(['bit_connect_forum_lock_post']) as never)
 
     expect(useAuthStore.getState().isLoggedIn).toBe(true)
-    expect(useAuthStore.getState().can('bit_connect_forum_pin_post')).toBe(true)
+    expect(useAuthStore.getState().can('bit_connect_forum_lock_post')).toBe(true)
   })
 
   it('signs them out when handed nothing', () => {
-    useAuthStore.getState().setUser(member(['bit_connect_forum_pin_post']) as never)
+    useAuthStore.getState().setUser(member(['bit_connect_forum_lock_post']) as never)
     useAuthStore.getState().setUser(undefined)
 
     expect(useAuthStore.getState().isLoggedIn).toBe(false)
-    expect(useAuthStore.getState().can('bit_connect_forum_pin_post')).toBe(false)
+    expect(useAuthStore.getState().can('bit_connect_forum_lock_post')).toBe(false)
   })
 })

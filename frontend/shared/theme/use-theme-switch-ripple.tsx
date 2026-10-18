@@ -1,6 +1,8 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { useCallback, useState } from 'react'
 import { createPortal, flushSync } from 'react-dom'
+
+import MotionProvider from '../motion/motion-provider'
 
 /**
  * Animates a theme switch as a circular reveal: the switched UI itself grows
@@ -170,9 +172,12 @@ export default function useThemeSwitchRipple() {
     typeof document === 'undefined'
       ? undefined
       : createPortal(
+          // Its own provider: the admin app has none at its root, and the
+          // switch itself waits on this disc's animation completing.
+          <MotionProvider>
           <AnimatePresence>
             {state && (
-              <motion.div
+              <m.div
                 animate={{ scale: 1 }}
                 exit={{ opacity: 0 }}
                 initial={{ scale: 0 }}
@@ -201,7 +206,8 @@ export default function useThemeSwitchRipple() {
                 }}
               />
             )}
-          </AnimatePresence>,
+          </AnimatePresence>
+          </MotionProvider>,
           document.body
         )
 

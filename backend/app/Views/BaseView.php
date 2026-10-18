@@ -5,10 +5,17 @@ namespace BitApps\BitConnect\Views;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
+use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\NotificationService;
+use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use WP_Post;
 
@@ -105,6 +112,9 @@ class BaseView
             'settings'               => Config::getOption('settings'),
             'dateFormat'             => Config::getOption('date_format', false, true),
             'timeFormat'             => Config::getOption('time_format', false, true),
+            // Settings → General → Timezone, so the portal names every GMT
+            // instant on the site's clock rather than each reader's.
+            'timeZone' => wp_timezone_string(),
             'siteURL'                => Config::get('SITE_URL'),
             'version'                => Config::VERSION,
             'lang'                   => get_locale(),
@@ -120,18 +130,38 @@ class BaseView
             'wpRegisterURL'          => wp_registration_url(),
             'loginPageCustomization' => AuthService::getSettings()['loginPageCustomization'] ?? ['banner' => '', 'title' => '', 'description' => ''],
             'communityTitle'         => $generalSettings['communityTitle'] ?? '',
-            'logoLight'              => $generalSettings['logoLight'] ?? '',
-            'logoPermalinkMode'      => $generalSettings['logoPermalinkMode'] ?? 'default',
-            'logoPermalinkCustom'    => $generalSettings['logoPermalinkCustom'] ?? '',
-            'portalAccess'           => $generalSettings['portalAccess'] ?? 'everyone',
-            'portalFilters'          => GeneralSettings::portalFilters($generalSettings),
-            'promo'                  => GeneralSettings::promo($generalSettings),
-            'defaultStageSlug'       => StageService::defaultStageSlug(),
-            'defaultStatusSlug'      => StatusService::defaultStatusSlug(),
-            'wpMediaSettings'        => [
+            // The title the server falls back to when no community title is
+            // set, so a page title set in the browser matches the server's.
+            'siteName' => get_bloginfo('name'),
+            // Whether the site's permalinks end in a slash. The app builds its
+            // own links, and without this every one of them named a URL that
+            // WordPress answers with a 301 to the slashed form — see
+            // utils/route-path.ts.
+            'trailingSlash'       => str_ends_with((string) get_option('permalink_structure'), '/'),
+            'logoLight'           => $generalSettings['logoLight'] ?? '',
+            'logoPermalinkMode'   => $generalSettings['logoPermalinkMode'] ?? 'default',
+            'logoPermalinkCustom' => $generalSettings['logoPermalinkCustom'] ?? '',
+            'portalAccess'        => $generalSettings['portalAccess'] ?? 'everyone',
+            'portalFilters'       => GeneralSettings::portalFilters($generalSettings),
+            'promo'               => GeneralSettings::promo($generalSettings),
+            // URL segment => the topics filter its archive pins and the taxonomy
+            // behind it, for every archive the portal serves — including any a
+            // plugin adds, which the app cannot know of in advance.
+            'portalArchives'    => self::portalArchives(),
+            'defaultStageSlug'  => StageService::defaultStageSlug(),
+            'defaultStatusSlug' => StatusService::defaultStatusSlug(),
+            // The server's list page size, so `/page/N` starts where it did.
+            'topicListPageSize' => TopicsView::pageSize(),
+            'wpMediaSettings'   => [
                 'maxUploadBytes'      => wp_max_upload_size(),
                 'bigImageThresholdPx' => (int) Hooks::applyFilter('big_image_size_threshold', 2560),
             ],
+            // Both editors and the upload check read these, so a file or an image
+            // the portal lets through is one the server accepts. See PostingLimits.
+            'postingLimits' => PostingLimits::all(),
+            // The upload check's list of attachable files, from the same source
+            // as the server's, so the two cannot drift. See ExtensionPoints.
+            'attachmentTypes' => AttachmentValidatorService::attachmentTypes(),
             // Sent with the page so the bell's badge is right on first paint
             // instead of appearing a beat after the header draws. The portal
             // polls for changes after that; this is only the starting value.
@@ -160,7 +190,7 @@ class BaseView
         // routed portal pages already register on template_redirect, and
         // registration is idempotent so the shortcode's later call is harmless.
         $post = get_post();
-        $hasShortcode = is_singular() && $post instanceof WP_Post && has_shortcode($post->post_content, 'bit-connect');
+        $hasShortcode = is_singular() && $post instanceof WP_Post && PortalLocation::embedsPortal((string) $post->post_content);
         if ($hasShortcode) {
             $this->registerAssets();
         }
@@ -217,5 +247,62 @@ class BaseView
         if (!wp_script_is('media-upload')) {
             wp_enqueue_media();
         }
+    }
+
+    /**
+     * What one term of a taxonomy is called — "Tag" — translated.
+     */
+    private static function termLabel(string $taxonomy): string
+    {
+        $added = TopicTaxonomies::forTaxonomy($taxonomy);
+
+        if ($added !== null && $added['singular'] !== '') {
+            return $added['singular'];
+        }
+
+        $object = get_taxonomy($taxonomy);
+
+        return $object ? (string) ($object->labels->singular_name ?? $object->label) : '';
+    }
+
+    /**
+     * Each archive the portal serves, by the URL segment it answers to.
+     *
+     * The filter key is the topics endpoint's parameter for that taxonomy:
+     * this plugin's own are fixed, and an added one is named by TopicTaxonomies.
+     *
+     * @return array<string, array{filter: string, taxonomy: string, follow: string, label: string}>
+     */
+    private static function portalArchives(): array
+    {
+        $filters = [
+            Taxonomies::TOPIC_TYPES->value => 'topic-types',
+            Taxonomies::TAGS->value        => 'tags',
+            Taxonomies::STAGES->value      => 'stages',
+            Taxonomies::STATUSES->value    => 'statuses',
+        ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $filters[$entry['taxonomy']] = $param;
+        }
+
+        $archives = [];
+
+        foreach (PortalTaxonomies::map() as $segment => $taxonomy) {
+            if (isset($filters[$taxonomy])) {
+                $archives[PortalTaxonomies::slugFor($segment)] = [
+                    'filter'   => $filters[$taxonomy],
+                    'taxonomy' => $taxonomy,
+                    // The follow target a term is followed by, or '' for one
+                    // that cannot be. The archive page offers Follow on these.
+                    'follow' => FollowService::targetTypeForTaxonomy($taxonomy),
+                    // What one term is called, so that button can say what it
+                    // follows: "Follow tag". An added taxonomy names itself.
+                    'label' => self::termLabel($taxonomy),
+                ];
+            }
+        }
+
+        return $archives;
     }
 }

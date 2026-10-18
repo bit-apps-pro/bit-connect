@@ -56,6 +56,7 @@ const topicCommentToAppComment = (topicComment: TopicComment): Comment => {
     id: Number.parseInt(topicComment.comment_ID, 10),
     isAdmin: topicComment.isAdmin ?? false,
     parentId: Number.isNaN(parentId) ? 0 : parentId,
+    pinned: topicComment.pinned ?? false,
     replies: [],
     user: topicComment.comment_author,
     userId: Number.isNaN(userId) ? 0 : userId,
@@ -73,11 +74,33 @@ export const transformTopicCommentsToComments = (topicComments: TopicComment[]):
 }
 
 /**
+ * Lift the pinned reply to the front, whatever the sort said.
+ *
+ * The twin of the hoist CommentController does server-side, and it has to
+ * exist on both sides: the topic page builds its thread from the topic payload
+ * and sorts it here, while paginating hits the comments endpoint and gets the
+ * order from there. One without the other means the pinned reply jumps as soon
+ * as the reader scrolls.
+ *
+ * Moves rather than copies, so the thread still appears exactly once, and
+ * leaves the array alone when the pin is already first or there is no pin —
+ * which is every topic on a forum without the add-on.
+ */
+const hoistPinned = (comments: Comment[]): Comment[] => {
+  const index = comments.findIndex(comment => comment.pinned)
+  if (index <= 0) return comments
+
+  const pinned = comments[index]!
+  return [pinned, ...comments.slice(0, index), ...comments.slice(index + 1)]
+}
+
+/**
  * Sort hierarchical comments (only top-level, preserving replies).
  *
  * Two orderings are performed here. Any other value is handed to the
  * comment-order extension point; when nothing there claims it either, the
  * thread falls back to newest-first rather than to an unspecified order.
+ * Whichever ordering wins, a pinned reply is then lifted to the front.
  */
 export const sortHierarchicalComments = (comments: Comment[], sortOption: SortOption): Comment[] => {
   const sorted = [...comments]
@@ -98,10 +121,10 @@ export const sortHierarchicalComments = (comments: Comment[], sortOption: SortOp
     })
   } else {
     const ordered = orderComments(sorted, sortOption)
-    if (ordered) return ordered
+    if (ordered) return hoistPinned(ordered)
 
     sorted.sort((a, b) => compareDatesDesc(a.createdAt || '', b.createdAt || ''))
   }
 
-  return sorted
+  return hoistPinned(sorted)
 }

@@ -1,8 +1,10 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form } from 'antd'
-import { useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import { type TopicFieldMode } from '@/store/admin-settings.type'
 
 import { type TaxonomiesResponse } from '../data/use-taxonomies'
 
@@ -18,11 +20,15 @@ vi.mock('@features/file-uploader/state/use-file-store', () => ({ default: () => 
 // Which taxonomy selects the form offers is an admin setting, so the tests that
 // care about the row's layout set it per render. The `mock` prefix keeps it
 // reachable from the factory, which vitest hoists above this file's own code.
-const mockTopicFormFields: { requireDepartment?: boolean; requireTopicType?: boolean } = {}
+const mockTopicFormFields: { topicType?: TopicFieldMode } = {}
 vi.mock('@/store/admin-settings.zustand', () => ({
   useAdminSettingsStore: (selector: (s: unknown) => unknown) =>
     selector({ settings: { topicFormFields: mockTopicFormFields } })
 }))
+// The fields a plugin adds beside Topic Type. None by default, as in this
+// plugin; a test that needs the row shared adds one.
+const mockAddedTermFields: { fields: ReactNode[] } = { fields: [] }
+vi.mock('../data/use-added-term-fields', () => ({ default: () => mockAddedTermFields.fields }))
 // The availability check needs a query client and the network. What it reports
 // is its own test's business; here it only has to not be in the way.
 vi.mock('../data/use-slug-availability', () => ({
@@ -50,7 +56,7 @@ function Harness({
   return <TopicForm form={form} isEditMode={isEditMode} taxonomies={taxonomies} />
 }
 
-const title = () => screen.getByLabelText('Topic Title')
+const title = () => screen.getByLabelText('Topic title')
 const slugBox = () => screen.getByLabelText('Permalink')
 const openSlugButton = (name = 'Set a custom permalink') => screen.getByRole('button', { name })
 
@@ -70,7 +76,7 @@ describe('TopicForm slug field', () => {
     const labels = [...document.querySelectorAll('.ant-form-item-label label')].map(l =>
       l.textContent?.trim()
     )
-    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Topic Title') + 1)
+    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Topic title') + 1)
   })
 
   // The whole point of hiding it: an author who does not care about permalinks
@@ -93,7 +99,7 @@ describe('TopicForm slug field', () => {
     render(<Harness />)
 
     await userEvent.type(title(), 'My First Topic')
-    await openSlug()
+    await openSlug('Edit permalink')
 
     expect(slugBox()).toHaveValue('my-first-topic')
   })
@@ -102,7 +108,7 @@ describe('TopicForm slug field', () => {
     render(<Harness />)
 
     await userEvent.type(title(), 'My First')
-    await openSlug()
+    await openSlug('Edit permalink')
     await userEvent.clear(slugBox())
     await userEvent.type(slugBox(), 'chosen-slug')
     await userEvent.type(title(), ' Topic')
@@ -173,15 +179,45 @@ describe('TopicForm slug field', () => {
 
     expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
 
-    await openSlug()
+    await openSlug('Edit permalink')
     expect(slugBox()).toHaveValue('a-chosen-slug')
+  })
+
+  // What WordPress shows under a post title: the address, not just an opener.
+  it('previews the slug it will use once there is one', async () => {
+    render(<Harness />)
+
+    await userEvent.type(title(), 'My First Topic')
+
+    expect(screen.getByText('my-first-topic')).toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+  })
+
+  it('confirms on Enter without submitting the topic', async () => {
+    render(<Harness />)
+
+    await openSlug()
+    await userEvent.type(slugBox(), 'a chosen slug{Enter}')
+
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.getByText('a-chosen-slug')).toBeInTheDocument()
+  })
+
+  it('backs out on Escape, putting the slug back', async () => {
+    render(<Harness isEditMode slug="original-slug" />)
+
+    await openSlug('Edit permalink')
+    await userEvent.clear(slugBox())
+    await userEvent.type(slugBox(), 'second-thoughts{Escape}')
+
+    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.getByText('original-slug')).toBeInTheDocument()
   })
 })
 
-const term = (id: number, name: string) => ({ count: 0, id, name, parent: 0, slug: name })
+const term = (id: number, name: string) => ({ count: 0, description: '', id, name, parent: 0, slug: name })
 
 const taxonomies = {
-  'bit-connect-departments': [],
   'bit-connect-stages': [],
   'bit-connect-statuses': [],
   'bit-connect-tags': [term(11, 'billing'), term(12, 'onboarding'), term(13, 'reporting')],
@@ -194,52 +230,73 @@ const shownTags = () =>
   [...document.querySelectorAll('.ant-select-item-option-content')].map(o => o.textContent)
 
 const searchTags = async (query: string) => {
-  const box = screen.getByLabelText('Tag')
+  const box = screen.getByLabelText('Tags')
   await userEvent.click(box)
   await userEvent.type(box, query)
 }
 
-// The two taxonomy selects share a row. Either can be switched off by an admin,
-// and the one left behind should not sit at half width beside dead space.
+// Topic Type shares its row with any field a plugin adds. An admin can hide
+// Topic Type, and a field left alone should not sit at half width beside dead
+// space.
 const row = () => document.querySelector('.bc-grid')
+// antd marks the label, and only on an item whose rules require it.
+const requiredLabel = (label: string) =>
+  screen.getByLabelText(label).closest('.ant-form-item')?.querySelector('label.ant-form-item-required')
+
+const teamField = (
+  <Form.Item className="bc-mb-0" key="teams" label="Team" name="teams">
+    <input />
+  </Form.Item>
+)
 
 describe('TopicForm taxonomy row', () => {
   afterEach(() => {
     cleanup()
-    delete mockTopicFormFields.requireDepartment
-    delete mockTopicFormFields.requireTopicType
+    delete mockTopicFormFields.topicType
+    mockAddedTermFields.fields = []
   })
 
-  it('splits the row when both selects are required', () => {
-    mockTopicFormFields.requireDepartment = true
-    mockTopicFormFields.requireTopicType = true
-    render(<Harness taxonomies={taxonomies} />)
-
-    expect(row()).toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Topic Type')).toBeInTheDocument()
-    expect(screen.getByLabelText('Products/Department')).toBeInTheDocument()
-  })
-
-  it('gives Topic Type the whole row when Department is switched off', () => {
-    mockTopicFormFields.requireTopicType = true
+  it('gives Topic Type the whole row on its own', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.queryByLabelText('Products/Department')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
   })
 
-  it('gives Department the whole row when Topic Type is switched off', () => {
-    mockTopicFormFields.requireDepartment = true
+  it('splits the row with a field a plugin adds', () => {
+    mockAddedTermFields.fields = [teamField]
+    render(<Harness taxonomies={taxonomies} />)
+
+    expect(row()).toHaveClass('sm:bc-grid-cols-2')
+    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Team')).toBeInTheDocument()
+  })
+
+  it('gives an added field the whole row when Topic Type is hidden', () => {
+    mockTopicFormFields.topicType = 'hidden'
+    mockAddedTermFields.fields = [teamField]
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
     expect(screen.queryByLabelText('Topic Type')).not.toBeInTheDocument()
   })
 
-  it('drops the row entirely when neither is required', () => {
+  it('drops the row entirely when nothing is left in it', () => {
+    mockTopicFormFields.topicType = 'hidden'
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toBeNull()
+  })
+
+  it('marks Topic Type required only when it is', () => {
+    mockTopicFormFields.topicType = 'required'
+    render(<Harness taxonomies={taxonomies} />)
+    expect(requiredLabel('Topic type')).not.toBeNull()
+    cleanup()
+
+    mockTopicFormFields.topicType = 'optional'
+    render(<Harness taxonomies={taxonomies} />)
+    expect(requiredLabel('Topic type')).toBeNull()
   })
 })
 
@@ -267,7 +324,7 @@ describe('TopicForm tag field', () => {
   it('leaves every tag on offer before anything is typed', async () => {
     render(<Harness taxonomies={taxonomies} />)
 
-    await userEvent.click(screen.getByLabelText('Tag'))
+    await userEvent.click(screen.getByLabelText('Tags'))
 
     expect(shownTags()).toEqual(['billing', 'onboarding', 'reporting'])
   })

@@ -79,7 +79,7 @@ for (const [index, line] of lines.entries()) {
     const indent = line.match(/^\s*/)[0]
 
     output.push(
-      `${indent}/* translators: ${placeholders.join(', ')} — value(s) inserted by the plugin; keep them in the translation. */`
+      `${indent}/* translators: ${placeholders.join(', ')} are value(s) inserted by the plugin. Keep them in the translation. */`
     )
   }
 

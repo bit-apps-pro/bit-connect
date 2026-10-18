@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Services\NotificationDigest;
+use BitApps\BitConnect\Services\UploadClaims;
 
 /**
  * The plugin's scheduled work.
@@ -37,12 +38,20 @@ final class CronProvider
     public const CLEANUP_HOOK = 'bit_connect_notification_cleanup';
 
     /**
+     * Uploads no post ended up using, and large uploads abandoned half sent
+     * (UploadClaims). Its own job for the same reason as the two above: it has
+     * nothing to do with notifications.
+     */
+    public const UPLOAD_CLEANUP_HOOK = 'bit_connect_upload_cleanup';
+
+    /**
      * Wires the callbacks and makes sure both events exist.
      */
     public static function register(): void
     {
         Hooks::addAction(self::DIGEST_HOOK, [NotificationDigest::class, 'run']);
         Hooks::addAction(self::CLEANUP_HOOK, [NotificationDigest::class, 'cleanup']);
+        Hooks::addAction(self::UPLOAD_CLEANUP_HOOK, [UploadClaims::class, 'cleanup']);
 
         self::schedule();
     }
@@ -64,6 +73,10 @@ final class CronProvider
         if (!wp_next_scheduled(self::CLEANUP_HOOK)) {
             wp_schedule_event(time() + DAY_IN_SECONDS, 'daily', self::CLEANUP_HOOK);
         }
+
+        if (!wp_next_scheduled(self::UPLOAD_CLEANUP_HOOK)) {
+            wp_schedule_event(time() + DAY_IN_SECONDS, 'daily', self::UPLOAD_CLEANUP_HOOK);
+        }
     }
 
     /**
@@ -77,5 +90,6 @@ final class CronProvider
     {
         wp_clear_scheduled_hook(self::DIGEST_HOOK);
         wp_clear_scheduled_hook(self::CLEANUP_HOOK);
+        wp_clear_scheduled_hook(self::UPLOAD_CLEANUP_HOOK);
     }
 }

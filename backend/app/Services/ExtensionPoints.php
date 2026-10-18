@@ -9,9 +9,11 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
+use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use WP_Comment;
+use WP_Post;
 
 /**
  * The decisions this plugin lets another plugin make.
@@ -168,6 +170,26 @@ final class ExtensionPoints
     }
 
     /**
+     * The fields a formatted topic carries.
+     *
+     * The topic counterpart of commentFields(): everything this plugin knows
+     * about a topic is in `$fields` already, and this is where a plugin that
+     * knows something more about the same topic adds it.
+     *
+     * Trusted no further than the shape: an answer that is not an array gets
+     * this plugin's own fields sent instead of breaking the topic.
+     *
+     * @param array $fields the topic as this plugin formats it
+     * @param int   $postId the topic being formatted
+     */
+    public static function topicFields(array $fields, int $postId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_fields', $fields, $postId);
+
+        return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
      * A thread ordered by something this plugin cannot order by.
      *
      * This plugin sorts a thread by date, either way round, and that is every
@@ -198,6 +220,36 @@ final class ExtensionPoints
         }
 
         return $offered;
+    }
+
+    /**
+     * The reply pinned to a topic, or 0 when none is.
+     *
+     * This plugin has no pin action anywhere — no route, no capability, no
+     * menu entry. What it has is the reading half: a comment carries a
+     * `pinned` flag and the thread puts a pinned reply first, both of which
+     * are inert until something answers here with an id. Without a listener
+     * that is never, so the flag is false on every comment and the ordering
+     * is the ordering the reader asked for.
+     *
+     * Asked once per request and compared against each comment in turn, rather
+     * than asked per comment: the listener reads post meta, and a filter call
+     * for every reply on a three-hundred-reply topic would be three hundred
+     * reads to answer one question.
+     *
+     * The listener is responsible for the id still being pinnable — a pinned
+     * reply that has since been deleted, unapproved or hidden by a report must
+     * come back as 0, or the portal would hoist a tombstone to the top of the
+     * thread. This plugin cannot check that itself without knowing what the
+     * listener stored, and does not try: whatever id comes back is matched
+     * against comments already filtered for visibility, and a stale one
+     * simply matches nothing.
+     *
+     * @param int $topicId the topic whose pin is being asked about
+     */
+    public static function pinnedCommentId(int $topicId): int
+    {
+        return (int) Hooks::applyFilter('bit_connect_pinned_comment', 0, $topicId);
     }
 
     /**
@@ -254,6 +306,24 @@ final class ExtensionPoints
     }
 
     /**
+     * Whether a member who does not moderate the forum still receives this
+     * moderator-only type.
+     *
+     * This plugin's moderators are whoever holds the moderate capability, and
+     * that alone decides who it sends moderator-only types to. A plugin with
+     * moderators of its own — of one space, say — answers yes for them, for
+     * the types they act on. Only ever widens: a forum moderator receives
+     * every moderator-only type whatever a listener says.
+     *
+     * @param NotificationTypes $type   a moderator-only type
+     * @param int               $userId a member who does not moderate the forum
+     */
+    public static function receivesModeratorType(NotificationTypes $type, int $userId): bool
+    {
+        return $userId > 0 && (bool) Hooks::applyFilter('bit_connect_receives_moderator_type', false, $type->value, $userId);
+    }
+
+    /**
      * How many upvotes a member has received.
      *
      * This plugin counts the votes on their topics, which is every vote it
@@ -296,5 +366,274 @@ final class ExtensionPoints
             $author,
             $pending
         );
+    }
+
+    /**
+     * How much a topic or a reply may hold — its length, its images and its
+     * files — and how large one uploaded file may be.
+     *
+     * This plugin sets none — every value is null, "no limit" — so with
+     * nobody listening a member may post as much as the server takes. A
+     * listener answers with numbers of its own. The answer is raw:
+     * PostingLimits validates its shape and caps the file size at what the
+     * server accepts, so a listener cannot promise an upload PHP will refuse
+     * anyway.
+     *
+     * @param array{topic: array{attachments: null, characters: null, images: null}, comment: array{attachments: null, characters: null, images: null}, maxFileSize: null} $own
+     *
+     * @return mixed
+     */
+    public static function postingLimits(array $own)
+    {
+        return Hooks::applyFilter('bit_connect_posting_limits', $own);
+    }
+
+    /**
+     * Which files a member may attach to a topic or a reply: extension →
+     * the MIME types its content may be read as.
+     *
+     * This plugin's answer is its own list of images and documents. A listener
+     * may add to it or take from it. The answer is raw: AttachmentValidatorService
+     * drops malformed entries and anything on its dangerous list, and every
+     * upload is still checked against what WordPress itself allows and against
+     * the file's actual bytes, so a listener widens the list, never the checks.
+     *
+     * Attachments only — avatars and cover images keep their own fixed list.
+     *
+     * @param array<string, string[]> $own
+     *
+     * @return mixed
+     */
+    public static function attachmentTypes(array $own)
+    {
+        return Hooks::applyFilter('bit_connect_attachment_types', $own);
+    }
+
+    /**
+     * The topic list's query, for a named list this plugin does not define.
+     *
+     * The topic list is this plugin's filters and nothing else; it has no list
+     * of its own under a name. A request that names one (`?view=…`) is offered
+     * here, and a listener that recognises the name returns the query narrowed
+     * to it. Nobody recognising it leaves the ordinary list, filters applied —
+     * a stale link lands on the topics, not on an error.
+     *
+     * The listener answers for who may see what it lists: a list that names a
+     * status this plugin keeps out of the listing must check the reader's
+     * capability itself.
+     *
+     * Trusted no further than the shape: an answer that is not an array is
+     * discarded and the ordinary query runs.
+     *
+     * @param array  $args the WP_Query arguments this plugin built
+     * @param string $view the name asked for
+     */
+    public static function topicListQuery(array $args, string $view): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_list_query', $args, $view);
+
+        return \is_array($offered) ? $offered : $args;
+    }
+
+    /**
+     * Topics a topic list leads with, before its own order begins.
+     *
+     * This plugin lists topics in the order the reader asked for and leads
+     * with none, so nobody answering leaves every list exactly as sorted. A
+     * listener returns topic ids; only those the list would show anyway are
+     * lifted, in the list's own order, so naming a topic cannot add it to a
+     * list it does not belong in or show it to someone who may not read it.
+     *
+     * Anything that is not a positive integer is dropped.
+     *
+     * @return list<int>
+     */
+    public static function leadingTopicIds(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_leading_topic_ids', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $offered), static fn (int $id): bool => $id > 0)));
+    }
+
+    /**
+     * The fields a row of the admin's Topics table carries.
+     *
+     * The table counterpart of topicFields(): everything this plugin shows in
+     * a row is in `$fields` already, and a plugin that adds a column to the
+     * table adds the value it reads here.
+     *
+     * Trusted no further than the shape: an answer that is not an array gets
+     * this plugin's own row sent instead.
+     *
+     * @param array $fields the row as this plugin builds it
+     * @param int   $postId the topic the row is for
+     */
+    public static function moderationRowFields(array $fields, int $postId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_moderation_topic_row', $fields, $postId);
+
+        return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
+     * Actions the activity log records beyond this plugin's own.
+     *
+     * The log is written against ActivityActions, which lists what this plugin
+     * does. A plugin that does something more a moderator should see answers
+     * with `slug => label`; the slug can then be recorded and the log names it.
+     * A slug this plugin already uses is not taken over, and anything that is
+     * not a non-empty string on both sides is dropped.
+     *
+     * @return array<string, string>
+     */
+    public static function activityActions(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_activity_actions', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        $own = array_flip(ActivityActions::values());
+        $clean = [];
+
+        foreach ($offered as $slug => $label) {
+            if (\is_string($slug) && $slug !== '' && !isset($own[$slug]) && \is_string($label) && $label !== '') {
+                $clean[$slug] = $label;
+            }
+        }
+
+        return $clean;
+    }
+
+    /**
+     * Whether a topic this plugin would let someone read stays readable.
+     *
+     * This plugin decides from the topic's status and the reader alone; a
+     * listener may hold a topic back for reasons of its own. It can only take
+     * away: a topic the status rules refuse is never offered, so nothing a
+     * listener answers makes a hidden or private topic readable.
+     *
+     * Asked about one topic at a time — the single-topic page, the write paths
+     * and each notification recipient. The lists are narrowed separately, by
+     * topicQueryArgs(), so the two must agree.
+     *
+     * Anything but `true` holds the topic back: a listener that answers with
+     * the wrong type fails closed rather than open.
+     *
+     * @param WP_Post $post   the topic, already readable by this plugin's rules
+     * @param int     $userId the reader, 0 for a visitor
+     */
+    public static function topicReadable(WP_Post $post, int $userId): bool
+    {
+        return Hooks::applyFilter('bit_connect_topic_readable', true, $post, $userId) === true;
+    }
+
+    /**
+     * The query behind every topic list, offered before it runs.
+     *
+     * The listing, search, archives, profile lists and the sitemap all go
+     * through here, so a listener that keeps some topics from a reader — the
+     * same ones it refuses in topicReadable() — narrows every list at once,
+     * typically with a `tax_query` clause or `post__not_in`.
+     *
+     * A listener adds to the query; it must not widen the statuses, which this
+     * plugin chose for the reader. An answer that is not an array is discarded.
+     *
+     * @param array  $args    the WP_Query arguments this plugin built
+     * @param int    $userId  the reader the list is for, 0 for a visitor
+     * @param string $context `list` for the portal's own lists, `sitemap` for
+     *                        what search engines are told about
+     */
+    public static function topicQueryArgs(array $args, int $userId, string $context): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_topic_query_args', $args, $userId, $context);
+
+        return \is_array($offered) ? $offered : $args;
+    }
+
+    /**
+     * Portal paths this plugin does not route itself, which a plugin draws —
+     * one segment each, e.g. `boards` for `/boards` — with the page's title.
+     *
+     * The portal serves its shell at each and the plugin's own client route
+     * draws the page. A path this plugin already uses, or one that is not a
+     * plain lower-case segment, is dropped: a plugin can add pages, never take
+     * one over. Read per request, so a listener registered on
+     * `plugins_loaded` is in time.
+     *
+     * @return array<string, string> path => page title
+     */
+    public static function portalPages(): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_portal_pages', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        $reserved = ['page', 'user', 'notifications', 'following', 'login', 'register', 'verify-email', 'forgot-password', 'comment'];
+        $pages = [];
+
+        foreach ($offered as $path => $title) {
+            $path = \is_string($path) ? $path : '';
+
+            if (!preg_match('/^[a-z0-9][a-z0-9-]{0,39}$/', $path) || \in_array($path, $reserved, true) || PortalTaxonomies::isReservedSegment($path)) {
+                continue;
+            }
+
+            $pages[$path] = sanitize_text_field(\is_string($title) ? $title : '') ?: $path;
+        }
+
+        return $pages;
+    }
+
+    /**
+     * Published topics a plugin keeps from this reader, by id — for the queries
+     * this plugin writes as SQL (profile lists, counts, insights), which no
+     * WP_Query argument reaches. The same topics topicReadable() refuses.
+     *
+     * Only ids are honoured: anything else in the answer is dropped.
+     *
+     * @param int $userId the reader, 0 for a visitor
+     *
+     * @return array<int, int>
+     */
+    public static function heldBackTopicIds(int $userId): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_held_back_topic_ids', [], $userId);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        return array_values(array_unique(array_filter(array_map('intval', $offered), static fn (int $id): bool => $id > 0)));
+    }
+
+    /**
+     * The terms of a taxonomy the portal lists to its reader.
+     *
+     * Every term, unless a listener keeps some from this reader — a term that
+     * stands for something they may not see. Only removal is honoured: an
+     * answer that adds terms, or is not an array, leaves the list as it was.
+     *
+     * @param array<int, mixed> $terms    the terms this plugin would list
+     * @param string            $taxonomy their taxonomy
+     *
+     * @return array<int, mixed>
+     */
+    public static function portalTerms(array $terms, string $taxonomy): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_portal_terms', $terms, $taxonomy);
+
+        if (!\is_array($offered) || \count($offered) > \count($terms)) {
+            return $terms;
+        }
+
+        return array_values($offered);
     }
 }

@@ -12,6 +12,7 @@ use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\DefaultTermService;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TagApprovalService;
 use BitApps\BitConnect\Services\TermOrderService;
 use WP_Post;
 
@@ -55,7 +56,7 @@ class PostTypeProvider
      * to remove content is not the thing being prevented here.
      *
      * Plugin code is unaffected — wp_update_post() performs no capability check
-     * of its own, so hiding, restoring, pinning and locking all still work.
+     * of its own, so hiding, restoring and locking all still work.
      */
     public function restrictEditingToAuthor(): void
     {
@@ -124,7 +125,6 @@ class PostTypeProvider
             'show_in_rest'          => true,
             'taxonomies'            => [
                 Taxonomies::TOPIC_TYPES->value,
-                Taxonomies::DEPARTMENTS->value,
                 Taxonomies::STAGES->value,
                 Taxonomies::STATUSES->value,
                 Taxonomies::TAGS->value,
@@ -155,12 +155,6 @@ class PostTypeProvider
             true
         );
         $this->registerTaxonomy(
-            Taxonomies::DEPARTMENTS->value,
-            _x('Department', 'Taxonomy Singular Name', 'bit-connect'),
-            _x('Departments', 'Taxonomy General Name', 'bit-connect'),
-            true
-        );
-        $this->registerTaxonomy(
             Taxonomies::STAGES->value,
             _x('Stage', 'Taxonomy Singular Name', 'bit-connect'),
             _x('Stages', 'Taxonomy General Name', 'bit-connect'),
@@ -178,6 +172,9 @@ class PostTypeProvider
             _x('Tags', 'Taxonomy General Name', 'bit-connect'),
             false
         );
+
+        // What a member-suggested tag carries while it waits for review.
+        TagApprovalService::register();
 
         // Create default stages after registration
         $this->createDefaultStages();
@@ -264,6 +261,18 @@ class PostTypeProvider
             ]
         );
 
+        // The stage's badge on a topic card.
+        register_term_meta(
+            Taxonomies::STAGES->value,
+            'bit_connect_color',
+            [
+                'show_in_rest'      => true,
+                'single'            => true,
+                'sanitize_callback' => 'sanitize_text_field',
+                'type'              => 'string',
+            ]
+        );
+
         register_term_meta(
             Taxonomies::STAGES->value,
             'bit_connect_icon_url',
@@ -317,28 +326,6 @@ class PostTypeProvider
                 ]
             );
         }
-
-        register_term_meta(
-            Taxonomies::TOPIC_TYPES->value,
-            'bit_connect_icon_url',
-            [
-                'type'              => 'string',
-                'single'            => true,
-                'sanitize_callback' => 'sanitize_text_field',
-                'show_in_rest'      => true,
-            ]
-        );
-
-        register_term_meta(
-            Taxonomies::TOPIC_TYPES->value,
-            'bit_connect_icon_id',
-            [
-                'type'              => 'integer',
-                'single'            => true,
-                'sanitize_callback' => 'absint',
-                'show_in_rest'      => true,
-            ]
-        );
 
         $this->addIconDarkTermMetaFields();
     }
@@ -397,7 +384,6 @@ class PostTypeProvider
         $iconTaxonomies = [
             Taxonomies::STAGES->value,
             Taxonomies::STATUSES->value,
-            Taxonomies::TOPIC_TYPES->value,
         ];
 
         foreach ($iconTaxonomies as $taxonomy) {

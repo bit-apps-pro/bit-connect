@@ -21,10 +21,11 @@ export default function useUpdateRoleCapabilities() {
     onError: () => {
       messageApi?.error(__('Failed to update capabilities'))
     },
+    // No success toast: each role saves as its boxes are ticked, and its
+    // status line says so. A toast per checkbox would be noise.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: managerKeys.capabilitySettings() })
       queryClient.invalidateQueries({ queryKey: managerKeys.users() })
-      messageApi?.success(__('Capabilities updated'))
     }
   })
 

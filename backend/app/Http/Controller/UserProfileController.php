@@ -9,9 +9,11 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\GetUserContentRequest;
+use BitApps\BitConnect\Http\Requests\GetUserInsightsRequest;
 use BitApps\BitConnect\Http\Requests\GetUserPermissionsRequest;
 use BitApps\BitConnect\Http\Requests\GetUserProfileRequest;
 use BitApps\BitConnect\Http\Requests\GetUserVotesRequest;
+use BitApps\BitConnect\Services\UserInsightsService;
 use BitApps\BitConnect\Services\UserProfileService;
 use BitApps\BitConnect\Services\UserStatsService;
 
@@ -22,6 +24,7 @@ use BitApps\BitConnect\Services\UserStatsService;
  * GET /users/{id}/topics   — topics they wrote (public)
  * GET /users/{id}/comments — comments they left (public)
  * GET /users/{id}/votes    — topics they upvoted (owner or moderator only)
+ * GET /users/{id}/insights — totals, top topics and type breakdown for a period (public)
  *
  * Separate from UserManagementController, which is capability-gated: these must
  * not inherit those checks, and equally must not hand back anything that
@@ -109,18 +112,14 @@ final class UserProfileController
         );
     }
 
-    public function pinned(GetUserContentRequest $request)
+    public function insights(GetUserInsightsRequest $request)
     {
         if ($this->profileService->profile((int) $request->id) === null) {
             return Response::error(__('User not found.', 'bit-connect'))->httpStatus(self::HTTP_NOT_FOUND);
         }
 
         return Response::success(
-            $this->profileService->pinnedTopics(
-                (int) $request->id,
-                (int) ($request->page ?? 1),
-                (int) ($request->per_page ?? 10)
-            )
+            (new UserInsightsService())->forUser((int) $request->id, $request->period ?? '30d')
         );
     }
 

@@ -51,3 +51,18 @@ export function syncVotesReceived(authorId: number | string, hasVoted: boolean):
   void queryClient.invalidateQueries({ queryKey: ['user-stats', id] })
   void queryClient.invalidateQueries({ queryKey: ['user-profile'] })
 }
+
+/**
+ * Refetch members' totals and activity after a comment is written or removed.
+ *
+ * The author card and the profile cache their numbers for minutes, so without
+ * this a member who commented four times kept seeing the count from before.
+ * Every member rather than one: a delete takes the replies under it too, and
+ * those can belong to anyone. Only queries on screen refetch; the rest are
+ * marked stale and catch up when next shown.
+ */
+export function refreshContributions(): void {
+  void queryClient.invalidateQueries({ queryKey: ['user-stats'] })
+  void queryClient.invalidateQueries({ queryKey: ['user-profile'] })
+  void queryClient.invalidateQueries({ queryKey: ['user-content'] })
+}

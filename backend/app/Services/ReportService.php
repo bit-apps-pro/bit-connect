@@ -11,6 +11,8 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Model;
+use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\ReportReasons;
 use BitApps\BitConnect\Enum\ReportStatus;
 use BitApps\BitConnect\Model\Report;
@@ -45,6 +47,93 @@ final class ReportService
      * Transient holding the queue badge's count.
      */
     private const PENDING_COUNT_KEY = 'bit_connect_reports_pending_targets';
+
+    /**
+     * Targets a moderator is removing through the Reports screen right now,
+     * keyed `type:id`. See removingFor().
+     *
+     * @var array<string, true>
+     */
+    private static array $resolvingElsewhere = [];
+
+    /**
+     * Closes the reports on content that no longer exists.
+     *
+     * A topic or comment can go without a moderator deciding anything — its
+     * author deletes it, an editor empties it from wp-admin, a topic takes its
+     * comments with it — and its pending reports stayed in the queue, a card
+     * for something nobody can open. They are closed as removed, which is what
+     * happened to the content; the rows stay, so the history does too.
+     */
+    public static function registerHooks(): void
+    {
+        Hooks::addAction('deleted_post', [self::class, 'handlePostDeleted'], 10, 2);
+        Hooks::addAction('deleted_comment', [self::class, 'handleCommentDeleted']);
+    }
+
+    /**
+     * Runs a moderator's removal without closing that target's reports.
+     *
+     * The Reports screen destroys the content first and resolves second, with
+     * the moderator's note and the reporters' notices. Left to the delete
+     * hook, the reports would already be closed by then and the resolve would
+     * answer "nothing left to review". Only this target is held back: the
+     * comments a removed topic takes with it still close on their own.
+     *
+     * @template T
+     *
+     * @param callable(): T $remove
+     *
+     * @return T
+     */
+    public static function removingFor(string $targetType, int $targetId, callable $remove)
+    {
+        $key = $targetType . ':' . $targetId;
+        self::$resolvingElsewhere[$key] = true;
+
+        try {
+            return $remove();
+        } finally {
+            unset(self::$resolvingElsewhere[$key]);
+        }
+    }
+
+    /**
+     * @param int   $postId
+     * @param mixed $post
+     */
+    public static function handlePostDeleted($postId, $post = null): void
+    {
+        if ($post instanceof WP_Post && $post->post_type !== PostTypes::BIT_CONNECT->value) {
+            return;
+        }
+
+        self::closeDeleted(self::TARGET_POST, (int) $postId);
+    }
+
+    /**
+     * @param int|string $commentId
+     */
+    public static function handleCommentDeleted($commentId): void
+    {
+        self::closeDeleted(self::TARGET_COMMENT, (int) $commentId);
+    }
+
+    private static function closeDeleted(string $targetType, int $targetId): void
+    {
+        if (isset(self::$resolvingElsewhere[$targetType . ':' . $targetId])) {
+            return;
+        }
+
+        // A delete hook must not throw: the content is already gone, and a
+        // failed write here leaves the reports as they were, which is no worse
+        // than before this hook existed.
+        try {
+            self::resolveTarget($targetType, $targetId, ReportStatus::RESOLVED_REMOVED);
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+    }
 
     /**
      * Files a report, or explains why it cannot be filed.
@@ -240,8 +329,15 @@ final class ReportService
         $perPage = min(100, max(1, (int) ($filters['per_page'] ?? 20)));
         $status = (string) ($filters['status'] ?? ReportStatus::PENDING->value);
 
+        // Kept and dismissed leave the content exactly as it was, so the screen
+        // offers one of them and shows both together — reports dismissed before
+        // that still belong beside the ones kept since.
+        $statuses = $status === ReportStatus::RESOLVED_KEPT->value
+            ? [ReportStatus::RESOLVED_KEPT->value, ReportStatus::DISMISSED->value]
+            : [$status];
+
         $rows = self::asList(
-            Report::where('status', $status)
+            Report::whereIn('status', $statuses)
                 ->orderBy('created_at')
                 ->desc()
                 ->take((string) self::QUEUE_ROW_CAP)

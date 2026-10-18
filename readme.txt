@@ -14,7 +14,7 @@ Build a community, forum, feedback portal and public roadmap with topics, profil
 
 **Bit Connect is a community plugin and forum plugin for building discussion forums, customer communities, feedback portals and public roadmaps directly on your WordPress website.**
 
-Members can create topics, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap by organizing topics with topic types, departments or products, tags, stages and statuses.
+Members can create topics, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap by organizing topics with topic types, tags, stages and statuses.
 
 = Bit Connect Features =
 
@@ -25,10 +25,10 @@ Members can create topics, join threaded discussions, upvote ideas, follow conve
 * **@mentions:** Mention other members inside topics and replies.
 * **Topic upvotes:** Let members vote on ideas, questions and feature requests.
 * **Feature requests and roadmap:** Collect ideas and feedback and move topics through stages and statuses.
-* **Topic organization:** Use topic types, departments or products, tags, stages and statuses.
+* **Topic organization:** Use topic types, tags, stages and statuses.
 * **Search, sorting and filters:** Help members find relevant community discussions.
 * **Attachments:** Allow supported files on topics and replies.
-* **Following:** Members can follow topics, departments or products, tags or the whole community.
+* **Following:** Members can follow topics, tags or the whole community.
 * **Member profiles:** Profile photo, cover image, display name, profile URL, bio and supported social/profile links.
 * **Member activity:** Surface topics, comments and upvoted content from profile areas.
 * **In-app and email notifications:** Keep members updated on supported community events and let them manage available notification preferences.
@@ -60,11 +60,11 @@ Create an easy-to-follow discussion forum with topics, threaded replies, @mentio
 
 = Feature Requests and Public Roadmaps =
 
-Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote topics, while you organize feedback by product, department, type, tag, stage and status so everyone can follow progress clearly.
+Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote topics, while you organize feedback by type, tag, stage and status so everyone can follow progress clearly.
 
 = Following and Notifications =
 
-Keep members connected to the conversations that matter. Users can follow topics, products or departments, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, topic activity and other relevant community updates automatically.
+Keep members connected to the conversations that matter. Users can follow topics, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, topic activity and other relevant community updates automatically.
 
 = Moderation and Role Permissions =
 
@@ -102,9 +102,9 @@ To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 `pnpm install`
 `pnpm build:free`
 
-= Bundled Font =
+= Bundled Fonts =
 
-The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), included in the plugin and served from your own site. It is licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Outfit.txt`. Source: https://github.com/Outfitio/Outfit-Fonts
+The portal's text is set in **Inter** (© 2016 The Inter Project Authors) and its headings in **Outfit** (© 2021 The Outfit Project Authors). Both are included in the plugin and served from your own site, and both are licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Inter.txt` and `LICENSE-Outfit.txt`. Sources: https://github.com/rsms/inter and https://github.com/Outfitio/Outfit-Fonts
 
 = Other Products by Bit Apps =
 
@@ -120,11 +120,11 @@ The portal uses the **Outfit** font (© 2021 The Outfit Project Authors), includ
 
 Join our [Bit Apps Community](https://www.facebook.com/groups/bitcommunityusers) for the latest plugin updates.
 
-View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/) — see *Source Code* above.
+View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/). See *Source Code* above.
 
 == External Services ==
 
-This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Outfit** typeface it is set in ships inside the plugin (SIL Open Font License 1.1) and is served from your own site.
+This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Inter** and **Outfit** typefaces it is set in ship inside the plugin (SIL Open Font License 1.1) and is served from your own site.
 
 = Bit Apps plugin catalogue =
 
@@ -133,7 +133,7 @@ On the **Bit Connect → Support** screen, the bottom of the page offers a **Sho
 * **What is sent:** nothing beyond an ordinary web request. No site content, user data, email addresses or settings are transmitted. As with any web request, the receiving server sees your IP address and the referring admin URL.
 * **What is received:** a list of plugin names, descriptions and links, plus the address of each plugin's icon image, which your browser then loads from Bit Apps' servers to display the card.
 * **When:** only after an administrator clicks the button on the Support screen. Never automatically, never on the front end, and never on other admin screens.
-* **Provider:** Bit Apps — [terms of service](https://bitapps.pro/terms-of-service/), [privacy policy](https://bitapps.pro/privacy-policy/).
+* **Provider:** Bit Apps. See the [terms of service](https://bitapps.pro/terms-of-service/) and [privacy policy](https://bitapps.pro/privacy-policy/).
 
 == Installation ==
 
@@ -153,7 +153,7 @@ Both. Bit Connect includes forum-style topics, comments and threaded replies whi
 
 = Can I use Bit Connect for feature requests and a public roadmap? =
 
-Yes. Members can submit ideas and feedback, discuss requests and upvote topics. You can organize them with products or departments, topic types, tags, stages and statuses.
+Yes. Members can submit ideas and feedback, discuss requests and upvote topics. You can organize them with topic types, tags, stages and statuses.
 
 = Can I use Bit Connect for a SaaS or product community? =
 

@@ -31,6 +31,7 @@ use BitApps\BitConnect\Http\Controller\ReportController;
 use BitApps\BitConnect\Http\Controller\SeoSettingsController;
 use BitApps\BitConnect\Http\Controller\TaxonomyController;
 use BitApps\BitConnect\Http\Controller\TopicController;
+use BitApps\BitConnect\Http\Controller\TopicModerationController;
 use BitApps\BitConnect\Http\Controller\UserManagementController;
 use BitApps\BitConnect\Http\Controller\UserProfileController;
 use BitApps\BitConnect\Http\Controller\UserStatsController;
@@ -53,6 +54,7 @@ Route::post('topics/{id}', [TopicController::class, 'update']);
 Route::get('topics-delete/{id}', [TopicController::class, 'delete']);
 // Off the `topics/` prefix on purpose — `topics/{id}` would swallow it.
 Route::get('topic-slug-check', [TopicController::class, 'slugCheck']);
+Route::get('topic-types-used', [TopicController::class, 'typesUsed']);
 
 // Comments
 Route::get('posts/{id}/comments', [CommentController::class, 'getByPost']);
@@ -94,6 +96,15 @@ Route::post('notification-settings/test-email', [NotificationSettingsController:
 // two endpoints leaves the member where they started.
 Route::post('follows/toggle', [FollowController::class, 'toggle']);
 Route::get('follows', [FollowController::class, 'mine']);
+// One thing's state, for a page that did not arrive with it (a tag archive).
+Route::get('follows/state', [FollowController::class, 'state']);
+
+// The admin's Topics screen. bit_connect_forum_moderate, enforced in each
+// Request. Under `moderation/`, not `topics/`, which `topics/{id}` would
+// swallow. One row's status, stage and lock go through `topics/{id}`.
+Route::get('moderation/topics', [TopicModerationController::class, 'index']);
+Route::get('moderation/topic-filters', [TopicModerationController::class, 'filters']);
+Route::post('moderation/topics/bulk', [TopicModerationController::class, 'bulk']);
 
 // Activity log — who did what to content they did not write. bit_connect_forum_moderate,
 // enforced in GetActivityLogRequest::authorize().
@@ -106,8 +117,12 @@ Route::get('posts/{id}/votes', [VoteController::class, 'getPostVotes']);
 
 Route::get('taxonomies', [TaxonomyController::class, 'getTaxonomies']);
 
-// Term CRUD uses the core terms endpoint; only ordering needs a plugin route.
+// Term CRUD uses the core terms endpoint; only ordering and merging need a
+// plugin route — core can neither sort by meta nor re-file a term's topics.
 Route::post('taxonomies/{taxonomy}/reorder', [TaxonomyController::class, 'reorder']);
+Route::post('taxonomies/{taxonomy}/merge', [TaxonomyController::class, 'merge']);
+// A member-suggested tag, let into the vocabulary. See TagApprovalService.
+Route::post('taxonomies/tags/approve', [TaxonomyController::class, 'approve']);
 
 // Public contribution totals for a topic author's card. Separate from the
 // admin-only user management routes below.
@@ -120,7 +135,7 @@ Route::get('users/{id}/topics', [UserProfileController::class, 'topics']);
 Route::get('users/{id}/comments', [UserProfileController::class, 'comments']);
 Route::get('users/{id}/votes', [UserProfileController::class, 'votes']);
 Route::get('users/{id}/overview', [UserProfileController::class, 'overview']);
-Route::get('users/{id}/pinned', [UserProfileController::class, 'pinned']);
+Route::get('users/{id}/insights', [UserProfileController::class, 'insights']);
 Route::get('users/{id}/permissions', [UserProfileController::class, 'permissions']);
 
 // Self-service profile editing (owner only — see each Request's authorize()).
@@ -139,6 +154,8 @@ Route::post('users/{id}/email/cancel', [AccountSecurityController::class, 'cance
 
 // Attachments
 Route::post('attachments', [AttachmentController::class, 'upload']);
+Route::post('attachments/chunk', [AttachmentController::class, 'uploadChunk']);
+Route::post('attachments/chunk/abort', [AttachmentController::class, 'abortChunkedUpload']);
 Route::post('attachments/delete', [AttachmentController::class, 'delete']);
 
 // Onboarding Routes

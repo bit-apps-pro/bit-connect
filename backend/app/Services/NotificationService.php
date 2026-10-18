@@ -13,6 +13,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Model\Notification;
+use WP_Post;
 
 /**
  * The one way anything in this plugin tells a member something happened.
@@ -47,6 +48,13 @@ final class NotificationService
     public const TARGET_USER = 'user';
 
     /**
+     * A private space someone asked to join — ACCESS_REQUESTED's target, so
+     * requests to join the same space fold into one row. Raised by whatever
+     * plugin provides the spaces; this one only delivers it.
+     */
+    public const TARGET_SPACE = 'space';
+
+    /**
      * The actor id kept for something the forum did on its own.
      *
      * Zero because no person did it — the auto-hide that fires when reports
@@ -79,6 +87,41 @@ final class NotificationService
     ): int {
         return self::send(
             get_current_user_id(),
+            $type,
+            $targetType,
+            $targetId,
+            $context,
+            $topicId,
+            $recipients,
+            $exclude
+        );
+    }
+
+    /**
+     * Sends an event on behalf of the member it belongs to.
+     *
+     * For an event that comes true on someone else's request: a topic that
+     * reaches the public only when another member acts on it was still written
+     * by its author, and "posted a new topic" has to name them rather than
+     * whoever made it visible.
+     *
+     * @param int                  $actorId    the member the event is attributed to
+     * @param array<string, mixed> $context
+     * @param null|array<int, int> $recipients
+     * @param array<int, int>      $exclude
+     */
+    public static function dispatchAs(
+        int $actorId,
+        NotificationTypes $type,
+        string $targetType,
+        int $targetId,
+        array $context = [],
+        ?int $topicId = null,
+        ?array $recipients = null,
+        array $exclude = []
+    ): int {
+        return self::send(
+            max(self::SYSTEM_ACTOR, $actorId),
             $type,
             $targetType,
             $targetId,
@@ -342,9 +385,19 @@ final class NotificationService
             $excluded[] = $actorId;
         }
 
+        // A row names its topic — in the bell, the email and the digest — so
+        // nobody is written one about a topic they cannot open. Asked last,
+        // after every listener, so a recipient a filter added is held to it too.
+        $thread = $topicId ?? ($targetType === self::TARGET_TOPIC ? $targetId : 0);
+        $topic = $thread > 0 ? get_post($thread) : null;
+
         $written = 0;
 
         foreach (self::normalizeIds($candidates, $excluded) as $userId) {
+            if ($topic instanceof WP_Post && !TopicService::isReadableBy($topic, $userId)) {
+                continue;
+            }
+
             if (self::deliver($userId, $actorId, $type, $targetType, $targetId, $context, $topicId)) {
                 ++$written;
             }
@@ -381,7 +434,9 @@ final class NotificationService
                 return NotificationRecipients::newTopicAudience((int) $thread);
 
             case NotificationTypes::COMMENT_REPLY:
-                $author = NotificationRecipients::commentAuthor($targetId);
+                // The target is the reply, so the link lands on it; the person
+                // to tell is whoever wrote the comment it answers.
+                $author = NotificationRecipients::parentCommentAuthor($targetId);
 
                 return $author === null ? [] : [$author];
 
@@ -396,6 +451,9 @@ final class NotificationService
             case NotificationTypes::REPORT_FILED:
             case NotificationTypes::TOPIC_POSTED:
                 return NotificationRecipients::moderatorIds();
+
+            case NotificationTypes::TAG_SUGGESTED:
+                return NotificationRecipients::tagReviewerIds();
 
             default:
                 return [];
@@ -581,6 +639,26 @@ final class NotificationService
         $type = NotificationTypes::tryFrom((string) $row->type);
         $actor = (int) $row->actor_id > 0 ? get_userdata((int) $row->actor_id) : false;
         $context = \is_string($row->context) ? json_decode($row->context, true) : null;
+        $context = \is_array($context) ? $context : [];
+        $exists = self::targetExists((string) $row->target_type, (int) $row->target_id);
+
+        // Built now rather than trusted from the row: the stored link froze the
+        // portal's address at the moment of the event, and older rows carry the
+        // post type's own permalink, which the portal's router has no route for.
+        // A removed comment still has a thread to open, so the row falls back
+        // to its topic; with the topic gone too there is nowhere to go, and a
+        // link would only lead to a 404.
+        $liveUrl = $exists ? self::targetUrl((string) $row->target_type, (int) $row->target_id) : '';
+
+        if ($liveUrl === '' && (int) $row->topic_id > 0) {
+            $liveUrl = PortalLocation::topicUrl((int) $row->topic_id);
+        }
+
+        if ($liveUrl !== '') {
+            $context['url'] = $liveUrl;
+        } elseif (\in_array((string) $row->target_type, [self::TARGET_COMMENT, self::TARGET_TOPIC], true)) {
+            $context['url'] = '';
+        }
 
         return [
             'id'         => (int) $row->id,
@@ -604,16 +682,33 @@ final class NotificationService
             'target' => [
                 'type'   => (string) $row->target_type,
                 'id'     => (int) $row->target_id,
-                'exists' => self::targetExists((string) $row->target_type, (int) $row->target_id),
+                'exists' => $exists,
             ],
             'topic_id' => (int) $row->topic_id,
-            'context'  => \is_array($context) ? $context : [],
+            'context'  => $context,
             // How many times this collapsed event happened. 1 for everything
             // that is not a vote.
             'count'      => max(1, (int) $row->event_count),
             'read'       => $row->read_at !== null,
             'created_at' => (string) $row->created_at,
         ];
+    }
+
+    /**
+     * The portal address of a topic or comment, or '' for targets that are not
+     * posts — those keep whatever link their event stored.
+     */
+    private static function targetUrl(string $targetType, int $targetId): string
+    {
+        if ($targetType === self::TARGET_COMMENT) {
+            return PortalLocation::commentUrl($targetId);
+        }
+
+        if ($targetType === self::TARGET_TOPIC) {
+            return PortalLocation::topicUrl($targetId);
+        }
+
+        return '';
     }
 
     private static function targetExists(string $targetType, int $targetId): bool

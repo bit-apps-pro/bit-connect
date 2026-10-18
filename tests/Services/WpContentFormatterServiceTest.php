@@ -179,6 +179,33 @@ final class WpContentFormatterServiceTest extends TestCase
         $this->assertSame($already, $this->formatter->format($already));
     }
 
+    // -----------------------------------------------------------------------
+    // Videos
+    // -----------------------------------------------------------------------
+
+    public function testABareVideoIsWrappedInAGutenbergFigure(): void
+    {
+        $this->assertSame(
+            '<figure class="wp-block-video"><video src="a.mp4" controls></video></figure>',
+            $this->formatter->format('<video src="a.mp4" controls></video>')
+        );
+    }
+
+    public function testAVideoTheEditorLeftInAParagraphIsLiftedOut(): void
+    {
+        $this->assertSame(
+            '<p>before</p><figure class="wp-block-video"><video src="a.mp4" controls></video></figure><p>after</p>',
+            $this->formatter->format('<p>before</p><p><video src="a.mp4" controls></video></p><p>after</p>')
+        );
+    }
+
+    public function testAVideoAlreadyInAFigureIsLeftAlone(): void
+    {
+        $already = '<figure class="wp-block-video"><video src="a.mp4" controls></video></figure>';
+
+        $this->assertSame($already, $this->formatter->format($already));
+    }
+
     public function testAFigureAndABareImageSideBySideAreTreatedSeparately(): void
     {
         $this->assertSame(

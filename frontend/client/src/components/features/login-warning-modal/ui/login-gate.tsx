@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { routePath } from '@utils/route-path'
 import { Button } from 'antd'
 import { type ReactNode, useEffect, useRef } from 'react'
 import { LuLock } from 'react-icons/lu'
@@ -46,7 +47,11 @@ export default function LoginGate({ children, message }: LoginGateProps) {
         <div className={styles.prompt}>
           <LuLock color="#65676b" size={14} />
           <p className={styles.message}>{message ?? __('Log in to join the conversation.')}</p>
-          <Button onClick={() => navigate(`/login${redirectParam}`)} shape="round" type="primary">
+          <Button
+            onClick={() => navigate(routePath(`/login${redirectParam}`))}
+            shape="round"
+            type="primary"
+          >
             {__('Login')}
           </Button>
         </div>

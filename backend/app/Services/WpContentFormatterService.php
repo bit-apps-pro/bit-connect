@@ -65,8 +65,10 @@ final class WpContentFormatterService
         // 3. Normalise <pre><code> structure for code blocks
         $html = $this->normalizeCodeBlocks($html);
 
-        // 4. Wrap bare <img> tags in <figure class="wp-block-image">
+        // 4. Wrap bare <img> tags in <figure class="wp-block-image">, and bare
+        //    <video> tags in <figure class="wp-block-video">
         $html = $this->wrapBareImages($html);
+        $html = $this->wrapBareVideos($html);
 
         // 5. Remove double-<p> wrapping that can occur when the client sends
         //    content with outer <p> AND wpautop later adds another layer
@@ -207,6 +209,29 @@ final class WpContentFormatterService
                 }
 
                 return '<figure class="wp-block-image">' . $m[0] . '</figure>';
+            },
+            $html
+        ) ?? $html;
+    }
+
+    /**
+     * Wrap bare <video> tags (not inside <figure>) in a Gutenberg figure, as
+     * images are: <figure class="wp-block-video"><video src="…"></video></figure>.
+     * The paragraph the editor's HTML may leave around one is lifted off
+     * first — a <p> cannot hold a block, and browsers close it at the figure.
+     */
+    private function wrapBareVideos(string $html): string
+    {
+        $html = preg_replace('/<p>\s*(<video\b[^>]*>(?:.*?<\/video>)?)\s*<\/p>/is', '$1', $html) ?? $html;
+
+        return preg_replace_callback(
+            '/<figure[^>]*>.*?<\/figure>|<video\b[^>]*>(?:.*?<\/video>)?/is',
+            static function (array $m): string {
+                if (stripos($m[0], '<figure') === 0) {
+                    return $m[0];
+                }
+
+                return '<figure class="wp-block-video">' . $m[0] . '</figure>';
             },
             $html
         ) ?? $html;

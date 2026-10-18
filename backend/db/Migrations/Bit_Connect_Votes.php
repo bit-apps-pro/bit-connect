@@ -171,7 +171,7 @@ final class Bit_Connect_Votes extends Migration
         if ($result === false) {
             $error = Connection::prop('last_error');
 
-            throw new RuntimeException(esc_html("Votes migration failed: {$error} — while running: {$sql}"));
+            throw new RuntimeException(esc_html("Votes migration failed: {$error} (while running: {$sql})"));
         }
     }
 

@@ -37,11 +37,11 @@ export default function PostDetailsSkeleton() {
           <div className="bc-flex bc-gap-4">
             {/* Vote box column — beside the title from lg, above it below that,
                 matching how VoteBox is placed on the real page. */}
-            <Skeleton.Node active className="bc-hidden lg:bc-block" style={{ height: 64, width: 62 }} />
+            <Skeleton.Node active className="bc-hidden lg:bc-block" style={{ height: 88, width: 64 }} />
 
             <div className="bc-min-w-0 bc-flex-1">
               <div className="bc-mb-4 bc-flex bc-gap-4 lg:bc-hidden">
-                <Skeleton.Node active style={{ height: 64, width: 62 }} />
+                <Skeleton.Node active style={{ height: 48, width: 48 }} />
               </div>
 
               <Skeleton active paragraph={{ rows: 4 }} title={{ width: '70%' }} />

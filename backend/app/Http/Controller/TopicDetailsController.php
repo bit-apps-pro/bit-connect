@@ -25,12 +25,27 @@ class TopicDetailsController
     /**
      * Handle the topic details route and render the topic details page.
      *
-     * @param string $slug Topic slug
+     * Also answers `/{slug}/comment/{commentId}`, a link to one reply. The page
+     * is the topic's own either way: the portal scrolls to the reply once the
+     * thread loads, and says so there when it is gone. Nothing about the reply
+     * is decided here, so a deleted one still gets its topic rather than a 404,
+     * and the canonical URL stays the topic's.
+     *
+     * @param string      $slug      Topic slug
+     * @param null|string $commentId the reply a comment link names; the portal
+     *                               resolves it, so it is unused here
      *
      * @return string
      */
-    public function show(Request $request, $slug)
+    public function show(Request $request, $slug, $commentId = null)
     {
+        // The single-segment route also carries the pages plugins draw — see
+        // ExtensionPoints::portalPages(). Read here, per request, because the
+        // route table is built before plugins register their pages.
+        if ($commentId === null && \is_string($slug) && PortalPageController::isPage($slug)) {
+            return (new PortalPageController())->show($request, $slug);
+        }
+
         // Prepare data for the topic details view
         $topicsView = new TopicsView();
         $topicsView->prepareTopicDetailsData($slug);
@@ -45,7 +60,11 @@ class TopicDetailsController
         // The single-segment route is a catch-all: any slug that is not a topic
         // lands here. Rendering the shell anyway and answering 200 would make
         // every typo and every deleted topic an indexable page.
-        if (empty($viewData['topic'])) {
+        //
+        // Not for a visitor a members-only portal turns away: they were given
+        // no topic to look for, and get the portal's sign-in prompt whether or
+        // not the slug exists — which is also what keeps it from saying so.
+        if (empty($viewData['topic']) && !TopicsView::isClosed()) {
             return (new NotFoundController())->index($request);
         }
 

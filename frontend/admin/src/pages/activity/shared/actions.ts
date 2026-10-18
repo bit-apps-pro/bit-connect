@@ -4,12 +4,12 @@ import {
   LuHistory,
   LuLock,
   LuLockOpen,
-  LuPin,
-  LuPinOff,
   LuRotateCcw,
   LuShieldCheck,
   LuTrash2
 } from 'react-icons/lu'
+
+import addedLooks from './added-looks'
 
 /**
  * How each recorded action looks in the log.
@@ -23,8 +23,7 @@ import {
  *
  * The tint groups by what the action did to the content's *availability*, which
  * is the axis a moderator reads a log along: shut it down, opened it back up,
- * or changed it. Pinning is neither, so it sits on a decorative tone rather
- * than borrowing a status colour it would misreport.
+ * or changed it.
  */
 export interface ActionLook {
   Icon: IconType
@@ -41,12 +40,11 @@ const LOOKS: Record<string, ActionLook> = {
   delete_comment: { Icon: LuTrash2, tint: DESTROYED },
   delete_post: { Icon: LuTrash2, tint: DESTROYED },
   hide: { Icon: LuEyeOff, tint: RESTRICTED },
+  hide_post: { Icon: LuEyeOff, tint: RESTRICTED },
   lock_post: { Icon: LuLock, tint: RESTRICTED },
-  pin_post: { Icon: LuPin, tint: 'bc-bg-tone-violet-soft bc-text-tone-violet' },
   resolve_reports: { Icon: LuShieldCheck, tint: OPENED },
   restore: { Icon: LuRotateCcw, tint: OPENED },
-  unlock_post: { Icon: LuLockOpen, tint: OPENED },
-  unpin_post: { Icon: LuPinOff, tint: NEUTRAL }
+  unlock_post: { Icon: LuLockOpen, tint: OPENED }
 }
 
 /**
@@ -58,4 +56,4 @@ const LOOKS: Record<string, ActionLook> = {
  */
 const UNKNOWN: ActionLook = { Icon: LuHistory, tint: NEUTRAL }
 
-export const lookOf = (action: string): ActionLook => LOOKS[action] ?? UNKNOWN
+export const lookOf = (action: string): ActionLook => LOOKS[action] ?? addedLooks[action] ?? UNKNOWN

@@ -70,7 +70,7 @@ final class UploadCoverRequest extends Request
         try {
             // Validates the real bytes on disk: magic-byte MIME sniffing plus
             // double-extension and dangerous-extension checks.
-            $validated = (new AttachmentValidatorService())->validate($files['file']);
+            $validated = (new AttachmentValidatorService())->validate($files['file'], AttachmentValidatorService::PROFILE_IMAGE_MAX_SIZE);
         } catch (InvalidArgumentException $e) {
             return $e->getMessage();
         }

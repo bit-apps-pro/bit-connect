@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
  * Validation pipeline:
  *   1. Presence check (file exists in $_FILES and was not truncated)
  *   2. PHP upload error codes
- *   3. File size against MAX_FILE_SIZE
+ *   3. File size against PostingLimits::maxFileSize()
  *   4. Extension extracted from the real filename (not MIME)
  *   5. Double-extension / dangerous-extension check
  *   6. Allowed-extension allowlist
@@ -34,14 +34,17 @@ if (!defined('ABSPATH')) {
 final class AttachmentValidatorService
 {
     /**
-     * Maximum file size in bytes.
-     * Must stay in sync with MAX_FILE_SIZE_BYTES in attachment-validation.ts.
+     * Ceiling for avatars and cover images, which the media limits do not
+     * govern: those are for what members post, not for their profile.
+     * Must stay in sync with AVATAR_MAX_BYTES in avatar-validation.ts.
      */
-    public const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    public const PROFILE_IMAGE_MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
     /**
-     * Allowed file extensions and their expected MIME types.
-     * Must stay in sync with ALLOWED_TYPES in attachment-validation.ts.
+     * Allowed file extensions and their expected MIME types — this plugin's own
+     * list, and the whole of it for avatars and cover images. Attachments use
+     * attachmentTypes(), which starts here and which the portal is sent, so
+     * its upload check accepts what this does.
      *
      * Format: 'ext' => ['mime/type', ...]
      */
@@ -76,18 +79,73 @@ final class AttachmentValidatorService
     ];
 
     /**
+     * What a member may attach to a topic or a reply: ALLOWED, as answered by
+     * `bit_connect_attachment_types` (see ExtensionPoints).
+     *
+     * The answer is cleaned rather than trusted. An entry is kept only when its
+     * extension is short and plain, is not on the dangerous list, and names at
+     * least one well-formed MIME type; a malformed answer as a whole falls back
+     * to ALLOWED. Whatever survives still faces every other check in validate().
+     *
+     * @return array<string, string[]>
+     */
+    public static function attachmentTypes(): array
+    {
+        $offered = ExtensionPoints::attachmentTypes(self::ALLOWED);
+
+        if (!\is_array($offered)) {
+            return self::ALLOWED;
+        }
+
+        $types = [];
+
+        foreach ($offered as $ext => $mimes) {
+            $ext = strtolower((string) $ext);
+
+            if (!preg_match('/^[a-z0-9]{1,10}$/', $ext) || \in_array($ext, self::DANGEROUS_EXTENSIONS, true) || !\is_array($mimes)) {
+                continue;
+            }
+
+            $wellFormed = [];
+
+            foreach ($mimes as $mime) {
+                if (\is_string($mime) && preg_match('#^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$#i', $mime)) {
+                    $wellFormed[] = strtolower($mime);
+                }
+            }
+
+            if ($wellFormed !== []) {
+                $types[$ext] = $wellFormed;
+            }
+        }
+
+        return $types;
+    }
+
+    /**
      * Validate an uploaded file from $_FILES.
      *
-     * @param array $file A single entry from $_FILES (e.g. $_FILES['file']).
+     * @param array                        $file    A single entry from $_FILES (e.g. $_FILES['file']).
+     * @param null|int                     $maxSize bytes allowed; the media limit when left out
+     * @param null|array<string, string[]> $allowed   extension → MIME types accepted; ALLOWED when left out
+     * @param bool                         $assembled the file was put together from pieces by ChunkedUpload,
+     *                                                not handed over by PHP as one upload
      *
      * @throws InvalidArgumentException when the file fails any validation rule
      *
      * @return array the validated file array (same structure as $file input)
      */
-    public function validate(array $file): array
+    public function validate(array $file, ?int $maxSize = null, ?array $allowed = null, bool $assembled = false): array
     {
-        // 1. Presence
-        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        $allowed ??= self::ALLOWED;
+
+        // 1. Presence — and, for a file put together from pieces, that it is
+        //    one ChunkedUpload wrote, never a path the request could name.
+        $present = !empty($file['tmp_name']) && ($assembled
+            ? ChunkedUpload::owns($file['tmp_name'])
+            : is_uploaded_file($file['tmp_name']));
+
+        if (!$present) {
             throw new InvalidArgumentException('No valid file was uploaded.');
         }
 
@@ -100,11 +158,12 @@ final class AttachmentValidatorService
             throw new InvalidArgumentException('Uploaded file is empty or unreadable.');
         }
 
-        if ($actualSize > self::MAX_FILE_SIZE) {
-            $mb = round($actualSize / (1024 * 1024), 1);
-
-            throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is 5 MB."));
-        }
+        // The portal reads the same numbers from the page (`postingLimits`), so
+        // a file it lets through is one this accepts. With no size given, the
+        // largest any kind of file may be is checked now, before the bytes are
+        // read, and the file's own kind once they have been (step 11).
+        $kindSized = $maxSize === null;
+        $this->assertSize($actualSize, $maxSize ?? PostingLimits::maxFileSize());
 
         // 4. Sanitize and extract extension from the real filename
         $rawName = $file['name'] ?? '';
@@ -112,6 +171,12 @@ final class AttachmentValidatorService
 
         if ($safeName === '') {
             throw new InvalidArgumentException('File name is missing or invalid.');
+        }
+
+        // The portal refuses the same names. Past 255 bytes the file system
+        // cannot hold the name, and the move into uploads fails with a 500.
+        if (\strlen($safeName) > 255) {
+            throw new InvalidArgumentException('File name is too long (maximum 255 characters).');
         }
 
         $ext = strtolower(pathinfo($safeName, \PATHINFO_EXTENSION));
@@ -135,10 +200,10 @@ final class AttachmentValidatorService
         }
 
         // 7. Allowed-extension allowlist check
-        if (!\array_key_exists($ext, self::ALLOWED)) {
-            $allowed = implode(', ', array_keys(self::ALLOWED));
+        if (!\array_key_exists($ext, $allowed)) {
+            $list = implode(', ', array_keys($allowed));
 
-            throw new InvalidArgumentException(esc_html("File type .{$ext} is not allowed. Allowed types: {$allowed}."));
+            throw new InvalidArgumentException(esc_html("File type .{$ext} is not allowed. Allowed types: {$list}."));
         }
 
         // 8. Magic-byte MIME validation via wp_check_filetype_and_ext().
@@ -151,9 +216,23 @@ final class AttachmentValidatorService
         }
 
         // 9. Cross-check: the magic-byte MIME must match the expected MIMEs for this extension
-        $expectedMimes = self::ALLOWED[$ext];
+        $expectedMimes = $allowed[$ext];
         if (!\in_array($checked['type'], $expectedMimes, true)) {
             throw new InvalidArgumentException(esc_html("File content does not match its extension (.{$ext}). Upload rejected."));
+        }
+
+        // 10. Media must read as media. wp_check_filetype_and_ext() reads the
+        //     bytes strictly only for images: a file it cannot identify at all
+        //     is waved through for any video, audio or application type, so
+        //     random bytes named clip.mp4 came back as video/mp4. A picture or
+        //     a clip is a format finfo knows, so for video and audio its answer
+        //     has to agree before the file is accepted.
+        $this->assertMediaReadsAsMedia($file['tmp_name'], $checked['type']);
+
+        // 11. The size limit for this kind of file — an image, a video or a
+        //     document may each have their own — read from its verified type.
+        if ($kindSized) {
+            $this->assertSize($actualSize, PostingLimits::maxFileSizeFor($checked['type']));
         }
 
         // Return the file array with the server-verified name and type substituted
@@ -169,6 +248,50 @@ final class AttachmentValidatorService
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * @throws InvalidArgumentException when the file is larger than allowed
+     */
+    private function assertSize(int $actualSize, int $maxSize): void
+    {
+        if ($actualSize <= $maxSize) {
+            return;
+        }
+
+        $mb = round($actualSize / (1024 * 1024), 1);
+        $maxMb = round($maxSize / (1024 * 1024), 1);
+
+        throw new InvalidArgumentException(esc_html("File is too large ({$mb} MB). Maximum allowed size is {$maxMb} MB."));
+    }
+
+    /**
+     * Refuse a video or audio file whose bytes finfo does not read as one.
+     *
+     * Without finfo there is nothing stricter to ask, and the check WordPress
+     * already made stands — the same as it does for every other type.
+     *
+     * @throws InvalidArgumentException when the content is not the media it claims
+     */
+    private function assertMediaReadsAsMedia(string $path, string $type): void
+    {
+        $family = strtok($type, '/');
+
+        if (!\in_array($family, ['video', 'audio'], true) || !\function_exists('finfo_open')) {
+            return;
+        }
+
+        $finfo = finfo_open(\FILEINFO_MIME_TYPE);
+
+        if ($finfo === false) {
+            return;
+        }
+
+        $real = finfo_file($finfo, $path);
+
+        if (!\is_string($real) || strtok($real, '/') !== $family) {
+            throw new InvalidArgumentException('File content could not be read as the media its name says. Upload rejected.');
+        }
+    }
 
     /**
      * Convert PHP upload error codes into human-readable messages.

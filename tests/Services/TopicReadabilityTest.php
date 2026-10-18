@@ -30,6 +30,8 @@ final class TopicReadabilityTest extends TestCase
     {
         $GLOBALS['__wp_caps'] = [];
         $GLOBALS['__wp_current_user_id'] = 0;
+        $GLOBALS['__wp_user_caps'] = [];
+        unset($GLOBALS['__wp_filters']['bit_connect_topic_readable']);
     }
 
     public function testAPublishedTopicIsReadableByAGuest(): void
@@ -100,6 +102,85 @@ final class TopicReadabilityTest extends TestCase
         $post->post_author = self::AUTHOR;
 
         return $post;
+    }
+
+    // -----------------------------------------------------------------------
+    // A plugin holding topics back (bit_connect_topic_readable)
+    // -----------------------------------------------------------------------
+
+    public function testAPluginCanHoldBackATopicTheRulesAllow(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_readable'] = static fn (): bool => false;
+
+        $this->assertFalse(TopicService::isReadable($this->topic('publish')));
+    }
+
+    public function testAPluginCannotOpenATopicTheRulesRefuse(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_readable'] = static fn (): bool => true;
+
+        $this->assertFalse(TopicService::isReadable($this->topic('private')));
+    }
+
+    public function testAnAnswerThatIsNotTrueHoldsTheTopicBack(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_readable'] = static fn () => 1;
+
+        $this->assertFalse(TopicService::isReadable($this->topic('publish')));
+    }
+
+    public function testThePluginIsToldWhoIsReading(): void
+    {
+        $asked = [];
+        $GLOBALS['__wp_filters']['bit_connect_topic_readable'] = static function (bool $readable, WP_Post $post, int $userId) use (&$asked): bool {
+            $asked[] = $userId;
+
+            return $readable;
+        };
+
+        $this->actAs(self::OTHER);
+        TopicService::isReadable($this->topic('publish'));
+        TopicService::isReadableBy($this->topic('publish'), self::AUTHOR);
+
+        $this->assertSame([self::OTHER, self::AUTHOR], $asked);
+    }
+
+    // -----------------------------------------------------------------------
+    // Asked for someone other than the current user (isReadableBy)
+    // -----------------------------------------------------------------------
+
+    public function testAPrivateTopicIsReadableByItsAuthorWhoeverIsAsking(): void
+    {
+        $this->actAs(self::OTHER);
+
+        $this->assertTrue(TopicService::isReadableBy($this->topic('private'), self::AUTHOR));
+    }
+
+    public function testAPrivateTopicIsNotReadableByAnotherMemberWhoeverIsAsking(): void
+    {
+        $this->actAs(self::AUTHOR);
+
+        $this->assertFalse(TopicService::isReadableBy($this->topic('private'), self::OTHER));
+    }
+
+    public function testTheMembersOwnCapabilitiesDecideNotTheAskers(): void
+    {
+        // The current user may read private posts; the member asked about may not.
+        $this->actAs(1, ['read_private_posts' => true]);
+
+        $this->assertFalse(TopicService::isReadableBy($this->topic('private'), self::OTHER));
+
+        $GLOBALS['__wp_user_caps'][self::OTHER] = ['read_private_posts' => true];
+
+        $this->assertTrue(TopicService::isReadableBy($this->topic('private'), self::OTHER));
+    }
+
+    public function testAHiddenTopicIsReadableByAModeratorWhoeverIsAsking(): void
+    {
+        $GLOBALS['__wp_user_caps'][self::OTHER] = [Capabilities::MODERATE->value => true];
+
+        $this->assertTrue(TopicService::isReadableBy($this->topic(ContentVisibilityService::HIDDEN_STATUS), self::OTHER));
+        $this->assertFalse(TopicService::isReadableBy($this->topic(ContentVisibilityService::HIDDEN_STATUS), 0));
     }
 
     /**

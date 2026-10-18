@@ -6,12 +6,12 @@ describe('decodeTermFields', () => {
   it('decodes the name and description of every term in a list', () => {
     expect(
       decodeTermFields([
-        { description: 'Q&amp;A', id: 34, name: 'API &amp; Integrations', taxonomy: 'bit-connect-departments' },
-        { id: 35, name: 'Billing', taxonomy: 'bit-connect-departments' }
+        { description: 'Q&amp;A', id: 34, name: 'API &amp; Integrations', taxonomy: 'bit-connect-tags' },
+        { id: 35, name: 'Billing', taxonomy: 'bit-connect-tags' }
       ])
     ).toEqual([
-      { description: 'Q&A', id: 34, name: 'API & Integrations', taxonomy: 'bit-connect-departments' },
-      { id: 35, name: 'Billing', taxonomy: 'bit-connect-departments' }
+      { description: 'Q&A', id: 34, name: 'API & Integrations', taxonomy: 'bit-connect-tags' },
+      { id: 35, name: 'Billing', taxonomy: 'bit-connect-tags' }
     ])
   })
 

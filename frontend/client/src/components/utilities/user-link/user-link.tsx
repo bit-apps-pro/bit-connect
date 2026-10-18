@@ -1,4 +1,5 @@
 import MemberBadge from '@utilities/member-badge'
+import { routePath } from '@utils/route-path'
 import { Avatar } from 'antd'
 import { Link } from 'react-router'
 
@@ -11,7 +12,7 @@ import { type MemberBadge as MemberBadgeType } from '@/types/member-badge'
  * author now includes as `author_slug` — so a byline can build the URL without
  * a lookup per author.
  */
-export const userProfilePath = (slug: string) => `/user/${encodeURIComponent(slug)}`
+export const userProfilePath = (slug: string) => routePath(`/user/${encodeURIComponent(slug)}`)
 
 interface UserLinkProps {
   avatar?: string
@@ -19,6 +20,8 @@ interface UserLinkProps {
   avatarSize?: number
   /** The author's standing, printed after the name. Omit to show none. */
   badge?: MemberBadgeType | null
+  /** Extra classes for the badge — e.g. to drop it where the row is tight. */
+  badgeClassName?: string
   className?: string
   name: string | undefined
   nameClassName?: string
@@ -42,6 +45,7 @@ export default function UserLink({
   avatar,
   avatarSize = 24,
   badge,
+  badgeClassName = '',
   className = '',
   name,
   nameClassName = '',
@@ -58,7 +62,7 @@ export default function UserLink({
       <span className={`bc-truncate ${nameClassName}`}>{name}</span>
       {/* Inside the link on purpose: the badge belongs to the name, and a
           reader who clicks it means to open that member's profile. */}
-      <MemberBadge badge={badge} />
+      <MemberBadge badge={badge} className={badgeClassName} />
     </>
   )
 

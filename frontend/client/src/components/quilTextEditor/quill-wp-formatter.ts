@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign -- every transform below rewrites the DOM
+   node it is handed in place; that mutation is the function's whole contract. */
 /**
  * Quill → WordPress HTML formatter.
  *
@@ -36,7 +38,8 @@ const WP = {
   LIST_ITEM: '',
   QUOTE: 'wp-block-quote',
   SEPARATOR: 'wp-block-separator',
-  TABLE: 'wp-block-table'
+  TABLE: 'wp-block-table',
+  VIDEO: 'wp-block-video'
 } as const
 
 // ---------------------------------------------------------------------------
@@ -98,7 +101,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     case 'b':
     case 'strong': {
       // Normalise <b> → <strong> (Quill emits <strong>, but pastes from Docs may use <b>)
-      if (tag === 'b') renameElement(element, 'strong', parent)
+      if (tag === 'b') renameElement(element, 'strong')
       break
     }
     case 'blockquote': {
@@ -111,7 +114,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     }
     case 'em':
     case 'i': {
-      if (tag === 'i') renameElement(element, 'em', parent)
+      if (tag === 'i') renameElement(element, 'em')
       break
     }
     case 'h1':
@@ -159,6 +162,10 @@ function transformElement(element: HTMLElement, parent: Element): void {
     }
     case 'ul': {
       transformList(element)
+      break
+    }
+    case 'video': {
+      transformVideo(element, parent)
       break
     }
     default: {
@@ -283,6 +290,29 @@ function transformImage(element: HTMLElement, parent: Element): void {
   element.replaceWith(figure)
 }
 
+/** What a stored video carries: its file, and how the browser should offer it. */
+const VIDEO_ATTRIBUTES = new Set(['controls', 'playsinline', 'preload', 'src'])
+
+/**
+ * Promote an uploaded video to Gutenberg's video block, as an image is: the
+ * editor's own attributes (contenteditable, ql- classes) go, and the player
+ * is wrapped in <figure class="wp-block-video"> unless it already sits in one.
+ */
+function transformVideo(element: HTMLElement, parent: Element): void {
+  for (const name of element.getAttributeNames()) {
+    if (!VIDEO_ATTRIBUTES.has(name)) element.removeAttribute(name)
+  }
+  element.setAttribute('controls', '')
+  if (!element.hasAttribute('preload')) element.setAttribute('preload', 'metadata')
+
+  if (parent.tagName.toLowerCase() === 'figure') return
+
+  const figure = element.ownerDocument.createElement('figure')
+  figure.className = WP.VIDEO
+  figure.append(element.cloneNode(true))
+  element.replaceWith(figure)
+}
+
 function transformLink(element: HTMLElement): void {
   stripQuillClasses(element)
   stripInlineStyle(element)
@@ -361,7 +391,7 @@ function unwrapElement(element: Element, parent: Element): void {
   element.remove()
 }
 
-function renameElement(element: HTMLElement, newTag: string, _parent?: Element): void {
+function renameElement(element: HTMLElement, newTag: string): void {
   const replacement = element.ownerDocument.createElement(newTag)
   for (const attribute of element.attributes) {
     replacement.setAttribute(attribute.name, attribute.value)

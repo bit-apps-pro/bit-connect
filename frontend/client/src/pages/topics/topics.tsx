@@ -1,36 +1,48 @@
 import './topics.css'
 
 import NotifyContext from '@common/context/NotifyContext'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
-import ProductFilter from '@utilities/product-filter'
-import SearchInput from '@utilities/search-input'
+import usePageTitle, { pageTitle } from '@common/hooks/usePageTitle'
 import SortFilter from '@utilities/sort-filter'
 import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
 import TopicCard from '@utilities/topic-card'
+import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Button, Drawer } from 'antd'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
-import { useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 
 import config from '@/config/config'
 import { usePostsStore } from '@/store/posts.zustand'
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
+import useAddedViews from '../../components/utilities/sort-filter/use-added-views'
+import useListingSelection from '../Layout/data/use-listing-selection'
+import { ALL_STAGES } from '../Layout/ui/Sidebar/listing-link'
+import ArchiveHeader from './archive-header'
+import useTopics from './data/use-topics'
+import ListingContext from './listing-context'
+import TopicListSkeleton from './topic-card-skeleton'
+import TopicListBanners from './topic-list-banners'
+
 /** Hide the back-to-top button this long (ms) after scrolling stops. */
 const SCROLL_IDLE_HIDE_MS = 1500
 
-/** Modern "elevated dark circle" styling for the mobile filter button. */
-// Quiet neutral circle matching the filled search input beside it — the filter
-// is a secondary control, not a call to action. The active-filter state is
-// signalled by the small blue dot, not by the button itself.
+/** How long (ms) a switch to an unopened stage keeps the old list before the skeleton. */
+const SKELETON_DELAY_MS = 250
+
+// A bordered square the height of the type chips and the sort picker beside it,
+// so the row reads as one toolbar. The filter is a secondary control,
+// not a call to action — the active-filter state is signalled by the small
+// blue dot, not by the button itself.
 const FILTER_BUTTON_CLASS = [
-  'bc-group bc-relative bc-flex bc-h-10 bc-w-10 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center',
-  'bc-rounded-full bc-border-none bc-bg-surface-raised bc-text-ink-subtle',
+  'bc-group bc-relative bc-flex bc-h-8 bc-w-8 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center',
+  'bc-rounded-[8px] bc-border bc-border-solid bc-border-line bc-bg-surface-hover bc-text-ink',
   'bc-transition-colors bc-duration-200 bc-ease-out',
-  'hover:bc-bg-surface-raised hover:bc-text-ink-muted',
+  'hover:bc-border-primary hover:bc-text-primary',
   'active:bc-scale-95'
 ].join(' ')
 
@@ -40,55 +52,125 @@ export interface TopicsProps {
    * Keys match the filter payload below (`tags`, `topic-types`, …).
    */
   archiveFilter?: Record<string, string>
+  /**
+   * Whether a term archive draws its own heading above the list. Off when a
+   * plugin lays the archive out as a page of its own — see archive-page-for.
+   */
+  showArchiveHeader?: boolean
 }
 
-export default function Topics({ archiveFilter }: TopicsProps = {}) {
+export default function Topics({ archiveFilter, showArchiveHeader = true }: TopicsProps = {}) {
   const { notificationApi } = useContext(NotifyContext)
   const [searchParams, setSearchParams] = useSearchParams()
   const search = searchParams.get('search') || ''
   const sortBy = searchParams.get('sort') || 'newest'
-  const product = searchParams.get('product') || ''
-  const stages = searchParams.get('stage') || config.DEFAULT_STAGE_SLUG
   const visibility = searchParams.get('visibility') || ''
   const myTopics = searchParams.get('my_topics') || ''
+  // A named list counts only while the sort control offers it; a stale
+  // `?view=` is the ordinary listing.
+  const viewParam = searchParams.get('view') || ''
+  const activeView = useAddedViews().find(offered => offered.value === viewParam)
+  const view = activeView ? activeView.value : ''
   const topicType = searchParams.get('topic-types') || ''
   const tagSlugs = useMemo(() => parseTagParam(searchParams.get('tags')), [searchParams])
   // Normalised back to the wire format, so a re-render with an equivalent URL
   // (`tags=a,,a`) doesn't look like a new filter to the fetch effect below.
   const tags = tagSlugs.join(',')
 
+  // The listing shows one stage at a time — the sidebar's stages are its
+  // primary navigation, so a bare `/` is the default stage. A search, a tag
+  // filter or a term archive is a question about the whole forum, though: the
+  // tag picker counts topics across every stage, and "no posts found" under a
+  // tag that plainly has three is the answer the old stage default gave. Those
+  // span all stages unless the URL names one, and `?stage=` still wins. So does
+  // a named list from the sort control, which is its own question.
+  //
+  // The archive the listing is scoped to is the exception among archives: the
+  // sidebar's stages stay beside it and narrow it, so it is the forum's own
+  // listing over fewer topics, and opens on the default stage as the root does.
+  //
+  // A search drops the listing scope and any stage — even one the URL names.
+  // It keeps a term archive, though: the header's search box only lands on an
+  // archive with `?search=` when the reader searched *in* it (a board, a tag),
+  // the way a forum's search stays inside the board you are on; a search for
+  // everything goes to the root. The refinements the reader picked here (sort,
+  // type, tags) still apply, since their chips stay on screen beside the
+  // results.
+  const { scope: pageScope } = useListingSelection()
+
+  // `/page/N`: a deeper page of the list the server renders as a crawl path —
+  // every stage, newest first, TOPIC_LIST_PAGE_SIZE at a time. A reader lands
+  // here from a search result or the server's own "next" link, so the app has
+  // to show the topics that page held, not the default stage from the top.
+  const { pageNumber } = useParams()
+  const listPage = archiveFilter ? 1 : Math.max(1, Number.parseInt(pageNumber ?? '', 10) || 1)
+  const isDeepPage = listPage > 1 && config.TOPIC_LIST_PAGE_SIZE > 0
+  const isSearching = search !== ''
+  const scopeFilter = archiveFilter
+  const listingScope = isSearching ? '' : pageScope
+  const stageParam = isSearching ? '' : searchParams.get('stage') || ''
+  const spansAllStages =
+    isSearching ||
+    tags !== '' ||
+    view !== '' ||
+    isDeepPage ||
+    (scopeFilter !== undefined && listingScope === '')
+  const stages =
+    stageParam === ALL_STAGES ? '' : stageParam || (spansAllStages ? '' : config.DEFAULT_STAGE_SLUG)
+  // Cards name their stage only where the list mixes them; under one stage the
+  // picker already says which — as does a stage's own archive, which narrows
+  // by its path rather than `?stage=`.
+  const showsStageBadges = stages === '' && !archiveFilter?.stages
+
   // Each filter control can be switched off per-site (admin → General → Portal
   // Filters). Hiding one removes its control, its chip and its share of the
   // reset/"filters are active" state; the matching URL params are still applied
   // to the query below, so links people have already shared keep working.
-  const { product: showProductFilter, sort: showSortFilter, tags: showTagFilter } = config.PORTAL_FILTERS
-  const showAnyFilter = showSortFilter || showProductFilter || showTagFilter
+  const { sort: showSortFilter, tags: showTagFilter, types: showTypeFilter } = config.PORTAL_FILTERS
+  // A type archive (`/topic/bug`) has already chosen, and a chip there could
+  // not override the path anyway.
+  const showTypeChips = showTypeFilter && !scopeFilter?.['topic-types']
 
   const [filterOpen, setFilterOpen] = useState(false)
-  const hasActiveFilters =
-    (showSortFilter &&
-      (sortBy !== 'newest' || visibility !== '' || myTopics !== '' || topicType !== '')) ||
-    (showProductFilter && product !== '') ||
-    (showTagFilter && tags !== '')
 
   // Active (non-default) filters, shown as removable chips under the search bar.
   const taxonomies = useTaxonomiesStoreSelect()
   const topicTypes = taxonomies?.['bit-connect-topic-types'] || []
-  const departments = taxonomies?.['bit-connect-departments'] || []
   const tagTerms = taxonomies?.['bit-connect-tags'] || []
+
+  // The tab title, as the server sets it: the community name for the listing,
+  // "Term — Community" for an archive. Left alone until the term's name has
+  // loaded, rather than flashing the bare community name first.
+  const [archiveKey, archiveSlug] = archiveFilter ? (Object.entries(archiveFilter)[0] ?? []) : []
+  const archive = archiveKey ? Object.values(config.PORTAL_ARCHIVES).find(a => a.filter === archiveKey) : undefined
+  const archiveTerm = archive ? taxonomies?.[archive.taxonomy]?.find(term => term.slug === archiveSlug) : undefined
+  const archiveName = archiveKey ? archiveTerm?.name : ''
+  usePageTitle(archiveName)
+
+  // After usePageTitle, so it wins: the server's "Community | Page N" form.
+  useEffect(() => {
+    if (isDeepPage) document.title = sprintf(__('%1$s | Page %2$s'), pageTitle(), String(listPage))
+  }, [isDeepPage, listPage])
 
   const clearSort = () =>
     setSearchParams(prev => {
-      for (const key of ['sort', 'visibility', 'my_topics', 'topic-types']) {
+      for (const key of ['sort', 'visibility', 'my_topics', 'view']) {
         prev.delete(key)
       }
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
 
-  const clearProduct = () =>
+  const clearTopicType = () =>
     setSearchParams(prev => {
-      prev.delete('product')
+      prev.delete('topic-types')
+      if (prev.has('page')) prev.set('page', '1')
+      return prev
+    })
+
+  const clearTags = () =>
+    setSearchParams(prev => {
+      prev.delete('tags')
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -112,8 +194,8 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   const resetFilters = () =>
     setSearchParams(prev => {
       const keys = [
-        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'topic-types'] : []),
-        ...(showProductFilter ? ['product'] : []),
+        ...(showSortFilter ? ['sort', 'visibility', 'my_topics', 'view'] : []),
+        ...(showTypeFilter ? ['topic-types'] : []),
         ...(showTagFilter ? ['tags'] : [])
       ]
       for (const key of keys) {
@@ -125,25 +207,21 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
   const activeChips: { key: string; label: string; onRemove: () => void }[] = []
   if (showSortFilter) {
-    if (myTopics === 'true') {
+    if (activeView) {
+      activeChips.push({ key: 'sort', label: activeView.label, onRemove: clearSort })
+    } else if (myTopics === 'true') {
       activeChips.push({ key: 'sort', label: __('My Topics'), onRemove: clearSort })
     } else if (visibility === 'private') {
       activeChips.push({ key: 'sort', label: __('Private'), onRemove: clearSort })
-    } else if (topicType !== '') {
-      activeChips.push({
-        key: 'sort',
-        label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
-        onRemove: clearSort
-      })
     } else if (sortBy !== 'newest') {
       activeChips.push({ key: 'sort', label: __('Oldest'), onRemove: clearSort })
     }
   }
-  if (showProductFilter && product !== '') {
+  if (showTypeFilter && topicType !== '') {
     activeChips.push({
-      key: 'product',
-      label: departments.find(d => d.slug === product)?.name ?? product,
-      onRemove: clearProduct
+      key: 'topic-type',
+      label: topicTypes.find(t => t.slug === topicType)?.name ?? topicType,
+      onRemove: clearTopicType
     })
   }
   if (showTagFilter) {
@@ -163,42 +241,106 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
   // instead of being rewritten to `?tags=api` the moment React mounts.
   const filters = useMemo(
     () => ({
-      departments: product,
       my_topics: myTopics,
       search,
       sortBy,
       stages,
       tags,
       'topic-types': topicType,
+      view,
       visibility,
-      ...archiveFilter
+      ...scopeFilter
     }),
-    [product, myTopics, search, sortBy, stages, tags, topicType, visibility, archiveFilter]
+    [myTopics, search, sortBy, stages, tags, topicType, view, visibility, scopeFilter]
   )
 
-  const { fetchAllPosts, fetchMorePosts, hasMore, isLoading, isLoadingMore, posts, toggleVote } =
-    usePostsStore()
+  const toggleVote = usePostsStore(state => state.toggleVote)
+  const {
+    error: loadError,
+    fetchNextPage,
+    hasNextPage: hasMore,
+    isFetchingNextPage: isLoadingMore,
+    isPending: isLoading,
+    isPlaceholderData: isSwitching,
+    posts
+  } = useTopics(filters, isDeepPage ? { perPage: config.TOPIC_LIST_PAGE_SIZE, startPage: listPage } : undefined)
 
-  // Applying a filter changes this key, remounting the list container so the
-  // cards replay their entrance animation — the visual cue that the result set
-  // changed. Appended pages (infinite scroll) keep the same key, so only the
-  // new cards animate in.
+  // Which list is on screen: undefined while the previous one stands in.
   const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
+  const listKey = isSwitching ? undefined : filtersKey
+
+  // The topics already shown in this list, so only the ones that arrive later —
+  // the next page, a topic posted since — animate in. A whole new list (another
+  // stage, or the real list replacing a stand-in) swaps in place instead: every
+  // card fading in again on each switch read as the page blinking.
+  const [seen, setSeen] = useState(() => ({ ids: new Set(posts.map(topic => topic.ID)), key: listKey }))
+  useEffect(() => {
+    setSeen(previous => {
+      const ids = posts.map(topic => topic.ID)
+      if (previous.key === listKey && ids.every(id => previous.ids.has(id))) return previous
+
+      return { ids: new Set(previous.key === listKey ? [...previous.ids, ...ids] : ids), key: listKey }
+    })
+  }, [posts, listKey])
 
   const shouldReduceMotion = useReducedMotion()
-  const cardMotion = (index: number) => ({
+  const cardMotion = (topicId: number, index: number) => ({
     animate: { opacity: 1, y: 0 },
-    initial: shouldReduceMotion ? false : { opacity: 0, y: 12 },
+    initial:
+      shouldReduceMotion || listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
+        ? false
+        : { opacity: 0, y: 12 },
     // Stagger is capped so late infinite-scroll pages don't accumulate delay.
     transition: { delay: Math.min(index * 0.05, 0.3), duration: 0.3, ease: 'easeOut' as const }
   })
 
-  // (Re)load the first page on mount and whenever the filters change.
+  // The "all caught up" note is only meaningful after the user has actually
+  // paginated — a list that fits in the first page never shows it.
+  const [hasPaginated, setHasPaginated] = useState(false)
+
+  // A new filter set starts from its first page; useTopics fetches it. The list
+  // no longer remounts on a switch, so it would keep the old scroll position
+  // and open the new stage halfway down — back to the top instead. Not on
+  // mount: arriving at the list is the scroller's business.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const isFirstFilters = useRef(true)
   useEffect(() => {
-    fetchAllPosts(filters).catch(() => {
-      notificationApi?.error({ message: __('Failed to load posts') })
+    setHasPaginated(false)
+    if (isFirstFilters.current) {
+      isFirstFilters.current = false
+      return
+    }
+    getScrollParent(rootRef.current)?.scrollTo({ top: 0 })
+  }, [filters])
+
+  useEffect(() => {
+    if (loadError) notificationApi?.error({ message: __('Failed to load posts') })
+  }, [loadError, notificationApi])
+
+  // Guards against concurrent calls, and against paging the previous list while
+  // it stands in for the new one.
+  // A stage not opened before: the previous list holds for a beat, then gives
+  // way to the skeleton. Its topics belong to the stage the reader just left,
+  // so they are not shown for long — but a skeleton flashed for the 200ms a
+  // quick answer takes would blink just the same. A stage already opened shows
+  // its cached topics at once and never gets here.
+  const [isSlowSwitch, setIsSlowSwitch] = useState(false)
+  useEffect(() => {
+    if (!isSwitching) return
+    const timer = setTimeout(() => setIsSlowSwitch(true), SKELETON_DELAY_MS)
+    return () => {
+      clearTimeout(timer)
+      setIsSlowSwitch(false)
+    }
+  }, [isSwitching])
+  const showSkeleton = isLoading || (isSwitching && isSlowSwitch)
+
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || isSwitching) return
+    fetchNextPage().catch(() => {
+      notificationApi?.error({ message: __('Failed to load more posts') })
     })
-  }, [filters, fetchAllPosts, notificationApi])
+  }, [fetchNextPage, isLoadingMore, isSwitching, notificationApi])
 
   // Infinite scroll: load the next page when the sentinel scrolls into view.
   // The list lives inside a scrollable layout container, so observe relative to
@@ -211,10 +353,8 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) {
-          // fetchMorePosts guards against concurrent calls internally.
-          fetchMorePosts().catch(() => {
-            notificationApi?.error({ message: __('Failed to load more posts') })
-          })
+          setHasPaginated(true)
+          loadMore()
         }
       },
       { root: getScrollParent(node), rootMargin: '300px' }
@@ -222,15 +362,15 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
 
     observer.observe(node)
     return () => observer.disconnect()
-    // `isLoading`/`posts.length` are included because the sentinel is only
-    // rendered once loading finishes and there are posts. Without them the
-    // observer wouldn't re-attach after a client-side navigation where
-    // `hasMore` is already true (carried over in the persistent store).
-  }, [hasMore, fetchMorePosts, notificationApi, isLoading, posts.length])
+    // `showSkeleton`/`posts.length` are included because the sentinel is only
+    // rendered while the list is (not its skeleton) and there are posts.
+    // Without them the observer wouldn't re-attach after a client-side
+    // navigation where `hasMore` is already true (carried over in the query
+    // cache).
+  }, [hasMore, loadMore, showSkeleton, posts.length])
 
   // Scroll-to-top button: show it while the user scrolls down past a threshold,
   // then auto-hide once scrolling stops for SCROLL_IDLE_HIDE_MS.
-  const rootRef = useRef<HTMLDivElement>(null)
   const scrollParentRef = useRef<HTMLElement | undefined>(undefined)
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -285,90 +425,157 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
     }
   }
 
+  // Where the list is: the term a tag, type or status archive is listing, which
+  // spans every stage.
+  const contextName =
+    !isSearching && archiveKey && archiveKey !== 'stages' && listingScope === '' ? (archiveName ?? archiveSlug) : ''
+  const listingContext = <ListingContext archiveName={contextName} />
+
+  // The type strip already shows the selected type and the sort control the
+  // selected ordering or list, so their chips would only repeat them — the
+  // row lists what the toolbar can't.
+  const toolbarChips = activeChips.filter(
+    chip => !(showTypeChips && chip.key === 'topic-type') && chip.key !== 'sort'
+  )
+
+  // Active (non-default) filters as removable chips, in the type strip's
+  // selected style — each one is a filter the reader switched on. Each chip
+  // pops in and out.
+  const renderFilterChips = (chips: typeof activeChips) => (
+    <AnimatePresence initial={false}>
+      {chips.length > 0 && (
+        <m.div
+          animate={{ opacity: 1 }}
+          className="bc-flex bc-shrink-0 bc-flex-wrap bc-items-center bc-gap-2 max-lg:bc-flex-nowrap"
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          key="filter-chips"
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          <AnimatePresence initial={false} mode="popLayout">
+            {chips.map(chip => (
+              <m.span
+                animate={{ opacity: 1, scale: 1 }}
+                className="bc-inline-flex bc-h-8 bc-shrink-0 bc-items-center bc-gap-1 bc-whitespace-nowrap bc-rounded-md bc-border bc-border-solid bc-border-primary/30 bc-bg-primary/10 bc-pl-3 bc-pr-1 bc-text-sm bc-font-medium bc-text-primary"
+                exit={{ opacity: 0, scale: 0.85 }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                key={chip.key}
+                layout
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+              >
+                {chip.label}
+                {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
+                    button is easy to miss with a thumb. */}
+                <button
+                  aria-label={__('Remove filter')}
+                  className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded bc-border-none bc-bg-transparent bc-text-primary bc-transition-colors hover:bc-bg-primary/15"
+                  onClick={chip.onRemove}
+                  type="button"
+                >
+                  <LuX size={14} />
+                </button>
+              </m.span>
+            ))}
+          </AnimatePresence>
+        </m.div>
+      )}
+    </AnimatePresence>
+  )
+
   return (
     // 16px on phones, matching the topic page's gutter at the same width: the
     // two are the same journey, and at 12 here the card edges sat 4px inside
     // where the topic's own text lands, so tapping a card shifted everything.
     // From sm both fall back to 12, where each panel adds padding of its own.
-    <div className="bc-p-4 sm:bc-p-3 lg:bc-p-4 lg:bc-space-y-4" ref={rootRef}>
+    <div className="bc-p-4 sm:bc-p-3 lg:bc-p-6 lg:bc-space-y-4" ref={rootRef}>
       <div className="bc-flex bc-flex-col bc-gap-2 bc-mb-4">
-        {/* mobile: always-visible search + a filter button that opens a sheet */}
-        <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
-          <SearchInput className="bc-flex-1" />
-          {showAnyFilter && (
-            <button
-              aria-label={__('Filters')}
-              className={FILTER_BUTTON_CLASS}
-              onClick={() => setFilterOpen(true)}
-              type="button"
-            >
-              <LuSlidersHorizontal size={18} />
-              {hasActiveFilters && (
-                <span className="filter-dot-pulse bc-absolute bc-right-2 bc-top-2 bc-h-2 bc-w-2 bc-rounded-full bc-bg-primary" />
-              )}
-            </button>
-          )}
-        </div>
+        {TopicListBanners && <TopicListBanners />}
 
-        {/* mobile: active (non-default) filters as removable chips. The row
-            collapses/expands as chips come and go; each chip pops in and out. */}
-        <AnimatePresence initial={false}>
-          {activeChips.length > 0 && (
-            <motion.div
-              animate={{ height: 'auto', opacity: 1 }}
-              className="bc-flex bc-flex-wrap bc-items-center bc-gap-2 bc-overflow-hidden lg:bc-hidden"
-              exit={{ height: 0, opacity: 0 }}
-              initial={{ height: 0, opacity: 0 }}
-              key="filter-chips"
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-              <AnimatePresence initial={false} mode="popLayout">
-                {activeChips.map(chip => (
-                  <motion.span
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bc-inline-flex bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-raised bc-py-1 bc-pl-3 bc-pr-1.5 bc-text-xs bc-font-medium bc-text-ink-muted"
-                    exit={{ opacity: 0, scale: 0.85 }}
-                    initial={{ opacity: 0, scale: 0.85 }}
-                    key={chip.key}
-                    layout
-                    transition={{ duration: 0.18, ease: 'easeOut' }}
-                  >
-                    {chip.label}
-                    {/* 24px hit area — the WCAG 2.5.8 minimum target size; a 16px
-                        button is easy to miss with a thumb. */}
-                    <button
-                      aria-label={__('Remove filter')}
-                      className="bc-flex bc-h-6 bc-w-6 bc-shrink-0 bc-cursor-pointer bc-items-center bc-justify-center bc-rounded-full bc-border-none bc-bg-transparent bc-text-ink-subtle bc-transition-colors hover:bc-bg-surface-raised hover:bc-text-ink-muted"
-                      onClick={chip.onRemove}
-                      type="button"
-                    >
-                      <LuX size={14} />
-                    </button>
-                  </motion.span>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* A term archive's own heading, description and Follow. Not for a
+            stage archive, which the stage picker already names, nor the archive
+            the listing is scoped to, which is the picker beside it. */}
+        {showArchiveHeader && !isSearching && archive && archiveKey !== 'stages' && listingScope === '' && (
+          <ArchiveHeader archive={archive} term={archiveTerm} />
+        )}
 
-        {/* desktop toolbar row */}
-        <div className="bc-hidden bc-items-center bc-justify-between lg:bc-flex lg:bc-gap-12">
-          <SearchInput className="bc-min-w-48" />
-          {showAnyFilter && (
-            <div className="bc-flex bc-items-center bc-gap-3">
+        {/* below lg: the desktop toolbar's own shape — the type chips as a
+            strip scrolling sideways, the sort picker held at the right edge —
+            so the two filters a reader reaches for most are one tap away
+            rather than behind a sheet. Only tags, which need a search field
+            and a list, still open the sheet. Search itself lives in the
+            header. */}
+        {(showTypeChips || showSortFilter || showTagFilter) && (
+          <div className="bc-flex bc-items-center bc-gap-2 lg:bc-hidden">
+            {showTypeChips && <TopicTypeFilter className="bc-flex-1" layout="strip" scope={scopeFilter} />}
+            <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-2">
               {showSortFilter && <SortFilter />}
-              {showProductFilter && <ProductFilter />}
+              {showTagFilter && (
+                <button
+                  aria-label={__('Tags')}
+                  className={FILTER_BUTTON_CLASS}
+                  onClick={() => setFilterOpen(true)}
+                  type="button"
+                >
+                  <LuSlidersHorizontal size={16} />
+                  {tags !== '' && (
+                    <span className="filter-dot-pulse bc-absolute bc--right-1 bc--top-1 bc-h-2.5 bc-w-2.5 bc-rounded-full bc-bg-primary bc-ring-2 bc-ring-surface" />
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* below lg: where the list is, and the tags narrowing it — the type
+            and the ordering already show in the toolbar above. The place chip
+            truncates before the filters do, since a filter's name is what its
+            remove button acts on; past that the row scrolls sideways. */}
+        {(contextName || toolbarChips.length > 0) && (
+          <div
+            className="bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-overflow-x-auto lg:bc-hidden"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {listingContext}
+            {renderFilterChips(toolbarChips)}
+          </div>
+        )}
+
+        {/* desktop toolbar, one row: the type chips from the left edge,
+            taking whatever width is left and scrolling sideways past it, then
+            every picker together on the right — where the list is (stage, and
+            any added choice) beside the ones that sort and narrow it. Search
+            and Create are the header's, on every page. The chips had a row of
+            their own once, beside the search box; with that gone it left two
+            half-empty rows. */}
+        <div className="bc-hidden bc-flex-col bc-gap-3 lg:bc-flex">
+          <div className="bc-flex bc-items-center bc-gap-3">
+            {showTypeChips && (
+              <TopicTypeFilter className="bc-flex-1" layout="strip" scope={scopeFilter} />
+            )}
+            {/* ml-auto: with no chips the pickers still hold the right edge. */}
+            <div className="bc-ml-auto bc-flex bc-shrink-0 bc-items-center bc-gap-3">
+              {listingContext}
+              {showSortFilter && <SortFilter />}
               {showTagFilter && <TagFilter />}
+            </div>
+          </div>
+          {toolbarChips.length > 0 && (
+            <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
+              {renderFilterChips(toolbarChips)}
+              <Button onClick={resetFilters} size="small" type="link">
+                {__('Clear all')}
+              </Button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Mobile filter sheet, opened by the filter button above. */}
+      {/* Phone tag sheet, opened by the button beside the sort picker: the
+          tag picker searches and lists, which a toolbar slot has no room for. */}
       <Drawer
         className="lg:bc-hidden"
         extra={
-          <Button disabled={!hasActiveFilters} onClick={resetFilters} size="small" type="link">
+          <Button disabled={tags === ''} onClick={clearTags} size="small" type="link">
             {__('Reset')}
           </Button>
         }
@@ -377,60 +584,35 @@ export default function Topics({ archiveFilter }: TopicsProps = {}) {
         open={filterOpen}
         placement="bottom"
         styles={{ content: { borderTopLeftRadius: 16, borderTopRightRadius: 16 } }}
-        title={__('Filters')}
+        title={__('Tags')}
       >
-        <div className="bc-flex bc-flex-col bc-gap-3 bc-pb-2">
-          {showSortFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Sort by')}</span>
-              <SortFilter />
-            </div>
-          )}
-          {showProductFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Product')}</span>
-              <ProductFilter />
-            </div>
-          )}
-          {showTagFilter && (
-            <div className="bc-flex bc-items-center bc-justify-between bc-gap-3 bc-rounded-lg bc-bg-surface-sunken bc-px-4 bc-py-2.5">
-              <span className="bc-text-sm bc-font-medium bc-text-ink-muted">{__('Tags')}</span>
-              <TagFilter />
-            </div>
-          )}
+        <div className="bc-pb-2">
+          <TagFilter block />
         </div>
       </Drawer>
 
-      {isLoading && (
-        <div className="bc-flex bc-items-center bc-justify-center bc-p-8">
-          <span>{__('Loading posts...')}</span>
-        </div>
-      )}
-      {!isLoading && posts.length === 0 && (
+      {showSkeleton && <TopicListSkeleton />}
+      {!showSkeleton && posts.length === 0 && (
         <div className="bc-flex bc-items-center bc-justify-center bc-p-8">
           <span>{__('No posts found')}</span>
         </div>
       )}
-      {!isLoading && posts.length > 0 && (
-        <div className="bc-flex bc-flex-col bc-gap-4" key={filtersKey}>
+      {!showSkeleton && posts.length > 0 && (
+        <div aria-busy={isSwitching} className="bc-flex bc-flex-col bc-gap-4">
           {posts.map((topic, index) => (
-            <motion.div key={topic.ID} {...cardMotion(index)}>
-              <TopicCard onVote={handlePostVote} topic={topic} />
-            </motion.div>
+            <m.div key={topic.ID} {...cardMotion(topic.ID, index)}>
+              <TopicCard onVote={handlePostVote} showStage={showsStageBadges} topic={topic} />
+            </m.div>
           ))}
 
           {/* Sentinel: observed to trigger loading the next page */}
           <div aria-hidden="true" className="bc-h-px" ref={sentinelRef} />
 
-          {isLoadingMore && (
-            <div className="bc-flex bc-items-center bc-justify-center bc-p-4">
-              <span>{__('Loading more...')}</span>
-            </div>
-          )}
+          {isLoadingMore && <TopicListSkeleton count={2} />}
 
-          {!hasMore && !isLoadingMore && (
+          {hasPaginated && !hasMore && !isLoadingMore && (
             <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
-              <span>{__("🎉 You're all caught up — no more topics")}</span>
+              <span>{__("🎉 You're all caught up. That's every topic!")}</span>
             </div>
           )}
         </div>

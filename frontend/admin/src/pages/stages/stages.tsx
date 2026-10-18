@@ -1,5 +1,6 @@
 import { __ } from '@common/helpers/i18nWrap'
 import TermIconCell from '@utilities/term-icon-cell'
+import { termNameColumn } from '@utilities/term-name-column'
 import {
   dragColumn,
   DragHandle,
@@ -7,9 +8,11 @@ import {
   SortableTable,
   useSortableRows
 } from '@utilities/term-order'
-import { Button, Form, Popconfirm, Space, Table, Typography } from 'antd'
+import { Button, Form, Popconfirm, Space, Table, Tag, Typography } from 'antd'
 import { useState } from 'react'
 import { LuPenLine, LuPlus, LuTrash2 } from 'react-icons/lu'
+
+import useChipProps from '@/utils/use-chip-props'
 
 import useDeleteStage from './data/use-delete-stage'
 import { type ErrorResponse } from './data/use-save-stage'
@@ -35,6 +38,7 @@ export default function Stages() {
   const [editingStage, setEditingStage] = useState<Stage>()
   const [modalOpen, setModalOpen] = useState(false)
   const { isStagesPending, stages } = useStages()
+  const { chipTagProps } = useChipProps()
   const { error, isError, isSavingStage, saveStage } = useSaveStage()
   const { error: updateError, isError: isUpdateError, isUpdatingStage, updateStage } = useUpdateStage()
   const { deleteStage, isDeletingStage } = useDeleteStage()
@@ -49,6 +53,7 @@ export default function Stages() {
   const handleEdit = (stage: Stage) => {
     setEditingStage(stage)
     form.setFieldsValue({
+      color: stage.meta?.bit_connect_color,
       description: stage.description,
       icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
       icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
@@ -74,6 +79,8 @@ export default function Stages() {
           // as null but ignores one that never arrives, and `wpApi` serialises
           // undefined to null — so an omitted key would leave a removed icon
           // in place.
+          // An empty string, not null, clears a removed colour the same way.
+          bit_connect_color: data.color || '',
           bit_connect_icon_dark_id: data.icon_dark_id || 0,
           bit_connect_icon_dark_url: data.icon_dark_url,
           bit_connect_icon_id: data.icon_id || 0,
@@ -102,6 +109,7 @@ export default function Stages() {
   const columns = [
     { ...dragColumn, render: () => <DragHandle /> },
     {
+      ...termNameColumn,
       dataIndex: 'name',
       key: 'name',
       title: __('Stage Name')
@@ -111,6 +119,18 @@ export default function Stages() {
       key: 'description',
       render: (text: string) => text || <Text type="secondary">{__('No description')}</Text>,
       title: __('Description')
+    },
+    {
+      key: 'color',
+      render: (_: unknown, record: Stage) =>
+        record.meta?.bit_connect_color ? (
+          <Tag className="bc-m-0" {...chipTagProps(record.meta.bit_connect_color)}>
+            {record.name}
+          </Tag>
+        ) : (
+          <Text type="secondary">{__('No color')}</Text>
+        ),
+      title: __('Color')
     },
     {
       key: 'icon',
@@ -152,30 +172,34 @@ export default function Stages() {
   ]
 
   return (
-    <div>
-      <div className=" bc-py-6 bc-px-5 bc-flex bc-items-center bc-justify-between">
-        <div>
-          <Title className="bc-mb-2" level={2}>
-            {__('Stage')}
+    <div className="bc-px-6 bc-pb-6">
+      <div className="bc-flex bc-flex-wrap bc-items-center bc-justify-between bc-gap-3 bc-pb-4 bc-pt-5">
+        <div className="bc-min-w-0">
+          <Title className="bc-mb-0" level={3}>
+            {__('Stages')}
           </Title>
-          <Text type="secondary">{__('Manage stages for your project')}</Text>
+          <Text type="secondary">{__('The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.')}</Text>
         </div>
-        <Button icon={<LuPlus />} onClick={handleCreate} size="large" type="primary">
-          {__('Create Stage')}
+        <Button icon={<LuPlus />} onClick={handleCreate} type="primary">
+          {__('Add stage')}
         </Button>
       </div>
 
-      <SortableTable items={rows.map(stage => stage.id)} onDragEnd={handleDragEnd} sensors={sensors}>
-        <Table
-          columns={columns}
-          components={{ body: { row: SortableRow } }}
-          dataSource={rows}
-          loading={isStagesPending}
-          pagination={false}
-          rowClassName="bg-transparent"
-          rowKey="id"
-        />
-      </SortableTable>
+      {/* The layout's ground is sunken, so the table sits on its own raised
+          card, like the Settings screen's sections. */}
+      <div className="bc-overflow-x-auto bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface">
+        <SortableTable items={rows.map(stage => stage.id)} onDragEnd={handleDragEnd} sensors={sensors}>
+          <Table
+            columns={columns}
+            components={{ body: { row: SortableRow } }}
+            dataSource={rows}
+            loading={isStagesPending}
+            pagination={false}
+            rowClassName="bg-transparent"
+            rowKey="id"
+          />
+        </SortableTable>
+      </div>
 
       <StageModal
         errorMessage={getErrorMessage(error || updateError, isError || isUpdateError)}

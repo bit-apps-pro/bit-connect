@@ -3,6 +3,8 @@
 namespace BitApps\BitConnect\Tests\Http;
 
 use BitApps\BitConnect\Http\Controller\NotFoundController;
+use BitApps\BitConnect\SSR\Seo\SeoMeta;
+use BitApps\BitConnect\SSR\Seo\SeoPluginBridge;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,6 +26,9 @@ final class NotFoundResponseTest extends TestCase
         $GLOBALS['__wp_status_header'] = null;
         $GLOBALS['__wp_nocache_headers'] = false;
         $GLOBALS['__wp_actions'] = [];
+        $GLOBALS['__wp_filters'] = [];
+
+        (new \ReflectionClass(SeoMeta::class))->getProperty('meta')->setValue(null, null);
     }
 
     public function testItSendsARealNotFoundStatus(): void
@@ -44,15 +49,12 @@ final class NotFoundResponseTest extends TestCase
     {
         NotFoundController::markResponseNotFound();
 
-        $callbacks = $GLOBALS['__wp_actions']['wp_head'] ?? [];
-        $this->assertCount(1, $callbacks);
-
-        ob_start();
-        $callbacks[0]();
-        $head = (string) ob_get_clean();
+        $head = SeoMeta::head();
 
         $this->assertStringContainsString('name="robots"', $head);
         $this->assertStringContainsString('noindex', $head);
+        // A canonical would name this missing URL as some other page.
+        $this->assertStringNotContainsString('rel="canonical"', $head);
     }
 
     /**
@@ -64,11 +66,20 @@ final class NotFoundResponseTest extends TestCase
     {
         NotFoundController::markResponseNotFound();
 
-        ob_start();
-        $GLOBALS['__wp_actions']['wp_head'][0]();
-        $head = (string) ob_get_clean();
+        $head = SeoMeta::head();
 
         $this->assertStringContainsString('noindex,follow', $head);
         $this->assertStringNotContainsString('nofollow', $head);
+    }
+
+    /**
+     * Described as a route, so the site's SEO plugin is stood down rather than
+     * printing the portal page's own `index` robots and canonical beside ours.
+     */
+    public function testTheSeoPluginStandsDownOnANotFoundPage(): void
+    {
+        NotFoundController::markResponseNotFound();
+
+        $this->assertTrue(SeoPluginBridge::standsDown());
     }
 }

@@ -8,6 +8,9 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
+use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
@@ -21,11 +24,47 @@ use WP_Term;
  */
 class TopicService
 {
+    /** `sortBy` value, and the WP_Query var it becomes, for most votes first. */
+    public const ORDER_VOTES = 'votes';
+
+    private const VOTE_ORDER_VAR = 'bit_connect_vote_order';
+
     /**
      * Total number of topics matching the most recent getAllTopics() query,
      * ignoring pagination limits. Populated by getAllTopics().
      */
     private int $lastQueryTotal = 0;
+
+    /**
+     * `posts_clauses` for a topic list ordered by votes: most first, newest
+     * first among equals.
+     *
+     * Counted from the votes table, one row per vote, as every card's own
+     * total is (Vote::getPostVoteCount). Not from the `_bit_connect_vote_count`
+     * post meta: that cache is written only when something reads it through
+     * VoteService, which the listing never does, so on most topics it is
+     * simply absent. A LEFT JOIN keeps topics nobody has voted on, as none.
+     *
+     * @param array<string, string> $clauses
+     * @param WP_Query              $query
+     *
+     * @return array<string, string>
+     */
+    public static function voteOrderClauses($clauses, $query)
+    {
+        if (!$query instanceof WP_Query || !$query->get(self::VOTE_ORDER_VAR)) {
+            return $clauses;
+        }
+
+        global $wpdb;
+
+        $votes = Connection::prop('prefix') . Config::VAR_PREFIX . 'votes';
+
+        $clauses['join'] .= " LEFT JOIN (SELECT post_id, COUNT(*) AS total FROM {$votes} WHERE post_id IS NOT NULL GROUP BY post_id) AS bc_votes ON (bc_votes.post_id = {$wpdb->posts}.ID)";
+        $clauses['orderby'] = "COALESCE(bc_votes.total, 0) DESC, {$wpdb->posts}.post_date DESC, {$wpdb->posts}.ID DESC";
+
+        return $clauses;
+    }
 
     /**
      * Get all topics with optional filtering.
@@ -74,12 +113,34 @@ class TopicService
             $args['author'] = $currentUserId;
         }
 
+        // The topics the reader follows. `[0]` when they follow none, because an
+        // empty post__in means "no restriction" to WP_Query, not "nothing".
+        // `perm => readable` still applies, so a topic they followed and can no
+        // longer open drops out.
+        if (!empty($filters['followed']) && $currentUserId > 0) {
+            $args['post__in'] = Follow::activeTargetIds($currentUserId, Follow::TARGET_TOPIC) ?: [0];
+        }
+
         // Explicit author filter, used by the public profile pages. Previously
         // getTopicsByAuthor() set this and nothing read it, so it silently
         // returned every topic. `perm => readable` above still applies, so a
         // visitor only ever sees the author's topics they are allowed to read.
         if (!empty($filters['author'])) {
             $args['author'] = (int) $filters['author'];
+        }
+
+        // A list of the reader's own topics names their hidden ones too — "My
+        // Topics" and their own profile. They can already open each by its URL;
+        // without this, a member whose topic is hidden had no way back to it
+        // once they left the page. Nobody else's list changes: the author
+        // clause is what keeps this to their own.
+        if (
+            $currentUserId > 0
+            && (int) ($args['author'] ?? 0) === $currentUserId
+            && !\in_array(ContentVisibilityService::HIDDEN_STATUS, $args['post_status'], true)
+            && $args['post_status'] !== ['private']
+        ) {
+            $args['post_status'][] = ContentVisibilityService::HIDDEN_STATUS;
         }
 
         // Hydrate an explicit set of IDs (the profile's "voted" list, which is
@@ -109,11 +170,78 @@ class TopicService
             $includeComments = true;
         }
 
+        // Most votes first. Before the view: a named list a plugin adds sets
+        // its own order, and that is the more specific question.
+        if (($filters['orderby'] ?? '') === self::ORDER_VOTES) {
+            $args['orderby'] = 'date';
+            $args[self::VOTE_ORDER_VAR] = true;
+        }
+
+        if (!empty($filters['view'])) {
+            $args = ExtensionPoints::topicListQuery($args, (string) $filters['view']);
+        }
+
+        // Every list, whatever it was asked for: whatever a plugin holds back
+        // from this reader one topic at a time (isReadable) it keeps out of
+        // the lists here too, search and archives included.
+        $args = ExtensionPoints::topicQueryArgs($args, $currentUserId, 'list');
+
+        // Just which topics match, for a question about the set rather than a
+        // page of it — the same statuses and readability as the list.
+        if (!empty($filters['ids_only'])) {
+            $args['fields'] = 'ids';
+            $args['no_found_rows'] = true;
+
+            return array_map('intval', (new WP_Query($args))->posts);
+        }
+
+        // The list is in its own order. WordPress would prepend every sticky
+        // post to a list like this one, whatever its taxonomy filters; this
+        // plugin does not order by stickiness, so that is switched off. Any
+        // topics another plugin has a list lead with (see
+        // ExtensionPoints::leadingTopicIds()) are asked for through the list's
+        // own arguments instead, then kept out of its pages.
+        $args['ignore_sticky_posts'] = true;
+        $perPage = (int) ($args['posts_per_page'] ?? -1);
+        $page = max(1, (int) ($args['paged'] ?? 1));
+        $leading = $this->leadingTopics($args, $filters);
+
+        if ($perPage > 0) {
+            $leading = \array_slice($leading, 0, $perPage);
+        }
+
+        if ($leading !== []) {
+            $args = self::withoutPosts($args, array_map(static fn (WP_Post $post): int => (int) $post->ID, $leading));
+
+            // The leading topics take the first places of page one, so every
+            // later page starts that many places earlier in the rest.
+            if ($perPage > 0) {
+                unset($args['paged']);
+                $args['offset'] = $page === 1 ? 0 : ($page - 1) * $perPage - \count($leading);
+                $args['posts_per_page'] = $page === 1 ? max(1, $perPage - \count($leading)) : $perPage;
+            }
+        }
+
         $query = new WP_Query($args);
-        $this->lastQueryTotal = (int) $query->found_posts;
+        $this->lastQueryTotal = (int) $query->found_posts + \count($leading);
+
+        $posts = $query->posts;
+
+        if ($leading !== [] && $page === 1) {
+            // A page the leading topics fill on their own: the one row asked
+            // for above was only to count the rest.
+            $posts = $perPage > 0 && \count($leading) >= $perPage ? $leading : [...$leading, ...$posts];
+        }
 
         $topics = [];
-        foreach ($query->posts as $post) {
+        foreach ($posts as $post) {
+            // A lookup by slug is singular, and WP_Query skips `tax_query` for
+            // singular queries — so whatever a plugin excluded through
+            // topicQueryArgs() can still come back here. Asked one by one.
+            if (!empty($filters['name']) && !self::isReadable($post)) {
+                continue;
+            }
+
             $topicData = $this->prepareTopicData($post, $includeComments);
             $topics[] = $topicData;
         }
@@ -138,6 +266,27 @@ class TopicService
     }
 
     /**
+     * Slugs of the topic types the readable topics under `$taxQuery` are filed
+     * as — only topics this reader could list, so the answer names no type
+     * that exists only behind a topic held back from them.
+     *
+     * @return list<string>
+     */
+    public function topicTypesUsed(array $taxQuery): array
+    {
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Topics are filtered by taxonomy by design; there is no meta equivalent.
+        $ids = $this->getAllTopics(['tax_query' => $taxQuery, 'ids_only' => true]);
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $slugs = wp_get_object_terms($ids, Taxonomies::TOPIC_TYPES->value, ['fields' => 'slugs']);
+
+        return is_wp_error($slugs) ? [] : array_values(array_unique($slugs));
+    }
+
+    /**
      * Total topics matching the most recent getAllTopics() call, ignoring the
      * per-page limit. Use right after getAllTopics() to build pagination meta.
      */
@@ -158,8 +307,13 @@ class TopicService
         }
 
         // get_page_by_path() matches on slug and post type alone — it applies no
-        // status filter at all. Without this, a hidden or private topic would
-        // still be served in full to anyone holding its URL.
+        // status filter at all. Without this, a topic hidden from every listing,
+        // or a private one the listing query had just refused, would still be
+        // served in full to anyone holding its URL: this is the fallback
+        // getAllTopics() reaches for when its own query answers nothing.
+        //
+        // The author is not a stranger to their own topic: they keep the URL,
+        // marked as hidden, while it stays out of every listing for everyone.
         if (!self::isReadable($post)) {
             return null;
         }
@@ -215,22 +369,44 @@ class TopicService
      */
     public static function isReadable(WP_Post $post): bool
     {
-        switch ($post->post_status) {
-            case 'publish':
-                return true;
+        $readable = match ($post->post_status) {
+            'publish'                               => true,
+            ContentVisibilityService::HIDDEN_STATUS => ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author),
+            'private'                               => ContentVisibilityService::isOwnContent((int) $post->post_author)
+                || self::mayReadPrivate($post, static fn (string $cap) => current_user_can($cap)),
+            default => false,
+        };
 
-            case ContentVisibilityService::HIDDEN_STATUS:
-                return ContentVisibilityService::isPostViewableWhileHidden((int) $post->post_author);
+        // A plugin may hold back a topic these rules allow, never the reverse.
+        return $readable && ExtensionPoints::topicReadable($post, get_current_user_id());
+    }
 
-            case 'private':
-                $postType = get_post_type_object($post->post_type);
-
-                return ContentVisibilityService::isOwnContent((int) $post->post_author)
-                    || ($postType && current_user_can($postType->cap->read_private_posts));
-
-            default:
-                return false;
+    /**
+     * Whether a given member — not necessarily the one asking — may read this
+     * topic. The same rules as isReadable(), answered for someone else: the
+     * notification layer asks it of every recipient before writing them a row
+     * that names the topic.
+     *
+     * @param int $userId the member, 0 for a visitor
+     */
+    public static function isReadableBy(WP_Post $post, int $userId): bool
+    {
+        if ($userId === get_current_user_id()) {
+            return self::isReadable($post);
         }
+
+        $isAuthor = $userId > 0 && $userId === (int) $post->post_author;
+
+        $readable = match ($post->post_status) {
+            'publish'                               => true,
+            ContentVisibilityService::HIDDEN_STATUS => $isAuthor
+                || ($userId > 0 && user_can($userId, Capabilities::MODERATE->value)),
+            'private' => $isAuthor
+                || ($userId > 0 && self::mayReadPrivate($post, static fn (string $cap) => user_can($userId, $cap))),
+            default => false,
+        };
+
+        return $readable && ExtensionPoints::topicReadable($post, $userId);
     }
 
     /**
@@ -239,6 +415,14 @@ class TopicService
     public function createTopic(array $data, ?int $userId = null): ?array
     {
         $userId = $userId ?: get_current_user_id();
+
+        // Here rather than in a request, so every route that creates a topic
+        // meets it — including ones another plugin registers.
+        PostingLimits::assertWithin(
+            'topic',
+            (string) ($data['post_content'] ?? ''),
+            \is_array($data['attachments'] ?? null) ? $data['attachments'] : []
+        );
 
         $postData = [
             'post_type'    => PostTypes::BIT_CONNECT->value,
@@ -255,17 +439,17 @@ class TopicService
 
         $postId = wp_insert_post($postData);
 
-        if (is_wp_error($postId)) {
+        // 0 is how wp_insert_post() reports a failed database write.
+        if (is_wp_error($postId) || !$postId) {
             return null;
         }
+
         // Set taxonomy terms if provided
         if (isset($data['topic_types'])) {
             $res = wp_set_post_terms($postId, $data['topic_types'], Taxonomies::TOPIC_TYPES->value); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
         }
 
-        if (isset($data['departments'])) {
-            wp_set_post_terms($postId, $data['departments'], Taxonomies::DEPARTMENTS->value);
-        }
+        TopicTaxonomies::setTerms($postId, $data);
 
         if (isset($data['stages'])) {
             wp_set_post_terms($postId, $data['stages'], Taxonomies::STAGES->value);
@@ -276,20 +460,27 @@ class TopicService
         }
 
         if (isset($data['tags']) && \is_array($data['tags'])) {
-            wp_set_post_terms($postId, $data['tags'], Taxonomies::TAGS->value);
+            // Ints: a numeric string would be read as a tag name and created.
+            wp_set_post_terms($postId, array_map('intval', $data['tags']), Taxonomies::TAGS->value);
         }
 
-        // Link attachments to the topic via post_parent
-        if (!empty($data['attachments']) && \is_array($data['attachments'])) {
-            foreach ($data['attachments'] as $attachmentId) {
-                wp_update_post(
-                    [
-                        'ID'          => (int) $attachmentId,
-                        'post_parent' => $postId,
-                    ]
-                );
-            }
+        // Link attachments to the topic via post_parent: the files attached
+        // below it, and the pictures and videos placed in its text.
+        $attached = !empty($data['attachments']) && \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+        $created = get_post($postId);
+        $authorId = $created instanceof WP_Post ? (int) $created->post_author : 0;
+        $linked = array_merge($attached, $this->inlineUploads((string) ($data['post_content'] ?? ''), $authorId, $postId));
+
+        foreach (array_unique($linked) as $attachmentId) {
+            wp_update_post(
+                [
+                    'ID'          => (int) $attachmentId,
+                    'post_parent' => $postId,
+                ]
+            );
         }
+
+        UploadClaims::claim($linked);
 
         $post = get_post($postId);
 
@@ -307,12 +498,35 @@ class TopicService
             return null;
         }
 
+        // Only what this edit sends: a status change carries no content and
+        // must not be refused over a topic written under looser limits.
+        PostingLimits::assertWithin(
+            'topic',
+            isset($data['post_content']) ? (string) $data['post_content'] : null,
+            isset($data['attachments']) ? (array) $data['attachments'] : null
+        );
+
+        $status = $data['post_status'] ?? $existingPost->post_status;
+
+        // A hidden topic comes back through ContentVisibilityService::restorePost()
+        // and nothing else. Its author's edit form sends a status with every
+        // save, and written here that would put the topic back in public view
+        // without the moderator who hid it; it becomes the status the topic
+        // returns to instead.
+        if ($existingPost->post_status === ContentVisibilityService::HIDDEN_STATUS) {
+            if (isset($data['post_status']) && $data['post_status'] !== ContentVisibilityService::HIDDEN_STATUS) {
+                update_post_meta($id, ContentVisibilityService::PREV_STATUS_META, $data['post_status']);
+            }
+
+            $status = ContentVisibilityService::HIDDEN_STATUS;
+        }
+
         $postData = [
             'ID'           => $id,
             'post_title'   => $data['post_title'] ?? $existingPost->post_title,
             'post_content' => $data['post_content'] ?? $existingPost->post_content,
             'post_excerpt' => $data['post_excerpt'] ?? $existingPost->post_excerpt,
-            'post_status'  => $data['post_status'] ?? $existingPost->post_status,
+            'post_status'  => $status,
             // The permalink belongs to the topic once it exists: only an explicit
             // slug replaces it. Renaming the title used to silently re-mint this
             // and break every link already pointing at the topic.
@@ -329,30 +543,16 @@ class TopicService
 
         $result = wp_update_post($postData);
 
-        if (is_wp_error($result)) {
+        if (is_wp_error($result) || !$result) {
             return null;
         }
 
         // Only a change to the words counts as an edit. An update carrying just
-        // is_pinned or is_locked still calls wp_update_post() below and bumps
-        // post_modified, which is why that column cannot answer this and the
-        // meta has to be written deliberately.
+        // is_locked still calls wp_update_post() below and bumps post_modified,
+        // which is why that column cannot answer this and the meta has to be
+        // written deliberately.
         if ($contentChanged) {
             EditAttributionService::recordPost($id, get_current_user_id());
-        }
-
-        // Pin/unpin: WordPress sticky posts list
-        if (isset($data['is_pinned'])) {
-            $stickies = get_option('sticky_posts', []);
-            if ($data['is_pinned']) {
-                if (!\in_array($id, $stickies, true)) {
-                    $stickies[] = $id;
-                    update_option('sticky_posts', $stickies);
-                }
-            } else {
-                $stickies = array_values(array_diff($stickies, [$id]));
-                update_option('sticky_posts', $stickies);
-            }
         }
 
         // Lock/unlock: comment_status open/closed
@@ -370,9 +570,7 @@ class TopicService
             wp_set_post_terms($id, $data['topic_types'], Taxonomies::TOPIC_TYPES->value);
         }
 
-        if (isset($data['departments'])) {
-            wp_set_post_terms($id, $data['departments'], Taxonomies::DEPARTMENTS->value);
-        }
+        TopicTaxonomies::setTerms($id, $data);
 
         if (isset($data['stages'])) {
             wp_set_post_terms($id, $data['stages'], Taxonomies::STAGES->value);
@@ -382,17 +580,33 @@ class TopicService
             wp_set_post_terms($id, $data['statuses'], Taxonomies::STATUSES->value);
         }
 
-        if (isset($data['tags'])) {
-            wp_set_post_terms($id, $data['tags'], Taxonomies::TAGS->value);
+        if (isset($data['tags']) && \is_array($data['tags'])) {
+            wp_set_post_terms($id, array_map('intval', $data['tags']), Taxonomies::TAGS->value);
         }
 
-        // Update attachments: unlink old, link new
-        if (isset($data['attachments'])) {
-            $newAttachmentIds = \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+        // Update attachments: unlink old, link new. The pictures and videos in
+        // the text count as the topic's too — read from the text this edit
+        // sends, or the text it keeps when it sends none.
+        if (isset($data['attachments']) || isset($data['post_content'])) {
+            $content = (string) ($data['post_content'] ?? $existingPost->post_content);
+            $inline = $this->inlineUploads($content, (int) $existingPost->post_author, $id);
 
-            // Unlink existing attachments that are not in the new list
-            $existingAttachments = get_attached_media('', $id);
-            foreach ($existingAttachments as $existing) {
+            if (isset($data['attachments'])) {
+                $attached = \is_array($data['attachments']) ? array_map('intval', $data['attachments']) : [];
+            } else {
+                // Only the text changed: the files below it stay as they were.
+                $attached = array_map(
+                    'intval',
+                    array_diff(array_keys(get_attached_media('', $id)), $this->inlineUploads((string) $existingPost->post_content, (int) $existingPost->post_author, $id))
+                );
+            }
+
+            $newAttachmentIds = array_values(array_unique(array_merge($attached, $inline)));
+
+            // Unlink existing attachments that are not in the new list, and
+            // hand the portal's own uploads among them to the daily cleanup.
+            $removed = [];
+            foreach (get_attached_media('', $id) as $existing) {
                 if (!\in_array($existing->ID, $newAttachmentIds, true)) {
                     wp_update_post(
                         [
@@ -400,8 +614,10 @@ class TopicService
                             'post_parent' => 0,
                         ]
                     );
+                    $removed[] = $existing->ID;
                 }
             }
+            UploadClaims::release($removed);
 
             // Link new attachments to the topic
             foreach ($newAttachmentIds as $attachmentId) {
@@ -412,6 +628,7 @@ class TopicService
                     ]
                 );
             }
+            UploadClaims::claim($newAttachmentIds);
         }
 
         $post = get_post($result);
@@ -435,7 +652,16 @@ class TopicService
         // data against a reply cleans up on that hook rather than here.
         (new VoteService())->deletePostVotes($id);
 
+        // WordPress does not delete a post's media with it: it moves them to
+        // the post's parent, which for a topic is nothing. The members' own
+        // uploads go to the daily cleanup instead of staying behind forever.
+        $media = array_keys(get_attached_media('', $id));
+
         $result = wp_delete_post($id, true);
+
+        if ($result instanceof WP_Post) {
+            UploadClaims::release($media);
+        }
 
         return $result instanceof WP_Post;
     }
@@ -484,6 +710,17 @@ class TopicService
     {
         $totalTopics = wp_count_posts(PostTypes::BIT_CONNECT->value);
 
+        $taxonomyCounts = [
+            'topic_types' => wp_count_terms([Taxonomies::TOPIC_TYPES->value]),
+            'stages'      => wp_count_terms([Taxonomies::STAGES->value]),
+            'statuses'    => wp_count_terms([Taxonomies::STATUSES->value]),
+            'tags'        => wp_count_terms([Taxonomies::TAGS->value]),
+        ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $taxonomyCounts[$param] = wp_count_terms([$entry['taxonomy']]);
+        }
+
         return [
             'total'         => (int) $totalTopics->publish,
             'status_counts' => [
@@ -491,13 +728,7 @@ class TopicService
                 'draft'   => (int) $totalTopics->draft,
                 'pending' => (int) $totalTopics->pending,
             ],
-            'taxonomy_counts' => [
-                'topic_types' => wp_count_terms([Taxonomies::TOPIC_TYPES->value]),
-                'departments' => wp_count_terms([Taxonomies::DEPARTMENTS->value]),
-                'stages'      => wp_count_terms([Taxonomies::STAGES->value]),
-                'statuses'    => wp_count_terms([Taxonomies::STATUSES->value]),
-                'tags'        => wp_count_terms([Taxonomies::TAGS->value]),
-            ]
+            'taxonomy_counts' => $taxonomyCounts,
         ];
     }
 
@@ -594,6 +825,117 @@ class TopicService
     }
 
     /**
+     * " AND {column} NOT IN (…)" over the topics a plugin keeps from this
+     * reader, for a query written as SQL; '' when there are none.
+     *
+     * The ids are integers by the time they reach here (see
+     * ExtensionPoints::heldBackTopicIds()), so the list is safe to inline.
+     *
+     * @param string $column the topic id column, e.g. `p.ID` — the caller's own literal
+     * @param int    $userId the reader, 0 for a visitor
+     */
+    public static function heldBackSql(string $column, int $userId): string
+    {
+        $ids = ExtensionPoints::heldBackTopicIds($userId);
+
+        return $ids === [] ? '' : " AND {$column} NOT IN (" . implode(',', $ids) . ')';
+    }
+
+    /**
+     * The topics a list leads with: those another plugin names (see
+     * ExtensionPoints::leadingTopicIds()) among what the list itself would
+     * return, in its own order. None for a search, a single topic, one
+     * author's topics or an explicit set of ids — lists whose order is the
+     * point of asking for them.
+     *
+     * @param array<string, mixed> $args    the list's query, as it stands
+     * @param array<string, mixed> $filters
+     *
+     * @return array<int, WP_Post>
+     */
+    private function leadingTopics(array $args, array $filters): array
+    {
+        if (!empty($filters['s']) || !empty($filters['name']) || !empty($args['author']) || ($args['orderby'] ?? '') === 'post__in') {
+            return [];
+        }
+
+        $ids = ExtensionPoints::leadingTopicIds();
+
+        if (isset($args['post__in'])) {
+            $ids = array_values(array_intersect($ids, array_map('intval', (array) $args['post__in'])));
+        }
+
+        if ($ids === []) {
+            return [];
+        }
+
+        unset($args['paged'], $args['offset']);
+        $args['post__in'] = $ids;
+        $args['posts_per_page'] = -1;
+        $args['no_found_rows'] = true;
+
+        return array_values(array_filter((new WP_Query($args))->posts, static fn ($post): bool => $post instanceof WP_Post));
+    }
+
+    /**
+     * The query with these posts left out. Through `post__in` when the query
+     * has one — WP_Query reads `post__not_in` only when it does not.
+     *
+     * @param array<string, mixed> $args
+     * @param array<int, int>      $ids
+     *
+     * @return array<string, mixed>
+     */
+    private static function withoutPosts(array $args, array $ids): array
+    {
+        if (isset($args['post__in'])) {
+            // `[0]`, not empty: an empty post__in means "no restriction".
+            $args['post__in'] = array_values(array_diff(array_map('intval', (array) $args['post__in']), $ids)) ?: [0];
+
+            return $args;
+        }
+
+        $args['post__not_in'] = array_values(array_unique([...array_map('intval', (array) ($args['post__not_in'] ?? [])), ...$ids]));
+
+        return $args;
+    }
+
+    /**
+     * Whether the capability check given may read other people's private
+     * posts of this type — exactly who `perm => readable` admits.
+     *
+     * @param callable(string): bool $can
+     */
+    private static function mayReadPrivate(WP_Post $post, callable $can): bool
+    {
+        $postType = get_post_type_object($post->post_type);
+
+        return $postType && $can($postType->cap->read_private_posts);
+    }
+
+    /**
+     * The topic author's own uploads shown in the text — never another
+     * member's upload a topic happens to link to, and never one attached to
+     * some other post.
+     *
+     * @return int[]
+     */
+    private function inlineUploads(string $content, int $authorId, int $topicId): array
+    {
+        return array_values(array_filter(
+            UploadClaims::idsInContent($content),
+            static function (int $attachmentId) use ($authorId, $topicId): bool {
+                $attachment = get_post($attachmentId);
+
+                return $attachment instanceof WP_Post
+                    && $attachment->post_type === 'attachment'
+                    && (int) $attachment->post_author === $authorId
+                    && \in_array((int) $attachment->post_parent, [0, $topicId], true);
+            }
+        ));
+    }
+
+    /**
      * Pick the slug to store, falling back when the requested one is unusable.
      *
      * `sanitize_title()` yields '' for input that is nothing but separators or
@@ -632,7 +974,6 @@ class TopicService
             'guid'              => $post->guid,
             'comment_status'    => $post->comment_status,
             'is_locked'         => ($post->comment_status === 'closed'),
-            'is_pinned'         => \in_array($post->ID, (array) get_option('sticky_posts', []), true),
             'ping_status'       => $post->ping_status,
             'post_name'         => $post->post_name,
             'post_parent'       => $post->post_parent,
@@ -649,7 +990,7 @@ class TopicService
             // here so a topic byline can badge staff without a lookup per topic.
             'author_badge' => UserBadgeService::for((int) $post->post_author),
             // Null until someone edits the words. Not derived from post_modified,
-            // which pinning and locking both bump.
+            // which locking bumps.
             'edited' => EditAttributionService::forPost((int) $post->ID),
             // True only for the two audiences that get a hidden topic served at
             // all — its author and a moderator — so the page can say why it is
@@ -657,8 +998,10 @@ class TopicService
             'hidden'         => $post->post_status === ContentVisibilityService::HIDDEN_STATUS,
             'comments_count' => get_comments_number($post->ID),
             'vote'           => self::getPostVoteStatus($post->ID),
-            'terms'          => $this->getTopicTerms($post->ID),
-            'attachments'    => $this->formatAttachments($post->ID),
+            // When it entered its stage, GMT; '' if that predates the record.
+            'stage_changed_at' => StageHistoryService::changedAt((int) $post->ID),
+            'terms'            => $this->getTopicTerms($post->ID),
+            'attachments'      => $this->formatAttachments($post->ID, (string) $post->post_content),
         ];
 
         if ($includeComments) {
@@ -683,7 +1026,7 @@ class TopicService
             );
         }
 
-        return $data;
+        return ExtensionPoints::topicFields($data, (int) $post->ID);
     }
 
     /**
@@ -691,19 +1034,31 @@ class TopicService
      *
      * @return array<int, array{id: int, filename: string, filesize: int, type: string, url: string}>
      */
-    private function formatAttachments(int $postId): array
+    private function formatAttachments(int $postId, string $content): array
     {
         $attachments = get_attached_media('', $postId);
         $formatted = [];
 
+        // The pictures and videos placed in the text are attached to the topic
+        // too, so they are claimed and outlive the upload cleanup, but the
+        // reader already sees them there. Listing them again under the post
+        // would show every one twice. Compared decoded, as a filename with an
+        // emoji or a space may be stored either way.
+        $inText = array_map('rawurldecode', UploadClaims::sourcesInContent($content));
+
         foreach ($attachments as $attachment) {
+            $url = wp_get_attachment_url($attachment->ID);
+            if ($url && \in_array(rawurldecode($url), $inText, true)) {
+                continue;
+            }
+
             $filePath = get_attached_file($attachment->ID);
             $formatted[] = [
                 'id'       => $attachment->ID,
                 'filename' => basename($filePath ?: $attachment->guid),
                 'filesize' => $filePath && file_exists($filePath) ? filesize($filePath) : 0,
                 'type'     => $attachment->post_mime_type,
-                'url'      => wp_get_attachment_url($attachment->ID),
+                'url'      => $url,
             ];
         }
 
@@ -712,18 +1067,23 @@ class TopicService
 
     /**
      * Get terms associated with a topic, including meta (color, icon).
-     * - topic_types: color, icon
+     * - topic_types: color
      * - statuses: color
-     * - stages: icon.
+     * - stages: icon, color.
      */
     private function getTopicTerms(int $postId): array
     {
         $singleTermTaxonomies = [
-            Taxonomies::TOPIC_TYPES->value => ['key' => 'topic_types', 'meta' => ['color', 'icon']],
-            Taxonomies::DEPARTMENTS->value => ['key' => 'departments', 'meta' => []],
-            Taxonomies::STAGES->value      => ['key' => 'stages', 'meta' => ['icon']],
+            Taxonomies::TOPIC_TYPES->value => ['key' => 'topic_types', 'meta' => ['color']],
+            Taxonomies::STAGES->value      => ['key' => 'stages', 'meta' => ['icon', 'color']],
             Taxonomies::STATUSES->value    => ['key' => 'statuses', 'meta' => ['color']],
         ];
+
+        // One term each from a taxonomy another plugin adds, under the
+        // parameter that carries it — with its picture, when its terms have one.
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $singleTermTaxonomies[$entry['taxonomy']] = ['key' => $param, 'meta' => $entry['icons'] ? ['icon'] : []];
+        }
 
         $terms = [];
         foreach ($singleTermTaxonomies as $taxonomy => $config) {
@@ -734,8 +1094,15 @@ class TopicService
             );
         }
 
+        // Each tag says whether it is still awaiting review, so the portal can
+        // mark it — a member who suggested it should see that it went somewhere.
         $tagsRaw = get_the_terms($postId, Taxonomies::TAGS->value);
-        $terms['tags'] = \is_array($tagsRaw) ? $tagsRaw : [];
+        $terms['tags'] = \is_array($tagsRaw)
+            ? array_map(
+                static fn (WP_Term $tag): array => (array) $tag + ['pending' => TagApprovalService::isPending((int) $tag->term_id)],
+                $tagsRaw
+            )
+            : [];
 
         return $terms;
     }
@@ -778,6 +1145,11 @@ class TopicService
                 $iconId = (int) get_term_meta($term->term_id, 'bit_connect_icon_id', true);
                 $meta['icon'] = $iconId > 0 ? wp_get_attachment_image_url($iconId, 'full') : null;
             }
+
+            // The optional dark-theme counterpart; the portal falls back to
+            // the light icon when it is unset.
+            $iconDarkUrl = get_term_meta($term->term_id, 'bit_connect_icon_dark_url', true);
+            $meta['icon_dark'] = $iconDarkUrl !== '' ? $iconDarkUrl : null;
         }
         if ($meta !== []) {
             $data['meta'] = $meta;
@@ -806,6 +1178,11 @@ class TopicService
         );
 
         $canViewHidden = ContentVisibilityService::canViewHidden();
+
+        // Once for the topic, not once per reply — the listener reads post
+        // meta. 0 on a forum without the add-on, which makes every comparison
+        // below a miss and every `pinned` false.
+        $pinnedId = ExtensionPoints::pinnedCommentId($postId);
 
         $formattedComments = [];
         foreach ($comments as $comment) {
@@ -858,6 +1235,16 @@ class TopicService
                 // underneath. "Out of public view", not "you may read this", so
                 // it is true on a tombstone as well.
                 'hidden' => $isHidden,
+                // The reply the topic's author singled out. The topic page
+                // reads its comments from here rather than from the comments
+                // endpoint, so a pin missing from this shape is a pin nobody
+                // sees until the reader paginates — the same trap the
+                // author_badge note above records. Replies cannot be pinned,
+                // hence the parent check: a stale id naming one matches
+                // nothing.
+                'pinned' => $pinnedId > 0
+                    && (int) $comment->comment_ID === $pinnedId
+                    && (int) $comment->comment_parent === 0,
             ], (int) $comment->comment_ID);
         }
 

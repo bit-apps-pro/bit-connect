@@ -146,12 +146,12 @@ describe('readStoredMode', () => {
     expect(readStoredMode(stored({ isDarkTheme: true, themeMode: 'light' }))).toBe('light')
   })
 
-  it('falls back to system for anything unusable', () => {
+  it('falls back to light for anything unusable', () => {
     // eslint-disable-next-line unicorn/no-null -- localStorage.getItem returns null
     for (const raw of [null, undefined, '', 'not json', '[]', '"dark"', stored({}), stored(null)]) {
-      expect(readStoredMode(raw)).toBe('system')
+      expect(readStoredMode(raw)).toBe('light')
     }
-    expect(readStoredMode(stored({ themeMode: 'auto' }))).toBe('system')
-    expect(readStoredMode(stored({ isDarkTheme: 'yes' }))).toBe('system')
+    expect(readStoredMode(stored({ themeMode: 'auto' }))).toBe('light')
+    expect(readStoredMode(stored({ isDarkTheme: 'yes' }))).toBe('light')
   })
 })

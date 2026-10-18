@@ -219,10 +219,10 @@ enum NotificationSettings: string
     public static function mailPlaceholders(): array
     {
         return [
-            '{name}'  => __('The member\'s display name', 'bit-connect'),
-            '{site}'  => __('Your community name', 'bit-connect'),
-            '{count}' => __('How many notifications the email covers', 'bit-connect'),
-            '{url}'   => __('A link back to the forum', 'bit-connect'),
+            '{name}'  => __('Member\'s display name', 'bit-connect'),
+            '{site}'  => __('Community name', 'bit-connect'),
+            '{count}' => __('Number of notifications in the email', 'bit-connect'),
+            '{url}'   => __('Link to the forum', 'bit-connect'),
         ];
     }
 

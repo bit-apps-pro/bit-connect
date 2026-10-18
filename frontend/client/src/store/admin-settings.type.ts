@@ -10,9 +10,11 @@ export interface TopicAccessSettings {
   upvote: boolean
 }
 
+/** How the topic form treats one of its optional fields — see TopicFieldMode.php. */
+export type TopicFieldMode = 'hidden' | 'optional' | 'required'
+
 export interface TopicFormFieldsSettings {
-  requireDepartment: boolean
-  requireTopicType: boolean
+  topicType: TopicFieldMode
 }
 
 export interface AdminSettings {

@@ -71,7 +71,12 @@ export default function TagEditModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isUpdatingTag}
-      destroyOnClose
+      // Mount the body before the first open, and keep it mounted after a
+      // close, so the Form instance created above is always connected to a
+      // <Form>; antd warns otherwise, and the reset in the effect above runs
+      // while the modal is closed. Nothing stale survives — that reset is
+      // what destroyOnClose used to do.
+      forceRender
       loading={isTagFetching}
       okButtonProps={{ disabled: isUpdatingTag }}
       okText={__('Save Changes')}

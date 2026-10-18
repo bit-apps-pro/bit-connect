@@ -1,7 +1,7 @@
-import { Switch, Typography } from 'antd'
 import { type ReactNode } from 'react'
 
-const { Text, Title } = Typography
+import SectionCard from './section-card'
+import SwitchRow from './switch-row'
 
 interface SettingItem {
   description: string
@@ -12,7 +12,7 @@ interface SettingItem {
 
 interface SettingsSectionProps {
   disabled?: boolean
-  /** Rendered under the grid. Used to say what an edition does not have. */
+  /** Rendered under the rows. Used for controls another plugin adds here. */
   note?: ReactNode
   onChange: (key: string, value: boolean) => void
   settings: SettingItem[]
@@ -21,12 +21,12 @@ interface SettingsSectionProps {
 }
 
 /**
- * A grid of on/off settings.
+ * A stack of on/off settings.
  *
  * Every switch here is real: it is bound to a stored value and the forum acts
  * on it. There is deliberately no disabled variant of a row: a switch for
  * something this plugin cannot do would not be a setting. A caller that has
- * something else to put under the grid passes `note`.
+ * something else to put under the rows passes `note`.
  */
 export default function SettingsSection({
   disabled = false,
@@ -37,40 +37,26 @@ export default function SettingsSection({
   title
 }: SettingsSectionProps) {
   return (
-    <div className="bc-bg-surface bc-p-6 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-mb-6">
-      <div className="bc-mb-4">
-        <Title className="bc-mb-1" level={4}>
-          {title}
-        </Title>
-        <Text type="secondary">{subtitle}</Text>
-      </div>
-      <div className="bc-grid bc-grid-cols-1 md:bc-grid-cols-3 bc-gap-4">
+    <SectionCard subtitle={subtitle} title={title}>
+      <div className="bc-flex bc-flex-col bc-gap-3">
         {settings.map(setting => (
-          <div
-            className="bc-bg-surface bc-p-4 bc-rounded-md bc-border bc-border-solid bc-border-line bc-flex bc-flex-col bc-justify-between bc-flex-1"
+          <SwitchRow
+            checked={setting.value}
+            description={setting.description}
+            disabled={disabled}
             key={setting.key}
-          >
-            <div className="bc-flex bc-items-center bc-justify-between bc-mb-4">
-              <Typography.Text strong>{setting.label}</Typography.Text>
-              <Switch
-                checked={setting.value}
-                disabled={disabled}
-                onChange={checked => onChange(setting.key, checked)}
-              />
-            </div>
-            <Text className="bc-text-sm" type="secondary">
-              {setting.description}
-            </Text>
-          </div>
+            label={setting.label}
+            onChange={checked => onChange(setting.key, checked)}
+          />
         ))}
-      </div>
 
-      {/*
-        The caller passes `note` only when something actually filled the slot —
-        an unconditional `<Slot />` element would be truthy however little it
-        drew, and this wrapper would then space out nothing.
-      */}
-      {note && <div className="bc-mt-4">{note}</div>}
-    </div>
+        {/*
+          The caller passes `note` only when something actually filled the slot —
+          an unconditional `<Slot />` element would be truthy however little it
+          drew, and would add a gap under the last row for nothing.
+        */}
+        {note}
+      </div>
+    </SectionCard>
   )
 }

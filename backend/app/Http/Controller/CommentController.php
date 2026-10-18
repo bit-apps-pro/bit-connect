@@ -29,9 +29,13 @@ use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\ReportService;
+use BitApps\BitConnect\Services\TopicAccess;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\UploadClaims;
 use BitApps\BitConnect\Services\UserBadgeService;
 use InvalidArgumentException;
 use WP_Comment;
@@ -88,7 +92,12 @@ final class CommentController
             }
         }
 
-        $topLevel = $this->sortTopLevelComments($topLevel, $sort);
+        // Asked once, here, and carried through both the ordering and the
+        // formatting below. Without the add-on this is 0 and every use of it is
+        // a comparison that never matches.
+        $pinnedId = ExtensionPoints::pinnedCommentId((int) $postId);
+
+        $topLevel = $this->sortTopLevelComments($topLevel, $sort, $pinnedId);
 
         $total = \count($topLevel);
         $totalPages = max(1, (int) ceil($total / $perPage));
@@ -119,8 +128,8 @@ final class CommentController
         // Flatten each page thread (top-level comment followed by its whole
         // subtree) into the response; the frontend nests them by parent id.
         $formattedComments = [];
-        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent) {
-            $formattedComments[] = $this->formatComment($comment);
+        $appendThread = function ($comment) use (&$appendThread, &$formattedComments, $childrenByParent, $pinnedId) {
+            $formattedComments[] = $this->formatComment($comment, $pinnedId);
             $children = $childrenByParent[(int) $comment->comment_ID] ?? [];
             foreach ($children as $child) {
                 $appendThread($child);
@@ -151,8 +160,14 @@ final class CommentController
 
         // Only forum topics accept comments — without this, anyone with the
         // create-comment cap could attach comments to any page/post on the site.
-        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value) {
+        // And only topics the commenter may read: a topic they cannot open is
+        // answered as missing, the way reading its comments already is.
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Topic not found', 404);
+        }
+
+        if (!TopicAccess::allows(TopicAccess::COMMENT)) {
+            return Response::error(__('Comments are turned off in this forum.', 'bit-connect'), 403);
         }
 
         // Respect topic lock (comment_status closed). Moderators bypass the lock.
@@ -170,6 +185,16 @@ final class CommentController
 
         $parentId = $request->parent_id ? (int) $request->parent_id : 0;
         $attachments = array_map('intval', (array) ($request->attachments ?? []));
+
+        if (!self::hasSubstance($content, $attachments)) {
+            return Response::error(__('Comment content is required.', 'bit-connect'), 422);
+        }
+
+        try {
+            PostingLimits::assertWithin('comment', $content, $attachments);
+        } catch (InvalidArgumentException $e) {
+            return Response::error($e->getMessage(), 422);
+        }
 
         if ($parentId > 0) {
             $parentComment = get_comment($parentId);
@@ -219,6 +244,10 @@ final class CommentController
             update_comment_meta($commentId, '_bit_connect_comment_attachments', $attachments);
         }
 
+        // The files attached to the reply and the pictures placed in it are in
+        // use now, so the cleanup of unused uploads leaves them alone.
+        UploadClaims::claim(array_merge((array) $attachments, UploadClaims::idsInContent($content)));
+
         $comment = get_comment($commentId);
         if (!$comment) {
             return Response::error('Comment created but could not be retrieved', 500);
@@ -263,6 +292,18 @@ final class CommentController
         $newAttachmentIds = $request->attachments !== null
             ? array_map('intval', (array) $request->attachments)
             : null;
+
+        $keptAttachmentIds = $newAttachmentIds ?? (array) get_comment_meta($commentId, '_bit_connect_comment_attachments', true);
+
+        if (!self::hasSubstance($content, array_filter($keptAttachmentIds))) {
+            return Response::error(__('Comment content is required.', 'bit-connect'), 422);
+        }
+
+        try {
+            PostingLimits::assertWithin('comment', $content, $newAttachmentIds);
+        } catch (InvalidArgumentException $e) {
+            return Response::error($e->getMessage(), 422);
+        }
 
         // Compared before the write: wp_update_comment() overwrites in place and
         // wp_comments carries no modified column, so once this returns there is
@@ -313,12 +354,20 @@ final class CommentController
             }
         }
 
+        UploadClaims::claim(array_merge($newAttachmentIds ?? [], UploadClaims::idsInContent($content)));
+
         $updatedComment = get_comment($commentId);
         if (!$updatedComment) {
             return Response::error('Comment updated but could not be retrieved', 500);
         }
 
-        $formattedComment = $this->formatComment($updatedComment);
+        // Resolved rather than defaulted: the author of a pinned reply editing
+        // a typo in it gets the comment back, and a `pinned` of false here
+        // would take the marker off the row until the next full load.
+        $formattedComment = $this->formatComment(
+            $updatedComment,
+            ExtensionPoints::pinnedCommentId((int) $comment->comment_post_ID)
+        );
 
         return Response::success($formattedComment);
     }
@@ -343,6 +392,12 @@ final class CommentController
         // record — afterwards there is nothing left to count.
         $deleted = ContentRemovalService::describe(ReportService::TARGET_COMMENT, (int) $commentId);
         $deletedAuthor = (int) $comment->user_id;
+        $topic = get_post((int) $comment->comment_post_ID);
+        $notice = [
+            'topic_title' => $topic ? (string) $topic->post_title : '',
+            'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags((string) $comment->comment_content)),
+            'url'         => PortalLocation::topicUrl((int) $comment->comment_post_ID),
+        ];
 
         if (!ContentRemovalService::remove(ReportService::TARGET_COMMENT, (int) $commentId)) {
             return Response::error('Failed to delete comment', 500);
@@ -355,6 +410,22 @@ final class CommentController
             $deletedAuthor,
             $deleted
         );
+
+        // A moderator removing someone's comment is the same event as a report
+        // upheld with removal, and the author is owed the same notice. Without
+        // it the comment simply vanished. Addressed explicitly because the
+        // comment the default audience would be read from is already gone;
+        // the dispatcher drops the actor, so deleting your own tells nobody.
+        if ($deletedAuthor > 0) {
+            NotificationService::dispatch(
+                NotificationTypes::CONTENT_ACTIONED,
+                NotificationService::TARGET_COMMENT,
+                (int) $commentId,
+                $notice,
+                (int) $comment->comment_post_ID,
+                [$deletedAuthor]
+            );
+        }
 
         return Response::success(['id' => (int) $commentId]);
     }
@@ -385,6 +456,25 @@ final class CommentController
      *
      * @param WP_Comment $comment the comment just written
      */
+    /**
+     * Whether a comment says or shows anything once sanitized. The request's
+     * `required` rule passes `<p></p>` and a run of spaces, which sanitize to
+     * nothing. A picture or video on its own counts, as it does in the editor,
+     * and so does a comment that only carries files.
+     *
+     * @param int[] $attachmentIds
+     */
+    private static function hasSubstance(string $content, array $attachmentIds): bool
+    {
+        if ($attachmentIds !== [] || preg_match('~<(?:img|video|iframe)\b~i', $content)) {
+            return true;
+        }
+
+        $text = html_entity_decode(wp_strip_all_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return trim(str_replace("\u{00A0}", ' ', $text)) !== '';
+    }
+
     private function notifyThread(WP_Post $post, $comment, int $parentId): void
     {
         $commentId = (int) $comment->comment_ID;
@@ -498,12 +588,56 @@ final class CommentController
      * are no reply votes here to order by; a plugin that adds a field to a
      * comment can answer the extension point below with an ordering over it.
      *
+     * A pinned reply is then lifted to the front, whatever the sort said. That
+     * is the point of pinning it: the topic's author has marked one reply as
+     * the one to read, and a reader who switched to "oldest first" has asked
+     * about the other two hundred, not about that one. It moves rather than
+     * being duplicated, so the thread still appears exactly once.
+     *
+     * The lift happens here rather than at the call site so it lands before
+     * pagination and before pageOfComment() resolves a `#comment-N` link —
+     * both of which read the array this returns, and both of which would
+     * otherwise answer for an order the reader never sees.
+     *
+     * @param WP_Comment[] $topLevel
+     * @param string       $sort     newest|all, or whatever a listener knows
+     * @param int          $pinnedId the pinned reply, or 0 when none is
+     *
+     * @return WP_Comment[]
+     */
+    private function sortTopLevelComments($topLevel, $sort, $pinnedId = 0)
+    {
+        $topLevel = $this->applySort($topLevel, $sort);
+
+        if ($pinnedId <= 0) {
+            return $topLevel;
+        }
+
+        foreach ($topLevel as $index => $comment) {
+            if ((int) $comment->comment_ID === $pinnedId) {
+                // Already first under the reader's own sort: leave the array
+                // alone rather than splicing it apart and back together.
+                if ($index > 0) {
+                    array_splice($topLevel, $index, 1);
+                    array_unshift($topLevel, $comment);
+                }
+
+                break;
+            }
+        }
+
+        return $topLevel;
+    }
+
+    /**
+     * The reader's chosen ordering, before pinning has its say.
+     *
      * @param WP_Comment[] $topLevel
      * @param string       $sort     newest|all, or whatever a listener knows
      *
      * @return WP_Comment[]
      */
-    private function sortTopLevelComments($topLevel, $sort)
+    private function applySort($topLevel, $sort)
     {
         $ordered = ExtensionPoints::orderedComments($topLevel, $sort);
 
@@ -573,7 +707,11 @@ final class CommentController
         return 0;
     }
 
-    private function formatComment($comment)
+    /**
+     * @param WP_Comment $comment
+     * @param int        $pinnedId the topic's pinned reply, or 0 when none is
+     */
+    private function formatComment($comment, $pinnedId = 0)
     {
         $authorId = (int) $comment->user_id;
         $authorBadge = UserBadgeService::for($authorId);
@@ -581,7 +719,7 @@ final class CommentController
         $keepsWords = ContentVisibilityService::canViewHidden()
             || ContentVisibilityService::isOwnContent($authorId);
 
-        $attachments = TopicService::formatCommentAttachments($comment->comment_ID);
+        $attachments = TopicService::formatCommentAttachments((int) $comment->comment_ID);
 
         return ExtensionPoints::commentFields([
             'id'          => (int) $comment->comment_ID,
@@ -624,6 +762,14 @@ final class CommentController
             // Who last edited this and when, or null if nobody has. `by_author`
             // separates the plain "(edited)" from a colleague's byline.
             'edited' => EditAttributionService::forComment((int) $comment->comment_ID),
+            // The one reply the topic's author singled out, or false on every
+            // reply when nothing is pinned — which is every reply on a forum
+            // without the add-on, since nothing here can write a pin. Replies
+            // are never pinned: only a top-level comment can be, so the
+            // comparison below cannot match one even if a stale id named it.
+            'pinned' => $pinnedId > 0
+                && (int) $comment->comment_ID === $pinnedId
+                && (int) $comment->comment_parent === 0,
             // Superseded by author_badge; kept until the portal stops reading it,
             // because post-commons.ts defaults a missing value to false and would
             // silently un-badge every staff comment. Note this now answers true

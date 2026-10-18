@@ -2,6 +2,7 @@
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Route;
 use BitApps\BitConnect\Http\Controller\AuthPageController;
+use BitApps\BitConnect\Http\Controller\FollowingPageController;
 use BitApps\BitConnect\Http\Controller\NotFoundController;
 use BitApps\BitConnect\Http\Controller\NotificationsPageController;
 use BitApps\BitConnect\Http\Controller\TopicArchiveController;
@@ -19,9 +20,11 @@ if (!defined('ABSPATH')) {
 // Root route - matches frontend route '/'
 Route::get('/', [new TopicsController(), 'index']);
 
-// Paginated list - matches frontend route '/page/:pageNumber'. These pages are a
-// crawl path to topics older than the first screenful, not index entries; see
-// SeoMeta::forTopics().
+// Paginated list - matches frontend route '/page/:pageNumber'. The router binds
+// placeholders to controller parameters by name, so this must match
+// TopicsController::index()'s `$pageNumber`. It must not be `{page}`: the
+// placeholder also names the rewrite rule's query var, and `page` is WordPress's
+// own <!--nextpage--> var, so redirect_canonical 301s `/page/2` back to page 1.
 Route::get('/page/{pageNumber}', [new TopicsController(), 'index']);
 
 // The member's own notifications - matches frontend route '/notifications'.
@@ -29,6 +32,10 @@ Route::get('/page/{pageNumber}', [new TopicsController(), 'index']);
 // otherwise take it and look for a topic by that name. Static beats dynamic
 // here only because this is declared first; the router matches in order.
 Route::get('/notifications', [new NotificationsPageController(), 'show']);
+
+// What the member follows - matches frontend route '/following'. Before
+// '/{slug}' for the same reason as '/notifications'.
+Route::get('/following', [new FollowingPageController(), 'show']);
 
 // Auth screens - match the frontend routes '/login', '/register',
 // '/verify-email' and '/forgot-password'. Declared before '/{slug}' for the same
@@ -48,6 +55,13 @@ Route::get('/user/{userId}', [new UserProfilePageController(), 'show']);
 // below, which is single-segment and cannot match these anyway. An unknown
 // segment or term is turned into a 404 by the controller rather than here.
 Route::get('/{segment}/{termSlug}', [new TopicArchiveController(), 'show']);
+
+// A link to one reply - matches frontend route '/:postName/comment/:commentId'.
+// The topic page itself, with the portal scrolling to the reply once it loads;
+// the server has nothing to do with the reply, so a deleted one still answers
+// with its topic rather than a 404. Three segments, so neither route beside it
+// can take it.
+Route::get('/{slug}/comment/{commentId}', [new TopicDetailsController(), 'show']);
 
 // Topic details route - matches frontend route '/topics/details/:id'
 Route::get('/{slug}', [new TopicDetailsController(), 'show']);

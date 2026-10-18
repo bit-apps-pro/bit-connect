@@ -38,7 +38,8 @@ export default function TabNav<K extends string>({
   ariaLabel,
   idPrefix,
   items,
-  onChange
+  onChange,
+  variant = 'underline'
 }: {
   activeKey: K
   ariaLabel: string
@@ -46,7 +47,13 @@ export default function TabNav<K extends string>({
   idPrefix: string
   items: TabItem<K>[]
   onChange: (key: K) => void
+  /**
+   * `pill` frames the strip and fills the selected tab — for a page whose
+   * tabs are its primary navigation rather than a filter over one list.
+   */
+  variant?: 'pill' | 'underline'
 }) {
+  const isPill = variant === 'pill'
   const listRef = useRef<HTMLDivElement>(null)
 
   const alignSelected = useCallback(() => {
@@ -130,7 +137,13 @@ export default function TabNav<K extends string>({
   return (
     <div
       aria-label={ariaLabel}
-      className={`${styles.scroller} bc-flex bc-gap-1 bc-overflow-x-auto bc-border-0 bc-border-b bc-border-solid bc-border-line`}
+      className={[
+        styles.scroller,
+        'bc-flex bc-gap-1 bc-overflow-x-auto bc-border-solid bc-border-line',
+        isPill
+          ? 'bc-w-fit bc-max-w-full bc-rounded-lg bc-border bc-bg-surface bc-p-1.5'
+          : 'bc-border-0 bc-border-b'
+      ].join(' ')}
       ref={listRef}
       role="tablist"
     >
@@ -142,10 +155,16 @@ export default function TabNav<K extends string>({
             aria-selected={isActive}
             className={[
               'bc-relative bc-flex bc-shrink-0 bc-cursor-pointer bc-items-center bc-gap-1.5',
-              'bc-border-none bc-bg-transparent bc-px-3 bc-pb-2.5 bc-pt-1.5',
-              'bc-text-[13px] bc-font-medium bc-transition-colors',
-              isActive ? 'bc-text-ink' : 'bc-text-ink-muted hover:bc-text-ink'
-            ].join(' ')}
+              'bc-border-none bc-font-medium bc-transition-colors',
+              isPill
+                ? 'bc-rounded-md bc-px-3 bc-py-2 bc-text-[15px]'
+                : 'bc-bg-transparent bc-px-3 bc-pb-2.5 bc-pt-1.5 bc-text-[13px]',
+              isPill && isActive && 'bc-bg-primary bc-text-white',
+              isPill && !isActive && 'bc-bg-transparent bc-text-ink hover:bc-bg-surface-sunken',
+              !isPill && (isActive ? 'bc-text-ink' : 'bc-text-ink-muted hover:bc-text-ink')
+            ]
+              .filter(Boolean)
+              .join(' ')}
             id={`${idPrefix}-tab-${item.key}`}
             key={item.key}
             onClick={() => onChange(item.key)}
@@ -157,13 +176,13 @@ export default function TabNav<K extends string>({
           >
             {item.label}
             {item.count !== undefined && (
-              <span className={isActive ? 'bc-text-ink-subtle' : 'bc-text-ink-subtle'}>
+              <span className={isPill && isActive ? 'bc-text-white/75' : 'bc-text-ink-subtle'}>
                 {item.count}
               </span>
             )}
             {/* Sits on top of the container's bottom hairline rather than
                 beside it, so the rail stays unbroken. */}
-            {isActive && (
+            {isActive && !isPill && (
               <span
                 aria-hidden="true"
                 className="bc-absolute bc--bottom-px bc-left-2 bc-right-2 bc-h-0.5 bc-rounded-full bc-bg-primary"

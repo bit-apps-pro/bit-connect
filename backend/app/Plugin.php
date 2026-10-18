@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\QueryBuilder;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Migration\MigrationHelper;
@@ -44,6 +45,13 @@ final class Plugin
     public function __construct()
     {
         // Connection::setPluginPrefix(Config::VAR_PREFIX);
+
+        // Every timestamp this plugin stores is GMT — the ones it writes itself
+        // through current_time('mysql', true), and the ones it reads back, which
+        // the admin and portal parse as UTC. Left unset, the query builder fills
+        // created_at in the site's own zone, so on a UTC+6 site a report filed
+        // just now read "in 6 hours".
+        QueryBuilder::$TIME_ZONE = 'UTC';
 
         $this->registerInstaller();
 

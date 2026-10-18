@@ -23,9 +23,9 @@ use WP_Post;
  *
  *   - wp_comments has no modified column at all. comment_date is the only
  *     timestamp a comment carries, so without this there is nothing to compare.
- *   - post_modified exists but cannot answer the question. Pinning or locking a
- *     topic calls wp_update_post(), which bumps it without a word of the topic
- *     changing, so a pinned topic would claim to have been edited.
+ *   - post_modified exists but cannot answer the question. Locking a topic
+ *     calls wp_update_post(), which bumps it without a word of the topic
+ *     changing, so a locked topic would claim to have been edited.
  *
  * Nothing records itself: the write sites decide what counts as a content
  * change, and only call record*() when one really happened.
@@ -105,9 +105,9 @@ final class EditAttributionService
     /**
      * Whether any of a topic's readable fields differ from what is stored.
      *
-     * Only the words count. An update carrying nothing but is_pinned or
-     * is_locked leaves every one of these untouched, which is exactly why a
-     * pinned topic must not come out of it claiming to have been edited.
+     * Only the words count. An update carrying nothing but is_locked leaves
+     * every one of these untouched, which is exactly why a locked topic must
+     * not come out of it claiming to have been edited.
      *
      * @param array<string, mixed> $data the incoming update
      */

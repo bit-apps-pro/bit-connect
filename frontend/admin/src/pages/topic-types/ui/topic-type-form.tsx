@@ -1,6 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
 import ChipPreview from '@utilities/chip-preview'
-import IconPickerField, { iconDarkHint, iconSizeHint } from '@utilities/icon-picker-field'
 import SlugField, { useSlugSync } from '@utilities/slug-field'
 import { ColorPicker, type FormInstance, Input, Typography } from 'antd'
 import { Form } from 'antd'
@@ -18,11 +17,14 @@ export default function TopicTypeForm({ form, isEditMode, open }: TopicTypeProps
 
   return (
     <Form form={form} layout="vertical">
-      <Form.Item label={__('Topic Type Name')} name="name" rules={[{ required: false }]}>
-        <Input
-          onChange={event => onNameChange(event.target.value)}
-          placeholder={__('Write Topic Title here')}
-        />
+      {/* Required here as on the server: left optional, an empty name went
+          through and came back as the raw "Missing parameter(s): name". */}
+      <Form.Item
+        label={__('Topic Type Name')}
+        name="name"
+        rules={[{ message: __('Topic type name is required'), required: true, whitespace: true }]}
+      >
+        <Input onChange={event => onNameChange(event.target.value)} placeholder={__('For example, Question')} />
       </Form.Item>
       <SlugField isEditMode={isEditMode} onChange={onSlugChange} />
       <Form.Item
@@ -49,20 +51,6 @@ export default function TopicTypeForm({ form, isEditMode, open }: TopicTypeProps
         <ColorPicker format="hex" showText />
       </Form.Item>
       <ChipPreview color={color} label={name} />
-      <IconPickerField
-        baseName="icon"
-        extra={iconSizeHint()}
-        form={form}
-        label={__('Icon (light mode)')}
-        previewAlt={__('Topic type icon')}
-      />
-      <IconPickerField
-        baseName="icon_dark"
-        extra={iconDarkHint()}
-        form={form}
-        label={__('Icon (dark mode)')}
-        previewAlt={__('Topic type icon for dark mode')}
-      />
     </Form>
   )
 }

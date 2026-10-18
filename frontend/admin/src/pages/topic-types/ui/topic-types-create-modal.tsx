@@ -27,11 +27,7 @@ export default function TopicTypesCreateModal() {
       const formattedBody = {
         description: values.description,
         meta: {
-          bit_connect_color: values.color,
-          bit_connect_icon_dark_id: values.icon_dark_id || 0,
-          bit_connect_icon_dark_url: values.icon_dark_url,
-          bit_connect_icon_id: values.icon_id || 0,
-          bit_connect_icon_url: values.icon_url
+          bit_connect_color: values.color
         },
         name: values.name,
         ...(values.slug ? { slug: slugify(values.slug) } : {})
@@ -51,6 +47,10 @@ export default function TopicTypesCreateModal() {
     <Modal
       cancelText={__('Cancel')}
       confirmLoading={isStoringTopicType}
+      // Mount the body before the first open, and keep it mounted after a
+      // close, so the Form instance created above is always connected to a
+      // <Form>; antd warns otherwise when fields are reset while it is closed.
+      forceRender
       okText={__('Create Topic Type')}
       onCancel={handleCancel}
       onOk={handleOk}

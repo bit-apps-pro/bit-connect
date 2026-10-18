@@ -8,13 +8,15 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\TopicsView;
 
 /**
- * Serves a term archive: every topic carrying one stage, tag, department, ….
+ * Serves a term archive: every topic carrying one stage, tag, topic type, ….
  *
  * These are the portal's topic clusters — the page that can rank for a subject
  * rather than for one question about it, and the hub that links deep topics
@@ -39,12 +41,31 @@ class TopicArchiveController
      */
     public function show(Request $request, $segment, $termSlug)
     {
+        $movedTo = PortalTaxonomies::renamedArchiveUrl((string) $segment, (string) $termSlug);
+
+        if ($movedTo !== '') {
+            wp_safe_redirect($movedTo, 301);
+
+            exit;
+        }
+
         $term = PortalTaxonomies::resolve((string) $segment, (string) $termSlug);
 
         // An unknown term is a genuine 404, not an empty archive answering 200 —
         // otherwise every mistyped term URL becomes an indexable blank page.
         if ($term === null) {
             return (new NotFoundController())->index($request);
+        }
+
+        // The default stage's archive lists exactly what the portal root lists,
+        // so it is the same page under a second URL. Redirecting rather than
+        // canonicalising keeps one address in circulation: the sidebar already
+        // links the default stage to the root, and this catches the links that
+        // were shared before it did.
+        if ($segment === 'stage' && $termSlug === StageService::defaultStageSlug()) {
+            wp_safe_redirect(PortalLocation::url(), 301);
+
+            exit;
         }
 
         $topicsView = new TopicsView();

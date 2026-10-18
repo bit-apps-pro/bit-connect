@@ -5,7 +5,6 @@ namespace BitApps\BitConnect\SSR\Seo;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
-use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use WP_Term;
@@ -36,11 +35,16 @@ final class SeoContent
      */
     public static function isEnabled(): bool
     {
-        // A members-only portal always wins: the setting can switch rendering
-        // off, never on for content the portal itself refuses to show.
-        $enabled = self::isPortalPublic() && SeoSettings::bool('serverRendering');
+        // Not an administrator setting: switching it off only ever made the
+        // portal invisible to link previews and AI crawlers, and it takes the
+        // route's head tags with it. The filter remains for a site whose own
+        // code has a reason to — it can switch rendering off, never on for a
+        // members-only portal.
+        if (!self::isPortalPublic()) {
+            return false;
+        }
 
-        return (bool) Hooks::applyFilter('bit_connect_seo_content_enabled', $enabled);
+        return (bool) Hooks::applyFilter('bit_connect_seo_content_enabled', true);
     }
 
     /**
@@ -222,7 +226,12 @@ HTML,
      */
     public static function portalUrl(string $path = ''): string
     {
-        return PortalLocation::url($path);
+        // In the site's own permalink form. On the usual trailing-slash
+        // structure WordPress 301s `/portal/topic` to `/portal/topic/`, so a
+        // canonical, og:url, schema or sitemap entry without the slash named a
+        // redirect rather than the page. PortalLocation::url() stays bare: the
+        // app's router and mention links build on it.
+        return user_trailingslashit(PortalLocation::url($path));
     }
 
     /**
@@ -257,7 +266,11 @@ HTML,
             return '';
         }
 
-        return wp_trim_words(wp_strip_all_tags(strip_shortcodes($source)), $words, '…');
+        // Stripping tags alone glues adjacent blocks together — `<p>a</p><p>b</p>`
+        // reads as "ab" — so every block boundary becomes a space first.
+        $source = preg_replace('~<br\s*/?>|</(?:p|div|li|h[1-6]|blockquote|pre|figure|tr|td|th)>~i', '$0 ', strip_shortcodes($source));
+
+        return wp_trim_words(wp_strip_all_tags((string) $source), $words, '…');
     }
 
     /**
@@ -367,7 +380,7 @@ HTML,
 
         if (!empty($topic['post_date_gmt'])) {
             $parts[] = '<time datetime="' . esc_attr(gmdate('c', strtotime($topic['post_date_gmt'] . ' UTC'))) . '">'
-                . esc_html(date_i18n(get_option('date_format'), strtotime($topic['post_date'] ?? $topic['post_date_gmt'])))
+                . esc_html((string) wp_date(get_option('date_format'), strtotime($topic['post_date_gmt'] . ' UTC')))
                 . '</time>';
         }
 

@@ -1211,12 +1211,6 @@
         <tbody>
           <tr class="high">
             <td class="sev">High</td>
-            <td class="subject">Editing a discussion's title and description for search</td>
-            <td class="note">The description is taken from the first lines of the question. If those lines are vague, the Google result is vague, and nobody can override it.</td>
-            <td class="note">Ask authors to open with a clear sentence.</td>
-          </tr>
-          <tr class="high">
-            <td class="sev">High</td>
             <td class="subject">Redirects when a discussion is renamed</td>
             <td class="note">Renaming a discussion changes its address. Old links — from Google, from emails, from other sites — break silently, and nothing records that it happened.</td>
             <td class="note">Install Redirection and add a rule when renaming.</td>
@@ -1325,12 +1319,6 @@
     <ol class="queue">
       <li>
         <div class="what">
-          <b>Let people edit how a discussion appears in search</b>
-          <span>A title, description and image field on the discussion itself. The only gap authors can feel directly.</span>
-        </div>
-      </li>
-      <li>
-        <div class="what">
           <b>Keep old links alive when a discussion is renamed</b>
           <span>Automatic redirects plus a log of broken links, so nothing is lost quietly.</span>
         </div>
@@ -1362,9 +1350,12 @@
     </ol>
 
     <p class="callout">
-      <b>Landed recently:</b> the SEO control panel is now in the admin sidebar with all six
-      tabs and a live status panel, and the community sitemap keeps working even if you
-      switch off the plain-HTML fallback.
+      <b>Landed recently:</b> every discussion now has its own search title, description
+      and preview image, set from the topic's edit form under “Customise search
+      appearance” — blank fields keep falling back to the topic itself. Before that: the
+      SEO control panel in the admin sidebar with all six tabs and a live status panel,
+      and a community sitemap that keeps working even if you switch off the plain-HTML
+      fallback.
     </p>
   </section>
 
@@ -1372,7 +1363,7 @@
     <span class="fh">For developers</span>
     <p>
       backend/app/SSR/Seo/{SeoMeta, SeoContent, SeoPluginBridge, PortalSitemap}.php ·
-      backend/app/Enum/SeoSettings.php · backend/app/Services/PortalTaxonomies.php ·
+      backend/app/Enum/SeoSettings.php · backend/app/Services/{PortalTaxonomies, TopicSeoService}.php ·
       backend/app/Http/Controller/{SeoSettingsController, NotFoundController}.php ·
       frontend/admin/src/pages/seo/ · tests/Seo/ · scripts/crawl-check.mjs ·
       branch feat/seo-full-coverage

@@ -2,7 +2,7 @@ import { request } from '@common/request'
 import { type ResponseType } from '@common/request/types'
 import { useQuery } from '@tanstack/react-query'
 
-import { type Settings } from '../shared/types'
+import { type Settings, type TopicFieldMode } from '../shared/types'
 
 // Default/mock settings data
 const defaultSettings: Settings = {
@@ -14,9 +14,14 @@ const defaultSettings: Settings = {
     upvote: true
   },
   topicFormFields: {
-    requireDepartment: true,
-    requireTopicType: true
+    topicType: 'required'
   }
+}
+
+const FIELD_MODES: ReadonlySet<unknown> = new Set<TopicFieldMode>(['hidden', 'optional', 'required'])
+
+function fieldMode(value: unknown, fallback: TopicFieldMode): TopicFieldMode {
+  return FIELD_MODES.has(value) ? (value as TopicFieldMode) : fallback
 }
 
 export default function useSettings() {
@@ -55,12 +60,10 @@ export default function useSettings() {
             upvote: settingsData.topicAccess?.upvote ?? defaultSettings.topicAccess.upvote
           },
           topicFormFields: {
-            requireDepartment:
-              settingsData.topicFormFields?.requireDepartment ??
-              defaultSettings.topicFormFields.requireDepartment,
-            requireTopicType:
-              settingsData.topicFormFields?.requireTopicType ??
-              defaultSettings.topicFormFields.requireTopicType
+            topicType: fieldMode(
+              settingsData.topicFormFields?.topicType,
+              defaultSettings.topicFormFields.topicType
+            )
           }
         }
       }

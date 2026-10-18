@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import { routePath } from '@utils/route-path'
 import { Badge, Button, Dropdown, Grid } from 'antd'
 import { useEffect, useState } from 'react'
 import { LuBell } from 'react-icons/lu'
@@ -75,8 +76,9 @@ export default function NotificationBell() {
       <div className="bc-flex bc-items-center bc-justify-between bc-gap-2 bc-px-4 bc-pb-2 bc-pt-3">
         <span className="bc-flex bc-items-center bc-gap-2">
           <span className="bc-font-semibold bc-text-base bc-text-ink">{__('Notifications')}</span>
-          {/* The count as a quiet pill rather than a second red badge. The bell
-              already carries the alarm; in here the number is just a fact. */}
+          {/* The count as a quiet pill rather than a second solid badge. The
+              bell already carries the signal; in here the number is just a
+              fact. */}
           {unreadCount > 0 && (
             <span className="bc-rounded-full bc-bg-info-soft bc-px-2 bc-py-0.5 bc-text-xs bc-font-medium bc-text-info">
               {unreadCount > 99 ? '99+' : unreadCount}
@@ -113,7 +115,7 @@ export default function NotificationBell() {
             block
             onClick={() => {
               setOpen(false)
-              navigate('/notifications')
+              navigate(routePath('/notifications'))
             }}
             size="small"
             type="text"
@@ -133,15 +135,42 @@ export default function NotificationBell() {
       // A square, not a pill: the badge sits inside the button as a child, so
       // antd charges it the 15px flanks of a text button and the bell ended up
       // half again as wide as the icon it holds. Squared off, it matches the
-      // menu button at the other end of the bar.
-      className="bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0"
-      onClick={isMobile ? () => navigate('/notifications') : undefined}
+      // menu button at the other end of the bar. From md the right margin
+      // clears the badge, which hangs 6px past the button's edge; on a phone
+      // the bell sits close to the account menu instead, and the badge hangs
+      // into that button's own padding.
+      className="touch-target bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0 md:bc-mr-2"
+      onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
       type="text"
     >
       {/* `count` is capped by antd at `overflowCount`; 99+ is plenty and a
-          four-digit badge would push the header around. */}
-      <Badge count={unreadCount} overflowCount={99} size="small">
-        <LuBell size={18} />
+          four-digit badge would push the header around. Shifted right, since
+          antd centres it on the icon's corner and two digits covered half the
+          bell.
+
+          Brand blue, not antd's error red: an unread count is news, not a
+          fault, and red in the header read as something having gone wrong.
+          A fixed square rounded off, so one digit and two draw the same
+          circle instead of the count stretching into a pill. "99+" is the one
+          label too wide for that circle at 10px, so it alone steps down. */}
+      {/* The count is pinned over the icon's corner explicitly: left in flow it
+          sat beside the bell, doubling the badge to 36px, pushing the bell to
+          the button's left edge and hanging the count in the gap after it. */}
+      <Badge
+        className="bc-relative bc-flex"
+        classNames={{
+          indicator: [
+            'bc-absolute bc-right-0 bc-top-0 bc-h-[18px] bc-w-[18px] bc-min-w-[18px] bc-rounded-full bc-bg-primary bc-p-0',
+            'bc-font-semibold bc-leading-[18px]',
+            unreadCount > 99 ? 'bc-text-[8.5px] bc-tracking-tighter' : 'bc-text-[10px]'
+          ].join(' ')
+        }}
+        count={unreadCount}
+        offset={[6, 0]}
+        overflowCount={99}
+        size="small"
+      >
+        <LuBell size={22} />
       </Badge>
     </Button>
   )

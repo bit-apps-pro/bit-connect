@@ -54,6 +54,15 @@ final class ThemeBootTest extends TestCase
         $this->assertStringContainsString('style.colorScheme=d?"dark":"light"', $script);
     }
 
+    public function testDefaultsToLightWhenNothingIsStored(): void
+    {
+        ThemeBoot::attach(self::HANDLE);
+
+        // Must match DEFAULT_THEME_MODE in @shared/theme/theme-mode.ts, or a
+        // fresh install paints one theme and React flips it to the other.
+        $this->assertStringContainsString('var m="light",', $this->script());
+    }
+
     public function testIsAnIifeWithNoLeadingIndentation(): void
     {
         ThemeBoot::attach(self::HANDLE);

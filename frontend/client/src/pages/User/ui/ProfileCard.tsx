@@ -3,7 +3,6 @@ import MemberBadge from '@utilities/member-badge'
 import { Skeleton } from 'antd'
 import {
   LuAtSign,
-  LuCake,
   LuClock3,
   LuGithub,
   LuGlobe,
@@ -12,7 +11,9 @@ import {
   LuTwitter
 } from 'react-icons/lu'
 
+import { parseMaybeGmt } from '@/common/helpers/globalHelpers'
 import { type UserStats } from '@/pages/Post/data/use-user-stats'
+import { formatSiteTime } from '@/utils/site-time'
 import { relativeTime } from '@/utils/utils'
 
 import { SOCIAL_LINK_KEYS, type SocialLinkKey, type UserProfile } from '../data/use-user-profile'
@@ -45,23 +46,17 @@ const displayUrl = (url: string | undefined) => {
 
 const fullDate = (iso: string | undefined) => {
   if (!iso) return
-  const date = new Date(iso.replace(' ', 'T'))
+  // `user_registered` is GMT with no zone marker.
+  const date = parseMaybeGmt(iso)
   if (Number.isNaN(date.getTime())) return
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+  return formatSiteTime(date, { day: 'numeric', month: 'short', year: 'numeric' })
 }
-
-/**
- * The quiet pill an ordinary member gets. Staff standings are drawn by
- * MemberBadge, which is keyed by tone — this map used to key off the printed
- * label, so renaming Moderator to Team would have dropped it to this style.
- */
-const PLAIN_MEMBER_STYLE = 'bc-bg-surface-sunken bc-text-ink-muted'
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bc-flex bc-flex-col">
-      <span className="bc-text-[16px] bc-font-semibold bc-leading-none bc-text-ink">{value}</span>
-      <span className="bc-mt-1 bc-text-[11px] bc-text-ink-subtle">{label}</span>
+      <span className="bc-text-[18px] bc-font-semibold bc-leading-none bc-text-ink">{value}</span>
+      <span className="bc-mt-1.5 bc-text-[12px] bc-text-ink-subtle">{label}</span>
     </div>
   )
 }
@@ -99,7 +94,6 @@ export default function ProfileCard({
   stats: undefined | UserStats
 }) {
   const joined = fullDate(profile?.registered_at ?? stats?.registered_at)
-  const role = profile?.role_label ?? 'Member'
   const badges = profile?.badges ?? (profile?.badge ? [profile.badge] : [])
 
   return (
@@ -110,13 +104,13 @@ export default function ProfileCard({
       {/* The gradient is the fallback, not a placeholder — members without a
           cover keep it, and it is what the avatar sits against. */}
       {profile?.cover ? (
-        <img alt="" className="bc-h-14 bc-w-full bc-object-cover" src={profile.cover} />
+        <img alt="" className="bc-h-[68px] bc-w-full bc-object-cover" src={profile.cover} />
       ) : (
-        <div className="bc-h-14 bc-bg-gradient-to-r bc-from-primary bc-to-[#7B9BF5]" />
+        <div className="bc-h-[68px] bc-bg-gradient-to-r bc-from-primary bc-to-[#7B3AED]" />
       )}
 
-      <div className="bc-px-4 bc-pb-4">
-        <div className="bc--mt-8 bc-mb-3">
+      <div className="bc-px-5 bc-pb-5">
+        <div className="bc--mt-10 bc-mb-3">
           <AvatarEditor
             avatar={profile?.avatar}
             canEdit={canEditAvatar}
@@ -131,25 +125,18 @@ export default function ProfileCard({
         ) : (
           <>
             <div className="bc-flex bc-flex-wrap bc-items-center bc-gap-2">
-              <h1 className="bc-m-0 bc-text-[19px] bc-font-semibold bc-leading-tight bc-text-ink">
+              <h1 className="bc-m-0 bc-text-[21px] bc-font-medium bc-leading-tight bc-text-ink">
                 {profile?.display_name}
               </h1>
               {/* All of them here, where a byline shows only the first: this
                   page is about one person and has the width to say Developer
                   and Support both. `badges` is optional on the type because a
                   cached payload from before it existed has only `badge` — that
-                  fallback keeps such a response showing one badge, not none. */}
-              {badges.length > 0 ? (
-                badges.map((badge, index) => (
-                  <MemberBadge badge={badge} key={badge.id ?? `standing-${index}`} size="md" />
-                ))
-              ) : (
-                <span
-                  className={`bc-rounded-full bc-px-2 bc-py-0.5 bc-text-[11px] bc-font-semibold ${PLAIN_MEMBER_STYLE}`}
-                >
-                  {role}
-                </span>
-              )}
+                  fallback keeps such a response showing one badge, not none.
+                  A member wearing none gets nothing beside their name. */}
+              {badges.map((badge, index) => (
+                <MemberBadge badge={badge} key={badge.id ?? `badge-${index}`} size="md" />
+              ))}
             </div>
 
             {profile?.bio && (
@@ -159,20 +146,20 @@ export default function ProfileCard({
             )}
 
             {stats && (
-              <div className="bc-mt-4 bc-grid bc-grid-cols-3 bc-gap-2">
+              <div className="bc-mt-5 bc-grid bc-grid-cols-3 bc-gap-2">
                 <Stat label={__('Topics')} value={formatCount(stats.topics)} />
                 <Stat label={__('Comments')} value={formatCount(stats.comments)} />
                 <Stat label={__('Upvotes')} value={formatCount(stats.votes_received)} />
               </div>
             )}
 
-            <hr className="bc-my-4 bc-border-0 bc-border-t bc-border-solid bc-border-line" />
+            <hr className="bc-my-5 bc-border-0 bc-border-t bc-border-solid bc-border-line" />
 
             <div className="bc-flex bc-flex-col bc-gap-2">
               {joined && (
-                <MetaLine icon={<LuCake size={14} />}>
+                <p className="bc-m-0 bc-text-[13px] bc-text-ink-muted">
                   {__('Joined')} {joined}
-                </MetaLine>
+                </p>
               )}
               {profile?.last_active_at && (
                 <MetaLine icon={<LuClock3 size={14} />}>
@@ -198,11 +185,11 @@ export default function ProfileCard({
 
             {onManage && (
               <button
-                className="bc-mt-4 bc-flex bc-w-full bc-cursor-pointer bc-items-center bc-justify-center bc-gap-2 bc-rounded-full bc-border bc-border-solid bc-border-line-strong bc-bg-surface bc-py-1.5 bc-text-[13px] bc-font-medium bc-text-ink bc-transition-colors hover:bc-bg-surface-sunken"
+                className="bc-mt-5 bc-flex bc-w-full bc-cursor-pointer bc-items-center bc-justify-center bc-gap-2 bc-rounded-md bc-border bc-border-solid bc-border-line-strong bc-bg-surface bc-py-2 bc-text-[14px] bc-font-medium bc-text-ink bc-transition-colors hover:bc-bg-surface-sunken"
                 onClick={onManage}
                 type="button"
               >
-                <LuSettings size={14} />
+                <LuSettings size={15} />
                 {__('Manage profile')}
               </button>
             )}

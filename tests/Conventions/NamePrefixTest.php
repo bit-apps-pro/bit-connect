@@ -72,8 +72,6 @@ final class NamePrefixTest extends TestCase
     private const CORE_NAMES = [
         // PortalSlugController: making the portal page the site front page.
         'show_on_front', 'page_on_front',
-        // TopicService: pinning a topic is core's sticky list.
-        'sticky_posts',
         // Flushed after a slug change; core recomputes it lazily.
         'rewrite_rules',
         // Core filters the plugin applies to its own output, not ones it declares.

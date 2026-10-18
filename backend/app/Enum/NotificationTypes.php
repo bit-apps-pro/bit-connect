@@ -42,7 +42,7 @@ enum NotificationTypes: string
     case COMMENT_REPLY = 'comment_reply';
 
     #[Label('A new topic is posted')]
-    #[Description('A topic appears under a product or tag you follow.')]
+    #[Description('A topic appears under something you follow.')]
     case TOPIC_NEW = 'topic_new';
 
     #[Label('Someone mentions you')]
@@ -77,6 +77,18 @@ enum NotificationTypes: string
     #[Description('Sent to moderators only, for every topic published anywhere in the forum.')]
     case TOPIC_POSTED = 'topic_posted';
 
+    #[Label('A new tag needs approval')]
+    #[Description('Sent only to people who can manage forum settings, when a member suggests a tag that is not in the list.')]
+    case TAG_SUGGESTED = 'tag_suggested';
+
+    #[Label('A member asks to join')]
+    #[Description('Sent to moderators only, when a member asks to join a private space.')]
+    case ACCESS_REQUESTED = 'access_requested';
+
+    #[Label('You are added to a group')]
+    #[Description('An admin lets you into a private space, or adds you to one.')]
+    case ACCESS_GRANTED = 'access_granted';
+
     /**
      * The label, translated.
      *
@@ -107,6 +119,9 @@ enum NotificationTypes: string
             self::TOPIC_STATUS_CHANGED => __('A topic you follow changes status', 'bit-connect'),
             self::REPORT_FILED         => __('A new report needs review', 'bit-connect'),
             self::TOPIC_POSTED         => __('Any new topic is posted', 'bit-connect'),
+            self::TAG_SUGGESTED        => __('A new tag needs approval', 'bit-connect'),
+            self::ACCESS_REQUESTED     => __('A member asks to join', 'bit-connect'),
+            self::ACCESS_GRANTED       => __('You are added to a group', 'bit-connect'),
         };
     }
 
@@ -118,7 +133,7 @@ enum NotificationTypes: string
         return match ($type) {
             self::TOPIC_REPLY          => __('A new top-level comment on a topic you wrote or follow.', 'bit-connect'),
             self::COMMENT_REPLY        => __('A direct reply to something you wrote in a thread.', 'bit-connect'),
-            self::TOPIC_NEW            => __('A topic appears under a product or tag you follow.', 'bit-connect'),
+            self::TOPIC_NEW            => __('A topic appears under something you follow.', 'bit-connect'),
             self::MENTION              => __('Your name is used in a topic or comment.', 'bit-connect'),
             self::VOTE_RECEIVED        => __('Collapsed into one entry per item, so a popular post is one line and not fifty.', 'bit-connect'),
             self::REPORT_RESOLVED      => __('A moderator reaches a decision on something you reported.', 'bit-connect'),
@@ -127,6 +142,9 @@ enum NotificationTypes: string
             self::TOPIC_STATUS_CHANGED => __('The stage or status moves on a topic you wrote or follow.', 'bit-connect'),
             self::REPORT_FILED         => __('Sent to moderators only, when a report enters the queue.', 'bit-connect'),
             self::TOPIC_POSTED         => __('Sent to moderators only, for every topic published anywhere in the forum.', 'bit-connect'),
+            self::TAG_SUGGESTED        => __('Sent only to people who can manage forum settings, when a member suggests a tag that is not in the list.', 'bit-connect'),
+            self::ACCESS_REQUESTED     => __('Sent to moderators only, when a member asks to join a private space.', 'bit-connect'),
+            self::ACCESS_GRANTED       => __('An admin lets you into a private space, or adds you to one.', 'bit-connect'),
         };
     }
 
@@ -142,18 +160,23 @@ enum NotificationTypes: string
      */
     public static function isModeratorOnly(NotificationTypes $type): bool
     {
-        return $type === self::REPORT_FILED || $type === self::TOPIC_POSTED;
+        return $type === self::REPORT_FILED
+            || $type === self::TOPIC_POSTED
+            || $type === self::TAG_SUGGESTED
+            || $type === self::ACCESS_REQUESTED;
     }
 
     /**
      * Types this plugin raises by itself.
      *
-     * All but one. Nothing here awards a profile badge — the catalogue, the
+     * All but three. Nothing here awards a profile badge — the catalogue, the
      * assignment screen and the endpoint behind them are not part of this
      * plugin — so BADGE_AWARDED is a case this forum can render and deliver but
      * never originates. It stays in the enum because it must: a badge awarded
      * by another plugin arrives as this type, and dropping the case would leave
      * the mailer and the notification list unable to read a row they are handed.
+     * The same holds for ACCESS_REQUESTED and ACCESS_GRANTED: this plugin has
+     * no private spaces to ask to join, so it delivers those and raises neither.
      *
      * What it should not do is appear as a preference row on a forum where
      * nothing can raise it, for exactly the reason isModeratorOnly() exists —
@@ -165,7 +188,7 @@ enum NotificationTypes: string
      */
     public static function isDispatchedHere(NotificationTypes $type): bool
     {
-        return $type !== self::BADGE_AWARDED;
+        return !\in_array($type, [self::BADGE_AWARDED, self::ACCESS_REQUESTED, self::ACCESS_GRANTED], true);
     }
 
     /**
@@ -188,14 +211,16 @@ enum NotificationTypes: string
     /**
      * Types where repeats collapse onto one row instead of stacking.
      *
-     * Votes only. A vote carries nothing of its own to read, so fifty of them
-     * are one fact — "fifty people liked this" — and fifty rows would bury
-     * every other notification the member has. A reply is the opposite: each
+     * Votes, and requests to join a private space. A vote carries nothing of
+     * its own to read, so fifty of them are one fact — "fifty people liked
+     * this" — and fifty rows would bury every other notification the member
+     * has. A request is the same: what a moderator needs is "twelve people are
+     * waiting", and the space's queue lists who. A reply is the opposite: each
      * one is a distinct thing somebody wrote and needs its own link.
      */
     public static function isCollapsible(NotificationTypes $type): bool
     {
-        return $type === self::VOTE_RECEIVED;
+        return $type === self::VOTE_RECEIVED || $type === self::ACCESS_REQUESTED;
     }
 
     /**
@@ -223,6 +248,8 @@ enum NotificationTypes: string
                 self::MENTION,
                 self::REPORT_RESOLVED,
                 self::CONTENT_ACTIONED,
+                // The answer to a request the member made and is waiting on.
+                self::ACCESS_GRANTED,
             ],
             true
         );

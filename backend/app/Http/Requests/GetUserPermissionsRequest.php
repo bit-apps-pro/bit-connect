@@ -21,7 +21,7 @@ final class GetUserPermissionsRequest extends Request
     /**
      * Owner or moderator only.
      *
-     * The list is useful to the member ("why can't I pin this?") but it is a
+     * The list is useful to the member ("why can't I lock this?") but it is a
      * permission map, not published content — handing every visitor a readout
      * of who can moderate is an invitation to go looking for the weakest one.
      */

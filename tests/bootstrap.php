@@ -135,6 +135,11 @@ if (!function_exists('get_posts')) {
                         }
                     }
 
+                    // A post seeded without a parent is top-level, as in core.
+                    if (isset($args['post_parent']) && (int) ($post->post_parent ?? 0) !== (int) $args['post_parent']) {
+                        return false;
+                    }
+
                     return true;
                 }
             )
@@ -151,6 +156,63 @@ if (!function_exists('get_posts')) {
         }
 
         return $matches;
+    }
+}
+
+// The query object, over the same $GLOBALS['__wp_posts'] that get_posts() reads.
+//
+// Honours only what the plugin queries with, but honours `offset` and
+// `orderby => modified` in particular: the sitemap pages its topics by explicit
+// offset rather than by `paged`, and a stub that ignored it would have every
+// page return the same rows and still look like it worked.
+if (!class_exists('WP_Query')) {
+    #[\AllowDynamicProperties]
+    class WP_Query
+    {
+        /** @var array<int, WP_Post> */
+        public $posts = [];
+
+        /**
+         * @param array<string, mixed> $args
+         */
+        public function __construct(array $args = [])
+        {
+            $matches = array_values(
+                array_filter(
+                    $GLOBALS['__wp_posts'] ?? [],
+                    static function ($post) use ($args) {
+                        foreach (['post_type' => 'post_type', 'post_status' => 'post_status'] as $arg => $field) {
+                            if (isset($args[$arg]) && $args[$arg] !== 'any' && ($post->{$field} ?? null) !== $args[$arg]) {
+                                return false;
+                            }
+                        }
+
+                        if (isset($args['post_name__in'])
+                            && !\in_array($post->post_name ?? '', (array) $args['post_name__in'], true)) {
+                            return false;
+                        }
+
+                        return true;
+                    }
+                )
+            );
+
+            if (($args['orderby'] ?? '') === 'modified') {
+                usort(
+                    $matches,
+                    static fn ($a, $b) => strcmp((string) ($b->post_modified_gmt ?? ''), (string) ($a->post_modified_gmt ?? ''))
+                );
+
+                if (strtoupper((string) ($args['order'] ?? 'DESC')) === 'ASC') {
+                    $matches = array_reverse($matches);
+                }
+            }
+
+            $offset = (int) ($args['offset'] ?? 0);
+            $limit = (int) ($args['posts_per_page'] ?? -1);
+
+            $this->posts = \array_slice($matches, $offset, $limit > 0 ? $limit : null);
+        }
     }
 }
 
@@ -292,6 +354,82 @@ if (!function_exists('get_post')) {
     }
 }
 
+if (!function_exists('get_post_mime_type')) {
+    // Seed $GLOBALS['__wp_mime_types'][$id] for an attachment's type.
+    function get_post_mime_type($postId = null)
+    {
+        return $GLOBALS['__wp_mime_types'][$postId] ?? false;
+    }
+}
+
+if (!function_exists('get_post_type')) {
+    function get_post_type($postId = null)
+    {
+        $post = $GLOBALS['__wp_posts'][$postId] ?? null;
+
+        return $post ? $post->post_type : false;
+    }
+}
+
+if (!function_exists('get_post_types')) {
+    /**
+     * The registered types, keyed by name the way core returns them. The
+     * filter argument is ignored: every type here is public and searchable.
+     */
+    function get_post_types($args = [], $output = 'names')
+    {
+        // Seed $GLOBALS['__wp_post_type_objects'] with objects carrying
+        // `rewrite` / `has_archive` for code that reads how a type is routed.
+        if ($output === 'objects') {
+            return $GLOBALS['__wp_post_type_objects'] ?? [];
+        }
+
+        $types = $GLOBALS['__wp_post_types'] ?? ['post', 'page', 'attachment', 'bit-connect'];
+
+        return array_combine($types, $types);
+    }
+}
+
+if (!function_exists('get_taxonomies')) {
+    // Seed $GLOBALS['__wp_taxonomy_objects'] with objects carrying `rewrite`.
+    function get_taxonomies($args = [], $output = 'names')
+    {
+        $objects = $GLOBALS['__wp_taxonomy_objects'] ?? [];
+
+        return $output === 'objects' ? $objects : array_keys($objects);
+    }
+}
+
+if (!function_exists('has_shortcode')) {
+    // Core matches the registered tag; a literal `[tag` is what that amounts to here.
+    function has_shortcode($content, $tag)
+    {
+        return (bool) preg_match('/\\[' . preg_quote((string) $tag, '/') . '[\\s\\]\\/]/', (string) $content);
+    }
+}
+
+if (!function_exists('has_block')) {
+    // Core looks for the block's comment delimiter, as this does.
+    function has_block($blockName, $post = null)
+    {
+        return strpos((string) $post, '<!-- wp:' . $blockName . ' ') !== false;
+    }
+}
+
+if (!function_exists('rest_get_url_prefix')) {
+    function rest_get_url_prefix()
+    {
+        return 'wp-json';
+    }
+}
+
+if (!function_exists('is_admin')) {
+    function is_admin(): bool
+    {
+        return !empty($GLOBALS['__wp_is_admin']);
+    }
+}
+
 if (!function_exists('get_comment')) {
     function get_comment($commentId)
     {
@@ -375,6 +513,74 @@ if (!class_exists('WP_Term')) {
     }
 }
 
+// The base class core's sitemap providers extend.
+//
+// get_sitemap_entries() and its two helpers mirror core's own, because a
+// subclass that overrides the entry list can still defer to the default one —
+// a stub that omitted them would make `parent::get_sitemap_entries()` fatal and
+// leave that branch untestable.
+if (!class_exists('WP_Sitemaps_Provider')) {
+    #[\AllowDynamicProperties]
+    abstract class WP_Sitemaps_Provider
+    {
+        public $name = '';
+
+        public $object_type = '';
+
+        abstract public function get_url_list($pageNum, $objectSubtype = '');
+
+        abstract public function get_max_num_pages($objectSubtype = '');
+
+        public function get_object_subtypes()
+        {
+            return [];
+        }
+
+        /**
+         * One record per sitemap this provider exposes: its subtype and page count.
+         */
+        public function get_sitemap_type_data()
+        {
+            $subtypes = $this->get_object_subtypes();
+
+            if (empty($subtypes)) {
+                return [['name' => '', 'pages' => $this->get_max_num_pages()]];
+            }
+
+            $data = [];
+
+            foreach (array_keys($subtypes) as $name) {
+                $data[] = ['name' => (string) $name, 'pages' => $this->get_max_num_pages((string) $name)];
+            }
+
+            return $data;
+        }
+
+        /**
+         * A loc per page of each sitemap, which is what the index is built from.
+         */
+        public function get_sitemap_entries()
+        {
+            $entries = [];
+
+            foreach ($this->get_sitemap_type_data() as $type) {
+                for ($page = 1; $page <= $type['pages']; ++$page) {
+                    $entries[] = ['loc' => $this->get_sitemap_url($type['name'], $page)];
+                }
+            }
+
+            return $entries;
+        }
+
+        public function get_sitemap_url($name, $page)
+        {
+            $parts = array_filter([$this->name, $name, $page]);
+
+            return home_url('/wp-sitemap-' . implode('-', $parts) . '.xml');
+        }
+    }
+}
+
 if (!function_exists('get_term_by')) {
     /**
      * Resolves against $GLOBALS['__wp_terms'], a list of WP_Term objects.
@@ -408,6 +614,20 @@ if (!function_exists('sanitize_key')) {
     function sanitize_key($key): string
     {
         return strtolower(preg_replace('/[^a-z0-9_\-]/', '', (string) $key));
+    }
+}
+
+if (!function_exists('taxonomy_exists')) {
+    // This plugin's own taxonomies always exist; a test registers any other
+    // by naming it in $GLOBALS['__wp_taxonomies'].
+    function taxonomy_exists($taxonomy): bool
+    {
+        $own = array_map(
+            static fn (BitApps\BitConnect\Enum\Taxonomies $case): string => $case->value,
+            BitApps\BitConnect\Enum\Taxonomies::cases()
+        );
+
+        return in_array($taxonomy, [...$own, ...($GLOBALS['__wp_taxonomies'] ?? [])], true);
     }
 }
 
@@ -470,6 +690,40 @@ if (!function_exists('home_url')) {
     function home_url($path = '')
     {
         return rtrim($GLOBALS['__wp_home_url'] ?? 'https://example.com', '/') . $path;
+    }
+}
+
+if (!function_exists('wp_upload_dir')) {
+    function wp_upload_dir()
+    {
+        return [
+            'baseurl' => $GLOBALS['__wp_upload_baseurl'] ?? home_url('/wp-content/uploads'),
+            'basedir' => $GLOBALS['__wp_upload_basedir'] ?? sys_get_temp_dir() . '/bit-connect-test-uploads',
+        ];
+    }
+}
+
+if (!function_exists('attachment_url_to_postid')) {
+    // Tests map an upload's address to its attachment in __wp_attachment_urls.
+    function attachment_url_to_postid($url)
+    {
+        return (int) ($GLOBALS['__wp_attachment_urls'][$url] ?? 0);
+    }
+}
+
+if (!function_exists('wp_mkdir_p')) {
+    function wp_mkdir_p($target)
+    {
+        return is_dir($target) || mkdir($target, 0777, true);
+    }
+}
+
+if (!function_exists('wp_delete_file')) {
+    function wp_delete_file($file)
+    {
+        if (is_file($file)) {
+            unlink($file);
+        }
     }
 }
 
@@ -561,6 +815,21 @@ if (!function_exists('date_i18n')) {
     }
 }
 
+if (!function_exists('wp_date')) {
+    // The test site keeps UTC, so its clock is GMT's.
+    function wp_date($format, $timestamp = null, $timezone = null)
+    {
+        return gmdate($format, $timestamp ?? time());
+    }
+}
+
+if (!function_exists('wp_timezone')) {
+    function wp_timezone()
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
 if (!function_exists('wp_json_encode')) {
     function wp_json_encode($data, $options = 0, $depth = 512)
     {
@@ -626,6 +895,13 @@ if (!function_exists('wp_register_script')) {
     }
 }
 
+if (!function_exists('wp_register_script_module')) {
+    function wp_register_script_module($id, $src, $deps = [], $version = false): void
+    {
+        $GLOBALS['__wp_script_modules'][$id] = $src;
+    }
+}
+
 if (!function_exists('wp_enqueue_script')) {
     function wp_enqueue_script($handle, $src = '', $deps = [], $ver = false, $args = [])
     {
@@ -675,6 +951,16 @@ if (!function_exists('remove_action')) {
     function remove_action($tag, $callback, $priority = 10): bool
     {
         $GLOBALS['__wp_removed_actions'][$tag][] = $callback;
+
+        return true;
+    }
+}
+
+if (!function_exists('remove_all_actions')) {
+    function remove_all_actions($tag, $priority = false): bool
+    {
+        $GLOBALS['__wp_removed_all_actions'][] = $tag;
+        unset($GLOBALS['__wp_actions'][$tag]);
 
         return true;
     }
@@ -1214,6 +1500,10 @@ if (!function_exists('get_terms')) {
                         return false;
                     }
 
+                    if (!empty($args['exclude']) && \in_array((int) $term->term_id, array_map('intval', (array) $args['exclude']), true)) {
+                        return false;
+                    }
+
                     if (isset($args['meta_key'])) {
                         $meta = $GLOBALS['__wp_term_meta'][(int) $term->term_id][$args['meta_key']] ?? '';
 
@@ -1230,8 +1520,20 @@ if (!function_exists('get_terms')) {
         );
 
         $limit = (int) ($args['number'] ?? 0);
+        $matches = $limit > 0 ? \array_slice($matches, 0, $limit) : $matches;
 
-        return $limit > 0 ? array_slice($matches, 0, $limit) : $matches;
+        // Core returns scalars rather than objects for these, and callers that
+        // ask for them cast the result — so a stub that always answered with
+        // WP_Term would send them down a path core never does.
+        if (($args['fields'] ?? '') === 'slugs') {
+            return array_map(static fn ($term) => $term->slug, $matches);
+        }
+
+        if (($args['fields'] ?? '') === 'ids') {
+            return array_map(static fn ($term) => (int) $term->term_id, $matches);
+        }
+
+        return $matches;
     }
 }
 
@@ -1358,6 +1660,15 @@ if (!function_exists('wp_delete_comment')) {
 // Uploads
 // ---------------------------------------------------------------------------
 
+if (!function_exists('wp_max_upload_size')) {
+    // What php.ini lets through. Generous by default so the plugin's own limit is
+    // the one a test meets; a test of the server's cap seeds a smaller one.
+    function wp_max_upload_size()
+    {
+        return $GLOBALS['__wp_max_upload_size'] ?? 64 * 1024 * 1024;
+    }
+}
+
 if (!function_exists('sanitize_file_name')) {
     function sanitize_file_name($name)
     {
@@ -1401,6 +1712,17 @@ if (!function_exists('wp_check_filetype_and_ext')) {
         // RIFF....WEBP
         if (strncmp($head, 'RIFF', 4) === 0 && substr($head, 8, 4) === 'WEBP') {
             return ['ext' => 'webp', 'type' => 'image/webp', 'proper_filename' => false];
+        }
+
+        // Core reads non-images through finfo, and lets a file it cannot place
+        // at all — "application/octet-stream" — through for any video, audio or
+        // application type, trusting the name. Mirrored for video, so a test
+        // can show what the validator does about that leniency.
+        $byName = ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime'];
+        $ext = strtolower(pathinfo((string) $filename, \PATHINFO_EXTENSION));
+
+        if (isset($byName[$ext])) {
+            return ['ext' => $ext, 'type' => $byName[$ext], 'proper_filename' => false];
         }
 
         return ['ext' => false, 'type' => false, 'proper_filename' => false];
@@ -1687,11 +2009,92 @@ if (!function_exists('wp_set_post_terms')) {
     {
         $ids = array_map('intval', (array) $terms);
 
+        // Appending never doubles a relationship, as in core.
         $GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] = $append
-            ? array_merge($GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] ?? [], $ids)
+            ? array_values(array_unique(array_merge($GLOBALS['__wp_post_terms'][(int) $postId][$taxonomy] ?? [], $ids)))
             : $ids;
 
         return $ids;
+    }
+}
+
+if (!function_exists('wp_set_object_terms')) {
+    /**
+     * The same store as wp_set_post_terms(); ids only, as the plugin passes them.
+     *
+     * @param array<int, int>|int $terms
+     * @param mixed               $objectId
+     * @param mixed               $taxonomy
+     * @param mixed               $append
+     */
+    function wp_set_object_terms($objectId, $terms, $taxonomy, $append = false)
+    {
+        return wp_set_post_terms($objectId, $terms, $taxonomy, $append);
+    }
+}
+
+if (!function_exists('get_objects_in_term')) {
+    /**
+     * Posts filed under a term, from the same store wp_set_post_terms() writes.
+     *
+     * @param mixed $termIds
+     * @param mixed $taxonomies
+     *
+     * @return array<int, int>
+     */
+    function get_objects_in_term($termIds, $taxonomies): array
+    {
+        $wanted = array_map('intval', (array) $termIds);
+        $taxonomies = (array) $taxonomies;
+        $found = [];
+
+        foreach ($GLOBALS['__wp_post_terms'] ?? [] as $postId => $byTaxonomy) {
+            foreach ($taxonomies as $taxonomy) {
+                if (array_intersect($wanted, $byTaxonomy[$taxonomy] ?? []) !== []) {
+                    $found[] = (int) $postId;
+                }
+            }
+        }
+
+        return array_values(array_unique($found));
+    }
+}
+
+if (!function_exists('wp_delete_term')) {
+    /**
+     * Drops the term and every relationship to it, as core does; answers true
+     * for a term that existed and false otherwise.
+     *
+     * @param mixed $termId
+     * @param mixed $taxonomy
+     */
+    function wp_delete_term($termId, $taxonomy)
+    {
+        $termId = (int) $termId;
+        $existed = false;
+
+        $GLOBALS['__wp_terms'] = array_values(array_filter(
+            $GLOBALS['__wp_terms'] ?? [],
+            static function ($term) use ($termId, $taxonomy, &$existed) {
+                if ((int) $term->term_id === $termId && $term->taxonomy === $taxonomy) {
+                    $existed = true;
+
+                    return false;
+                }
+
+                return true;
+            }
+        ));
+
+        foreach ($GLOBALS['__wp_post_terms'] ?? [] as $postId => $byTaxonomy) {
+            if (isset($byTaxonomy[$taxonomy])) {
+                $GLOBALS['__wp_post_terms'][$postId][$taxonomy] = array_values(
+                    array_diff($byTaxonomy[$taxonomy], [$termId])
+                );
+            }
+        }
+
+        return $existed;
     }
 }
 
@@ -1850,6 +2253,22 @@ if (!function_exists('wp_count_posts')) {
     function wp_count_posts($postType = 'post', $perm = '')
     {
         return (object) ($GLOBALS['__wp_post_counts'] ?? ['publish' => 0, 'private' => 0, 'draft' => 0]);
+    }
+}
+
+// Rewrite rules. Recorded rather than applied: what the tests care about is
+// which patterns a feature registers and whether it asked for a flush.
+if (!function_exists('add_rewrite_rule')) {
+    function add_rewrite_rule($regex, $query, $after = 'bottom')
+    {
+        $GLOBALS['__wp_added_rewrite_rules'][$regex] = $query;
+    }
+}
+
+if (!function_exists('flush_rewrite_rules')) {
+    function flush_rewrite_rules($hard = true)
+    {
+        $GLOBALS['__wp_rewrite_flushes'] = (int) ($GLOBALS['__wp_rewrite_flushes'] ?? 0) + 1;
     }
 }
 

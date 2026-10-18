@@ -114,6 +114,20 @@ class NotificationMailerTest extends TestCase
         $this->assertStringNotContainsString("\n", $line);
     }
 
+    public function testARequestToJoinNamesWhoAskedAndWhere(): void
+    {
+        $line = NotificationMailer::line(self::row(NotificationTypes::ACCESS_REQUESTED, ['space_name' => 'Beta testers']));
+
+        $this->assertStringContainsString('Aiden Carter asked to join Beta testers', $line);
+    }
+
+    public function testBeingLetInNamesTheSpace(): void
+    {
+        $line = NotificationMailer::line(self::row(NotificationTypes::ACCESS_GRANTED, ['space_name' => 'Beta testers']));
+
+        $this->assertStringContainsString('You can now read Beta testers', $line);
+    }
+
     /**
      * @param array<string, mixed> $context
      */

@@ -3,6 +3,7 @@ import ContentBox from '@pages/Post/ContentBox'
 import { LuArrowBigUp, LuMessageSquare } from 'react-icons/lu'
 import { Link } from 'react-router'
 
+import { routePath } from '@/utils/route-path'
 import { relativeTime } from '@/utils/utils'
 
 import { type UserComment } from '../data/use-user-content'
@@ -22,7 +23,7 @@ export default function CommentRow({ comment }: { comment: UserComment }) {
         <span className="bc-shrink-0">{__('replied to')}</span>
         <Link
           className="bc-truncate bc-font-medium bc-text-primary bc-no-underline hover:bc-underline"
-          to={`/${comment.post_name}`}
+          to={routePath(`/${comment.post_name}`)}
         >
           {comment.post_title}
         </Link>

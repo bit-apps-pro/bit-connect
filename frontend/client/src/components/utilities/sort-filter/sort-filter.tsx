@@ -1,24 +1,42 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { __ } from '@common/helpers/i18nWrap'
 import useHasPrivateTopics from '@features/topic-modal/data/use-private-topics-available'
-import { Grid, Select } from 'antd'
+import { Select } from 'antd'
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router'
 
 import { useAuthStore } from '@/store/auth.zustand'
-import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
-const FILTER_KEYS = ['sort', 'visibility', 'my_topics', 'topic-types'] as const
+import useAddedViews from './use-added-views'
 
-export default function SortFilter({ loading = false }: { loading?: boolean }) {
+// `topic-types` is not among them: the type has its own chip row now (see
+// topic-type-filter), and choosing an order must not clear it.
+const FILTER_KEYS = ['sort', 'visibility', 'my_topics', 'view'] as const
+
+/** A named list's option value, kept apart from the orderings' own values. */
+const VIEW_PREFIX = 'view:'
+
+/**
+ * @param block a full-width field, for a control given a row of its own — the
+ *              phone filter sheet — rather than a slot in the desktop toolbar.
+ */
+export default function SortFilter({
+  block = false,
+  loading = false
+}: {
+  block?: boolean
+  loading?: boolean
+}) {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useAuthStore()
   const hasPrivateTopics = useHasPrivateTopics()
+  const views = useAddedViews()
 
   const currentValue = (() => {
+    // Only a list this control offers: a stale `?view=` must not show as a raw value.
+    const view = searchParams.get('view')
+    if (view && views.some(offered => offered.value === view)) return VIEW_PREFIX + view
     if (searchParams.get('my_topics') === 'true') return 'my_topics'
     if (searchParams.get('visibility') === 'private') return 'private'
-    if (searchParams.get('topic-types')) return searchParams.get('topic-types') as string
     return searchParams.get('sort') ?? 'newest'
   })()
 
@@ -32,32 +50,24 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
         prev.delete(key)
       }
 
-      if (value === 'private') {
+      if (value.startsWith(VIEW_PREFIX)) {
+        prev.set('view', value.slice(VIEW_PREFIX.length))
+      } else if (value === 'private') {
         prev.set('visibility', 'private')
       } else if (value === 'my_topics') {
         prev.set('my_topics', 'true')
       } else if (value === 'oldest') {
         prev.set('sort', 'oldest')
-      } else if (value !== 'newest') {
-        // Topic-type slugs are filters, not sort orders: route them to the
-        // `topic-types` param so the backend applies a tax_query (sortBy only
-        // controls newest/oldest ordering).
-        prev.set('topic-types', value)
       }
 
       return prev
     })
   }
 
-  const topicTypes = useTaxonomiesStoreSelect()?.['bit-connect-topic-types'] || []
   const options = useMemo(
     () => [
       { label: __('Newest'), value: 'newest' },
       { label: __('Oldest'), value: 'oldest' },
-      ...topicTypes.map(topic => ({
-        label: topic.name,
-        value: topic.slug
-      })),
       // The Private filter is dropped with the feature: without it the option
       // is a filter that can only ever come back empty, since this plugin has
       // no code that makes a topic private. It stays while the visitor is
@@ -67,27 +77,26 @@ export default function SortFilter({ loading = false }: { loading?: boolean }) {
       ...(isLoggedIn && (hasPrivateTopics || currentValue === 'private')
         ? [{ label: __('Private'), value: 'private' }]
         : []),
-      ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : [])
+      ...(isLoggedIn ? [{ label: __('My Topics'), value: 'my_topics' }] : []),
+      ...views.map(view => ({ label: view.label, value: VIEW_PREFIX + view.value }))
     ],
-    [topicTypes, isLoggedIn, hasPrivateTopics, currentValue]
+    [isLoggedIn, hasPrivateTopics, currentValue, views]
   )
-
-  const screens = Grid.useBreakpoint()
-  const isMobile = !screens.sm
 
   return (
     <Select
-      className="field-sizing-content topics-filter-select"
-      labelRender={({ label }) => (
-        <span className={isMobile ? 'bc-font-semibold bc-text-primary' : ''}>{label}</span>
-      )}
+      className={
+        block
+          ? 'topics-filter-select topics-field-select bc-w-full'
+          : 'field-sizing-content topics-filter-select'
+      }
       loading={loading}
       onChange={handleChange}
       options={options}
-      popupMatchSelectWidth={false}
-      size={isMobile ? 'middle' : 'large'}
+      popupMatchSelectWidth={block}
+      // The type chips' height: the picker shares their row on every width.
+      size={block ? 'large' : 'middle'}
       value={currentValue}
-      variant={isMobile ? 'borderless' : 'filled'}
     />
   )
 }

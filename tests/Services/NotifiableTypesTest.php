@@ -36,9 +36,27 @@ final class NotifiableTypesTest extends TestCase
         $GLOBALS['__wp_filters'] = [];
     }
 
+    /**
+     * The types this plugin delivers but never raises: nothing here awards a
+     * badge or keeps a private space anyone could ask to join.
+     */
+    private const RAISED_ELSEWHERE = [
+        NotificationTypes::BADGE_AWARDED,
+        NotificationTypes::ACCESS_REQUESTED,
+        NotificationTypes::ACCESS_GRANTED,
+    ];
+
     public function testWithNobodyListeningBadgesAreNotOffered(): void
     {
         $this->assertNotContains(NotificationTypes::BADGE_AWARDED, ExtensionPoints::notifiableTypes());
+    }
+
+    public function testWithNobodyListeningJoinRequestsAreNotOffered(): void
+    {
+        $offered = ExtensionPoints::notifiableTypes();
+
+        $this->assertNotContains(NotificationTypes::ACCESS_REQUESTED, $offered);
+        $this->assertNotContains(NotificationTypes::ACCESS_GRANTED, $offered);
     }
 
     public function testWithNobodyListeningEveryOtherTypeIsOffered(): void
@@ -46,7 +64,7 @@ final class NotifiableTypesTest extends TestCase
         $offered = ExtensionPoints::notifiableTypes();
 
         foreach (NotificationTypes::cases() as $type) {
-            if ($type === NotificationTypes::BADGE_AWARDED) {
+            if (\in_array($type, self::RAISED_ELSEWHERE, true)) {
                 continue;
             }
 

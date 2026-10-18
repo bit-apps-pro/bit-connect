@@ -11,17 +11,27 @@ import { isEmojiImage, replaceEmojiImages } from './quill-emoji'
 // Constants
 // ---------------------------------------------------------------------------
 
+/**
+ * Fixed structural caps. How long the text may be and how many images it may
+ * hold are the forum's posting limits instead (PostingLimits.php), passed to
+ * validateContent() by the editor that knows which apply.
+ */
 export const CONTENT_LIMITS = {
-  /** Raw HTML character limit must match backend CreateTopicRequest max:10000 */
-  MAX_HTML_LENGTH: 10_000,
-  /** Plain-text character limit shown to users */
   MAX_HEADINGS: 10,
-  MAX_IMAGES: 5,
+  /** Backstop on raw HTML — the most a reply's comment_content column holds. */
+  MAX_HTML_LENGTH: 65_000,
   MAX_LINKS: 20,
   MAX_NESTING_DEPTH: 10,
-  MAX_TABLES: 3,
-  MAX_TEXT_LENGTH: 5000
+  MAX_TABLES: 3
 } as const
+
+/** The forum's limits for the content being validated. Unset is no limit. */
+export interface ContentValidationLimits {
+  maxImages?: number
+  maxTextLength?: number
+  /** Videos placed in the text; the server counts attached ones with them. */
+  maxVideos?: number
+}
 
 /**
  * Tags that Quill's snow theme produces.  Anything not in this list is
@@ -61,7 +71,11 @@ export const ALLOWED_TAGS = new Set([
   'thead',
   'tr',
   'u',
-  'ul'
+  'ul',
+  // A video the member uploaded and placed in the text (quill-video-file.ts).
+  // Its `src` is held to the same URL rules as a picture's here; the server
+  // further refuses one not served from the site's own uploads.
+  'video'
 ])
 
 /** Attributes allowed per tag. '*' means any allowed tag. */
@@ -70,7 +84,8 @@ const ALLOWED_ATTRIBUTES: Record<string, Set<string>> = {
   a: new Set(['href', 'rel', 'target', 'title']),
   img: new Set(['alt', 'height', 'src', 'title', 'width']),
   td: new Set(['colspan', 'rowspan']),
-  th: new Set(['colspan', 'rowspan', 'scope'])
+  th: new Set(['colspan', 'rowspan', 'scope']),
+  video: new Set(['controls', 'playsinline', 'preload', 'src'])
 }
 
 /**
@@ -108,8 +123,7 @@ const DROP_WITH_CONTENT = new Set([
   'template',
   'textarea',
   'title',
-  'track',
-  'video'
+  'track'
 ])
 
 /**
@@ -247,7 +261,7 @@ function unwrapElement(element: Element): void {
  */
 export function sanitizeNode(node: Node, depth = 0): void {
   if (depth > CONTENT_LIMITS.MAX_NESTING_DEPTH) {
-    node.parentNode?.removeChild(node)
+    (node as ChildNode).remove()
     return
   }
 
@@ -294,9 +308,11 @@ export function sanitizeNode(node: Node, depth = 0): void {
   }
 
   // Remove img elements whose src was stripped — a srcless img is broken and
-  // likely had a data: URI that isSafeUrl rejected above.
-  if (tag === 'img' && !element.getAttribute('src')) {
-    node.parentNode?.removeChild(node)
+  // likely had a data: URI that isSafeUrl rejected above. A video is the same,
+  // and one that named its file only through <source> children lost them
+  // above (DROP_WITH_CONTENT), so it has nothing to play either.
+  if ((tag === 'img' || tag === 'video') && !element.getAttribute('src')) {
+    (node as ChildNode).remove()
     return
   }
 
@@ -327,7 +343,7 @@ export function sanitizeNode(node: Node, depth = 0): void {
   // Remove hidden elements used for tracking
   const computedDisplay = (element as HTMLElement).style?.display
   if (computedDisplay === 'none') {
-    node.parentNode?.removeChild(node)
+    (node as ChildNode).remove()
   }
 }
 
@@ -366,14 +382,23 @@ export function sanitizeHtml(html: string): string {
 function htmlToPlainText(html: string): string {
   const tmp = document.createElement('div')
   tmp.innerHTML = html
-  return tmp.textContent || tmp.innerText || ''
+  return tmp.textContent || ''
+}
+
+/**
+ * The text a reader sees, counted in characters as the server counts them
+ * (PostingLimits::countCharacters): by code point, so an emoji is one rather
+ * than the two UTF-16 units `.length` would report.
+ */
+export function countCharacters(html: string): number {
+  return [...htmlToPlainText(html).trim()].length
 }
 
 /**
  * Validate the HTML content coming from Quill before submission.
  * Returns all errors so the UI can show them simultaneously.
  */
-export function validateContent(html: string): ValidationResult {
+export function validateContent(html: string, limits: ContentValidationLimits = {}): ValidationResult {
   const errors: string[] = []
 
   if (!html || html === '<p><br></p>' || html.trim() === '') {
@@ -381,7 +406,7 @@ export function validateContent(html: string): ValidationResult {
     return { errors, valid: false }
   }
 
-  // Raw HTML size check (matches backend max:10000)
+  // Raw HTML backstop; the text limit below is the one members meet.
   if (html.length > CONTENT_LIMITS.MAX_HTML_LENGTH) {
     errors.push(
       `Content is too long (${html.length.toLocaleString()} chars). Maximum is ${CONTENT_LIMITS.MAX_HTML_LENGTH.toLocaleString()} characters.`
@@ -389,11 +414,8 @@ export function validateContent(html: string): ValidationResult {
   }
 
   // Human-readable text check
-  const plain = htmlToPlainText(html)
-  if (plain.length > CONTENT_LIMITS.MAX_TEXT_LENGTH) {
-    errors.push(
-      `Content exceeds ${CONTENT_LIMITS.MAX_TEXT_LENGTH.toLocaleString()} characters. Please shorten it.`
-    )
+  if (limits.maxTextLength !== undefined && countCharacters(html) > limits.maxTextLength) {
+    errors.push(`Content exceeds ${limits.maxTextLength.toLocaleString()} characters. Please shorten it.`)
   }
 
   // Parse and count elements
@@ -403,8 +425,13 @@ export function validateContent(html: string): ValidationResult {
   // Emoji sprites are characters, not pictures — counting them meant six 😀
   // failed a draft holding no images at all.
   const imageCount = [...doc.querySelectorAll('img')].filter(img => !isEmojiImage(img)).length
-  if (imageCount > CONTENT_LIMITS.MAX_IMAGES) {
-    errors.push(`Too many images (${imageCount}). Maximum is ${CONTENT_LIMITS.MAX_IMAGES}.`)
+  if (limits.maxImages !== undefined && imageCount > limits.maxImages) {
+    errors.push(`Too many images (${imageCount}). Maximum is ${limits.maxImages}.`)
+  }
+
+  const videoCount = doc.querySelectorAll('video').length
+  if (limits.maxVideos !== undefined && videoCount > limits.maxVideos) {
+    errors.push(`Too many videos (${videoCount}). Maximum is ${limits.maxVideos}.`)
   }
 
   const linkCount = doc.querySelectorAll('a').length
@@ -438,7 +465,7 @@ export function validateContent(html: string): ValidationResult {
   }
 
   // Validate all href / src URLs
-  const links = doc.querySelectorAll('a[href], img[src]')
+  const links = doc.querySelectorAll('a[href], img[src], video[src]')
   for (const element of links) {
     const url = element.getAttribute('href') || element.getAttribute('src') || ''
     if (url && !isSafeUrl(url)) {
@@ -449,9 +476,9 @@ export function validateContent(html: string): ValidationResult {
     }
   }
 
-  // Catch base64-embedded images that bypassed sanitization (e.g. programmatic insertion)
-  for (const img of doc.querySelectorAll('img')) {
-    if (/^data:/i.test(img.getAttribute('src') || '')) {
+  // Catch base64-embedded media that bypassed sanitization (e.g. programmatic insertion)
+  for (const media of doc.querySelectorAll('img, video')) {
+    if (/^data:/i.test(media.getAttribute('src') || '')) {
       errors.push(
         'Embedded base64 images are not allowed. Please upload images using the attachment button.'
       )

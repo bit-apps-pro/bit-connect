@@ -154,7 +154,7 @@ final class Bit_Connect_Notifications extends Migration
         if ($result === false) {
             $error = Connection::prop('last_error');
 
-            throw new RuntimeException(esc_html("Notifications migration failed: {$error} — while running: {$sql}"));
+            throw new RuntimeException(esc_html("Notifications migration failed: {$error} (while running: {$sql})"));
         }
     }
 

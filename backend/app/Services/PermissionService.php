@@ -128,6 +128,15 @@ final class PermissionService
         return WpCapabilities::check(Capabilities::VOTE_POST->value);
     }
 
+    /**
+     * Whether the member may put a tag on a topic that is not in the list yet.
+     * The tag then waits for approval — see TagApprovalService.
+     */
+    public static function canCreateTag(): bool
+    {
+        return WpCapabilities::check(Capabilities::CREATE_TAG->value);
+    }
+
     // -------------------------------------------------------------------------
     // Moderation
     // -------------------------------------------------------------------------
@@ -146,11 +155,6 @@ final class PermissionService
     public static function canDeleteAny(): bool
     {
         return WpCapabilities::check(Capabilities::DELETE_ANY->value);
-    }
-
-    public static function canPinPost(): bool
-    {
-        return WpCapabilities::check(Capabilities::PIN_POST->value);
     }
 
     public static function canLockPost(): bool
@@ -185,8 +189,10 @@ final class PermissionService
     {
         $capabilities = [];
 
-        foreach (Capabilities::cases() as $capability) {
-            $capabilities[$capability->value] = WpCapabilities::check($capability->value);
+        // Every slug the forum recognises, another plugin's included: a
+        // capability the portal is never told about reads as "not allowed".
+        foreach (ExtensionPoints::capabilities() as $capability) {
+            $capabilities[$capability] = WpCapabilities::check($capability);
         }
 
         return $capabilities;

@@ -11,10 +11,6 @@ export interface TopicTypeRequestBody {
   description?: string
   meta: {
     bit_connect_color?: string
-    bit_connect_icon_dark_id?: number
-    bit_connect_icon_dark_url?: string
-    bit_connect_icon_id?: number
-    bit_connect_icon_url?: string
   }
   name: string
   /** Omitted lets WordPress derive one from the name. */

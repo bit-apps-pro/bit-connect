@@ -85,7 +85,8 @@ final class PostController
         // get_post() answers for any post on the site, of any type and status.
         // This endpoint serves forum topics, and only the ones the viewer may
         // read — otherwise a guest could page through drafts and private posts
-        // by ID.
+        // by ID. A private or hidden topic answers exactly like a missing one,
+        // so the response does not confirm that there is something behind it.
         if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
             return Response::error('Post not found', 404);
         }

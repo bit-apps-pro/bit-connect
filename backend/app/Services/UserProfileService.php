@@ -40,13 +40,13 @@ class UserProfileService
         'bit_connect_forum_create_post'        => 'Posting',
         'bit_connect_forum_edit_own_post'      => 'Posting',
         'bit_connect_forum_delete_own_post'    => 'Posting',
+        'bit_connect_forum_create_tag'         => 'Posting',
         'bit_connect_forum_create_comment'     => 'Commenting',
         'bit_connect_forum_edit_own_comment'   => 'Commenting',
         'bit_connect_forum_delete_own_comment' => 'Commenting',
         'bit_connect_forum_vote_post'          => 'Voting',
         'bit_connect_forum_delete_any'         => 'Other People\'s Content',
         'bit_connect_forum_moderate'           => 'Moderation',
-        'bit_connect_forum_pin_post'           => 'Moderation',
         'bit_connect_forum_lock_post'          => 'Moderation',
         'bit_connect_forum_manage'             => 'Administration',
     ];
@@ -151,12 +151,6 @@ class UserProfileService
         $permissions = [];
 
         foreach (Capabilities::cases() as $capability) {
-            // Pinning is not part of the current release, so the panel should
-            // not promise it either way.
-            if ($capability === Capabilities::PIN_POST) {
-                continue;
-            }
-
             $permissions[] = [
                 'key'   => $capability->value,
                 'label' => Capabilities::translatedLabel($capability),
@@ -223,18 +217,22 @@ class UserProfileService
         $userId = (int) $userId;
         $postType = PostTypes::BIT_CONNECT->value;
 
+        // Neither list names a topic a plugin keeps from the one viewing the
+        // profile — nor a comment written on one.
+        $viewer = get_current_user_id();
+
         $topicWhere = Connection::prepare(
             "p.post_author = %d AND p.post_type = %s AND p.post_status = 'publish'",
             $userId,
             $postType
-        );
+        ) . TopicService::heldBackSql('p.ID', $viewer);
 
         $commentWhere = Connection::prepare(
             "c.user_id = %d AND c.comment_approved = '1' AND c.comment_type IN ('', 'comment')
              AND cp.post_type = %s AND cp.post_status = 'publish'",
             $userId,
             $postType
-        );
+        ) . TopicService::heldBackSql('cp.ID', $viewer);
 
         $union = "SELECT 'topic' AS kind, p.ID AS item_id, p.post_date_gmt AS occurred_at
                   FROM {$wpdbPosts} p
@@ -262,53 +260,6 @@ class UserProfileService
     }
 
     /**
-     * The member's topics that are currently pinned.
-     *
-     * Pinning is WordPress's `sticky_posts` option, which TopicService already
-     * reads back as `is_pinned`. There is no index on it, so this filters an
-     * explicit id list rather than querying — the sticky set is small by
-     * definition (it is a curated shortlist, not a category).
-     *
-     * @param int $userId
-     * @param int $page
-     * @param int $perPage
-     *
-     * @return array{data:array, pagination:array}
-     */
-    public function pinnedTopics($userId, $page = 1, $perPage = 10)
-    {
-        [$page, $perPage] = $this->paging($page, $perPage);
-
-        $sticky = array_map('intval', (array) get_option('sticky_posts', []));
-
-        if ($sticky === []) {
-            return [
-                'data'       => [],
-                'pagination' => $this->pagination(0, $page, $perPage),
-            ];
-        }
-
-        // Restrict to this member's own sticky topics; getAllTopics still
-        // applies the status and `perm => readable` rules.
-        $owned = $this->topicService->getAllTopics(
-            [
-                'author'           => (int) $userId,
-                'post__in'         => $sticky,
-                'numberposts'      => -1,
-                'include_comments' => false,
-            ]
-        );
-
-        $total = \count($owned);
-        $offset = ($page - 1) * $perPage;
-
-        return [
-            'data'       => \array_slice($owned, $offset, $perPage),
-            'pagination' => $this->pagination($total, $page, $perPage),
-        ];
-    }
-
-    /**
      * Approved comments the member left on portal topics, newest first.
      *
      * Each row carries just enough context to render a list entry and link back
@@ -329,6 +280,8 @@ class UserProfileService
         $userId = (int) $userId;
         $offset = ($page - 1) * $perPage;
 
+        // A comment on a topic a plugin keeps from the viewer is left out with
+        // it: the row carries the comment's words and the topic's title.
         $where = Connection::prepare(
             "c.user_id = %d
              AND c.comment_approved = '1'
@@ -337,7 +290,7 @@ class UserProfileService
              AND p.post_status = 'publish'",
             $userId,
             PostTypes::BIT_CONNECT->value
-        );
+        ) . TopicService::heldBackSql('p.ID', get_current_user_id());
 
         $total = (int) Connection::get_var(
             "SELECT COUNT(*) FROM {$wpdbComments} c
@@ -406,7 +359,7 @@ class UserProfileService
              AND p.post_status = 'publish'",
             $userId,
             PostTypes::BIT_CONNECT->value
-        );
+        ) . TopicService::heldBackSql('p.ID', get_current_user_id());
 
         $total = (int) Connection::get_var(
             "SELECT COUNT(*) FROM {$votes} v
@@ -466,7 +419,7 @@ class UserProfileService
                  WHERE post_author = %d AND post_type = %s AND post_status = 'publish'",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . TopicService::heldBackSql('ID', get_current_user_id())
         );
 
         $lastComment = Connection::get_var(
@@ -476,7 +429,7 @@ class UserProfileService
                  WHERE c.user_id = %d AND c.comment_approved = '1' AND p.post_type = %s",
                 $userId,
                 PostTypes::BIT_CONNECT->value
-            )
+            ) . TopicService::heldBackSql('p.ID', get_current_user_id())
         );
 
         $latest = max((string) $lastPost, (string) $lastComment);

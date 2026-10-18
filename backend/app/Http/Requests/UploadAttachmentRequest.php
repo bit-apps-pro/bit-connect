@@ -23,8 +23,6 @@ final class UploadAttachmentRequest extends Request
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
 
-    public const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-
     /**
      * The server-verified file array (sanitized name + magic-byte MIME),
      * populated by validateFile(). Callers should upload THIS, not the raw
@@ -66,7 +64,11 @@ final class UploadAttachmentRequest extends Request
             // double-extension and dangerous-extension checks). The
             // client-supplied $file['type'] / $file['size'] are attacker
             // controlled and must never be trusted.
-            $this->validatedFile = (new AttachmentValidatorService())->validate($files['file']);
+            $this->validatedFile = (new AttachmentValidatorService())->validate(
+                $files['file'],
+                null,
+                AttachmentValidatorService::attachmentTypes()
+            );
         } catch (InvalidArgumentException $e) {
             return $e->getMessage();
         }

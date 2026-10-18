@@ -8,7 +8,6 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
-use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\CheckTopicSlugRequest;
@@ -25,10 +24,15 @@ use BitApps\BitConnect\Services\NotificationPreferences;
 use BitApps\BitConnect\Services\NotificationRecipients;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
+use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\StatusService;
+use BitApps\BitConnect\Services\TagResolverService;
+use BitApps\BitConnect\Services\TopicModerationService;
 use BitApps\BitConnect\Services\TopicService;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
+use WP_Error;
 
 final class TopicController
 {
@@ -54,39 +58,15 @@ final class TopicController
         $perPage = $validatedData['per_page'] ?? 10;
         $visibility = $validatedData['visibility'] ?? '';
         $myTopics = $validatedData['my_topics'] ?? '';
+        $view = $validatedData['view'] ?? '';
 
-        // Build taxonomy filters
-        $taxonomyFilters = [
-            Taxonomies::STAGES->value      => $validatedData['stages'] ?? null,
-            Taxonomies::DEPARTMENTS->value => $validatedData['departments'] ?? null,
-            Taxonomies::TOPIC_TYPES->value => $validatedData['topic-types'] ?? null,
-            Taxonomies::STATUSES->value    => $validatedData['statuses'] ?? null,
-            Taxonomies::TAGS->value        => $validatedData['tags'] ?? null,
-        ];
-
-        // Build tax_query array for WP_Query
-        $taxQuery = [];
-        foreach ($taxonomyFilters as $taxonomy => $term) {
-            if (!empty($term)) {
-                $terms = array_map('trim', explode(',', $term));
-                $taxQuery[] = [
-                    'taxonomy' => $taxonomy,
-                    'field'    => 'slug',
-                    'terms'    => $terms,
-                    'operator' => 'IN',
-                ];
-            }
-        }
-
-        if (\count($taxQuery) > 1) {
-            $taxQuery['relation'] = 'AND';
-        }
+        $taxQuery = $this->taxQuery($validatedData);
 
         // Build filters array for TopicService
         $filters = [
             'numberposts' => $perPage,
             'paged'       => $page,
-            'orderby'     => 'date',
+            'orderby'     => $sortBy === TopicService::ORDER_VOTES ? TopicService::ORDER_VOTES : 'date',
             'order'       => ($sortBy === 'oldest') ? 'ASC' : 'DESC',
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Topics are filtered by taxonomy by design; there is no meta equivalent.
             'tax_query'        => $taxQuery,
@@ -99,6 +79,16 @@ final class TopicController
 
         if ($myTopics === 'true' || $myTopics === '1') {
             $filters['my_topics'] = true;
+        }
+
+        $followed = $validatedData['followed'] ?? '';
+
+        if ($followed === 'true' || $followed === '1') {
+            $filters['followed'] = true;
+        }
+
+        if ($view !== '') {
+            $filters['view'] = $view;
         }
 
         if ($search !== '') {
@@ -127,6 +117,21 @@ final class TopicController
     }
 
     /**
+     * The topic types the topics under these filters are filed as, so an
+     * archive offers type chips only for types it holds.
+     *
+     * Takes the list's own filters and ignores `topic-types`: the answer is
+     * the row of choices, which must not shrink to the one already picked.
+     */
+    public function typesUsed(GetAllTopicsRequest $request)
+    {
+        $filters = $request->validated();
+        unset($filters['topic-types']);
+
+        return Response::success($this->topicService->topicTypesUsed($this->taxQuery($filters)));
+    }
+
+    /**
      * Report whether a slug is free, and which one the save would really use.
      *
      * Advisory only — nothing here reserves the slug, so two authors settling
@@ -149,17 +154,25 @@ final class TopicController
     {
         $validatedData = $request->validated();
 
+        $resolved = $this->resolveTags($validatedData);
+
+        if (is_wp_error($resolved)) {
+            return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
+        }
+
         // Prepare data for service
         $topicData = [
             'post_title'   => $validatedData['post_title'],
-            'post_content' => $validatedData['post_content'],
-            'post_excerpt' => $validatedData['post_content'],
+            'post_content' => $validatedData['post_content'] ?? '',
             'post_status'  => $validatedData['post_status'] ?? 'publish',
             'topic_types'  => $validatedData['topic-types'] ?? [],
-            'departments'  => $validatedData['departments'] ?? [],
-            'tags'         => $validatedData['tags'] ?? [],
+            'tags'         => $resolved['ids'],
             'attachments'  => $validatedData['attachments'] ?? [],
         ];
+
+        foreach (array_keys(TopicTaxonomies::all()) as $param) {
+            $topicData[$param] = $validatedData[$param] ?? [];
+        }
 
         // Only when the author actually chose one. A slug of separators alone
         // sanitizes to '', which must fall through to the title rather than
@@ -191,6 +204,7 @@ final class TopicController
         }
 
         $this->notifyNewTopic($topic);
+        $this->notifySuggestedTags($topic, $resolved['created']);
 
         return Response::success($topic);
     }
@@ -243,14 +257,7 @@ final class TopicController
             }
         }
 
-        // Pin/lock require dedicated capabilities (moderator-level actions)
-        if (isset($validatedData['is_pinned'])) {
-            if (!PermissionService::canPinPost()) {
-                return Response::error('You do not have permission to pin topics', 403);
-            }
-            $updateData['is_pinned'] = (bool) $validatedData['is_pinned'];
-        }
-
+        // Locking needs its own capability (a moderator-level action)
         if (isset($validatedData['is_locked'])) {
             if (!PermissionService::canLockPost()) {
                 return Response::error('You do not have permission to lock topics', 403);
@@ -275,7 +282,11 @@ final class TopicController
             }
             if (!empty($validatedData['post_content']) && trim($validatedData['post_content'])) {
                 $updateData['post_content'] = $validatedData['post_content'];
-                $updateData['post_excerpt'] = $validatedData['post_content'];
+                // Cleared, not copied: SeoContent::excerpt() falls back to the
+                // content, and a copy of a long topic overflows the TEXT column
+                // and fails the whole write. Clearing also drops the stale
+                // copy older topics still carry.
+                $updateData['post_excerpt'] = '';
             }
             // Blank means "leave the permalink alone", not "rebuild it from the
             // title" — links already pointing at this topic have to keep working.
@@ -294,15 +305,33 @@ final class TopicController
             if (isset($validatedData['topic-types'])) {
                 $updateData['topic_types'] = $validatedData['topic-types'];
             }
-            if (isset($validatedData['departments'])) {
-                $updateData['departments'] = $validatedData['departments'];
-            }
-            if (isset($validatedData['tags'])) {
-                $updateData['tags'] = $validatedData['tags'];
+            // Present and empty means "take it out of that taxonomy's term";
+            // absent means "leave it as it is".
+            foreach (array_keys(TopicTaxonomies::all()) as $param) {
+                if (\array_key_exists($param, $validatedData)) {
+                    $updateData[$param] = $validatedData[$param];
+                }
             }
             if (isset($validatedData['attachments'])) {
                 $updateData['attachments'] = $validatedData['attachments'];
             }
+        }
+
+        // Tags are filing, not words: a moderator who may move a topic between
+        // stages may also file it under the tags it belongs to, and a member
+        // who mis-tagged their own topic may fix it. Everyone this endpoint
+        // admits is one or the other.
+        $suggested = [];
+
+        if (isset($validatedData['tags'])) {
+            $resolved = $this->resolveTags($validatedData);
+
+            if (is_wp_error($resolved)) {
+                return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
+            }
+
+            $updateData['tags'] = $resolved['ids'];
+            $suggested = $resolved['created'];
         }
 
         if (empty($updateData)) {
@@ -319,9 +348,10 @@ final class TopicController
             return Response::error('Failed to update topic', self::HTTP_SERVER_ERROR);
         }
 
-        $this->recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
+        TopicModerationService::recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
         $this->notifyMentions($id, $existingTopic, $topic);
-        $this->notifyStatusChange($id, $updateData, $existingTopic, $topic);
+        TopicModerationService::notifyStatusChange($id, $updateData, $existingTopic, $topic);
+        $this->notifySuggestedTags($topic, $suggested);
 
         return Response::success($topic);
     }
@@ -344,30 +374,9 @@ final class TopicController
             return Response::error('You are not allowed to delete this topic', 403);
         }
 
-        // Read before the delete, written after it succeeds. Reading first
-        // because once deleteTopic() returns there is no row left to take a
-        // title or an author from, and this log row is the only place the topic
-        // will have existed. Writing after because a delete that fails must not
-        // leave a record saying it happened.
-        $deleted = [
-            'post_title'   => $existingTopic['post_title'] ?? '',
-            'post_content' => ActivityLogService::excerpt($existingTopic['post_content'] ?? ''),
-        ];
-        $deletedAuthor = (int) ($existingTopic['post_author'] ?? 0);
-
-        $result = $this->topicService->deleteTopic($id);
-
-        if (!$result) {
+        if (!(new TopicModerationService($this->topicService))->deleteWithRecord((int) $id, $existingTopic)) {
             return Response::error('Failed to delete topic', self::HTTP_SERVER_ERROR);
         }
-
-        ActivityLogService::recordIfNotAuthor(
-            ActivityActions::DELETE_POST,
-            ActivityLogService::TARGET_POST,
-            $id,
-            $deletedAuthor,
-            $deleted
-        );
 
         return Response::success(
             [
@@ -417,7 +426,7 @@ final class TopicController
             'excerpt'     => ActivityLogService::excerpt(
                 wp_strip_all_tags((string) ($topic['post_content'] ?? ''))
             ),
-            'url' => (string) ($topic['permalink'] ?? ''),
+            'url' => PortalLocation::topicUrl((int) ($topic['ID'] ?? 0)),
         ];
 
         // Named before announced, and the names are then excluded below. Being
@@ -501,14 +510,18 @@ final class TopicController
             return;
         }
 
-        NotificationService::dispatch(
+        // From the author, whoever saved. Only the author writes a topic's words,
+        // but the save that first makes them public can be someone else's — a
+        // moderator changing the status of a topic another plugin was holding.
+        NotificationService::dispatchAs(
+            (int) ($after['post_author'] ?? 0),
             NotificationTypes::MENTION,
             NotificationService::TARGET_TOPIC,
             $id,
             [
                 'topic_title' => (string) ($after['post_title'] ?? ''),
                 'excerpt'     => ActivityLogService::excerpt(wp_strip_all_tags($now)),
-                'url'         => (string) ($after['permalink'] ?? ''),
+                'url'         => PortalLocation::topicUrl((int) ($after['ID'] ?? 0)),
             ],
             $id,
             $mentioned
@@ -516,129 +529,91 @@ final class TopicController
     }
 
     /**
-     * Tells a thread when its stage or status moves.
-     *
-     * The one edit to a topic that the people watching it actually want pushed
-     * to them: "Planned → Shipped" is the answer they subscribed for. Everything
-     * else this endpoint can change is either invisible to them (a slug), or
-     * their own doing (the author rewording their post), or already obvious on
-     * the page (a lock).
-     *
-     * Only fires when a term actually moved. `isset($updateData['statuses'])`
-     * alone is true whenever the form posted the field back unchanged, which on
-     * this endpoint is every single save — so the comparison is the whole guard.
-     *
-     * @param array<string, mixed> $updateData
-     * @param array<string, mixed> $existingTopic
-     * @param array<string, mixed> $after
+     * A `tax_query` for WP_Query from the list's term filters — each a
+     * comma-separated list of slugs, any of which matches.
      */
-    private function notifyStatusChange(int $id, array $updateData, array $existingTopic, array $after): void
+    private function taxQuery(array $validatedData): array
     {
-        $moved = [];
+        $taxonomyFilters = [
+            Taxonomies::STAGES->value      => $validatedData['stages'] ?? null,
+            Taxonomies::TOPIC_TYPES->value => $validatedData['topic-types'] ?? null,
+            Taxonomies::STATUSES->value    => $validatedData['statuses'] ?? null,
+            Taxonomies::TAGS->value        => $validatedData['tags'] ?? null,
+        ];
 
-        foreach (['statuses', 'stages'] as $taxonomy) {
-            if (!isset($updateData[$taxonomy])) {
-                continue;
-            }
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $taxonomyFilters[$entry['taxonomy']] = $validatedData[$param] ?? null;
+        }
 
-            if ($this->termId($existingTopic, $taxonomy) !== $this->termId($after, $taxonomy)) {
-                $moved[] = $taxonomy;
+        $taxQuery = [];
+        foreach ($taxonomyFilters as $taxonomy => $term) {
+            if (!empty($term)) {
+                $taxQuery[] = [
+                    'taxonomy' => $taxonomy,
+                    'field'    => 'slug',
+                    'terms'    => array_map('trim', explode(',', $term)),
+                    'operator' => 'IN',
+                ];
             }
         }
 
-        if ($moved === []) {
+        if (\count($taxQuery) > 1) {
+            $taxQuery['relation'] = 'AND';
+        }
+
+        return $taxQuery;
+    }
+
+    /**
+     * Tells moderators a tag is waiting for review, one row per tag.
+     *
+     * Sent after the topic is saved, not when the tag is created: a suggestion
+     * on a topic that then failed to save is nothing to review. The row points
+     * at the topic, where the tag can be seen in use; the decision is made on
+     * the admin's Tags screen.
+     *
+     * @param array<string, mixed>                     $topic     as the service returned it
+     * @param array<int, array{id: int, name: string}> $suggested what TagResolverService created
+     */
+    private function notifySuggestedTags(array $topic, array $suggested): void
+    {
+        $topicId = (int) ($topic['ID'] ?? 0);
+
+        if ($topicId <= 0) {
             return;
         }
 
-        NotificationService::dispatch(
-            NotificationTypes::TOPIC_STATUS_CHANGED,
-            NotificationService::TARGET_TOPIC,
-            $id,
-            [
-                'topic_title' => (string) ($after['post_title'] ?? ''),
-                'changed'     => $moved,
-                // Names, not ids, and stored rather than resolved at read time:
-                // a status renamed or deleted next month should not turn an old
-                // notification into a blank.
-                'status' => $this->termName($after, 'statuses'),
-                'stage'  => $this->termName($after, 'stages'),
-                'from'   => [
-                    'status' => $this->termName($existingTopic, 'statuses'),
-                    'stage'  => $this->termName($existingTopic, 'stages'),
+        foreach ($suggested as $tag) {
+            NotificationService::dispatch(
+                NotificationTypes::TAG_SUGGESTED,
+                NotificationService::TARGET_TOPIC,
+                $topicId,
+                [
+                    'topic_title' => (string) ($topic['post_title'] ?? ''),
+                    'tag_name'    => $tag['name'],
+                    'tag_id'      => $tag['id'],
                 ],
-                'url' => (string) ($after['permalink'] ?? ''),
-            ],
-            $id
+                $topicId
+            );
+        }
+    }
+
+    /**
+     * The topic's tags as ids, with any name the member typed matched to a
+     * tag or created as a pending one — see TagResolverService.
+     *
+     * @param array<string, mixed> $validatedData
+     *
+     * @return array{ids: array<int, int>, created: array<int, array{id: int, name: string}>}|WP_Error
+     */
+    private function resolveTags(array $validatedData)
+    {
+        $refs = $validatedData['tags'] ?? [];
+
+        return TagResolverService::resolve(
+            \is_array($refs) ? $refs : [],
+            get_current_user_id(),
+            PermissionService::canCreateTag()
         );
     }
-
-    /**
-     * The id of a topic's single status or stage term, or 0 when it has none.
-     *
-     * Both live under `terms` as one nullable formatted term rather than a list
-     * — see TopicService::getTopicTerms(), which takes [0] of each taxonomy.
-     *
-     * @param array<string, mixed> $topic
-     */
-    private function termId(array $topic, string $key): int
-    {
-        $terms = \is_array($topic['terms'] ?? null) ? $topic['terms'] : [];
-        $term = \is_array($terms[$key] ?? null) ? $terms[$key] : [];
-
-        return (int) ($term['term_id'] ?? 0);
-    }
-
-    /**
-     * The name of a topic's single status or stage term, or '' when it has none.
-     *
-     * @param array<string, mixed> $topic
-     */
-    private function termName(array $topic, string $key): string
-    {
-        $terms = \is_array($topic['terms'] ?? null) ? $topic['terms'] : [];
-        $term = \is_array($terms[$key] ?? null) ? $terms[$key] : [];
-
-        return (string) ($term['name'] ?? '');
-    }
-
-    /**
-     * Records what a moderator did to somebody else's topic.
-     *
-     * Reads the same $updateData the service acted on, so it cannot claim an
-     * edit the controller dropped: only the author reaches the content branch,
-     * so post_title and post_content never enter that array for anybody else.
-     *
-     * There is no arm for the words themselves. Editing another member's topic
-     * was withdrawn, which left that branch unreachable for a non-author and its
-     * before/after snapshot writing nothing. What is recorded here is the pin
-     * and lock moves that remain a moderator's.
-     *
-     * @param array<string, mixed> $updateData the fields actually applied
-     * @param array<string, mixed> $after      the refreshed topic
-     */
-    private function recordTopicActivity(int $id, int $author, array $updateData, array $after): void
-    {
-        // Pin and lock are recorded in whichever direction they were moved, so
-        // the feed reads as a history rather than a list of "changed pinning".
-        if (isset($updateData['is_pinned'])) {
-            ActivityLogService::recordIfNotAuthor(
-                $updateData['is_pinned'] ? ActivityActions::PIN_POST : ActivityActions::UNPIN_POST,
-                ActivityLogService::TARGET_POST,
-                $id,
-                $author,
-                ['post_title' => $after['post_title'] ?? '']
-            );
-        }
-
-        if (isset($updateData['is_locked'])) {
-            ActivityLogService::recordIfNotAuthor(
-                $updateData['is_locked'] ? ActivityActions::LOCK_POST : ActivityActions::UNLOCK_POST,
-                ActivityLogService::TARGET_POST,
-                $id,
-                $author,
-                ['post_title' => $after['post_title'] ?? '']
-            );
-        }
-    }
-
 }

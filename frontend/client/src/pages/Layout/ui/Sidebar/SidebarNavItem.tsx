@@ -2,15 +2,20 @@ import { cn } from '@common/helpers/globalHelpers'
 import useActiveStage from '@pages/Layout/data/use-active-stage'
 import If from '@utilities/If'
 import { theme } from 'antd'
-import { motion } from 'framer-motion'
-import { memo, useState } from 'react'
-import { NavLink } from 'react-router'
+import { m } from 'framer-motion'
+import { memo, type ReactNode, useState } from 'react'
+import { Link } from 'react-router'
 
+import { listingLink } from './listing-link'
 import { navItemStyle } from './SidebarNavItem.style'
 
 interface SidebarNavProps {
   props: {
+    /** A built-in icon, for rows that are the portal's own pages rather than terms. */
+    glyph?: ReactNode
     icon?: string
+    /** Overrides the stage match below, for rows that are not stages. */
+    isActive?: boolean
     label: JSX.Element | string
     path: string
     /**
@@ -20,10 +25,16 @@ interface SidebarNavProps {
      * stage icons at all.
      */
     reserveIconSlot?: boolean
+    /** The archive the listing is scoped to, which a stage row keeps — see listing-link. */
+    scope?: string
+    /** Overrides the stage archive URL below, for rows that are not stages. */
+    to?: string
   }
 }
 export default memo(SidebarNavItem)
-function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: SidebarNavProps) {
+function SidebarNavItem({
+  props: { glyph, icon, isActive: isActiveOverride, label, path, reserveIconSlot, scope, to: toOverride }
+}: SidebarNavProps) {
   const { token } = theme.useToken()
   // The URL of an icon that failed to load, so a stage whose attachment was
   // deleted from the media library falls back to its name instead of showing a
@@ -33,18 +44,45 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
 
   // Not read off `?stage=` alone: a topic URL carries no query string, so the
   // reader's stage has to be recovered from the topic itself. See the hook.
-  const isActive = useActiveStage() === path
+  const activeStage = useActiveStage()
+  const isActive = isActiveOverride ?? activeStage === path
 
+  // The stage archive's own path, not `/?stage=`: the sidebar is the portal's
+  // primary navigation, so the URLs it hands out are the ones that get shared,
+  // crawled and ranked — and a path segment is a page in its own right, where a
+  // query string is a filtered view of the portal page that canonicalises away.
+  //
+  // The default stage is the exception: `/stage/questions` lists exactly what
+  // `/` already lists, so pointing at it would put the portal's busiest page
+  // behind a second URL. The server 301s that archive back here, and this keeps
+  // the nav from relying on the redirect. `?stage=` still works for links
+  // already shared — see pages/topics/topics.tsx.
+  //
+  // With the listing scoped to an archive the row narrows that archive instead
+  // of leaving it, since the sidebar is the only place either choice is made.
+  const to = toOverride ?? listingLink({ scope, stage: path })
+
+  // A plain Link, with the row's own answer as aria-current: NavLink matches the
+  // path alone, so every stage of a listing narrowed by `?stage=` would claim
+  // to be the current page.
   return (
-    <NavLink
+    <Link
+      aria-current={isActive ? 'page' : undefined}
       className={cn([
         // h-11 keeps the row at the 44px minimum touch target on phones.
-        'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-cursor-pointer bc-items-center bc-gap-2 bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none'
+        'bc-relative bc-z-0 bc-flex bc-h-11 bc-w-full bc-shrink-0 bc-cursor-pointer bc-items-center bc-gap-2 bc-rounded-md bc-font-medium bc-text-base bc-bg-transparent bc-border-none bc-text-left bc-outline-none bc-transition-colors',
+        // The current row already has its pill.
+        !isActive && 'hover:bc-bg-surface-hover',
+        'focus-visible:bc-outline focus-visible:bc-outline-2 focus-visible:bc-outline-offset-2 focus-visible:bc-outline-primary'
       ])}
       style={navItemStyle({ isActive, token })}
-      to={`/?stage=${path}`}
+      to={to}
     >
-      {icon && brokenIcon !== icon ? (
+      {glyph ? (
+        <span aria-hidden className="bc-flex bc-h-5 bc-w-5 bc-shrink-0 bc-items-center bc-justify-center">
+          {glyph}
+        </span>
+      ) : icon && brokenIcon !== icon ? (
         <img
           alt=""
           // Rendered as uploaded, no filter. A dark glyph that would disappear
@@ -59,14 +97,16 @@ function SidebarNavItem({ props: { icon, label, path, reserveIconSlot } }: Sideb
       )}
       {/* Truncates rather than spills: the row height never grows, and an icon
           takes 28px of a sider that is only 250px wide to begin with. */}
-      <span className="bc-min-w-0 bc-truncate">{label}</span>
+      <span className="bc-min-w-0 bc-flex-1 bc-truncate">{label}</span>
 
       <If conditions={isActive}>
-        <motion.span
+        <m.span
           className="bc-absolute bc-inset-0 bc--z-10 bc-h-full bc-w-full bc-rounded-md bc-bg-primary/10 bc-border bc-border-solid bc-border-primary/30"
-          layoutId="sidebar-nav-item-active"
+          // One pill per section: a stage and a row of another section can
+          // both be current, and a shared id would fling one pill between them.
+          layoutId={toOverride ? 'sidebar-nav-other-active' : 'sidebar-nav-item-active'}
         />
       </If>
-    </NavLink>
+    </Link>
   )
 }

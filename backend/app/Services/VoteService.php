@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\PostTypes as EnumPostTypes;
 use BitApps\BitConnect\Model\Vote;
@@ -53,7 +54,9 @@ class VoteService
 
         $post = get_post($postId);
 
-        if (!$post || $post->post_type !== EnumPostTypes::BIT_CONNECT->value) {
+        // A topic the voter cannot read is as good as missing: a vote on it
+        // would confirm it exists and move counts its readers see.
+        if (!$post || $post->post_type !== EnumPostTypes::BIT_CONNECT->value || !TopicService::isReadableBy($post, $userId)) {
             return $this->error(__('Invalid post.', 'bit-connect'));
         }
 
@@ -76,13 +79,25 @@ class VoteService
         // Only on the way up. Un-voting is not an event anyone needs telling
         // about, and pairing the two would let one person toggle a notification
         // in and out of somebody's bell.
+        //
+        // And once per voter per topic within the window repeats fold over:
+        // the folded row counts events, not people, so voting, un-voting and
+        // voting again read as "2 people upvoted your post".
+        $notifiedKey = 'bit_connect_vote_notified_' . $postId . '_' . $userId;
+
+        if (get_transient($notifiedKey) !== false) {
+            return $this->success(__('Vote added.', 'bit-connect'), $this->postVoteData($postId, $userId));
+        }
+
+        set_transient($notifiedKey, 1, NotificationSettings::COLLAPSE_WINDOW_MINUTES * MINUTE_IN_SECONDS);
+
         NotificationService::dispatch(
             NotificationTypes::VOTE_RECEIVED,
             NotificationService::TARGET_TOPIC,
             $postId,
             [
                 'topic_title' => (string) $post->post_title,
-                'url'         => (string) get_permalink($post),
+                'url'         => PortalLocation::topicUrl($post),
             ],
             $postId
         );

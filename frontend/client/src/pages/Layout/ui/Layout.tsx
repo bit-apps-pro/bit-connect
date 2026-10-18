@@ -4,8 +4,9 @@ import { Global, ThemeProvider } from '@emotion/react'
 import LoginWarningModal from '@features/login-warning-modal/ui/login-warning-modal'
 import useTaxonomies from '@features/topic-modal/data/use-taxonomies'
 import getScrollParent from '@utils/get-scroll-parent'
+import { isListingPath } from '@utils/listing-path'
 import { Layout as AntLayout, Space, theme } from 'antd'
-import { motion, useReducedMotion } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
@@ -35,9 +36,23 @@ export default function Layout() {
   useTaxonomies()
   const antConfig = useToken()
 
-  const { pathname } = useLocation()
-  const suspenseKey = pathname.split('/')[1]
+  const { key: locationKey, pathname } = useLocation()
+  // Moving between stages, tags and other archives is the same page showing a
+  // different list, not a new page: keyed as one, so the list swaps its topics
+  // in place instead of the whole column fading out and back in on every click.
+  const isListing = isListingPath(pathname)
+  const pageKey = isListing ? 'listing' : pathname
+  const suspenseKey = isListing ? 'listing' : pathname.split('/')[1]
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // A tap in the phone drawer is a choice made, so it closes on arrival —
+  // leaving it open hid the list the reader just picked. Keyed on the location
+  // entry rather than the path: picking a stage inside a scoped archive changes
+  // only `?stage=`.
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [locationKey])
+
   const shouldReduceMotion = useReducedMotion()
 
   // Whether anything has scrolled under the header, which is the only moment
@@ -70,14 +85,15 @@ export default function Layout() {
       <LoginWarningModal />
       <Header isScrolled={isScrolled} onMenuOpen={() => setSidebarOpen(true)} />
       <AntLayout
-        className={cn([cls.layoutWrp, 'sm:bc-p-5'])}
+        className={cls.layoutWrp}
         color-scheme={isDarkTheme ? 'dark' : 'light'}
         hasSider
         style={{
-          // One step below the cards in both themes, so the panels read as
-          // raised. `transparent` here in dark mode let the page body — which
-          // this app does not own — show through as white gutters.
-          backgroundColor: 'var(--bc-surface-sunken)',
+          // One flat surface: the sider and the list are separated by a rule,
+          // not floated as two cards over a sunken backdrop. Explicit rather
+          // than `transparent`, which let the page body — which this app does
+          // not own — show through in dark mode.
+          backgroundColor: 'var(--bc-surface)',
           // The root is a 100dvh flex column (see global.css); growing into the
           // space left after the header replaces the old hard-coded 90vh, which
           // under-shot on tall screens and over-shot on short ones.
@@ -86,18 +102,7 @@ export default function Layout() {
         }}
       >
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        {/* Gutter keyed to `md`, not `lg`: Sidebar renders the desktop Sider from
-            `md` up (`isMobile = !screens.md`), so an `lg` gutter left the sider
-            and the content edge-to-edge across the whole 768–1023px band. */}
-        {/* Frame from md, where the sider appears and this stops being the whole
-            screen: below that its border ran down the outside edges of the phone
-            and its radius cut a curve out of each corner — a rounded card drawn
-            around a viewport that is not a card. */}
-        <Content
-          className={cn([
-            cls.contentWrp,
-            'scroller thin bc-bg-surface md:bc-ml-5 md:bc-rounded-md md:bc-border md:bc-border-solid md:bc-border-line'
-          ])}
+        <Content className={cn([cls.contentWrp, 'scroller thin bc-bg-surface'])}
           style={{ overflow: 'auto' }}
         >
           {/* Scroll sentinel for the header rule above. The negative margin
@@ -105,21 +110,21 @@ export default function Layout() {
               costs the page below it no space. */}
           <div aria-hidden="true" className="bc-h-px bc--mb-px" ref={topSentinelRef} />
 
-          {/* Enter-only fade keyed by pathname: each navigation fades the new
-              page in. Deliberately no AnimatePresence exit here — animating the
-              outgoing page requires snapshotting the outlet and doubles the
+          {/* Enter-only fade keyed by page: each navigation to another page
+              fades it in. Deliberately no AnimatePresence exit here — animating
+              the outgoing page requires snapshotting the outlet and doubles the
               transition time; an enter fade gives the perceived smoothness
               without either cost. */}
-          <motion.div
+          <m.div
             animate={{ opacity: 1, y: 0 }}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-            key={pathname}
+            key={pageKey}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             <Suspense fallback={fallbackOf()} key={suspenseKey}>
               <Outlet />
             </Suspense>
-          </motion.div>
+          </m.div>
         </Content>
       </AntLayout>
     </ThemeProvider>

@@ -63,9 +63,9 @@ describe('the portal’s filter switches', () => {
     const result = await load({ communityTitle: 'Acme' })
 
     expect(result.current.generalSettings.portalFilters).toEqual({
-      product: true,
       sort: true,
-      tags: true
+      tags: true,
+      types: true
     })
   })
 
@@ -73,10 +73,16 @@ describe('the portal’s filter switches', () => {
     const result = await load({ portalFilters: { tags: false } })
 
     expect(result.current.generalSettings.portalFilters).toEqual({
-      product: true,
       sort: true,
-      tags: false
+      tags: false,
+      types: true
     })
+  })
+
+  it('keep the type chips where Sort left them until they are saved on their own', async () => {
+    const result = await load({ portalFilters: { sort: false } })
+
+    expect(result.current.generalSettings.portalFilters.types).toBe(false)
   })
 })
 

@@ -1,5 +1,6 @@
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
+import { plainText } from '@common/helpers/plain-text'
 import { Alert, Input, Modal, Radio, Space, Typography } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 
@@ -13,13 +14,6 @@ const REQUIRES_DETAILS = 'other'
 
 /** Matches the max on CreateReportRequest, so the server never has to refuse. */
 const DETAILS_LIMIT = 2000
-
-/** Strips tags: the excerpt is stored HTML, shown here as plain text. */
-const plain = (html: string) =>
-  html
-    .replaceAll(/<[^>]*>/g, ' ')
-    .replaceAll(/\s+/g, ' ')
-    .trim()
 
 /**
  * The report dialog, mounted once for the page.
@@ -101,7 +95,7 @@ export default function ReportModal() {
           className="bc-mb-3 bc-rounded bc-bg-surface-sunken bc-p-2 bc-text-sm"
           type="secondary"
         >
-          {plain(target.excerpt).slice(0, 240)}
+          {plainText(target.excerpt).slice(0, 240)}
         </Paragraph>
       )}
 

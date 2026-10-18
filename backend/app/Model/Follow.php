@@ -29,8 +29,6 @@ class Follow extends Model
 {
     public const TARGET_TOPIC = 'topic';
 
-    public const TARGET_DEPARTMENT = 'department';
-
     public const TARGET_TAG = 'tag';
 
     public const TARGET_FORUM = 'forum';
@@ -80,6 +78,28 @@ class Follow extends Model
             ->where('target_type', $targetType)
             ->where('target_id', $targetId)
             ->where('muted', 0)
+            ->get();
+
+        return array_values(
+            array_unique(
+                array_map(static fn ($row): int => (int) $row->user_id, self::asList($rows))
+            )
+        );
+    }
+
+    /**
+     * Everyone with a row on this target, muted or not.
+     *
+     * For moving follows from one term to another, where a muted row is as
+     * much a decision as a listening one and has to travel with the rest.
+     *
+     * @return array<int, int>
+     */
+    public static function userIdsFor(string $targetType, int $targetId): array
+    {
+        $rows = static::select(['user_id'])
+            ->where('target_type', $targetType)
+            ->where('target_id', $targetId)
             ->get();
 
         return array_values(
@@ -143,6 +163,22 @@ class Follow extends Model
             ->first();
 
         return $found instanceof Model ? $found : null;
+    }
+
+    /**
+     * The ids of one kind of thing a member follows and has not muted.
+     *
+     * @return int[]
+     */
+    public static function activeTargetIds(int $userId, string $targetType): array
+    {
+        $rows = static::select(['target_id'])
+            ->where('user_id', $userId)
+            ->where('target_type', $targetType)
+            ->where('muted', 0)
+            ->get();
+
+        return array_map(static fn ($row): int => (int) $row->target_id, self::asList($rows ?? []));
     }
 
     /**

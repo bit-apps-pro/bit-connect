@@ -1,4 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
+import SettingsCard from '@utilities/settings-card'
 import { Skeleton } from 'antd'
 import { useMemo } from 'react'
 import { LuCheck, LuMinus } from 'react-icons/lu'
@@ -60,24 +61,18 @@ export default function PermissionsPanel({
   if (!isLoading && permissions.length === 0) return
 
   return (
-    <section
-      aria-label={__('Permissions')}
-      className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4 sm:bc-p-5"
+    <SettingsCard
+      ariaLabel={__('Permissions')}
+      subtitle={__('Set by your role and any per-member overrides an admin has applied.')}
+      title={isOwnProfile ? __('What you can do') : __('What this member can do')}
     >
-      <h2 className="bc-mb-1 bc-mt-0 bc-text-[15px] bc-font-semibold bc-text-ink">
-        {isOwnProfile ? __('What you can do') : __('What this member can do')}
-      </h2>
-      <p className="bc-mb-4 bc-mt-0 bc-text-[12px] bc-text-ink-subtle">
-        {__('Set by your role and any per-member overrides an admin has applied.')}
-      </p>
-
       {isLoading ? (
         <Skeleton active paragraph={{ rows: 5 }} title={false} />
       ) : (
         <div className="bc-grid bc-gap-x-6 bc-gap-y-4 sm:bc-grid-cols-2">
           {grouped.map(([group, items]) => (
             <div key={group}>
-              <h3 className="bc-mb-1 bc-mt-0 bc-text-[11px] bc-font-semibold bc-uppercase bc-tracking-[0.06em] bc-text-ink-subtle">
+              <h3 className="bc-mb-1 bc-mt-0 bc-text-[11px] bc-font-semibold bc-text-ink-subtle">
                 {group}
               </h3>
               <ul className="bc-m-0 bc-list-none bc-p-0 bc-text-[13px]">
@@ -89,6 +84,6 @@ export default function PermissionsPanel({
           ))}
         </div>
       )}
-    </section>
+    </SettingsCard>
   )
 }

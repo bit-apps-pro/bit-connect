@@ -70,7 +70,7 @@ final class UpdateNotificationSettingsRequest extends Request
         return [
             'digestHour.min'      => __('Pick an hour between 0 and 23.', 'bit-connect'),
             'digestHour.max'      => __('Pick an hour between 0 and 23.', 'bit-connect'),
-            'defaultFrequency.in' => __('That is not a digest frequency this forum offers.', 'bit-connect'),
+            'defaultFrequency.in' => __('That is not a summary email frequency this forum offers.', 'bit-connect'),
         ];
     }
 

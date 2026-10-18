@@ -8,8 +8,11 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
+use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Http\Requests\GetPostVotesRequest;
 use BitApps\BitConnect\Http\Requests\TogglePostVoteRequest;
+use BitApps\BitConnect\Services\TopicAccess;
+use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\VoteService;
 
 /**
@@ -37,6 +40,10 @@ final class VoteController
             return Response::error(__('Post not found.', 'bit-connect'))->httpStatus(404);
         }
 
+        if (!TopicAccess::allows(TopicAccess::UPVOTE)) {
+            return Response::error(__('Upvoting is turned off in this forum.', 'bit-connect'))->httpStatus(403);
+        }
+
         $result = $this->voteService->togglePostVote(get_current_user_id(), $postId);
 
         if (!$result['success']) {
@@ -48,6 +55,13 @@ final class VoteController
 
     public function getPostVotes(GetPostVotesRequest $request)
     {
+        // Even a count says a private topic exists; answer as for a missing one.
+        $post = get_post((int) $request->id);
+
+        if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
+            return Response::error('Post not found', 404);
+        }
+
         return Response::success(
             $this->voteService->getPostVoteStatus((int) $request->id, get_current_user_id())
         );

@@ -18,6 +18,11 @@ declare const SERVER_VARIABLES: {
   ajaxURL: string
   apiURL: string
   assetsURL: string
+  /**
+   * What a member may attach, extension → MIME types
+   * (AttachmentValidatorService::attachmentTypes()). Portal only.
+   */
+  attachmentTypes?: Record<string, string[]>
   authMode?: 'custom_url' | 'plugin_default'
   /**
    * Admin screens only — Head::createConfigVariable() sends these, the portal
@@ -70,8 +75,22 @@ declare const SERVER_VARIABLES: {
   pluginAdminURL: string
   pluginSlug: string
   portalAccess?: 'everyone' | 'logged_in'
-  portalFilters?: { product?: boolean; sort?: boolean; tags?: boolean }
+  /** URL segment → the filter its archive pins and its taxonomy — see BaseView. */
+  portalArchives?: Record<string, { filter: string; follow: string; label: string; taxonomy: string }>
+  portalFilters?: { sort?: boolean; tags?: boolean; types?: boolean }
+  /**
+   * How long a topic or reply may be and what media it may carry
+   * (PostingLimits.php). Both apps receive it: the portal enforces it, the
+   * admin's Settings screen states it.
+   */
+  postingLimits?: {
+    comment: { attachments: null | number; characters: null | number; images: null | number; videos?: null | number }
+    maxFileSize: number
+    maxFileSizeByKind?: { document: number; image: number; video: number }
+    topic: { attachments: null | number; characters: null | number; images: null | number; videos?: null | number }
+  }
   postURL: string
+  proApiURL: string
   promo?: {
     cta?: string
     enabled?: boolean
@@ -87,9 +106,15 @@ declare const SERVER_VARIABLES: {
   routePrefix: string
   settings: string
   siteBaseURL: string
+  /** The WordPress site title — the page-title fallback with no community title. */
+  siteName?: string
   siteURL: string
   timeFormat: string
   timeZone: string
+  /** Topics per server-rendered list page (TopicsView::pageSize()). */
+  topicListPageSize?: number
+  /** Whether the site's permalinks end in a slash (BaseView.php). */
+  trailingSlash?: boolean
   translations?: Record<string, string>
   /** Seed for the notification bell's badge. Absent during the SSR prerender. */
   unreadNotifications?: number

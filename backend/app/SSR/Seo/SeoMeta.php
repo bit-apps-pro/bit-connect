@@ -7,6 +7,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\GeneralSettings;
 use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\TagApprovalService;
 use WP_Term;
 
 if (!defined('ABSPATH')) {
@@ -40,47 +41,43 @@ final class SeoMeta
      */
     public static function forTopics(array $topics, int $page = 1): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled()) {
             return;
         }
 
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
-        $title = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
         $page = max(1, $page);
         $url = SeoContent::pageUrl($page);
 
-        // Pages after the first exist to give a crawler a route to topics deeper
-        // than the first screenful — they are not themselves worth ranking, and
-        // indexing them would put near-identical listings in front of the topic
-        // pages they link to. Self-canonical rather than pointing at page 1:
-        // noindex on a page whose canonical names a different URL can carry the
-        // noindex across to that URL.
-        if ($page > 1) {
-            self::$meta = [
-                'title' => \sprintf(
-                    // translators: 1: community name, 2: page number.
-                    __('%1$s — page %2$s', 'bit-connect'),
-                    $title,
-                    number_format_i18n($page)
-                ),
-                'description' => '',
-                'canonical'   => $url,
-                'image'       => '',
-                'type'        => 'website',
-                'robots'      => SeoSettings::bool('indexPagination') ? '' : 'noindex,follow',
-                'jsonLd'      => [],
-            ];
-
-            return;
-        }
+        // Pages after the first are indexable and self-canonical, as Google's
+        // pagination guidance asks: each is a distinct set of topics under a
+        // title naming its page. They were once noindex, but a page left noindex
+        // is crawled less and less until its links stop being followed — which
+        // is the one job these pages have, reaching topics deeper than the first
+        // screenful. Never canonical to page 1, which would disown them.
+        $title = $page > 1
+            ? \sprintf(
+                // translators: 1: community name, 2: page number.
+                __('%1$s | Page %2$s', 'bit-connect'),
+                $community,
+                number_format_i18n($page)
+            )
+            : $community;
 
         self::$meta = [
             'title'       => $title,
-            'description' => self::listDescription($topics, $title),
-            // Always the bare portal URL: the list is also served under filter
-            // and sort query strings, and every one of those is the same set of
-            // topics in a different order. Pointing them all here is what keeps
-            // the permutations out of the index.
+            'description' => self::listDescription($topics, $community),
+            // The bare page URL: the list is also served under filter and sort
+            // query strings, and every one of those is the same set of topics in
+            // a different order. Pointing them all here is what keeps the
+            // permutations out of the index.
             'canonical' => $url,
             'image'     => self::siteImage(),
             'type'      => 'website',
@@ -96,6 +93,12 @@ final class SeoMeta
      */
     public static function forTopic(?array $topic): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled() || empty($topic) || ($topic['post_status'] ?? '') !== 'publish') {
             return;
         }
@@ -111,7 +114,7 @@ final class SeoMeta
             'robots'      => '',
             'jsonLd'      => self::schemaDocuments(
                 self::discussionJsonLd($topic, $url),
-                self::breadcrumbJsonLd($topic['post_title'] ?? '', $url)
+                self::breadcrumbJsonLd($topic['post_title'] ?? '', $url, self::topicTrail($topic))
             ),
         ];
     }
@@ -127,6 +130,12 @@ final class SeoMeta
      */
     public static function forArchive(WP_Term $term, array $topics): void
     {
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         if (!SeoContent::isEnabled()) {
             return;
         }
@@ -140,13 +149,16 @@ final class SeoMeta
         $termName = wp_specialchars_decode($term->name, ENT_QUOTES);
 
         // translators: 1: term name, 2: community name.
-        $title = \sprintf(__('%1$s — %2$s', 'bit-connect'), $termName, $community);
+        $title = \sprintf(__('%1$s | %2$s', 'bit-connect'), $termName, $community);
 
         $description = $term->description !== ''
             ? wp_trim_words(wp_strip_all_tags($term->description), 30, '…')
             : self::archiveDescription($termName, $community, $topics);
 
-        $indexable = PortalTaxonomies::isIndexable(PortalTaxonomies::segmentFor($term->taxonomy));
+        // A tag still awaiting review is served, for the topics that carry it,
+        // but not offered to search until an administrator has let it in.
+        $indexable = PortalTaxonomies::isTermIndexable($term)
+            && !TagApprovalService::isPending((int) $term->term_id);
 
         self::$meta = [
             'title'       => $title,
@@ -167,31 +179,51 @@ final class SeoMeta
     /**
      * Describe a member profile route.
      *
-     * A profile is thin, largely duplicated across members and assembled
-     * client-side, so it is deliberately kept out of the index — without this it
+     * Kept out of the index by default: a profile is thin, assembled
+     * client-side, and publishes a member's name and activity. Without this it
      * inherits the portal page's title and canonical and competes with the
      * topics themselves. `follow` is retained so the topics a member links to
      * are still discovered.
+     *
+     * @param string $url the profile's own address, its canonical when indexed
      */
-    public static function forProfile(string $displayName = ''): void
+    public static function forProfile(string $displayName = '', string $url = ''): void
     {
+        // The member's name would otherwise reach the title of a page the
+        // portal refuses to show.
+        if (!SeoContent::isPortalPublic()) {
+            self::forMembersOnly();
+
+            return;
+        }
+
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         $title = $displayName === ''
             // translators: %s: community name.
-            ? \sprintf(__('Member profile — %s', 'bit-connect'), $community)
+            ? \sprintf(__('Member profile | %s', 'bit-connect'), $community)
             // translators: 1: member display name, 2: community name.
-            : \sprintf(__('%1$s — %2$s', 'bit-connect'), $displayName, $community);
+            : \sprintf(__('%1$s | %2$s', 'bit-connect'), $displayName, $community);
+
+        // Indexed only when the site asks for it — a profile publishes a member's
+        // name and activity, which is the owner's call rather than an SEO
+        // default. An indexed profile needs a canonical of its own, or it is an
+        // indexable page with none; a noindex one must not name one, since
+        // noindex beside a canonical pointing elsewhere can carry across.
+        $indexable = SeoSettings::bool('indexProfiles') && $displayName !== '' && $url !== '';
 
         self::$meta = [
             'title'       => $title,
-            'description' => '',
-            'canonical'   => '',
-            'image'       => '',
-            'type'        => 'profile',
-            'robots'      => SeoSettings::bool('indexProfiles') ? '' : 'noindex,follow',
-            'jsonLd'      => [],
+            'description' => $indexable
+                // translators: 1: member display name, 2: community name.
+                ? \sprintf(__('%1$s’s profile and discussions in the %2$s community.', 'bit-connect'), $displayName, $community)
+                : '',
+            'canonical' => $indexable ? $url : '',
+            'image'     => '',
+            'type'      => 'profile',
+            'robots'    => $indexable ? '' : 'noindex,follow',
+            'jsonLd'    => [],
         ];
     }
 
@@ -217,7 +249,7 @@ final class SeoMeta
         self::$meta = [
             'title' => \sprintf(
                 // translators: %s: community name.
-                __('Notifications — %s', 'bit-connect'),
+                __('Notifications | %s', 'bit-connect'),
                 $community
             ),
             'description' => '',
@@ -225,6 +257,82 @@ final class SeoMeta
             'image'       => '',
             'type'        => 'website',
             'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
+     * Describe the member's own following page. Never indexed, for the reason
+     * the notifications page is not: it is a different list for every reader.
+     */
+    public static function forFollowing(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title' => \sprintf(
+                // translators: %s: community name.
+                __('Following | %s', 'bit-connect'),
+                $community
+            ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
+     * Describe a page a plugin draws — see ExtensionPoints::portalPages().
+     * Never indexed: it is drawn client-side, and what it
+     * lists is the plugin's to expose, not this plugin's to advertise.
+     */
+    public static function forPortalPage(string $title): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title' => \sprintf(
+                // translators: 1: the page's title, 2: community name.
+                __('%1$s | %2$s', 'bit-connect'),
+                $title,
+                $community
+            ),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,follow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
+     * Describe a portal URL that matched nothing.
+     *
+     * The status is already 404; this is what makes the head agree. Without a
+     * described route the site's SEO plugin is not stood down, and prints the
+     * portal page's own `index` robots and canonical onto the missing URL.
+     * `follow` rather than `nofollow`: the portal's navigation is still on the
+     * page, and it leads somewhere real.
+     */
+    public static function forNotFound(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            // translators: %s: community name.
+            'title'       => \sprintf(__('Page not found | %s', 'bit-connect'), $community),
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,follow',
             'jsonLd'      => [],
         ];
     }
@@ -240,7 +348,7 @@ final class SeoMeta
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
         self::$meta = [
-            'title'       => $pageTitle . ' — ' . $community,
+            'title'       => $pageTitle . ' | ' . $community,
             'description' => '',
             'canonical'   => '',
             'image'       => '',
@@ -253,8 +361,8 @@ final class SeoMeta
     /**
      * Resolved head data for the matched route, or null when none matched.
      *
-     * Read by SeoPluginBridge, which feeds the same values into whichever SEO
-     * plugin owns the head on this site.
+     * Read by SeoPluginBridge, which stands the site's SEO plugin down on a
+     * described route and feeds it the route's title.
      *
      * @return null|array<string, mixed>
      */
@@ -336,6 +444,63 @@ final class SeoMeta
     }
 
     /**
+     * The pages between the community and a topic in its breadcrumb — none of
+     * this plugin's own, since a topic's URL sits directly under the portal.
+     * `bit_connect_topic_breadcrumb` may name the place a topic was filed in,
+     * as a list of `['name' => …, 'url' => …]`; anything else is dropped.
+     *
+     * @param array<string, mixed> $topic
+     *
+     * @return array<int, array{name: string, url: string}>
+     */
+    private static function topicTrail(array $topic): array
+    {
+        $items = Hooks::applyFilter('bit_connect_topic_breadcrumb', [], $topic);
+
+        if (!\is_array($items)) {
+            return [];
+        }
+
+        $trail = [];
+
+        foreach ($items as $item) {
+            $name = \is_array($item) ? trim((string) ($item['name'] ?? '')) : '';
+            $url = \is_array($item) ? esc_url_raw((string) ($item['url'] ?? '')) : '';
+
+            if ($name !== '' && $url !== '') {
+                $trail[] = ['name' => wp_specialchars_decode($name, ENT_QUOTES), 'url' => $url];
+            }
+        }
+
+        return $trail;
+    }
+
+    /**
+     * Describe a content route of a members-only portal.
+     *
+     * Every such route shows a logged-out visitor the same sign-in prompt, so
+     * each is kept out of the index and named only by the community — never by
+     * the topic, term or member it would have shown. Left undescribed, the
+     * site's SEO plugin was not stood down and printed the portal page's own
+     * `index` robots onto every one of them.
+     */
+    private static function forMembersOnly(): void
+    {
+        $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
+        $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
+
+        self::$meta = [
+            'title'       => $community,
+            'description' => '',
+            'canonical'   => '',
+            'image'       => '',
+            'type'        => 'website',
+            'robots'      => 'noindex,nofollow',
+            'jsonLd'      => [],
+        ];
+    }
+
+    /**
      * Print the head markup, escaping every value at the tag that carries it.
      */
     private static function printHead(): void
@@ -349,16 +514,16 @@ final class SeoMeta
         // PrePaint, enqueued from BaseView on exactly the requests that render
         // this markup. They still land in the head ahead of <body>.
 
-        // Robots directives are never delegated: a route we mark noindex must
-        // stay out of the index whether or not an SEO plugin is installed, and
-        // SeoPluginBridge suppresses the plugin's competing tag when it runs.
+        // A route we mark noindex must stay out of the index whether or not an
+        // SEO plugin is installed. A supported plugin's own robots tag, which
+        // describes the portal page, is stood down by SeoPluginBridge.
         if (!empty(self::$meta['robots'])) {
             printf("<meta name=\"robots\" content=\"%s\" />\n", esc_attr(self::$meta['robots']));
         }
 
-        // JSON-LD is additive — no SEO plugin emits a competing
-        // DiscussionForumPosting or portal BreadcrumbList for these routes, so
-        // it is always safe.
+        // Yoast and All in One SEO would otherwise print a WebPage and
+        // BreadcrumbList describing the portal page beside these, and Rank Math
+        // an Article; SeoPluginBridge stands their graphs down on this route.
         foreach ((array) (self::$meta['jsonLd'] ?? []) as $document) {
             if (empty($document)) {
                 continue;
@@ -412,24 +577,24 @@ final class SeoMeta
     /**
      * Whether to emit our own social tags and canonical.
      *
-     * Two sets of `og:title` is worse than one, so only one component may own
-     * these. When a supported SEO plugin is active, SeoPluginBridge pushes this
-     * same route data through that plugin's own filters and it prints them —
-     * so emitting here as well would duplicate every tag. With no such plugin,
-     * nothing else describes the route and we print them ourselves.
+     * Always, by default: no SEO plugin can describe a portal route, and a
+     * supported one is stood down on it by SeoPluginBridge. A site that keeps
+     * its plugin's output with `bit_connect_seo_plugin_stand_down` can silence
+     * these instead, so the head does not carry two of each.
      */
     private static function shouldEmitSocialTags(): bool
     {
-        return (bool) Hooks::applyFilter('bit_connect_seo_social_tags', !SeoPluginBridge::isBridged());
+        return (bool) Hooks::applyFilter('bit_connect_seo_social_tags', true);
     }
 
     /**
-     * The structured-data documents this route may emit, after the settings.
+     * The structured-data documents this route emits.
      *
-     * Both kinds are additive and safe by default, so they are on unless an
-     * administrator has a reason to silence them — most often another plugin
-     * already describing the same page and two competing graphs being worse
-     * than one.
+     * Not an administrator setting: no other plugin can describe a portal route,
+     * so there is never a competing graph to make way for. A site whose own
+     * code has a reason to drop or rewrite a document has
+     * `bit_connect_seo_json_ld`, which receives the list — each entry a
+     * schema.org document, told apart by its schema.org type.
      *
      * @param array<string, mixed> $primary    the page's own description
      * @param array<string, mixed> $breadcrumb its place in the portal
@@ -438,17 +603,10 @@ final class SeoMeta
      */
     private static function schemaDocuments(array $primary, array $breadcrumb): array
     {
-        $documents = [];
+        $documents = array_values(array_filter([$primary, $breadcrumb]));
+        $filtered = Hooks::applyFilter('bit_connect_seo_json_ld', $documents);
 
-        if (!empty($primary) && SeoSettings::bool('schemaDiscussion')) {
-            $documents[] = $primary;
-        }
-
-        if (!empty($breadcrumb) && SeoSettings::bool('schemaBreadcrumbs')) {
-            $documents[] = $breadcrumb;
-        }
-
-        return $documents;
+        return \is_array($filtered) ? array_values(array_filter($filtered, 'is_array')) : $documents;
     }
 
     /**
@@ -493,8 +651,10 @@ final class SeoMeta
     /**
      * Portal → topic trail, so the result shows the community as its parent
      * rather than a bare URL.
+     *
+     * @param array<int, array{name: string, url: string}> $between pages between the two
      */
-    private static function breadcrumbJsonLd(string $title, string $url): array
+    private static function breadcrumbJsonLd(string $title, string $url, array $between = []): array
     {
         if ($title === '') {
             return [];
@@ -503,23 +663,27 @@ final class SeoMeta
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $community = ($generalSettings['communityTitle'] ?? '') ?: get_bloginfo('name');
 
+        $pages = [
+            ['name' => $community, 'url' => SeoContent::portalUrl()],
+            ...$between,
+            ['name' => $title, 'url' => $url],
+        ];
+
+        $items = [];
+
+        foreach ($pages as $index => $page) {
+            $items[] = [
+                '@type'    => 'ListItem',
+                'position' => $index + 1,
+                'name'     => $page['name'],
+                'item'     => $page['url'],
+            ];
+        }
+
         return [
             '@context'        => 'https://schema.org',
             '@type'           => 'BreadcrumbList',
-            'itemListElement' => [
-                [
-                    '@type'    => 'ListItem',
-                    'position' => 1,
-                    'name'     => $community,
-                    'item'     => SeoContent::portalUrl(),
-                ],
-                [
-                    '@type'    => 'ListItem',
-                    'position' => 2,
-                    'name'     => $title,
-                    'item'     => $url,
-                ],
-            ],
+            'itemListElement' => $items,
         ];
     }
 

@@ -45,7 +45,7 @@ describe('picking a profile picture', () => {
     expect(validateAvatarFile(file('image/png', 0))).toBe('That image is empty.')
   })
 
-  // Mirrors AttachmentValidatorService::MAX_FILE_SIZE; a limit that drifts
+  // Mirrors AttachmentValidatorService::PROFILE_IMAGE_MAX_SIZE; a limit that drifts
   // apart shows up as a file the browser accepts and the server throws away.
   it('caps at the same five megabytes the server does', () => {
     expect(AVATAR_MAX_BYTES).toBe(5 * 1024 * 1024)

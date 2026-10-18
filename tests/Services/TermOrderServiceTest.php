@@ -33,9 +33,9 @@ final class TermOrderServiceTest extends TestCase
     // Which taxonomies can be ordered
     // -----------------------------------------------------------------------
 
-    public function testStagesStatusesTypesAndDepartmentsAreOrderable(): void
+    public function testStagesStatusesAndTypesAreOrderable(): void
     {
-        foreach ([Taxonomies::STAGES, Taxonomies::STATUSES, Taxonomies::TOPIC_TYPES, Taxonomies::DEPARTMENTS] as $taxonomy) {
+        foreach ([Taxonomies::STAGES, Taxonomies::STATUSES, Taxonomies::TOPIC_TYPES] as $taxonomy) {
             $this->assertTrue(TermOrderService::isOrderable($taxonomy->value), $taxonomy->value . ' should be orderable');
         }
     }

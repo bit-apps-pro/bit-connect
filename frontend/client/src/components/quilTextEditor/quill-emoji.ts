@@ -61,7 +61,12 @@ export function isEmojiImage(element: Element): boolean {
   const className = element.getAttribute('class') ?? ''
   if (EMOJI_CLASS_PATTERN.test(className)) return true
 
-  return EMOJI_SRC_PATTERN.test(element.getAttribute('src') ?? '')
+  return isEmojiSource(element.getAttribute('src') ?? '')
+}
+
+/** True when an image URL is an emoji sprite rather than a picture. */
+export function isEmojiSource(url: string): boolean {
+  return EMOJI_SRC_PATTERN.test(url)
 }
 
 /**

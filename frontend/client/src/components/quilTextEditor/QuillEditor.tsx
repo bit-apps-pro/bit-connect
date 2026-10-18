@@ -1,24 +1,13 @@
-import {
-  BoldOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  CodeOutlined,
-  EllipsisOutlined,
-  ItalicOutlined,
-  LinkOutlined,
-  OrderedListOutlined,
-  PaperClipOutlined,
-  PictureOutlined,
-  UnderlineOutlined,
-  UnorderedListOutlined,
-  WarningOutlined
-} from '@ant-design/icons'
+import { WarningOutlined } from '@ant-design/icons'
 import { __ } from '@common/helpers/i18nWrap'
-import { theme as antdTheme, Button, Flex, Input, Popover, Select, Tooltip } from 'antd'
+import { extractUploadError } from '@common/helpers/request'
+import { acceptMimeTypes } from '@features/file-uploader/attachment-validation'
+import { theme as antdTheme, Button, Flex, Input, type InputRef, Popover, Select, Tooltip, Typography } from 'antd'
 import Quill from 'quill'
 import {
   memo,
   type ReactNode,
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -26,42 +15,109 @@ import {
   useRef,
   useState
 } from 'react'
+import {
+  LuBold,
+  LuCheck,
+  LuEllipsis,
+  LuImage,
+  LuItalic,
+  LuLink,
+  LuList,
+  LuListOrdered,
+  LuPaperclip,
+  LuSquareTerminal,
+  LuUnderline,
+  LuX
+} from 'react-icons/lu'
 import 'quill/dist/quill.snow.css'
 
 // Side-effect imports: register custom Quill modules/blots
 import './quill-clipboard-sanitizer'
 import './quill-mention'
+import useEditorExtras from './editor-extras'
 import { searchMembers } from './mention-source'
-import { setImageLoadingProgress } from './quill-image-loading-blot'
-import { validateContent, type ValidationResult } from './quill-validation'
+import { codeExitBindings } from './quill-code-exit'
+import { isEmojiSource } from './quill-emoji'
+import { setImageLoadingProgress, setUploadLabel } from './quill-image-loading-blot'
+import { countCharacters, validateContent, type ValidationResult } from './quill-validation'
+import { unwrapVideoFigures } from './quill-video-file'
 import { formatForWordPress } from './quill-wp-formatter'
 import styles from './QuillEditor.module.css'
+import useOutsideDismiss from './use-outside-dismiss'
 
 /**
- * Uploads `file` and calls `insertImage` with the resulting URL. `onProgress`
+ * Uploads `file` and calls `insertMedia` with the resulting URL. `onProgress`
  * is optional — handlers that can report upload progress should call it with
  * 0–100 so the inline placeholder shows how far along the upload is.
  */
-type ImageHandler = (
+type MediaHandler = (
   file: File,
-  insertImage: (url: string) => void,
-  onProgress?: (percent: number) => void
+  insertMedia: (url: string) => void,
+  onProgress?: (percent: number) => void,
+  /** Aborted when the member cancels the upload or the editor goes away. */
+  signal?: AbortSignal
 ) => Promise<void> | void
+
+/** What an upload becomes in the text: a picture, or a video played in place. */
+type MediaKind = 'image' | 'video'
+
+/**
+ * How each kind is placed: the blot the finished upload becomes, and the
+ * prefix the placeholder's id carries while it is still uploading — one
+ * placeholder blot serves both, so the prefix is what tells them apart.
+ */
+const MEDIA = {
+  image: { blot: 'image', loadingPrefix: 'ql-img-' },
+  video: { blot: 'video-file', loadingPrefix: 'ql-vid-' }
+} as const
 
 /**
  * Whether there is anything worth submitting.
  *
  * A picture on its own is a legitimate comment — a screenshot of the bug, a
- * photo of the receipt — so an embedded image counts even with no text. The
- * loading placeholder deliberately does not: submitting mid-upload would post
- * a comment whose image never arrives.
+ * photo of the receipt — so an embedded image counts even with no text, and
+ * so does a video. The loading placeholder deliberately does not: submitting
+ * mid-upload would post a comment whose image never arrives.
  */
 function hasSubmittableContent(quill: Quill): boolean {
   if (quill.getText().trim().length > 0) return true
 
   return quill
     .getContents()
-    .ops.some(op => typeof op.insert === 'object' && 'image' in (op.insert as object))
+    .ops.some(
+      op => typeof op.insert === 'object' && ('image' in (op.insert as object) || 'video-file' in (op.insert as object))
+    )
+}
+
+/**
+ * Media of one kind in the text, finished or still uploading. Both count
+ * toward the limit: leaving the placeholders out would let a burst of pastes
+ * past it. Emoji sprites WordPress swapped in are characters, not pictures,
+ * and are saved as such — see quill-emoji.ts.
+ */
+function countMedia(quill: Quill, kind: MediaKind): number {
+  const { blot, loadingPrefix } = MEDIA[kind]
+  return quill
+    .getContents()
+    .ops.filter(op => {
+      if (typeof op.insert !== 'object' || op.insert === null) return false
+      const loading = (op.insert as { 'image-loading'?: unknown })['image-loading']
+      if (typeof loading === 'string') return loading.startsWith(loadingPrefix)
+      const url = (op.insert as Record<string, unknown>)[blot]
+      return typeof url === 'string' && !(kind === 'image' && isEmojiSource(url))
+    }).length
+}
+
+/** The limit's refusal, before anything is uploaded. */
+function limitMessage(kind: MediaKind, max: number): string {
+  if (kind === 'video') {
+    return max === 1
+      ? __('You can add only one video here.')
+      : __('You can add up to %d videos here.').replace('%d', String(max))
+  }
+  return max === 1
+    ? __('You can add only one image here.')
+    : __('You can add up to %d images here.').replace('%d', String(max))
 }
 
 /**
@@ -73,9 +129,10 @@ function hasSubmittableContent(quill: Quill): boolean {
  * actually reported anything, and a caller wired up without a notification
  * context would otherwise fail invisibly. A message twice beats none.
  */
-function reportImageError(error: Error, showInline: (message: string) => void) {
-  console.error('Image upload failed:', error)
-  showInline(error.message || 'Image upload failed.')
+function reportImageError(error: unknown, showInline: (message: string) => void) {
+  console.error('Upload failed:', error)
+  // An upload refusal arrives as the server's envelope, not an Error.
+  showInline(extractUploadError(error))
 }
 
 /**
@@ -85,28 +142,44 @@ function reportImageError(error: Error, showInline: (message: string) => void) {
  * cleared (or, when editing a comment, unmounted) the moment the draft is sent,
  * so the placeholder the finished upload looks for is gone and the image is
  * dropped on the floor. The count is what lets the submit button wait.
+ *
+ * It also holds a way to stop each upload, by the id of its placeholder:
+ * clicking the placeholder, deleting it, or closing the editor cancels the
+ * upload rather than leaving it to finish for nobody.
  */
 interface UploadTracker {
   begin: () => void
+  controllers: Map<string, AbortController>
   end: () => void
 }
 
 /**
  * Insert a loading placeholder at the cursor, call the upload handler while
- * feeding progress back into that placeholder, then swap in the real image
- * (or remove the placeholder on error).
+ * feeding progress back into that placeholder, then swap in the real picture
+ * or video (or remove the placeholder on error).
  */
-function triggerImageUpload(
+function triggerMediaUpload(
   quill: Quill,
   file: File,
-  handler: ImageHandler,
-  onError: (err: Error) => void,
-  track: UploadTracker
+  kind: MediaKind,
+  handler: MediaHandler,
+  onError: (err: unknown) => void,
+  track: UploadTracker,
+  max?: number
 ) {
-  const loadingId = `ql-img-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+  // Refused before anything is uploaded. The server refuses the save as well,
+  // but finding out then would cost the member the upload and the wait.
+  if (max !== undefined && countMedia(quill, kind) >= max) {
+    onError(new Error(limitMessage(kind, max)))
+    return
+  }
+
+  const { blot, loadingPrefix } = MEDIA[kind]
+  const loadingId = `${loadingPrefix}${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
   const range = quill.getSelection(true)
   quill.insertEmbed(range.index, 'image-loading', loadingId, 'user')
   quill.setSelection(range.index + 1, 0, 'user')
+  if (kind === 'video') setUploadLabel(quill.root, loadingId, __('Uploading video…'))
 
   const findIdx = (): number => {
     let i = 0
@@ -121,25 +194,34 @@ function triggerImageUpload(
     return -1
   }
 
+  const controller = new AbortController()
+
   const insertFunction = (url: string) => {
+    // Done: taking the placeholder out below must not read as a cancel.
+    track.controllers.delete(loadingId)
     const idx = findIdx()
     if (idx >= 0) {
       quill.deleteText(idx, 1, 'user')
-      quill.insertEmbed(idx, 'image', url, 'user')
+      quill.insertEmbed(idx, blot, url, 'user')
       quill.setSelection(idx + 1, 0, 'user')
     }
   }
 
   const reportProgress = (percent: number) => setImageLoadingProgress(quill.root, loadingId, percent)
 
+  track.controllers.set(loadingId, controller)
   track.begin()
-  Promise.resolve(handler(file, insertFunction, reportProgress))
-    .catch((error: Error) => {
+  Promise.resolve(handler(file, insertFunction, reportProgress, controller.signal))
+    .catch((error: unknown) => {
       const idx = findIdx()
       if (idx >= 0) quill.deleteText(idx, 1, 'user')
-      onError(error)
+      // A cancel is what the member asked for, not something to report.
+      if (!controller.signal.aborted) onError(error)
     })
-    .finally(() => track.end())
+    .finally(() => {
+      track.controllers.delete(loadingId)
+      track.end()
+    })
 }
 
 /**
@@ -157,15 +239,26 @@ const NO_HEADING = 0
 /** `list` value meaning "not a list item". Quill reports no value for those. */
 const NO_LIST = ''
 
+/** Share of maxLength at which the character counter appears. */
+const COUNTER_THRESHOLD = 0.8
+
 /** Fixed so the control does not resize as the selected level changes. */
 const HEADING_SELECT_WIDTH = 'bc-w-[124px]'
 
 /** In the overflow menu it spans the row, like every other item there. */
 const HEADING_SELECT_MENU_WIDTH = 'bc-w-full'
 
-interface QuillEditorProps {
+export interface QuillEditorProps {
   className?: string
   defaultValue?: string
+  /** Most images the text may hold. Unset is no limit; to allow none, leave
+   *  out the image handlers instead, which removes the control. */
+  maxImages?: number
+  /** Most characters the text may hold, checked on submit. Unset is no limit. */
+  maxLength?: number
+  /** Most videos the text may hold. Unset is no limit; to allow none, leave
+   *  out `onVideoInsert` instead, which withholds the video picker. */
+  maxVideos?: number
   /** Opt-out: typing "@" offers the member list. On everywhere the portal
    *  composes forum content, because a mention is how you bring a colleague
    *  into a thread — an editor without it leaves the notification with no way
@@ -173,9 +266,13 @@ interface QuillEditorProps {
   mentions?: boolean
   onAttachment?: (file: File) => void
   onChange?: (html: string) => void
-  onImageInsert?: ImageHandler
-  onImagePaste?: ImageHandler
+  onImageInsert?: MediaHandler
+  onImagePaste?: MediaHandler
   onSubmit?: (html: string) => void
+  /** Uploads a video to play where it is placed in the text, as a picture
+   *  is placed. Given only where the forum takes video files at all; the
+   *  editor hands its picker to the further tools (see editor-extras). */
+  onVideoInsert?: MediaHandler
   placeholder?: string
   /** Opt-in: adds the paragraph/heading select to the toolbar. Off by default
    *  because comments are stripped of headings server-side
@@ -207,12 +304,16 @@ interface FormatState {
 function QuillEditorInner({
   className,
   defaultValue,
+  maxImages,
+  maxLength,
+  maxVideos,
   mentions = true,
   onAttachment,
   onChange,
   onImageInsert,
   onImagePaste,
   onSubmit,
+  onVideoInsert,
   placeholder,
   showHeadings = false,
   showToolbar = true,
@@ -230,6 +331,10 @@ function QuillEditorInner({
   const onSubmitRef = useRef(onSubmit)
   const onImagePasteRef = useRef(onImagePaste)
   const onImageInsertRef = useRef(onImageInsert)
+  const onVideoInsertRef = useRef(onVideoInsert)
+  const maxImagesRef = useRef(maxImages)
+  const maxVideosRef = useRef(maxVideos)
+  const [characterCount, setCharacterCount] = useState(0)
   const savedSelectionRef = useRef<null | { index: number; length: number }>(null)
   const contentRef = useRef('')
   const isInternalChange = useRef(false)
@@ -243,6 +348,17 @@ function QuillEditorInner({
   const menuHeadingSelectId = useId()
   const [linkInputValue, setLinkInputValue] = useState('')
   const linkInputRef = useRef('')
+  const linkButtonRef = useRef<HTMLButtonElement>(null)
+  const linkPopoverRef = useRef<HTMLDivElement>(null)
+  const linkFieldRef = useRef<InputRef>(null)
+  const linkPopoverParts = useMemo(() => [linkButtonRef, linkPopoverRef], [])
+  // Bound to the latest pickMedia, which is declared further down and rebuilt
+  // every render, so the tools are handed one stable function.
+  const pickMediaRef = useRef<((kind: MediaKind) => void) | undefined>(undefined)
+  const pickVideo = useCallback(() => pickMediaRef.current?.('video'), [])
+  const extras = useEditorExtras({ pickVideo: onVideoInsert ? pickVideo : undefined })
+  // Read from inside Quill's listeners, which are bound once at mount.
+  const extrasRef = useRef(extras)
   const [formatState, setFormatState] = useState<FormatState>({
     bold: false,
     codeBlock: false,
@@ -257,6 +373,7 @@ function QuillEditorInner({
   // effect, and has to reach the same counter the toolbar button does.
   const uploadTracker = useRef<UploadTracker>({
     begin: () => setUploadsInFlight(n => n + 1),
+    controllers: new Map(),
     end: () => setUploadsInFlight(n => Math.max(0, n - 1))
   }).current
 
@@ -280,6 +397,10 @@ function QuillEditorInner({
     onSubmitRef.current = onSubmit
     onImagePasteRef.current = onImagePaste
     onImageInsertRef.current = onImageInsert
+    onVideoInsertRef.current = onVideoInsert
+    maxImagesRef.current = maxImages
+    maxVideosRef.current = maxVideos
+    extrasRef.current = extras
   })
 
   useEffect(() => {
@@ -292,6 +413,7 @@ function QuillEditorInner({
 
     const quill = new Quill(editorContainer, {
       modules: {
+        keyboard: { bindings: codeExitBindings },
         toolbar: false,
         // Registered via side-effect import of quill-clipboard-sanitizer.ts
         clipboardSanitizer: true,
@@ -308,8 +430,9 @@ function QuillEditorInner({
     editorRef.current = quill
 
     if (defaultValueRef.current) {
-      quill.setContents(quill.clipboard.convert({ html: defaultValueRef.current }))
+      quill.setContents(quill.clipboard.convert({ html: unwrapVideoFigures(defaultValueRef.current) }))
     }
+    extrasRef.current.onUpdate?.(quill)
 
     const updateFormatState = () => {
       const selection = quill.getSelection()
@@ -354,6 +477,14 @@ function QuillEditorInner({
     }
 
     quill.on(Quill.events.TEXT_CHANGE, () => {
+      extrasRef.current.onUpdate?.(quill)
+
+      // A placeholder deleted with the text around it — backspace, a cut, an
+      // undo — cancels its upload: nothing is left for the file to fill.
+      for (const [loadingId, controller] of uploadTracker.controllers) {
+        if (!quill.root.querySelector(`[data-loading-id="${CSS.escape(loadingId)}"]`)) controller.abort()
+      }
+
       // Format immediately so the value stored in state and passed to onChange
       // is already WordPress-compatible HTML — no further transformation needed
       // at submit time or on the backend read path.
@@ -362,6 +493,7 @@ function QuillEditorInner({
 
       const newHasContent = hasSubmittableContent(quill)
       setHasContent(prev => (prev === newHasContent ? prev : newHasContent))
+      setCharacterCount(countCharacters(html))
 
       // Clear errors as the user types so they don't persist stale messages
       setValidationErrors([])
@@ -377,6 +509,7 @@ function QuillEditorInner({
         savedSelectionRef.current = range
       }
       updateFormatState()
+      extrasRef.current.onUpdate?.(quill)
     })
 
     // Listen for paste rejections dispatched by ClipboardSanitizerModule
@@ -389,12 +522,14 @@ function QuillEditorInner({
     const handleImagePaste = (e: Event) => {
       const { file } = (e as CustomEvent<{ file: File }>).detail
       if (!onImagePasteRef.current) return
-      triggerImageUpload(
+      triggerMediaUpload(
         quill,
         file,
+        'image',
         onImagePasteRef.current,
         error => reportImageError(error, message => setValidationErrors([message])),
-        uploadTracker
+        uploadTracker,
+        maxImagesRef.current
       )
     }
     quill.root.addEventListener('quill-image-paste', handleImagePaste)
@@ -410,7 +545,7 @@ function QuillEditorInner({
     }
     quill.root.addEventListener('drop', handleDrop, true)
 
-    // Floating delete button shown when hovering over an inline image
+    // Floating delete button shown when hovering over an inline image or video
     const deleteBtn = document.createElement('button')
     deleteBtn.className = styles.imageDeleteBtn
     deleteBtn.setAttribute('type', 'button')
@@ -419,24 +554,27 @@ function QuillEditorInner({
       '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
     document.body.append(deleteBtn)
 
-    let hoveredImg: HTMLImageElement | null = null
+    let hoveredMedia: HTMLImageElement | HTMLVideoElement | undefined
 
-    const showDeleteBtn = (img: HTMLImageElement) => {
-      hoveredImg = img
-      const rect = img.getBoundingClientRect()
+    const showDeleteBtn = (media: HTMLImageElement | HTMLVideoElement) => {
+      hoveredMedia = media
+      const rect = media.getBoundingClientRect()
+      deleteBtn.setAttribute('aria-label', media.tagName === 'VIDEO' ? 'Remove video' : 'Remove image')
       deleteBtn.style.display = 'flex'
       deleteBtn.style.top = `${rect.top + 6}px`
       deleteBtn.style.left = `${rect.right - 30}px`
     }
 
     const hideDeleteBtn = () => {
-      hoveredImg = null
+      hoveredMedia = undefined
       deleteBtn.style.display = 'none'
     }
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      if (target.tagName === 'IMG') showDeleteBtn(target as HTMLImageElement)
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+        showDeleteBtn(target as HTMLImageElement | HTMLVideoElement)
+      }
     }
 
     const handleMouseLeave = (e: MouseEvent) => {
@@ -450,12 +588,13 @@ function QuillEditorInner({
     }
 
     const handleDeleteClick = () => {
-      if (!hoveredImg) return
-      const source = hoveredImg.getAttribute('src')
+      if (!hoveredMedia) return
+      const source = hoveredMedia.getAttribute('src')
+      const blot = hoveredMedia.tagName === 'VIDEO' ? MEDIA.video.blot : MEDIA.image.blot
       if (source) {
         let i = 0
         for (const op of quill.getContents().ops) {
-          if (typeof op.insert === 'object' && (op.insert as Record<string, unknown>).image === source) {
+          if (typeof op.insert === 'object' && (op.insert as Record<string, unknown>)[blot] === source) {
             quill.deleteText(i, 1, 'user')
             break
           }
@@ -470,7 +609,25 @@ function QuillEditorInner({
     deleteBtn.addEventListener('mouseleave', handleDeleteBtnMouseLeave)
     deleteBtn.addEventListener('click', handleDeleteClick)
 
+    // The uploading placeholder is its own cancel button: a click on it stops
+    // the upload, and the failed upload's own clean-up takes the placeholder
+    // out. From the keyboard, deleting the placeholder does the same.
+    const cancelUploadAt = (node: Element | null) => {
+      const placeholder = node?.closest<HTMLElement>('.ql-image-loading')
+      const loadingId = placeholder?.dataset.loadingId
+      if (!loadingId) return false
+      uploadTracker.controllers.get(loadingId)?.abort()
+      return true
+    }
+    const handleUploadClick = (e: MouseEvent) => {
+      if (cancelUploadAt(e.target as Element)) e.preventDefault()
+    }
+    quill.root.addEventListener('click', handleUploadClick)
+
     return () => {
+      // Closing the editor stops what it was still uploading.
+      for (const controller of uploadTracker.controllers.values()) controller.abort()
+      quill.root.removeEventListener('click', handleUploadClick)
       quill.root.removeEventListener('quill-paste-rejected', handlePasteRejected)
       quill.root.removeEventListener('quill-image-paste', handleImagePaste)
       quill.root.removeEventListener('drop', handleDrop, true)
@@ -497,7 +654,8 @@ function QuillEditorInner({
     if (contentRef.current === value) return
 
     isInternalChange.current = true
-    quill.setContents(quill.clipboard.convert({ html: value }))
+    quill.setContents(quill.clipboard.convert({ html: unwrapVideoFigures(value) }))
+    extrasRef.current.onUpdate?.(quill)
     contentRef.current = value
     isInternalChange.current = false
   }, [value])
@@ -661,6 +819,13 @@ function QuillEditorInner({
     setFormatState(prev => ({ ...prev, link: true }))
   }
 
+  const closeLinkPopover = useCallback(() => {
+    setLinkPopoverOpen(false)
+    setFormatState(prev => ({ ...prev, link: false }))
+  }, [])
+
+  useOutsideDismiss(linkPopoverOpen, linkPopoverParts, closeLinkPopover)
+
   const applyLink = () => {
     const quill = editorRef.current
     if (!quill) return
@@ -720,6 +885,44 @@ function QuillEditorInner({
 
   const isUploadingImage = uploadsInFlight > 0
 
+  /**
+   * Open the file picker for a picture or a video and upload what is chosen
+   * into the text at the caret.
+   */
+  const pickMedia = (kind: MediaKind) => {
+    const quill = editorRef.current
+    const handlerRef = kind === 'video' ? onVideoInsertRef : onImageInsertRef
+    const maxRef = kind === 'video' ? maxVideosRef : maxImagesRef
+    if (!quill || !handlerRef.current) return
+    // Save cursor before file picker steals focus
+    const savedRange = quill.getSelection() ?? {
+      index: quill.getLength() - 1,
+      length: 0
+    }
+    const input = document.createElement('input')
+    input.type = 'file'
+    // The video picker offers only the formats the forum takes; the image one
+    // keeps the browser's own filter and leaves the allowlist to the upload.
+    input.accept = kind === 'video' ? acceptMimeTypes('video') : 'image/*'
+    input.addEventListener('change', () => {
+      const file = input.files?.[0]
+      if (!file || !handlerRef.current) return
+      // Restore cursor position before inserting loading blot
+      quill.setSelection(savedRange.index, savedRange.length, 'silent')
+      triggerMediaUpload(
+        quill,
+        file,
+        kind,
+        handlerRef.current,
+        error => reportImageError(error, message => setValidationErrors([message])),
+        uploadTracker,
+        maxRef.current
+      )
+    })
+    input.click()
+  }
+  pickMediaRef.current = pickMedia
+
   const clearContent = () => {
     if (editorRef.current) {
       editorRef.current.setContents([])
@@ -736,7 +939,11 @@ function QuillEditorInner({
     // this holds, so reaching here means a stray call.
     if (isUploadingImage) return
 
-    const result: ValidationResult = validateContent(contentRef.current)
+    const result: ValidationResult = validateContent(contentRef.current, {
+      maxImages,
+      maxTextLength: maxLength,
+      maxVideos
+    })
     if (!result.valid) {
       setValidationErrors(result.errors)
       return
@@ -787,19 +994,19 @@ function QuillEditorInner({
   const blockControls = [
     {
       active: formatState.list === 'bullet',
-      icon: <UnorderedListOutlined />,
+      icon: <LuList size={16} />,
       label: __('Bulleted list'),
       run: () => handleBlockFormat('list', 'bullet')
     },
     {
       active: formatState.list === 'ordered',
-      icon: <OrderedListOutlined />,
+      icon: <LuListOrdered size={16} />,
       label: __('Numbered list'),
       run: () => handleBlockFormat('list', 'ordered')
     },
     {
       active: formatState.codeBlock,
-      icon: <CodeOutlined />,
+      icon: <LuSquareTerminal size={16} />,
       label: __('Code block'),
       run: () => handleBlockFormat('code-block', true)
     }
@@ -835,7 +1042,7 @@ function QuillEditorInner({
       {onAttachment && (
         <Button
           block
-          icon={<PaperClipOutlined />}
+          icon={<LuPaperclip size={16} />}
           onClick={() => {
             handleAttachment()
             setMoreOpen(false)
@@ -866,10 +1073,13 @@ function QuillEditorInner({
       // but `hidden` makes this a scrollport of its own, and a sticky child
       // resolves against the nearest one — which would pin the toolbar to a box
       // that never scrolls, i.e. not at all. See .stickyToolbar.
-      className={`bc-relative bc-rounded-lg bc-overflow-clip bc-mb-6 ${className || ''}`}
+      // No margin of its own: the topic form's field already spaces it, and the
+      // comment box asks for its own through `className`.
+      className={`bc-relative bc-rounded-lg bc-overflow-clip ${extras.wrapperClassName ?? ''} ${className || ''}`}
       style={{ border: `1px solid ${token.colorBorder}` }}
     >
       <div ref={containerRef} />
+      {extras.overlay}
       {showToolbar && (
         // The narrower side padding on a phone is what keeps the toolbar to
         // two rows: 16px each side of a 288px comment box is width the
@@ -898,7 +1108,7 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Bold')}
                 aria-pressed={formatState.bold}
-                icon={<BoldOutlined />}
+                icon={<LuBold size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('bold'))}
                 size="small"
                 title={__('Bold')}
@@ -907,7 +1117,7 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Italic')}
                 aria-pressed={formatState.italic}
-                icon={<ItalicOutlined />}
+                icon={<LuItalic size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('italic'))}
                 size="small"
                 title={__('Italic')}
@@ -916,16 +1126,20 @@ function QuillEditorInner({
               <Button
                 aria-label={__('Underline')}
                 aria-pressed={formatState.underline}
-                icon={<UnderlineOutlined />}
+                icon={<LuUnderline size={16} />}
                 onMouseDown={saveSelectionAndExec(() => handleFormat('underline'))}
                 size="small"
                 title={__('Underline')}
                 type={formatState.underline ? 'primary' : 'text'}
               />
               <Popover
+                // Focused once open, so typing the address is the next keystroke.
+                afterOpenChange={isOpen => {
+                  if (isOpen) linkFieldRef.current?.focus()
+                }}
                 arrow={false}
                 content={
-                  <div className={styles.linkPopoverContent}>
+                  <div className={styles.linkPopoverContent} ref={linkPopoverRef}>
                     <Input
                       onChange={e => {
                         linkInputRef.current = e.target.value
@@ -933,30 +1147,34 @@ function QuillEditorInner({
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') applyLink()
-                        if (e.key === 'Escape') setLinkPopoverOpen(false)
+                        if (e.key === 'Escape') closeLinkPopover()
                       }}
-                      placeholder="Search or type URL"
+                      placeholder={__('Type or paste a link')}
+                      ref={linkFieldRef}
                       size="middle"
+                      // Plain icons inside the field, as the permalink's inline
+                      // edit has them: cancel first, confirm in the accent colour.
                       suffix={
-                        <Flex gap={4}>
+                        <span className="bc-flex bc-items-center bc-gap-0.5">
+                          <Button
+                            aria-label={__('Cancel link')}
+                            className="bc-h-6 bc-w-6 bc-min-w-0 bc-p-0 bc-text-ink-muted"
+                            icon={<LuX size={15} />}
+                            onClick={closeLinkPopover}
+                            size="small"
+                            title={__('Cancel link')}
+                            type="text"
+                          />
                           <Button
                             aria-label={__('Apply link')}
-                            className={styles.linkSubmitBtn}
-                            icon={<CheckOutlined />}
+                            className="bc-h-6 bc-w-6 bc-min-w-0 bc-p-0 bc-text-primary"
+                            icon={<LuCheck size={15} />}
                             onClick={applyLink}
                             size="small"
                             title={__('Apply link')}
-                            type="primary"
+                            type="text"
                           />
-                          <Button
-                            aria-label={__('Cancel link')}
-                            className={styles.linkSubmitBtn}
-                            icon={<CloseOutlined />}
-                            onClick={() => setLinkPopoverOpen(false)}
-                            size="small"
-                            title={__('Cancel link')}
-                          />
-                        </Flex>
+                        </span>
                       }
                       value={linkInputValue}
                       variant="outlined"
@@ -964,22 +1182,20 @@ function QuillEditorInner({
                   </div>
                 }
                 onOpenChange={open => {
-                  if (!open) {
-                    setLinkPopoverOpen(false)
-                    setFormatState(prev => ({ ...prev, link: false }))
-                  }
+                  if (!open) closeLinkPopover()
                 }}
                 open={linkPopoverOpen}
-                overlayInnerStyle={{ padding: '10px 12px' }}
                 overlayStyle={{ boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}
                 placement="bottomLeft"
+                styles={{ body: { padding: '10px 12px' } }}
                 trigger={[]}
               >
                 <Button
                   aria-label={__('Insert link')}
                   aria-pressed={formatState.link}
-                  icon={<LinkOutlined />}
+                  icon={<LuLink size={16} />}
                   onMouseDown={handleLinkButtonClick}
+                  ref={linkButtonRef}
                   size="small"
                   title={__('Insert link')}
                   type={formatState.link ? 'primary' : 'text'}
@@ -1000,48 +1216,26 @@ function QuillEditorInner({
                 />
               ))}
             </div>
-            {onImageInsert && (
+            {(onImageInsert || extras.toolbar) && (
               <div className="bc-flex bc-items-center bc-gap-1">
-                <Button
-                  aria-label={__('Insert image')}
-                  icon={<PictureOutlined />}
-                  onClick={() => {
-                    const quill = editorRef.current
-                    if (!quill || !onImageInsertRef.current) return
-                    // Save cursor before file picker steals focus
-                    const savedRange = quill.getSelection() ?? {
-                      index: quill.getLength() - 1,
-                      length: 0
-                    }
-                    const input = document.createElement('input')
-                    input.type = 'file'
-                    input.accept = 'image/*'
-                    input.addEventListener('change', () => {
-                      const file = input.files?.[0]
-                      if (!file || !onImageInsertRef.current) return
-                      // Restore cursor position before inserting loading blot
-                      quill.setSelection(savedRange.index, savedRange.length, 'silent')
-                      triggerImageUpload(
-                        quill,
-                        file,
-                        onImageInsertRef.current,
-                        error => reportImageError(error, message => setValidationErrors([message])),
-                        uploadTracker
-                      )
-                    })
-                    input.click()
-                  }}
-                  size="small"
-                  title={__('Insert image')}
-                  type="text"
-                />
+                {onImageInsert && (
+                  <Button
+                    aria-label={__('Insert image')}
+                    icon={<LuImage size={16} />}
+                    onClick={() => pickMedia('image')}
+                    size="small"
+                    title={__('Insert image')}
+                    type="text"
+                  />
+                )}
+                {extras.toolbar}
               </div>
             )}
             {onAttachment && (
               <div className="bc-hidden bc-items-center bc-gap-1 md:bc-flex">
                 <Button
                   aria-label={__('Attach file')}
-                  icon={<PaperClipOutlined />}
+                  icon={<LuPaperclip size={16} />}
                   onClick={handleAttachment}
                   size="small"
                   title={__('Attach file')}
@@ -1057,14 +1251,14 @@ function QuillEditorInner({
                 content={moreMenu}
                 onOpenChange={setMoreOpen}
                 open={moreOpen}
-                overlayInnerStyle={{ padding: 6 }}
                 placement="bottomRight"
+                styles={{ body: { padding: 6 } }}
                 trigger="click"
               >
                 <Button
                   aria-expanded={moreOpen}
                   aria-label={__('More formatting')}
-                  icon={<EllipsisOutlined />}
+                  icon={<LuEllipsis size={16} />}
                   onMouseDown={rememberSelection}
                   size="small"
                   title={__('More formatting')}
@@ -1110,6 +1304,17 @@ function QuillEditorInner({
             </Tooltip>
           )}
         </Flex>
+      )}
+      {/* Only once the limit is in sight: a counter on every keystroke of a
+          two-line reply is noise. */}
+      {maxLength !== undefined && characterCount >= maxLength * COUNTER_THRESHOLD && (
+        <Typography.Text
+          aria-live="polite"
+          className="bc-mt-1 bc-block bc-text-right bc-text-xs"
+          type={characterCount > maxLength ? 'danger' : 'secondary'}
+        >
+          {`${characterCount.toLocaleString()} / ${maxLength.toLocaleString()}`}
+        </Typography.Text>
       )}
       {validationErrors.length > 0 && !showSubmitButton && (
         <ul className={styles.validationErrors}>

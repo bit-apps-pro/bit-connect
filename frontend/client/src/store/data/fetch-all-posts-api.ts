@@ -21,6 +21,14 @@ export interface TopicsPage {
 }
 
 /**
+ * Root of the portal listing's query keys — one entry per filter set under it.
+ *
+ * Under `topics` so saving an edited topic, which invalidates `['topics']`,
+ * refreshes every cached list too.
+ */
+export const TOPIC_LIST_QUERY_KEY = ['topics', 'list'] as const
+
+/**
  * Fetch a single page of topics with optional filters.
  * @param filters - Optional filters for searching/sorting (page is taken from here)
  * @returns Promise<TopicsPage> - The page of topics plus pagination metadata

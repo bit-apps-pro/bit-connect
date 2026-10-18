@@ -10,6 +10,8 @@ import appearanceFor from './appearance'
 describe('appearanceFor', () => {
   it('gives every notification the portal sends a badge of its own', () => {
     const types = [
+      'access_granted',
+      'access_requested',
       'badge_awarded',
       'comment_reply',
       'content_actioned',
@@ -46,7 +48,7 @@ describe('appearanceFor', () => {
 
   // Amber is only ever something waiting on a decision.
   it('keeps amber for the notifications that are waiting on somebody', () => {
-    for (const type of ['report_filed', 'report_resolved', 'badge_awarded']) {
+    for (const type of ['report_filed', 'report_resolved', 'badge_awarded', 'access_requested']) {
       expect(appearanceFor(type).bg).toBe('bc-bg-tone-amber-soft')
     }
   })

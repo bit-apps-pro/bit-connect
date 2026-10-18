@@ -127,7 +127,12 @@ class NotificationSettingsTest extends TestCase
 
     public function testOnlyTheQueueAlertAndTheEveryTopicAlertAreModeratorOnly(): void
     {
-        $moderatorOnly = [NotificationTypes::REPORT_FILED, NotificationTypes::TOPIC_POSTED];
+        $moderatorOnly = [
+            NotificationTypes::REPORT_FILED,
+            NotificationTypes::TOPIC_POSTED,
+            NotificationTypes::TAG_SUGGESTED,
+            NotificationTypes::ACCESS_REQUESTED,
+        ];
 
         foreach (NotificationTypes::cases() as $type) {
             $this->assertSame(
@@ -143,15 +148,16 @@ class NotificationSettingsTest extends TestCase
     }
 
     /**
-     * A vote carries nothing of its own to read, so fifty of them are one fact.
-     * A reply is the opposite — each is something somebody wrote — so collapsing
-     * one would lose a link to real content.
+     * A vote carries nothing of its own to read, so fifty of them are one fact;
+     * so do requests to join one space — the space's queue says who. A reply
+     * is the opposite — each is something somebody wrote — so collapsing one
+     * would lose a link to real content.
      */
-    public function testOnlyVotesCollapse(): void
+    public function testOnlyVotesAndRequestsToJoinCollapse(): void
     {
         foreach (NotificationTypes::cases() as $type) {
             $this->assertSame(
-                $type === NotificationTypes::VOTE_RECEIVED,
+                \in_array($type, [NotificationTypes::VOTE_RECEIVED, NotificationTypes::ACCESS_REQUESTED], true),
                 NotificationTypes::isCollapsible($type),
                 $type->value
             );

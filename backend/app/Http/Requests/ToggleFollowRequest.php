@@ -13,7 +13,7 @@ use BitApps\BitConnect\Services\PermissionService;
 /**
  * Request input properties.
  *
- * @property string $target_type topic | department | tag | forum
+ * @property string $target_type topic | tag | forum, or one TopicTaxonomies adds
  * @property int    $target_id   0 for the forum as a whole, which has no id
  * @property bool   $follow      true to follow, false to mute
  */

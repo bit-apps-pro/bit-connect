@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\Requests\GetPortalPageRequest;
 use BitApps\BitConnect\Http\Requests\UpdatePortalRootModeRequest;
 use BitApps\BitConnect\Http\Requests\UpdatePortalSlugRequest;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Views\PortalBlock;
 use WP_Post;
 
 /**
@@ -45,19 +46,24 @@ final class PortalSlugController
 
         return Response::success(
             [
-                'slug'         => $slug,
-                'url'          => get_home_url(null, $slug . '/'),
-                'exists'       => $page instanceof WP_Post,
+                'slug'   => $slug,
+                'url'    => get_home_url(null, $slug . '/'),
+                'exists' => $page instanceof WP_Post,
+                // Nothing may live here: WordPress routes on this segment itself.
+                'reserved' => PortalLocation::isReservedSlug($slug),
+                // A new page can be created under exactly this slug.
+                'available'    => !$page instanceof WP_Post && PortalLocation::isSlugFree($slug),
                 'isPortal'     => $page instanceof WP_Post && $portal instanceof WP_Post && $page->ID === $portal->ID,
-                'hasShortcode' => $page instanceof WP_Post && has_shortcode((string) $page->post_content, 'bit-connect'),
+                'hasShortcode' => $page instanceof WP_Post && PortalLocation::embedsPortal((string) $page->post_content),
             ]
         );
     }
 
     /**
-     * Create the portal page under a slug — the onboarding wizard's one-time
-     * setup. Refuses a slug something else already answers to: the wizard has
-     * already told the administrator to pick another name.
+     * Create the portal page under a slug — from the onboarding wizard, or from
+     * the settings screen when the saved slug has no page behind it. Refuses a
+     * slug something else already answers to: the screen has already told the
+     * administrator to pick another name.
      */
     public function createPage(CreatePortalPageRequest $request): Response
     {
@@ -67,13 +73,23 @@ final class PortalSlugController
         }
 
         if (PortalLocation::pageBySlug($slug) instanceof WP_Post) {
-            return Response::error('A page with that slug already exists', 409);
+            return Response::error(__('A page with that slug already exists.', 'bit-connect'), 409);
         }
 
-        if (self::createPortalPage($slug) === 0) {
-            return Response::error('Failed to create the portal page', 500);
+        if (!PortalLocation::isSlugFree($slug)) {
+            return Response::error(__('That address is already used by something else on your site. Please choose another.', 'bit-connect'), 409);
         }
 
+        $pageId = self::createPortalPage($slug);
+        $page = $pageId === 0 ? null : get_post($pageId);
+
+        if (!$page instanceof WP_Post) {
+            return Response::error(__('Failed to create the portal page.', 'bit-connect'), 500);
+        }
+
+        // The stored slug, not the requested one: the page is the truth, and a
+        // pointer that names anything else names nothing.
+        $slug = $page->post_name;
         Config::updateOption('portal_page', $slug, true);
         $this->invalidateRewriteRules();
 
@@ -94,10 +110,18 @@ final class PortalSlugController
                 'url'          => $slug === '' ? '' : PortalLocation::url(),
                 'configured'   => $slug !== '',
                 'exists'       => $page instanceof WP_Post,
-                'hasShortcode' => $page instanceof WP_Post && has_shortcode((string) $page->post_content, 'bit-connect'),
+                'hasShortcode' => $page instanceof WP_Post && PortalLocation::embedsPortal((string) $page->post_content),
                 'editUrl'      => $page instanceof WP_Post ? (string) get_edit_post_link($page->ID, 'raw') : '',
                 'root'         => PortalLocation::isRoot(),
                 'frontPageOk'  => PortalLocation::isFrontPageBound(),
+                // Both writes reach past the forum into the site itself, so each
+                // answers to the core capability that governs it — the screen
+                // offers only what the current user may actually do.
+                'canCreatePage'   => current_user_can('publish_pages'),
+                'canSetFrontPage' => current_user_can('manage_options'),
+                // `/{slug}/…` is a rewrite; with plain permalinks there are none.
+                'prettyPermalinks' => (string) get_option('permalink_structure') !== '',
+                'permalinksUrl'    => current_user_can('manage_options') ? admin_url('options-permalink.php') : '',
             ]
         );
     }
@@ -108,7 +132,8 @@ final class PortalSlugController
      * Enabling binds the portal page to the front page: that is what makes `/`
      * the topics list and what makes the router basename resolve to the install
      * root. Disabling unbinds it again — left bound, `/` and `/{slug}/` would
-     * both serve the portal index as duplicate content.
+     * both serve the portal index as duplicate content — and hands the homepage
+     * back to whatever held it before.
      */
     public function updateRootMode(UpdatePortalRootModeRequest $request): Response
     {
@@ -117,19 +142,19 @@ final class PortalSlugController
         $page = PortalLocation::page();
 
         if ($enabled && !$page) {
-            return Response::error('Create the community page before showing it as the homepage', 409);
+            return Response::error(__('Create the community page before showing it as the homepage.', 'bit-connect'), 409);
         }
 
         Config::updateOption(PortalLocation::ROOT_OPTION, $enabled ? 1 : 0, true);
 
         if ($enabled && $page) {
+            $this->rememberFrontPage($page);
             update_option('show_on_front', 'page');
             update_option('page_on_front', $page->ID);
         } elseif ($page && (int) get_option('page_on_front') === $page->ID) {
             // Only undo the binding this controller created; a front page pointing
             // anywhere else is the administrator's own and is left alone.
-            update_option('show_on_front', 'posts');
-            update_option('page_on_front', 0);
+            $this->restoreFrontPage();
         }
 
         $this->invalidateRewriteRules();
@@ -152,6 +177,10 @@ final class PortalSlugController
             return Response::error('Slug is required', 422);
         }
 
+        if (PortalLocation::isReservedSlug($slug)) {
+            return Response::error(__('WordPress already uses that address for another part of your site. Please choose another.', 'bit-connect'), 422);
+        }
+
         Config::updateOption('portal_page', $slug, true);
         $this->invalidateRewriteRules();
 
@@ -162,11 +191,21 @@ final class PortalSlugController
                 'url'          => PortalLocation::url(),
                 'slug'         => $slug,
                 'pageExists'   => $page instanceof WP_Post,
-                'hasShortcode' => $page instanceof WP_Post && has_shortcode((string) $page->post_content, 'bit-connect'),
+                'hasShortcode' => $page instanceof WP_Post && PortalLocation::embedsPortal((string) $page->post_content),
             ]
         );
     }
 
+    /**
+     * Make the portal template exist and belong to the active theme.
+     *
+     * A block theme only lists a wp_template whose `wp_theme` term names it, so
+     * the term is set on every call, not just on creation: this also runs on
+     * activation and on every theme switch, and a template still tagged with
+     * the previous theme is invisible to the page editor's template picker.
+     *
+     * @return int the template's post id, or 0 when creation failed
+     */
     public static function ensurePortalTemplate(): int
     {
         $existing = get_posts(
@@ -178,27 +217,21 @@ final class PortalSlugController
             ]
         );
 
-        if (!empty($existing)) {
-            return $existing[0]->ID;
+        $id = empty($existing) ? self::insertPortalTemplate() : $existing[0]->ID;
+
+        if ($id > 0) {
+            wp_set_post_terms($id, [get_stylesheet()], 'wp_theme');
         }
 
-        $id = wp_insert_post(
-            [
-                'post_title'   => 'Bit Connect Portal Template',
-                'post_name'    => 'bit-connect-portal',
-                'post_content' => '<!-- wp:post-content /-->',
-                'post_status'  => 'publish',
-                'post_type'    => 'wp_template',
-                'post_excerpt' => 'Clean template for Bit Connect portal with only post content block',
-            ]
-        );
-
-        return is_wp_error($id) ? 0 : $id;
+        return $id;
     }
 
     /**
-     * Create a standalone WordPress page that embeds the portal via the
-     * [bit-connect] shortcode.
+     * Create a standalone WordPress page that embeds the portal.
+     *
+     * As the block rather than the `[bit-connect]` shortcode: the two render
+     * the same portal, but only a block can show itself in the editor and in
+     * the template picker.
      *
      * This is NOT by itself the SSR portal route — that is controlled by the
      * `portal_page` option, which createPage() only points here when no portal
@@ -215,7 +248,7 @@ final class PortalSlugController
                 'post_title'     => ucfirst($slug),
                 'post_name'      => $slug,
                 'post_type'      => 'page',
-                'post_content'   => '[bit-connect]',
+                'post_content'   => PortalBlock::MARKUP,
                 'post_status'    => 'publish',
                 'comment_status' => 'closed',
                 'ping_status'    => 'closed',
@@ -229,10 +262,71 @@ final class PortalSlugController
         // Assign the clean Bit Connect Portal template to the page.
         if ($template > 0 && ($tpl = get_post($template))) {
             update_post_meta($page->ID, '_wp_page_template', $tpl->post_name);
-            wp_set_post_terms($tpl->ID, [get_stylesheet()], 'wp_theme');
         }
 
         return $page->ID;
+    }
+
+    /**
+     * Note what the homepage is before root mode replaces it.
+     *
+     * Skipped when the portal page already is the front page: that is this
+     * controller's own binding (or the administrator's, made by hand), and
+     * recording it would make "what was there before" the portal itself.
+     */
+    private function rememberFrontPage(WP_Post $portal): void
+    {
+        $showOnFront = (string) get_option('show_on_front', 'posts');
+        $pageOnFront = (int) get_option('page_on_front', 0);
+
+        if ($showOnFront === 'page' && $pageOnFront === $portal->ID) {
+            return;
+        }
+
+        Config::updateOption(
+            PortalLocation::PREVIOUS_FRONT_OPTION,
+            ['show_on_front' => $showOnFront, 'page_on_front' => $pageOnFront]
+        );
+    }
+
+    /**
+     * Hand the homepage back to what held it before root mode.
+     *
+     * A static homepage returns only if its page is still published; anything
+     * else — it was the posts index, or the page has since gone — falls back
+     * to the posts index, which is also core's own answer to a front page that
+     * no longer exists.
+     */
+    private function restoreFrontPage(): void
+    {
+        $previous = Config::getOption(PortalLocation::PREVIOUS_FRONT_OPTION, []);
+        $previous = \is_array($previous) ? $previous : [];
+        $pageId = (int) ($previous['page_on_front'] ?? 0);
+
+        $restorePage = ($previous['show_on_front'] ?? '') === 'page'
+            && $pageId > 0
+            && get_post_status($pageId) === 'publish';
+
+        update_option('show_on_front', $restorePage ? 'page' : 'posts');
+        update_option('page_on_front', $restorePage ? $pageId : 0);
+
+        Config::deleteOption(PortalLocation::PREVIOUS_FRONT_OPTION);
+    }
+
+    private static function insertPortalTemplate(): int
+    {
+        $id = wp_insert_post(
+            [
+                'post_title'   => 'Bit Connect Portal Template',
+                'post_name'    => 'bit-connect-portal',
+                'post_content' => '<!-- wp:post-content /-->',
+                'post_status'  => 'publish',
+                'post_type'    => 'wp_template',
+                'post_excerpt' => 'Clean template for Bit Connect portal with only post content block',
+            ]
+        );
+
+        return is_wp_error($id) ? 0 : $id;
     }
 
     /**

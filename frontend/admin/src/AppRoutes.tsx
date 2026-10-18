@@ -5,8 +5,8 @@ import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { ConfigProvider, message, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
-import { lazy, Suspense, useEffect, useMemo } from 'react'
-import { Navigate, Route, Routes, useNavigate } from 'react-router'
+import { lazy, type ReactNode, Suspense, useEffect, useMemo } from 'react'
+import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
 
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
@@ -15,6 +15,7 @@ import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
 import useOnboardingStatus from './pages/onboarding/data/use-onboarding-status'
+import useAddedPages from './pages/use-added-pages'
 
 function OnboardingGuard() {
   const { isOnboardingCompleted, isOnboardingStatusPending } = useOnboardingStatus()
@@ -23,20 +24,35 @@ function OnboardingGuard() {
   return isOnboardingStatusPending ? <></> : <Layout />
 }
 
-const Root = lazy(() => import('./pages/root/Root'))
+/**
+ * The General screen's old addresses, now tabs of Settings: Branding, Location
+ * and Access became the Portal tab, and Sign in kept its own.
+ */
+function GeneralRedirect() {
+  const { tab } = useParams()
+  return <Navigate replace to={tab === 'auth' ? '/settings/sign-in' : '/settings'} />
+}
+
+/**
+ * A screen only a forum manager may use. A moderator reaching one by its
+ * address used to get the form drawn with wrong defaults and every save
+ * refused; they land on Topics, as the dashboard already sends them.
+ */
+function manageOnly(screen: ReactNode) {
+  return config.CAN_MANAGE ? screen : <Navigate replace to="/topics" />
+}
+
+const Root = lazy(() => import('./pages/root/root'))
 const Stages = lazy(() => import('./pages/stages/stages'))
 const Status = lazy(() => import('./pages/status/status'))
 const TopicTypes = lazy(() => import('./pages/topic-types/topic-types'))
-const Products = lazy(() => import('./pages/products/products'))
 const Tags = lazy(() => import('./pages/tags/tags'))
-const General = lazy(() => import('./pages/general/general'))
 const Manager = lazy(() => import('./pages/manager'))
+const Topics = lazy(() => import('./pages/topics'))
 const Activity = lazy(() => import('./pages/activity'))
 const Reports = lazy(() => import('./pages/reports'))
-const Notifications = lazy(() => import('./pages/notifications'))
 const Onboarding = lazy(() => import('./pages/onboarding/onboarding'))
 const Settings = lazy(() => import('./pages/settings'))
-const Seo = lazy(() => import('./pages/seo'))
 const Support = lazy(() => import('./pages/support/support'))
 
 const { darkAlgorithm, defaultAlgorithm } = theme
@@ -47,6 +63,7 @@ export default function AppRoutes() {
   const [navigateUrl, setNavigateUrl] = useAtom($navigate)
   const navigate = useNavigate()
   const isDarkTheme = useAtomValue($isDarkTheme)
+  const addedPages = useAddedPages()
   useApplyTheme(isDarkTheme)
   const themeTokens = isDarkTheme ? darkThemeConfig : lightThemeConfig
   const themeAlgorithm = isDarkTheme ? darkAlgorithm : defaultAlgorithm
@@ -107,21 +124,25 @@ export default function AppRoutes() {
               path="onboarding"
             />
             <Route element={<OnboardingGuard />} path="/">
-              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="activity" />} index />
-              <Route element={<Stages />} path="stages" />
-              <Route element={<General />} path="general" />
-              <Route element={<Manager />} path="manager" />
+              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="topics" />} index />
+              <Route element={manageOnly(<Stages />)} path="stages" />
+              {/* Folded into Settings; the old addresses still land there. */}
+              <Route element={<GeneralRedirect />} path="general/:tab?" />
+              <Route element={<Navigate replace to="/settings/notifications" />} path="notifications" />
+              <Route element={<Navigate replace to="/settings/seo" />} path="seo" />
+              <Route element={manageOnly(<Manager />)} path="manager" />
+              <Route element={<Topics />} path="topics" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
-              <Route element={<Notifications />} path="notifications" />
-              <Route element={<Seo />} path="seo" />
-              <Route element={<Settings />} path="settings" />
+              <Route element={manageOnly(<Settings />)} path="settings/:tab?" />
               {/* Support, the changelog and what the add-on adds. */}
-              <Route element={<Support />} path="support" />
-              <Route element={<Tags />} path="tags" />
-              <Route element={<Products />} path="products" />
-              <Route element={<Status />} path="status" />
-              <Route element={<TopicTypes />} path="topic-types" />
+              <Route element={manageOnly(<Support />)} path="support" />
+              <Route element={manageOnly(<Tags />)} path="tags/:tab?" />
+              <Route element={manageOnly(<Status />)} path="status" />
+              <Route element={manageOnly(<TopicTypes />)} path="topic-types" />
+              {addedPages.map(page => (
+                <Route element={page.element} key={page.path} path={page.path} />
+              ))}
               <Route element={<Error404 />} path="*" />
             </Route>
           </Routes>

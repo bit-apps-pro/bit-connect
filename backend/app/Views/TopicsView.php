@@ -3,8 +3,8 @@
 namespace BitApps\BitConnect\Views;
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
-use BitApps\BitConnect\Enum\SeoSettings;
 use BitApps\BitConnect\Http\Controller\PostController;
+use BitApps\BitConnect\Services\PortalAccess;
 use BitApps\BitConnect\Services\StageService;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\SSR\View\SSRView;
@@ -20,6 +20,29 @@ if (!defined('ABSPATH')) {
  */
 class TopicsView extends SSRView
 {
+    /**
+     * How many topics the server-rendered list carries.
+     *
+     * This list was once fetched unbounded, so a community with thousands of
+     * topics serialised every one of them into every portal page load — for a
+     * list the React app discards and refetches anyway. It bounds both the
+     * first paint and the crawler's view of a list page; the sitemap, not this
+     * markup, is what makes the remaining topics discoverable. A site with a
+     * reason to differ has `bit_connect_ssr_topic_limit`.
+     */
+    private const SSR_TOPIC_LIMIT = 30;
+
+    /**
+     * Topics per server-rendered list page; 0 or less renders them all.
+     *
+     * Also sent to the app, which has to start `/page/N` on the same topic the
+     * server did — its own page size would put page 2 somewhere else entirely.
+     */
+    public static function pageSize(): int
+    {
+        return (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', self::SSR_TOPIC_LIMIT);
+    }
+
     public BaseView $baseView;
 
     /**
@@ -55,7 +78,11 @@ class TopicsView extends SSRView
      */
     public function prepareData($page = 1)
     {
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', SeoSettings::ssrTopicLimit());
+        if (self::isClosed()) {
+            return $this->prepareClosed(['topics' => [], 'page' => 1, 'totalPages' => 1]);
+        }
+
+        $limit = self::pageSize();
         $page = max(1, (int) $page);
 
         $topicsData = $this->topicService->getAllTopics(
@@ -125,9 +152,13 @@ class TopicsView extends SSRView
      */
     public function prepareArchiveData(WP_Term $term)
     {
+        if (self::isClosed()) {
+            return $this->prepareClosed(['topics' => [], 'term' => $term]);
+        }
+
         $this->baseView->registerAssets();
 
-        $limit = (int) Hooks::applyFilter('bit_connect_ssr_topic_limit', SeoSettings::ssrTopicLimit());
+        $limit = self::pageSize();
 
         $topicsData = $this->topicService->getAllTopics(
             [
@@ -174,7 +205,7 @@ class TopicsView extends SSRView
     {
         $this->baseView->registerAssets();
 
-        $topicData = $this->topicService->getTopicBySlug($topicSlug);
+        $topicData = self::isClosed() ? null : $this->topicService->getTopicBySlug($topicSlug);
 
         $this->setState(
             [
@@ -191,6 +222,19 @@ class TopicsView extends SSRView
         );
 
         return $this;
+    }
+
+    /**
+     * Whether the render is for a visitor a members-only portal turns away.
+     *
+     * The portal shows them a sign-in prompt, but the page's hydration state
+     * is in the markup whatever the client does with it — so a closed list
+     * carries no topics and a closed topic route no topic, rather than handing
+     * over what the REST routes refuse.
+     */
+    public static function isClosed(): bool
+    {
+        return !PortalAccess::canView();
     }
 
     /**
@@ -216,6 +260,23 @@ class TopicsView extends SSRView
                 'posts' => $postData,
             ]
         );
+
+        return $this;
+    }
+
+    /**
+     * A list route with nothing in it, for a visitor who may not read it.
+     *
+     * @param array<string, mixed> $viewData
+     *
+     * @return self
+     */
+    private function prepareClosed(array $viewData)
+    {
+        $this->baseView->registerAssets();
+
+        $this->setState(['data' => [], 'stages' => []]);
+        $this->setViewData($viewData + ['stages' => []]);
 
         return $this;
     }

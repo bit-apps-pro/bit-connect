@@ -3,6 +3,7 @@ import { userProfilePath } from '@utilities/user-link'
 import { Link } from 'react-router'
 
 import { type EditAttribution } from '@/types/edit-attribution'
+import { formatSiteTime, FULL_DATE_TIME } from '@/utils/site-time'
 
 interface EditedNoteProps {
   className?: string
@@ -14,7 +15,7 @@ const fullTime = (at: string) => {
   // The server sends GMT without a zone marker, which Safari reads as local.
   const date = new Date(at.replace(' ', 'T') + 'Z')
 
-  return Number.isNaN(date.getTime()) ? at : date.toLocaleString()
+  return Number.isNaN(date.getTime()) ? at : formatSiteTime(date, FULL_DATE_TIME)
 }
 
 /**

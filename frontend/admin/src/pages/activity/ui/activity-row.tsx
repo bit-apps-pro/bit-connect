@@ -1,6 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { Tooltip, Typography } from 'antd'
 import { motion } from 'framer-motion'
+import { type ReactNode } from 'react'
 import { LuBot, LuMessageSquare, LuQuote } from 'react-icons/lu'
 
 import { clockTime, fullDate, parseGmt } from '@/utils/format'
@@ -38,11 +39,33 @@ function Dot() {
   )
 }
 
+/**
+ * A part of the row that narrows the log to itself.
+ *
+ * Styled as text with an underline on hover rather than as a button: the row is
+ * a sentence, and a chip in the middle of it would break the reading.
+ */
+function FilterLink({ children, label, onClick }: { children: ReactNode; label: string; onClick: () => void }) {
+  return (
+    <Tooltip title={label}>
+      <button
+        className="bc-cursor-pointer bc-border-0 bc-bg-transparent bc-p-0 bc-text-inherit bc-decoration-dotted bc-underline-offset-2 hover:bc-underline"
+        onClick={onClick}
+        type="button"
+      >
+        {children}
+      </button>
+    </Tooltip>
+  )
+}
+
 interface ActivityRowProps {
   /** Position within its day, which staggers the entrance. */
   index: number
   /** The connector is drawn between medallions, so the last one has none. */
   isLast: boolean
+  onFilterActor: (person: ActivityPerson) => void
+  onFilterTarget: (target: { id: number; type: string }) => void
   row: Row
 }
 
@@ -57,7 +80,7 @@ interface ActivityRowProps {
  * its tint carry the action, and the recorded content is indented underneath
  * where it can take the width it needs.
  */
-export default function ActivityRow({ index, isLast, row }: ActivityRowProps) {
+export default function ActivityRow({ index, isLast, onFilterActor, onFilterTarget, row }: ActivityRowProps) {
   const { Icon, tint } = lookOf(row.action)
   const cardMotion = useCardMotion({ layout: false })
   const title = titleOf(row)
@@ -82,13 +105,22 @@ export default function ActivityRow({ index, isLast, row }: ActivityRowProps) {
         <Icon aria-hidden />
       </span>
 
-      <div className="bc-min-w-0 bc-flex-1 bc-rounded-md bc-px-3 bc-py-2 bc-transition-colors hover:bc-bg-surface-hover">
+      <div className="bc-min-w-0 bc-flex-1 bc-rounded-lg bc-px-3 bc-py-2 bc-transition-colors hover:bc-bg-surface-hover">
         <div className="bc-flex bc-flex-wrap bc-items-baseline bc-gap-x-2 bc-gap-y-1">
           <span className="bc-text-sm bc-font-semibold bc-text-ink">
             {row.actor.is_system && !row.actor.name && (
               <LuBot aria-hidden className="bc-mr-1 bc-inline bc-align-[-2px]" />
             )}
-            <PersonName person={row.actor} />
+            {/* Only a real, still-existing account can be filtered to: the
+                server filters by id, and the automatic actor and a deleted
+                account have none worth asking for. */}
+            {row.actor.name && !row.actor.is_system ? (
+              <FilterLink label={__('Show only this member’s actions')} onClick={() => onFilterActor(row.actor)}>
+                <PersonName person={row.actor} />
+              </FilterLink>
+            ) : (
+              <PersonName person={row.actor} />
+            )}
           </span>
           <span className="bc-text-sm bc-text-ink-muted">{row.action_label}</span>
 
@@ -105,7 +137,19 @@ export default function ActivityRow({ index, isLast, row }: ActivityRowProps) {
         </div>
 
         <div className="bc-mt-1 bc-flex bc-flex-wrap bc-items-center bc-gap-x-2 bc-gap-y-1 bc-text-xs bc-text-ink-muted">
-          {title && <span className="bc-font-medium bc-text-ink">{title}</span>}
+          {title &&
+            (row.target.url ? (
+              <a
+                className="bc-font-medium bc-text-ink hover:bc-text-brand hover:bc-underline"
+                href={row.target.url}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {title}
+              </a>
+            ) : (
+              <span className="bc-font-medium bc-text-ink">{title}</span>
+            ))}
           {title && <Dot />}
 
           {/* The id is what makes a row actionable: it is how you find the
@@ -113,8 +157,13 @@ export default function ActivityRow({ index, isLast, row }: ActivityRowProps) {
               target it is the only handle left — the log outlives what it
               describes, so a name and a date alone name nothing. */}
           <Text className="bc-text-xs" copyable={{ text: String(row.target.id) }} type="secondary">
-            {isComment && <LuMessageSquare aria-hidden className="bc-mr-1 bc-inline bc-align-[-2px]" />}
-            {kindLabel} #{row.target.id}
+            <FilterLink
+              label={isComment ? __('Show this comment’s history') : __('Show this topic’s history')}
+              onClick={() => onFilterTarget(row.target)}
+            >
+              {isComment && <LuMessageSquare aria-hidden className="bc-mr-1 bc-inline bc-align-[-2px]" />}
+              {kindLabel} #{row.target.id}
+            </FilterLink>
           </Text>
           <Dot />
           <span>

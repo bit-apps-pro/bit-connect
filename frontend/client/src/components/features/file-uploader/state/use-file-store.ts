@@ -1,7 +1,9 @@
-import queryRequest, { extractUploadError, uploadRequest } from '@common/helpers/request'
+import queryRequest, { extractUploadError } from '@common/helpers/request'
+import uploadAttachment from '@common/helpers/upload-attachment'
 import { create } from 'zustand'
 
-export const DEFAULT_MAX_ATTACHMENTS = 5
+/** No limit unless the forum sets one — see PostingLimits.php. */
+export const DEFAULT_MAX_ATTACHMENTS = Number.POSITIVE_INFINITY
 
 export interface WPAttachmentData {
   filename: string
@@ -88,10 +90,7 @@ const useFileStore = create<FileStore>((set, get) => ({
     patch({ isUploading: true, progress: 0, uploadError: undefined })
 
     try {
-      const formData = new FormData()
-      formData.append('file', file.file)
-
-      const response = await uploadRequest<WPAttachmentData>('attachments', formData, {
+      const response = await uploadAttachment<WPAttachmentData>(file.file, {
         onProgress: percent => patch({ progress: percent })
       })
       const attachment = response.data

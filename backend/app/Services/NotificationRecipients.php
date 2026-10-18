@@ -35,12 +35,12 @@ final class NotificationRecipients
     private const MODERATOR_LIMIT = 50;
 
     /**
-     * Cached for the request: a burst of comments on one page load would
-     * otherwise re-run the role scan for each.
+     * Cached for the request, per capability: a burst of comments on one page
+     * load would otherwise re-run the role scan for each.
      *
-     * @var null|array<int, int>
+     * @var array<string, array<int, int>>
      */
-    private static $moderatorCache;
+    private static $holderCache = [];
 
     /**
      * Everyone with a standing interest in a thread: its author, plus everyone
@@ -78,7 +78,7 @@ final class NotificationRecipients
     /**
      * Who to tell about a brand-new topic.
      *
-     * Followers of the products and tags it was filed under, plus anyone
+     * Followers of the terms it was filed under, plus anyone
      * following the forum as a whole. Deliberately *not* every member: a
      * broadcast is unusable past a handful of topics a week, and a notification
      * nobody asked for is the fastest way to teach people to ignore the bell.
@@ -90,9 +90,14 @@ final class NotificationRecipients
         $ids = FollowService::followerIdsFor(Follow::TARGET_FORUM, 0);
 
         $taxonomyTargets = [
-            Taxonomies::DEPARTMENTS->value => Follow::TARGET_DEPARTMENT,
-            Taxonomies::TAGS->value        => Follow::TARGET_TAG,
+            Taxonomies::TAGS->value => Follow::TARGET_TAG,
         ];
+
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['follow'] !== '') {
+                $taxonomyTargets[$entry['taxonomy']] = $entry['follow'];
+            }
+        }
 
         foreach ($taxonomyTargets as $taxonomy => $targetType) {
             $termIds = wp_get_object_terms($topicId, $taxonomy, ['fields' => 'ids']);
@@ -112,22 +117,103 @@ final class NotificationRecipients
     /**
      * Everyone who can act on the moderation queue.
      *
-     * Both grant paths, because either one alone is wrong: capabilities are set
-     * on roles by CapabilityService, and individual accounts can carry a
-     * per-user grant that beats their role. The role scan finds the first, the
-     * usermeta LIKE finds the second, and user_can() settles the result — it is
-     * the same question current_user_can() answers when the moderator actually
-     * opens the queue, so the notification and the permission cannot disagree.
-     *
      * @return array<int, int>
      */
     public static function moderatorIds(): array
     {
-        if (self::$moderatorCache !== null) {
-            return self::$moderatorCache;
+        return self::holdersOf(Capabilities::MODERATE->value);
+    }
+
+    /**
+     * Everyone who can open the Tags screen, where a suggested tag is decided.
+     *
+     * Not moderatorIds(): the Tags screen sits behind the manage capability, so
+     * telling a moderator who lacks it about a pending tag hands them work they
+     * cannot reach.
+     *
+     * @return array<int, int>
+     */
+    public static function tagReviewerIds(): array
+    {
+        return self::holdersOf(Capabilities::MANAGE->value);
+    }
+
+    /**
+     * The author of a topic, or null if it is gone or was never a topic.
+     */
+    public static function topicAuthor(int $topicId): ?int
+    {
+        $post = $topicId > 0 ? get_post($topicId) : null;
+
+        if (!$post) {
+            return null;
         }
 
-        $cap = Capabilities::MODERATE->value;
+        $author = (int) $post->post_author;
+
+        return $author > 0 ? $author : null;
+    }
+
+    /**
+     * The author of a comment, or null if it is gone or was left by a guest.
+     */
+    public static function commentAuthor(int $commentId): ?int
+    {
+        $comment = $commentId > 0 ? get_comment($commentId) : null;
+
+        if (!$comment) {
+            return null;
+        }
+
+        $author = (int) $comment->user_id;
+
+        return $author > 0 ? $author : null;
+    }
+
+    /**
+     * The author of the comment a reply answers, or null for a top-level
+     * comment, a missing parent or one left by a guest.
+     */
+    public static function parentCommentAuthor(int $commentId): ?int
+    {
+        $comment = $commentId > 0 ? get_comment($commentId) : null;
+
+        if (!$comment) {
+            return null;
+        }
+
+        return self::commentAuthor((int) $comment->comment_parent);
+    }
+
+    /**
+     * Drops the cached moderator and tag-reviewer lists.
+     *
+     * Needed after a capability change inside the same request, which the
+     * Manager screen does.
+     */
+    public static function flushModerators(): void
+    {
+        self::$holderCache = [];
+    }
+
+    /**
+     * Everyone holding one forum capability.
+     *
+     * Both grant paths, because either one alone is wrong: capabilities are set
+     * on roles by CapabilityService, and individual accounts can carry a
+     * per-user grant that beats their role. The role scan finds the first, the
+     * usermeta LIKE finds the second, and user_can() settles the result — it is
+     * the same question current_user_can() answers when the recipient actually
+     * opens the screen, so the notification and the permission cannot disagree.
+     *
+     * @return array<int, int>
+     */
+    private static function holdersOf(string $cap): array
+    {
+        if (isset(self::$holderCache[$cap])) {
+            return self::$holderCache[$cap];
+        }
+
         $candidates = [];
 
         $roles = wp_roles();
@@ -174,52 +260,9 @@ final class NotificationRecipients
             array_filter($ids, static fn (int $id): bool => user_can($id, $cap))
         );
 
-        self::$moderatorCache = \array_slice($confirmed, 0, self::MODERATOR_LIMIT);
+        self::$holderCache[$cap] = \array_slice($confirmed, 0, self::MODERATOR_LIMIT);
 
-        return self::$moderatorCache;
-    }
-
-    /**
-     * The author of a topic, or null if it is gone or was never a topic.
-     */
-    public static function topicAuthor(int $topicId): ?int
-    {
-        $post = $topicId > 0 ? get_post($topicId) : null;
-
-        if (!$post) {
-            return null;
-        }
-
-        $author = (int) $post->post_author;
-
-        return $author > 0 ? $author : null;
-    }
-
-    /**
-     * The author of a comment, or null if it is gone or was left by a guest.
-     */
-    public static function commentAuthor(int $commentId): ?int
-    {
-        $comment = $commentId > 0 ? get_comment($commentId) : null;
-
-        if (!$comment) {
-            return null;
-        }
-
-        $author = (int) $comment->user_id;
-
-        return $author > 0 ? $author : null;
-    }
-
-    /**
-     * Drops the cached moderator list.
-     *
-     * Needed after a capability change inside the same request, which the
-     * Manager screen does.
-     */
-    public static function flushModerators(): void
-    {
-        self::$moderatorCache = null;
+        return self::$holderCache[$cap];
     }
 
     /**

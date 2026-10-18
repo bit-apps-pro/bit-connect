@@ -19,11 +19,14 @@ final class CreatePortalPageRequest extends Request
 {
     /**
      * This publishes a page and a wp_template post, so it needs the capability
-     * that governs the forum's placement rather than merely a login.
+     * that governs the forum's placement rather than merely a login — and
+     * core's own `publish_pages` beside it. The forum capability can be granted
+     * to any role, and it must not become a way to publish site pages for a
+     * role WordPress itself does not let publish them.
      */
     public function authorize()
     {
-        return WpCapabilities::check(Capabilities::MANAGE->value);
+        return WpCapabilities::check(Capabilities::MANAGE->value) && current_user_can('publish_pages');
     }
 
     public function failedAuthorizationMessage(): string

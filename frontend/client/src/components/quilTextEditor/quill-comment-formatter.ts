@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign -- every transform below rewrites the DOM
+   node it is handed in place; that mutation is the function's whole contract. */
 /**
  * Quill → WordPress comment HTML formatter.
  *
@@ -12,6 +14,8 @@
  *  - No Gutenberg block classes (wp-block-*) — comments are not blocks.
  *  - No headings — comments are prose, not documents.
  *  - Images are allowed (uploaded to WP media library, https:// src only).
+ *  - Uploaded videos are allowed, bare — no figure, since comments are not
+ *    blocks — keeping their file and the browser's own controls.
  *  - No tables — not part of WordPress's comment allowed tag set.
  *  - Inline styles are always removed.
  *  - All ql-* Quill artefacts must be stripped before storage.
@@ -24,6 +28,8 @@
  *     → finalCleanup()
  */
 
+import { VIDEO_LINK_CLASS } from '@pages/Post/shared/video-link'
+
 import { MENTION_CLASS } from './mention-markup'
 import { replaceEmojiImages } from './quill-emoji'
 import { normalizeQuillLists } from './quill-list-normalizer'
@@ -35,8 +41,7 @@ export const COMMENT_LIMITS = {
   /** MySQL comment_content column is TEXT = 65,535 bytes */
   MAX_HTML_BYTES: 65_000,
   MAX_LINKS: 5,
-  MAX_NESTING_DEPTH: 8,
-  MAX_TEXT_CHARS: 5000
+  MAX_NESTING_DEPTH: 8
 } as const
 
 // ---------------------------------------------------------------------------
@@ -61,8 +66,12 @@ const COMMENT_ALLOWED_TAGS = new Set([
   's',
   'strong',
   'u',
-  'ul'
+  'ul',
+  'video'
 ])
+
+/** What a stored video carries: its file, and how the browser should offer it. */
+const VIDEO_ATTRIBUTES = new Set(['controls', 'playsinline', 'preload', 'src'])
 
 const QUILL_CLASS_PATTERN = /\bql-[\w-]+\b/g
 
@@ -96,16 +105,6 @@ export function formatCommentForWordPress(quillHtml: string): string {
   return finalCleanup(raw)
 }
 
-/**
- * Quick character-count check for the comment editor UI.
- * Returns number of plain-text characters (not HTML length).
- */
-export function getCommentPlainTextLength(quillHtml: string): number {
-  const tmp = document.createElement('div')
-  tmp.innerHTML = quillHtml
-  return (tmp.textContent || '').length
-}
-
 // ---------------------------------------------------------------------------
 // Tree walker
 // ---------------------------------------------------------------------------
@@ -126,7 +125,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
       break
     }
     case 'b': {
-      renameElement(element, 'strong', parent)
+      renameElement(element, 'strong')
       break
     }
     case 'blockquote': {
@@ -156,7 +155,7 @@ function transformElement(element: HTMLElement, parent: Element): void {
     case 'h4':
     case 'h5':
     case 'h6': {
-      demoteHeading(element, parent)
+      demoteHeading(element)
       break
     }
     case 'hr':
@@ -170,11 +169,11 @@ function transformElement(element: HTMLElement, parent: Element): void {
       break
     }
     case 'i': {
-      renameElement(element, 'em', parent)
+      renameElement(element, 'em')
       break
     }
     case 'img': {
-      transformImage(element, parent)
+      transformImage(element)
       break
     }
     case 'li': {
@@ -196,6 +195,10 @@ function transformElement(element: HTMLElement, parent: Element): void {
     }
     case 'span': {
       flattenSpan(element, parent)
+      break
+    }
+    case 'video': {
+      transformVideo(element)
       break
     }
     default: {
@@ -226,7 +229,7 @@ function transformParagraph(element: HTMLElement): void {
  * would cause wp_kses to strip the tags but keep the text — ugly.
  * Converting to bold preserves the author's intent while staying compatible.
  */
-function demoteHeading(element: HTMLElement, _parent: Element): void {
+function demoteHeading(element: HTMLElement): void {
   const p = element.ownerDocument.createElement('p')
   const strong = element.ownerDocument.createElement('strong')
   strong.innerHTML = element.innerHTML
@@ -288,11 +291,13 @@ function transformLink(element: HTMLElement): void {
   // styling.
   const hrefVal = element.getAttribute('href') || ''
   const titleVal = element.getAttribute('title') || ''
-  const isMention = element.classList.contains(MENTION_CLASS)
+  // A video address its writer chose to keep a link carries a class of its own
+  // for the same reason: without it the portal would show a player instead.
+  const kept = [MENTION_CLASS, VIDEO_LINK_CLASS].find(name => element.classList.contains(name))
   ;[...element.attributes].forEach(a => element.removeAttribute(a.name))
   if (hrefVal) element.setAttribute('href', hrefVal)
   if (titleVal) element.setAttribute('title', titleVal)
-  if (isMention) element.setAttribute('class', MENTION_CLASS)
+  if (kept) element.setAttribute('class', kept)
 
   // External links: add rel="nofollow ugc" (WordPress convention for comment links)
   if (hrefVal.startsWith('http')) {
@@ -326,7 +331,7 @@ function flattenSpan(element: HTMLElement, parent: Element): void {
   }
 }
 
-function transformImage(element: HTMLElement, _parent: Element): void {
+function transformImage(element: HTMLElement): void {
   const source = element.getAttribute('src') || ''
   const alt = element.getAttribute('alt') || ''
   // Only keep https/http images — strip data: URIs and anything unsafe
@@ -339,6 +344,16 @@ function transformImage(element: HTMLElement, _parent: Element): void {
   if (alt) element.setAttribute('alt', alt)
 }
 
+function transformVideo(element: HTMLElement): void {
+  if (!/^https?:\/\//i.test(element.getAttribute('src') || '')) {
+    element.remove()
+    return
+  }
+  for (const name of element.getAttributeNames()) {
+    if (!VIDEO_ATTRIBUTES.has(name)) element.removeAttribute(name)
+  }
+}
+
 function unwrapElement(element: Element, parent: Element): void {
   while (element.firstChild) {
     parent.insertBefore(element.firstChild, element)
@@ -346,7 +361,7 @@ function unwrapElement(element: Element, parent: Element): void {
   element.remove()
 }
 
-function renameElement(element: HTMLElement, newTag: string, _parent: Element): void {
+function renameElement(element: HTMLElement, newTag: string): void {
   const replacement = element.ownerDocument.createElement(newTag)
   replacement.innerHTML = element.innerHTML
   element.replaceWith(replacement)

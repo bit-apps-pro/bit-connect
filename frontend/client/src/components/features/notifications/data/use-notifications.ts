@@ -36,6 +36,10 @@ export interface NotificationItem {
     decision_label?: string
     excerpt?: string
     note?: string
+    /** The private space asked for, or opened, on an `access_*` row. */
+    space_name?: string
+    /** The tag a member suggested, on a `tag_suggested` row. */
+    tag_name?: string
     topic_title?: string
     url?: string
   }

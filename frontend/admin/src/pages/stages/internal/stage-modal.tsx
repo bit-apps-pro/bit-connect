@@ -2,9 +2,10 @@ import { __ } from '@common/helpers/i18nWrap'
 import slugify from '@common/helpers/slugify'
 import Input from '@components/utilities/Input/Input'
 import TextArea from '@components/utilities/Textarea/TextArea'
+import ChipPreview from '@utilities/chip-preview'
 import IconPickerField, { iconDarkHint, iconSizeHint } from '@utilities/icon-picker-field'
 import SlugField, { useSlugSync } from '@utilities/slug-field'
-import { Alert, Form, type FormInstance, Modal } from 'antd'
+import { Alert, ColorPicker, Form, type FormInstance, Modal } from 'antd'
 import { useEffect } from 'react'
 
 import { type Stage, type StageFormData } from '../shared/types'
@@ -31,12 +32,15 @@ export default function StageModal({
   const isEditMode = !!stage
 
   const { onNameChange, onSlugChange } = useSlugSync(form, open)
+  const color = Form.useWatch('color', form)
+  const name = Form.useWatch('name', form)
 
   useEffect(() => {
     if (!open) return
 
     if (stage) {
       form.setFieldsValue({
+        color: stage.meta?.bit_connect_color,
         description: stage.description,
         icon_dark_id: stage.meta?.bit_connect_icon_dark_id || 0,
         icon_dark_url: stage.meta?.bit_connect_icon_dark_url,
@@ -56,6 +60,7 @@ export default function StageModal({
       const values = await form.validateFields()
       // Ensure all icon fields are included even if they're undefined
       const formData: StageFormData = {
+        color: values.color,
         description: values.description,
         icon_dark_id: values.icon_dark_id || 0,
         icon_dark_url: values.icon_dark_url,
@@ -82,7 +87,7 @@ export default function StageModal({
       onCancel={onCancel}
       onOk={handleSubmit}
       open={open}
-      title={isEditMode ? __('Edit Stage') : __('Create Stage')}
+      title={isEditMode ? __('Edit Stage') : __('Add stage')}
       width={600}
     >
       <Form className="bc-mt-4" form={form} layout="vertical">
@@ -98,6 +103,28 @@ export default function StageModal({
         </Form.Item>
 
         <SlugField isEditMode={isEditMode} onChange={onSlugChange} />
+
+        <Form.Item
+          extra={__('Used for the stage badge on topic cards.')}
+          label={__('Color')}
+          name="color"
+          normalize={value => {
+            if (typeof value === 'string') return value
+            if (value && typeof value === 'object' && 'toHexString' in value) {
+              return value.toHexString()
+            }
+            return value
+          }}
+        >
+          <ColorPicker allowClear format="hex" showText />
+        </Form.Item>
+        {/* A form item's own gap below, so the preview does not sit on the
+            next field's label. */}
+        {color && (
+          <div className="bc--mt-4 bc-mb-6">
+            <ChipPreview color={color} label={name} />
+          </div>
+        )}
 
         <Form.Item label={__('Description')} name="description">
           <TextArea placeholder={__('Enter stage description (optional)')} rows={3} />

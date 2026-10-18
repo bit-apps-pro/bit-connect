@@ -1,5 +1,6 @@
 import { cn } from '@common/helpers/globalHelpers'
 import { __, sprintf } from '@common/helpers/i18nWrap'
+import { plainText } from '@common/helpers/plain-text'
 import { Avatar } from 'antd'
 
 import { type NotificationItem } from '../data/use-notifications'
@@ -45,6 +46,12 @@ function shortAgo(iso: string): string {
  * prose the client cannot restyle or translate in the reader's locale — and the
  * mail has to work with no client at all.
  */
+/** `post_upvote` -> `Post upvote`. Only for a type nothing else can name. */
+function humanizeType(type: string): string {
+  const words = type.replaceAll(/[_-]+/g, ' ').trim()
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
 function describe(item: NotificationItem) {
   const who = item.actor.is_system ? __('The forum') : item.actor.name || __('Someone')
   const title = item.context.topic_title
@@ -53,7 +60,29 @@ function describe(item: NotificationItem) {
   const name = <span className="bc-font-semibold bc-text-ink">{who}</span>
   const subject = <span className="bc-font-medium bc-text-ink">{named}</span>
 
+  const space = <span className="bc-font-medium bc-text-ink">{item.context.space_name ?? ''}</span>
+
   switch (item.type) {
+    case 'access_granted': {
+      return (
+        <>
+          {__('You can now read')} {space}
+        </>
+      )
+    }
+    case 'access_requested': {
+      // Requests to join one space fold into a row, as votes do.
+      return item.count > 1 ? (
+        <>
+          <span className="bc-font-semibold bc-text-ink">{sprintf(__('%d people'), item.count)}</span>{' '}
+          {__('asked to join')} {space}
+        </>
+      ) : (
+        <>
+          {name} {__('asked to join')} {space}
+        </>
+      )
+    }
     case 'badge_awarded': {
       return (
         <>
@@ -87,7 +116,16 @@ function describe(item: NotificationItem) {
       return (
         <>
           {__('A moderator reviewed something you reported')}
-          {item.context.decision_label ? ` — ${item.context.decision_label}` : ''}
+          {item.context.decision_label ? `: ${item.context.decision_label}` : ''}
+        </>
+      )
+    }
+    case 'tag_suggested': {
+      return (
+        <>
+          {name} {__('suggested a new tag')}{' '}
+          <span className="bc-font-medium bc-text-ink">{`#${item.context.tag_name ?? ''}`}</span> {__('on')}{' '}
+          {subject}
         </>
       )
     }
@@ -128,7 +166,10 @@ function describe(item: NotificationItem) {
       )
     }
     default: {
-      return <>{item.type_label}</>
+      // Rows written by an older build carry type names the switch above does
+      // not know. The label the server sends is that raw slug, so turn it into
+      // words rather than printing `post_upvote` to a member.
+      return <>{humanizeType(item.type_label || item.type)}</>
     }
   }
 }
@@ -146,7 +187,9 @@ interface NotificationRowProps {
 }
 
 export default function NotificationRow({ item, onSelect, variant = 'flat' }: NotificationRowProps) {
-  const excerpt = item.context.excerpt?.trim()
+  // The server strips markup before storing an excerpt but leaves its entities
+  // encoded, and rows written before it stripped still carry the post's HTML.
+  const excerpt = item.context.excerpt && plainText(item.context.excerpt)
   const { bg, fg, Icon } = appearanceFor(item.type)
   const initial = (item.actor.name || '?').charAt(0).toUpperCase()
   const isCard = variant === 'card'

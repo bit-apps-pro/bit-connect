@@ -35,18 +35,19 @@ final class Menu
      */
     public static function getSideBarMenu(Body $body)
     {
+        // The order of the in-app sidebar: daily work, then how topics are
+        // sorted, then settings, then the plugin's own Support screen.
         return [
             'Home'        => self::getHomeMenuAttributes($body),
             'Dashboard'   => self::getDashboardMenuAttributes(),
-            'General'     => self::getGeneralMenuAttributes(),
-            'Stages'      => self::getStagesMenuAttributes(),
-            'Topic Types' => self::getTopicTypesMenuAttributes(),
-            'Products'    => self::getProductsMenuAttributes(),
-            'Tags'        => self::getTagsMenuAttributes(),
-            'Status'      => self::getStatusMenuAttributes(),
-            'Manager'     => self::getManagerMenuAttributes(),
-            'Activity'    => self::getActivityMenuAttributes(),
+            'Topics'      => self::getTopicsMenuAttributes(),
             'Reports'     => self::getReportsMenuAttributes(),
+            'Activity'    => self::getActivityMenuAttributes(),
+            'Manager'     => self::getManagerMenuAttributes(),
+            'Topic Types' => self::getTopicTypesMenuAttributes(),
+            'Stages'      => self::getStagesMenuAttributes(),
+            'Status'      => self::getStatusMenuAttributes(),
+            'Tags'        => self::getTagsMenuAttributes(),
             'Settings'    => self::getSettingsMenuAttributes(),
             'Support'     => self::getSupportMenuAttributes(),
         ];
@@ -55,7 +56,7 @@ final class Menu
     private static function getHomeMenuAttributes(Body $body)
     {
         // phpcs:ignore Generic.Files.LineLength.MaxExceeded
-        $icon = 'data:image/svg+xml;base64,' . base64_encode('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.7995 7.9998H15.658C14.8343 5.66984 12.6119 3.99943 9.99971 3.99943C9.29795 3.99943 8.62498 4.11943 8 4.34119V0.200649C8.64608 0.0691322 9.31522 0 9.99971 0C14.8382 0 18.8731 3.43493 19.7995 7.9998Z" fill="white"/><path d="M19.7993 12C18.8729 16.5648 14.837 19.9998 9.9995 19.9998C4.47654 19.9998 0 15.5223 0 9.9993C0 6.72757 1.57058 3.82354 3.99941 1.99951V9.9993C3.99941 13.3133 6.68649 15.9994 9.9995 15.9994C12.6117 15.9994 14.8341 14.3299 15.6578 12L19.7993 12Z" fill="white"/><path d="M12.0004 9.99921C12.0004 11.1042 11.1047 11.9999 9.99971 11.9999C8.8957 11.9999 8 11.1042 8 9.99921C8 8.89519 8.8957 7.99951 9.99971 7.99951C11.1047 7.99951 12.0004 8.89519 12.0004 9.99921Z" fill="white"/></svg>');
+        $icon = 'data:image/svg+xml;base64,' . base64_encode('<svg width="20" height="20" viewBox="9 9 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28.7995 16.9998H24.658C23.8343 14.6698 21.6119 12.9994 18.9997 12.9994C18.2979 12.9994 17.625 13.1194 17 13.3412V9.20065C17.6461 9.06913 18.3152 9 18.9997 9C23.8382 9 27.8731 12.4349 28.7995 16.9998Z" fill="white"/><path d="M28.7993 21.0004C27.8729 25.5653 23.837 29.0003 18.9995 29.0003C13.4765 29.0003 9 24.5227 9 18.9998C9 15.7281 10.5706 12.824 12.9994 11V18.9998C12.9994 22.3138 15.6865 24.9999 18.9995 24.9999C21.6117 24.9999 23.8341 23.3304 24.6578 21.0005L28.7993 21.0004Z" fill="white"/><path d="M21.0004 18.9997C21.0004 20.1047 20.1047 21.0004 18.9997 21.0004C17.8957 21.0004 17 20.1047 17 18.9997C17 17.8957 17.8957 17 18.9997 17C20.1047 17 21.0004 17.8957 21.0004 18.9997Z" fill="white"/></svg>');
 
         return [
             'type'  => 'menu',
@@ -106,17 +107,6 @@ final class Menu
         ];
     }
 
-    private static function getProductsMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => 'Products',
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/products',
-        ];
-    }
-
     private static function getTagsMenuAttributes()
     {
         return [
@@ -133,16 +123,32 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Status',
+            'name'       => 'Statuses',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/status',
         ];
     }
 
     /**
-     * The one screen under this menu that answers to bit_connect_forum_moderate.
+     * Every topic in one table, to set statuses and stages, lock, hide or
+     * delete — several at once. bit_connect_forum_moderate: that is the work a
+     * moderator does, and defining the statuses and stages stays with Manage.
+     */
+    private static function getTopicsMenuAttributes()
+    {
+        return [
+            'parent'     => Config::SLUG,
+            'type'       => 'submenu',
+            'name'       => 'Topics',
+            'capability' => Capabilities::MODERATE->value,
+            'slug'       => Config::SLUG . '#/topics',
+        ];
+    }
+
+    /**
+     * A screen under this menu that answers to bit_connect_forum_moderate.
      *
-     * Everything else here is settings and belongs to bit_connect_forum_manage; reviewing
+     * Most of the rest is settings and belongs to bit_connect_forum_manage; reviewing
      * what was done to a member's post does not.
      */
     private static function getActivityMenuAttributes()
@@ -201,23 +207,16 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Manager',
+            'name'       => 'Members',
             'capability' => Capabilities::MANAGE->value,
             'slug'       => Config::SLUG . '#/manager',
         ];
     }
 
-    private static function getGeneralMenuAttributes()
-    {
-        return [
-            'parent'     => Config::SLUG,
-            'type'       => 'submenu',
-            'name'       => 'General',
-            'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/general',
-        ];
-    }
-
+    /**
+     * Every setting the forum has, one tab per subject: the portal, sign-in,
+     * topics, moderation, limits, notifications, SEO and data.
+     */
     private static function getSettingsMenuAttributes()
     {
         return [

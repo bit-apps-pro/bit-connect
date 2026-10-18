@@ -191,7 +191,7 @@ class EmailChangeService
         $subject = __('Confirm your new email address', 'bit-connect');
         $message = \sprintf(
             // translators: %s: confirmation URL
-            __("Hello,\n\nPlease confirm this address so we can use it for your account:\n\n%s\n\nYou may be asked to sign in first. This link expires in 24 hours.\n\nIf you did not ask to change your email address, you can safely ignore this email — nothing has changed.", 'bit-connect'), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
+            __("Hello,\n\nPlease confirm this address so we can use it for your account:\n\n%s\n\nYou may be asked to sign in first. This link expires in 24 hours.\n\nIf you did not ask to change your email address, you can safely ignore this email. Nothing has changed.", 'bit-connect'), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
             $confirmUrl
         );
 

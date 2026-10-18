@@ -15,7 +15,7 @@ export const AVATAR_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp
 /** `accept` attribute for the file input. */
 export const AVATAR_ACCEPT = AVATAR_MIMES.join(',')
 
-/** Mirrors AttachmentValidatorService::MAX_FILE_SIZE. */
+/** Mirrors AttachmentValidatorService::PROFILE_IMAGE_MAX_SIZE. */
 export const AVATAR_MAX_BYTES = 5 * 1024 * 1024
 
 /**

@@ -44,6 +44,11 @@ export interface TopicComment {
   /** Held while a moderator reviews a report. Content is a marker, not the words. */
   hidden?: boolean
   isAdmin?: boolean
+  /**
+   * The one reply the topic's author singled out as the answer. At most one
+   * comment on a topic carries it, and never a nested reply.
+   */
+  pinned?: boolean
   populated_children: boolean
   post_fields: string[]
   user_id: string

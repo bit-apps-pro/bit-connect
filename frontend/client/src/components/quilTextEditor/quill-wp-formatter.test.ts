@@ -144,3 +144,21 @@ describe('formatForWordPress code blocks', () => {
     )
   })
 })
+
+describe('formatForWordPress videos', () => {
+  it('stores an uploaded video as Gutenberg does, without the editor-only attributes', () => {
+    expect(
+      formatForWordPress(
+        '<p>Watch</p><video src="https://e.com/clip.mp4" controls="" preload="metadata" playsinline="" contenteditable="false"></video>'
+      ).replaceAll('\n', '')
+    ).toBe(
+      '<p>Watch</p><figure class="wp-block-video"><video src="https://e.com/clip.mp4" controls="" preload="metadata" playsinline=""></video></figure>'
+    )
+  })
+
+  it('leaves a video already in a figure alone', () => {
+    const already = '<figure class="wp-block-video"><video src="https://e.com/clip.mp4" controls="" preload="metadata"></video></figure>'
+
+    expect(formatForWordPress(already)).toBe(already)
+  })
+})

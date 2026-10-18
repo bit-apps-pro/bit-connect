@@ -24,6 +24,8 @@ export interface Comment {
   id: number
   isAdmin: boolean
   parentId?: number
+  /** The one reply the topic's author singled out as the answer. */
+  pinned?: boolean
   replies: Comment[]
   user: string
   userId?: number

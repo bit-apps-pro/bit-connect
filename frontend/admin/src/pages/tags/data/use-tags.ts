@@ -1,13 +1,13 @@
-import { type ResponseType } from '@common/request/types'
-import { wpApi } from '@common/request/wp-api'
+import { wpApiAll } from '@common/request/wp-api-all'
 import { useQuery } from '@tanstack/react-query'
 
 import { type Tag } from '../shared/types'
 
 export default function useTags() {
-  const { data, isError, isFetching, isPending, refetch } = useQuery<ResponseType<Tag[]>, Error, Tag[]>({
-    queryFn: ({ signal }) =>
-      wpApi('bit-connect-tags', { method: 'GET', queryParam: { per_page: 100 }, signal }),
+  // Every tag, not the first page: the screen searches and counts what is
+  // pending over the whole list.
+  const { data, isError, isFetching, isPending, refetch } = useQuery<Tag[]>({
+    queryFn: ({ signal }) => wpApiAll<Tag>('bit-connect-tags', { signal }),
     queryKey: ['tags']
   })
 

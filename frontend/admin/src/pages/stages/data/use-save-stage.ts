@@ -14,6 +14,7 @@ export interface ErrorResponse {
 export interface StageRequestBody {
   description?: string
   meta: {
+    bit_connect_color?: string
     bit_connect_icon_dark_id?: number
     bit_connect_icon_dark_url?: string
     bit_connect_icon_id?: number

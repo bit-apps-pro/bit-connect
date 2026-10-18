@@ -7,11 +7,28 @@ import useOnboardingStatus from './use-onboarding-status'
 
 vi.mock('@common/request', () => ({ request: vi.fn() }))
 
+const mockConfig = vi.hoisted(() => ({ CAN_MANAGE: true }))
+vi.mock('../../../config/config', () => ({ default: mockConfig }))
+
 const mockRequest = vi.mocked(request)
 
 describe('useOnboardingStatus', () => {
   beforeEach(() => {
     mockRequest.mockReset()
+    mockConfig.CAN_MANAGE = true
+  })
+
+  // The route refuses anyone without manage, and a never-run query stays
+  // pending — which the guard would read as "draw nothing yet", for good.
+  it('asks nothing of a moderator and is not left pending', () => {
+    mockConfig.CAN_MANAGE = false
+    const { wrapper } = createQueryWrapper()
+
+    const { result } = renderHook(() => useOnboardingStatus(), { wrapper })
+
+    expect(mockRequest).not.toHaveBeenCalled()
+    expect(result.current.isOnboardingStatusPending).toBe(false)
+    expect(result.current.isOnboardingCompleted).toBe(true)
   })
 
   it('requests the onboarding-status endpoint', async () => {

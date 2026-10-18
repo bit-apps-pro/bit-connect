@@ -4,12 +4,15 @@ import {
   LuBell,
   LuCircleCheck,
   LuHeart,
+  LuKeyRound,
   LuMessageSquare,
   LuReply,
   LuShieldAlert,
   LuSparkles,
+  LuTag,
   LuTriangleAlert,
-  LuTrophy
+  LuTrophy,
+  LuUserPlus
 } from 'react-icons/lu'
 
 /**
@@ -35,6 +38,10 @@ export interface NotificationAppearance {
 }
 
 const APPEARANCE: Record<string, NotificationAppearance> = {
+  // Green like an upvote: something good happened to you.
+  access_granted: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuKeyRound },
+  // Amber: a request waiting on a moderator's decision.
+  access_requested: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuUserPlus },
   badge_awarded: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTrophy },
   comment_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuReply },
   // The one red. Something you wrote was taken down, and nothing else in this
@@ -43,6 +50,8 @@ const APPEARANCE: Record<string, NotificationAppearance> = {
   mention: { bg: 'bc-bg-tone-violet-soft', fg: 'bc-text-tone-violet', Icon: LuAtSign },
   report_filed: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTriangleAlert },
   report_resolved: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuCircleCheck },
+  // Amber like a report: something waiting on a moderator's decision.
+  tag_suggested: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTag },
   topic_new: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
   // The same event as topic_new, sent to moderators, so it looks the same.
   topic_posted: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },

@@ -2,6 +2,7 @@
 
 namespace BitApps\BitConnect\Tests\Services;
 
+use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\NotificationRecipients;
 use PHPUnit\Framework\TestCase;
@@ -123,6 +124,42 @@ class NotificationRecipientsTest extends TestCase
         $this->assertNull(NotificationRecipients::commentAuthor(5), 'a guest comment has no member to notify');
         $this->assertNull(NotificationRecipients::commentAuthor(404));
         $this->assertSame(self::FOLLOWER, NotificationRecipients::commentAuthor(6));
+    }
+
+    public function testSuggestedTagsGoOnlyToThoseWhoCanOpenTheTagsScreen(): void
+    {
+        $moderator = 21;
+        $admin = 22;
+        $moderate = Capabilities::MODERATE->value;
+        $manage = Capabilities::MANAGE->value;
+
+        $GLOBALS['__wp_user_meta'] = [
+            $moderator => ['wp_capabilities' => [$moderate]],
+            $admin     => ['wp_capabilities' => [$moderate, $manage]],
+        ];
+        $GLOBALS['__wp_user_caps'] = [
+            $moderator => [$moderate => true],
+            $admin     => [$moderate => true, $manage => true],
+        ];
+        // No role carries either cap, so only the per-user grant path is under
+        // test. The shared stub keeps its role list private; core's is public.
+        $sharedRoles = $GLOBALS['__wp_roles'];
+        $GLOBALS['__wp_roles'] = new class () extends \WP_Roles {
+            public array $roles = [];
+        };
+
+        try {
+            $this->assertSame([$moderator, $admin], NotificationRecipients::moderatorIds());
+            $this->assertSame(
+                [$admin],
+                NotificationRecipients::tagReviewerIds(),
+                'a moderator without the manage capability cannot open the Tags screen, so is not told about pending tags'
+            );
+        } finally {
+            $GLOBALS['__wp_roles'] = $sharedRoles;
+            unset($GLOBALS['__wp_user_meta'], $GLOBALS['__wp_user_caps']);
+            NotificationRecipients::flushModerators();
+        }
     }
 
     /**

@@ -1,5 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { externalRegisterUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { Alert, Button, Form, Input, Result } from 'antd'
 import { useEffect } from 'react'
 import { LuMailCheck, LuUserPlus, LuUserX } from 'react-icons/lu'
@@ -18,6 +20,7 @@ interface RegisterFormValues {
 }
 
 export default function RegisterPage() {
+  usePageTitle(__('Sign up'))
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
@@ -66,7 +69,7 @@ export default function RegisterPage() {
           {__('Already have an account?')}{' '}
           <Link
             className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-            to={`/login?redirect_to=${encodeURIComponent(redirectTo)}`}
+            to={routePath(`/login?redirect_to=${encodeURIComponent(redirectTo)}`)}
           >
             {__('Login')}
           </Link>
@@ -204,7 +207,7 @@ export default function RegisterPage() {
         {__('Already have an account?')}{' '}
         <Link
           className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-          to={`/login?redirect_to=${encodeURIComponent(redirectTo)}`}
+          to={routePath(`/login?redirect_to=${encodeURIComponent(redirectTo)}`)}
         >
           {__('Login')}
         </Link>

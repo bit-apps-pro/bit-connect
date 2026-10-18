@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Http\Requests\GetActivityLogRequest;
 use BitApps\BitConnect\Services\ActivityLogService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 
 /**
  * Reads the activity log.
@@ -29,7 +30,8 @@ final class ActivityLogController
 
         // An unknown action slug would otherwise filter to nothing and read as
         // "no activity" rather than "that is not a thing that gets recorded".
-        if ($action !== '' && ActivityActions::tryFrom($action) === null) {
+        // A listener's actions are recorded too, so they filter like our own.
+        if ($action !== '' && ActivityActions::tryFrom($action) === null && !isset(ExtensionPoints::activityActions()[$action])) {
             return Response::error('Unknown activity action: ' . $action, 422);
         }
 
@@ -46,6 +48,7 @@ final class ActivityLogController
                     'action'      => $action,
                     'target_type' => $targetType,
                     'target_id'   => max(0, (int) ($validated['target_id'] ?? 0)),
+                    'period'      => (string) ($validated['period'] ?? ''),
                     'page'        => (int) ($validated['page'] ?? 1),
                     'per_page'    => (int) ($validated['per_page'] ?? 20),
                 ]
@@ -64,6 +67,12 @@ final class ActivityLogController
     // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- see above
     public function actions(GetActivityLogRequest $request)
     {
-        return Response::success(ActivityActions::options());
+        $added = [];
+
+        foreach (ExtensionPoints::activityActions() as $value => $label) {
+            $added[] = ['value' => $value, 'label' => $label];
+        }
+
+        return Response::success([...ActivityActions::options(), ...$added]);
     }
 }

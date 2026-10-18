@@ -41,6 +41,8 @@ export interface CommentResponse {
   id: number
   link: string
   parent: number
+  /** The one reply the topic's author singled out as the answer. */
+  pinned?: boolean
   post: number
   status: number | string
   type: string
@@ -78,6 +80,7 @@ export const commentResponseToTopicComment = (comment: CommentResponse): TopicCo
     comment_type: comment.type,
     edited: comment.edited,
     hidden: comment.hidden,
+    pinned: comment.pinned ?? false,
     populated_children: false,
     post_fields: [],
     user_id: comment.author.toString(),

@@ -1,0 +1,88 @@
+/* ===== A link to a reply that is gone =====
+   Drawn as the shape the reply would have had — the avatar's place, then the
+   text — so it reads as a gap in the thread rather than as an error about the
+   page. Dashed and muted: nothing here can be acted on except leaving it. */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--bc-line-strong);
+  border-radius: 14px;
+  background-color: var(--bc-surface-sunken);
+  animation: missing-comment-arrive 0.3s ease-out;
+}
+
+/* The avatar's place, sized like a top-level comment's (36px). */
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--bc-surface);
+  color: var(--bc-ink-subtle);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  color: var(--bc-ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.detail {
+  margin: 2px 0 0;
+  color: var(--bc-ink-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.action {
+  flex-shrink: 0;
+}
+
+@keyframes missing-comment-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice {
+    animation: none;
+  }
+}
+
+/* On a phone the action goes under the text, level with it, rather than
+   squeezing the sentence into a column beside a button. */
+@media (width < 576px) {
+  .notice {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  /* The row's whole width beside the icon, so the button has to wrap. */
+  .body {
+    flex-basis: calc(100% - 48px);
+  }
+
+  .action {
+    margin-left: 48px;
+  }
+}

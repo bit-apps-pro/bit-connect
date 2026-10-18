@@ -20,7 +20,10 @@ const EXTENSION_BY_TYPE: Record<string, string> = {
 
 function getMediaLimits(): { maxBytes: number; maxPx: number } {
   return {
-    maxBytes: config.WP_MEDIA_SETTINGS.maxUploadBytes,
+    // The smaller of the two: the server's cap, and the forum's own limit for
+    // an image. Shrinking only to the server's let a large photo through the
+    // resizer untouched and then fail the forum's limit.
+    maxBytes: Math.min(config.WP_MEDIA_SETTINGS.maxUploadBytes, config.POSTING_LIMITS.maxFileSizeByKind.image),
     maxPx: config.WP_MEDIA_SETTINGS.bigImageThresholdPx
   }
 }
@@ -44,7 +47,7 @@ export async function resizeImageIfNeeded(file: File): Promise<ResizeResult> {
     img = await new Promise<HTMLImageElement>((resolve, reject) => {
       const element = new Image()
       element.addEventListener('load', () => resolve(element))
-      element.onerror = () => reject(new Error('Could not read image'))
+      element.addEventListener('error', () => reject(new Error('Could not read image')))
       element.src = objectUrl
     })
   } finally {

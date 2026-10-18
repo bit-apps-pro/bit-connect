@@ -1,5 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { routePath } from '@utils/route-path'
 import { Alert, Button, Checkbox, Form, Input } from 'antd'
 import { useEffect } from 'react'
 import { LuLogIn } from 'react-icons/lu'
@@ -17,6 +19,7 @@ interface LoginFormValues {
 }
 
 export default function LoginPage() {
+  usePageTitle(__('Log in'))
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
@@ -77,23 +80,25 @@ export default function LoginPage() {
           <Input autoComplete="username" placeholder={__('Enter your username or email')} />
         </Form.Item>
 
-        <Form.Item
-          label={
-            <div className="bc-flex bc-w-full bc-items-center bc-justify-between">
-              <span>{__('Password')}</span>
-              <Link
-                className="bc-text-xs bc-text-primary hover:bc-text-primary/80 bc-font-medium bc-no-underline"
-                to={`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`}
-              >
-                {__('Forgot password?')}
-              </Link>
-            </div>
-          }
-          name="password"
-          rules={[{ message: __('Please enter your password'), required: true }]}
-        >
-          <Input.Password autoComplete="current-password" placeholder={__('Enter your password')} />
-        </Form.Item>
+        {/* The link sits on the label's line but outside the <label>: inside
+            it, a screen reader named the field "Password Forgot password?". */}
+        <div className="bc-relative">
+          <Form.Item
+            label={__('Password')}
+            name="password"
+            rules={[{ message: __('Please enter your password'), required: true }]}
+          >
+            <Input.Password autoComplete="current-password" placeholder={__('Enter your password')} />
+          </Form.Item>
+          <Link
+            className="bc-absolute bc-right-0 bc-text-xs bc-text-primary hover:bc-text-primary/80 bc-font-medium bc-no-underline"
+            // On the label's baseline rather than its top edge.
+            style={{ top: 3 }}
+            to={routePath(`/forgot-password?redirect_to=${encodeURIComponent(redirectTo)}`)}
+          >
+            {__('Forgot password?')}
+          </Link>
+        </div>
 
         <Form.Item initialValue={false} name="remember" valuePropName="checked">
           <Checkbox>{__('Remember me')}</Checkbox>
@@ -117,7 +122,7 @@ export default function LoginPage() {
           {__("Don't have an account?")}{' '}
           <Link
             className="bc-text-primary hover:bc-text-primary/80 bc-font-medium"
-            to={`/register?redirect_to=${encodeURIComponent(redirectTo)}`}
+            to={routePath(`/register?redirect_to=${encodeURIComponent(redirectTo)}`)}
           >
             {__('Registration')}
           </Link>

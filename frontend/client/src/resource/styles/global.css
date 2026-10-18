@@ -15,6 +15,12 @@
   height: calc(100vh - 50px);
 }
 
+body,
+html {
+  font-optical-sizing: auto;
+  height: 100%;
+}
+
 /* The full-page portal template (backend/templates/portal-template.php) wraps
    the app in #bit-connect-portal. Its body showed through the layout's outer
    margins as a white frame in dark mode, so it takes the backdrop token — the
@@ -45,6 +51,42 @@ body:has(#bit-connect-portal) {
   color: var(--bc-ink);
 }
 
+#bit-connect-u-root {
+  direction: ltr;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  font-size: 16px;
+
+  /* The portal mounts inside the active WordPress theme and inherits whatever
+     that theme sets on <body> — Twenty Twenty-Five ships 300 (Light). Light
+     renders thin or gets synthesised depending on which faces the visitor's
+     font provides, so pin the body weight here; components still override it. */
+  font-weight: 400;
+  overflow: auto;
+  isolation: isolate;
+}
+
+/* Themes style headings directly with their own heading font (Twenty
+   Twenty-Four sets Cardo on h1–h6), which beats inheritance from the root —
+   and antd's Typography headings set no family of their own. Hand headings
+   the portal's heading font (Outfit, over Inter body text), including those
+   inside antd overlays, which mount on <body> outside the root.
+
+   Colour too: block themes' Global Styles print an unlayered
+   `h1, h2, h3, h4, h5, h6 { color: var(--wp--preset--color--contrast) }` — #111
+   whatever the portal's theme — which outranks antd's Typography colour in
+   @layer antd and left every title black on black in dark mode. The token
+   rather than `inherit`: a title often sits in a link, and themes colour
+   links the same theme-blind way. A Tailwind colour class still wins, being
+   !important. */
+:is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
+  :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--bc-ink);
+  font-family: var(--bc-font-heading);
+}
+
 /* Full-viewport shell for the main portal layout: header keeps its natural
    height and the ant layout (flex: 1 in Layout.tsx) fills the rest, so the app
    always reaches the bottom edge regardless of screen height. Scoped with
@@ -57,14 +99,24 @@ body:has(#bit-connect-portal) {
   height: 100dvh;
 }
 
-::-webkit-datetime-edit {
-  line-height: 1;
+/* ...and the document behind that shell must not scroll. The shell is exactly
+   one viewport tall and scrolls its own content pane (`overflow: auto` on the
+   ant Content), so any scroll range on the window is stray: it drags the whole
+   fixed frame upward and reveals nothing but backdrop underneath, because the
+   layout wrapper has already clipped the pane. Locking it here states the
+   invariant in one place rather than hunting whichever descendant leaked.
+
+   Scoped through the same `> .ant-layout-has-sider` test as the rule above, so
+   the auth pages (login/register) — which share this template but render as a
+   normal, document-scrolled page — keep their scrollbar. */
+html:has(#bit-connect-u-root > .ant-layout-has-sider),
+body:has(#bit-connect-u-root > .ant-layout-has-sider) {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
-body,
-html {
-  font-optical-sizing: auto;
-  height: 100%;
+::-webkit-datetime-edit {
+  line-height: 1;
 }
 
 #bit-connect-u-root * {
@@ -87,15 +139,6 @@ html {
   box-shadow: none !important;
 }
 
-/* buttons/links: only remove outline for mouse clicks, keep for keyboard nav */
-#bit-connect-u-root button:focus:not(:focus-visible),
-#bit-connect-u-root .ant-btn:focus:not(:focus-visible),
-#bit-connect-u-root .ant-input-affix-wrapper:focus:not(:focus-visible),
-#bit-connect-u-root .ant-select-selector:focus:not(:focus-visible) {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 /* Ant Design wrapper focus classes */
 #bit-connect-u-root .ant-input-affix-wrapper-focused,
 #bit-connect-u-root .ant-input-affix-wrapper:focus-within,
@@ -103,6 +146,15 @@ html {
   outline: none !important;
   box-shadow: none !important;
   border-color: var(--bc-line-strong) !important;
+}
+
+/* buttons/links: only remove outline for mouse clicks, keep for keyboard nav */
+#bit-connect-u-root button:focus:not(:focus-visible),
+#bit-connect-u-root .ant-btn:focus:not(:focus-visible),
+#bit-connect-u-root .ant-input-affix-wrapper:focus:not(:focus-visible),
+#bit-connect-u-root .ant-select-selector:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 svg {
@@ -121,23 +173,6 @@ svg {
   background-image: linear-gradient(90deg, var(--bg-5) 0, var(--bg-10) 30px, var(--bg-5) 60px);
   background-size: 200%;
   animation: skeleton 1s infinite ease-out;
-}
-
-#bit-connect-u-root {
-  direction: ltr;
-  font-family: var(--font-family);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  height: 100%;
-  font-size: 16px;
-
-  /* The portal mounts inside the active WordPress theme and inherits whatever
-     that theme sets on <body> — Twenty Twenty-Five ships 300 (Light). Light
-     renders thin or gets synthesised depending on which faces the visitor's
-     font provides, so pin the body weight here; components still override it. */
-  font-weight: 400;
-  overflow: auto;
-  isolation: isolate;
 }
 
 a:focus:not(:focus-visible) {
@@ -242,9 +277,11 @@ a:focus:not(:focus-visible) {
   margin-top: 0;
 }
 
-/* scroll bar style */
+/* scroll bar style
+   A faint, translucent thumb over either surface: the bar is a hint that more
+   is below, not a control to compete with the content beside it. */
 .scroller {
-  --scrollbar-color-thumb: #c1c1c1;
+  --scrollbar-color-thumb: rgba(0, 0, 0, 14%);
   --scrollbar-color-track: transparent;
   --scrollbar-width: auto;
   --scrollbar-width-legacy: 0.75rem;
@@ -256,13 +293,21 @@ a:focus:not(:focus-visible) {
 }
 
 [color-scheme='dark'] .scroller {
-  --scrollbar-color-thumb: #686868;
+  --scrollbar-color-thumb: rgba(255, 255, 255, 16%);
 }
 
 @supports (scrollbar-width: auto) {
   .scroller {
     scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
     scrollbar-width: var(--scrollbar-width);
+  }
+
+  /* The hover-only thumb below is `::-webkit-scrollbar` styling, which any
+     browser that supports `scrollbar-color` ignores — Chrome included — so the
+     thumb was always painted. `.reveal` hides it here until the pointer or
+     keyboard focus is inside. The lane stays reserved, so nothing shifts. */
+  .scroller.reveal:not(:hover, :focus-within) {
+    scrollbar-color: transparent transparent;
   }
 }
 
@@ -392,8 +437,10 @@ a:focus:not(:focus-visible) {
    land; this only removes the window before they do. Disabled buttons are
    excluded because antd dims their label, and these rules are unlayered — they
    would otherwise outrank that from @layer antd and leave a disabled solid
-   button with a white label on a grey fill. */
-.ant-btn-variant-solid:not(:disabled, .ant-btn-disabled) {
+   button with a white label on a grey fill. Ghost buttons are excluded too:
+   antd marks a `ghost` primary button solid as well, but paints no fill and
+   colours its label with the brand, so white here made the label vanish. */
+.ant-btn-variant-solid:not(:disabled, .ant-btn-disabled, .ant-btn-background-ghost) {
   color: #fff;
 }
 
@@ -435,6 +482,29 @@ a:focus:not(:focus-visible) {
 @media (pointer: coarse) {
   .ant-btn-icon-only:not(.ant-btn-sm) {
     min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* Controls drawn compact on purpose — the filter chips, the bell, the
+     account menu — still take a full target under a finger. min-height wins
+     over a fixed height, even one Tailwind marks important, so the desktop
+     size is untouched. */
+  .touch-target {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* A segmented control is tapped segment by segment, so each one grows. */
+  .ant-segmented.touch-target .ant-segmented-item-label {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  /* A search field's button is icon-only too; the field grows to meet it
+     rather than leaving a 40px button beside a 32px input. */
+  .ant-input-search:not(.ant-input-group-wrapper-sm) .ant-input-affix-wrapper,
+  .ant-input-search:not(.ant-input-group-wrapper-sm) > .ant-input-wrapper > .ant-input {
     min-height: 40px;
   }
 }

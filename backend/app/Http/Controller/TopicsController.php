@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
@@ -25,13 +26,18 @@ class TopicsController
     /**
      * Handle the root route and render the topics page.
      *
-     * @param int|string $page list page, 1 unless a `/page/{n}` route matched
+     * @param int|string $pageNumber list page, 1 unless a `/page/{n}` route matched
      *
      * @return string
      */
-    public function index(Request $request, $page = 1) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+    public function index(Request $request, $pageNumber = 1)
     {
-        $page = max(1, (int) $page);
+        $page = max(1, (int) $pageNumber);
+
+        // Before anything is rendered, so a plugin that answers some form of
+        // this URL with a redirect — an older address of one of its archives —
+        // can still send one.
+        Hooks::doAction('bit_connect_before_topic_list', $request);
 
         // Prepare data for the topics view
         $topicsView = new TopicsView();
@@ -47,7 +53,9 @@ class TopicsController
 
         // A page past the end is not a thin page, it is no page — answering 200
         // would turn every out-of-range number into an indexable empty listing.
-        if ($page > 1 && empty($viewData['topics'])) {
+        // A members-only portal's guest was given no topics to count, and gets
+        // the sign-in prompt instead.
+        if ($page > 1 && empty($viewData['topics']) && !TopicsView::isClosed()) {
             return (new NotFoundController())->index($request);
         }
 

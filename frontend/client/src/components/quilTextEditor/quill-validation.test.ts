@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { cleanPastedHtml, sanitizeHtml, sanitizeNode } from './quill-validation'
+import {
+  cleanPastedHtml,
+  countCharacters,
+  sanitizeHtml,
+  sanitizeNode,
+  validateContent
+} from './quill-validation'
 
 /** The paste pipeline: Word/Docs cleanup, then DOM sanitization. */
 const paste = (html: string) => sanitizeHtml(cleanPastedHtml(html))
@@ -82,9 +88,66 @@ describe('sanitizeHtml — untrusted markup', () => {
     expect(paste('<img src="data:image/png;base64,AAAA">')).toBe('')
   })
 
+  it('keeps an uploaded video with its file and controls, and nothing that would play it unasked', () => {
+    expect(
+      paste(
+        '<video src="https://e.com/clip.mp4" controls autoplay muted onplay="alert(1)" preload="metadata"></video>'
+      )
+    ).toBe('<video src="https://e.com/clip.mp4" controls="" preload="metadata"></video>')
+  })
+
+  it('drops a video that names its file only through <source>, which it cannot keep', () => {
+    expect(paste('<video controls><source src="https://e.com/clip.mp4" type="video/mp4"></video>')).toBe('')
+  })
+
   it('marks external links safe to open', () => {
     expect(paste('<a href="https://x.com">link</a>')).toBe(
       '<a href="https://x.com" rel="noopener noreferrer" target="_blank">link</a>'
     )
+  })
+})
+
+describe('countCharacters', () => {
+  it('counts what a reader sees, not the markup', () => {
+    expect(countCharacters('<p><strong>abc</strong>&amp;de</p>')).toBe(6)
+  })
+
+  // The server counts code points (mb_strlen); `.length` counts UTF-16 units
+  // and would read one emoji as two.
+  it('counts an emoji as one character, as the server does', () => {
+    expect(countCharacters('<p>hi 😀</p>')).toBe(4)
+  })
+
+  it('counts Bangla by character, not by byte', () => {
+    expect(countCharacters('<p>বাংলা</p>')).toBe(5)
+  })
+})
+
+describe('validateContent limits', () => {
+  it('applies the text limit it is given', () => {
+    expect(validateContent('<p>abcdef</p>', { maxTextLength: 5 }).valid).toBe(false)
+    expect(validateContent('<p>abcde</p>', { maxTextLength: 5 }).valid).toBe(true)
+  })
+
+  it('applies the image limit it is given', () => {
+    const two = '<p><img src="https://e.com/a.png"><img src="https://e.com/b.png"></p>'
+
+    expect(validateContent(two, { maxImages: 1 }).errors).toContain('Too many images (2). Maximum is 1.')
+    expect(validateContent(two, { maxImages: 2 }).valid).toBe(true)
+  })
+
+  it('applies the video limit it is given', () => {
+    const two = '<video src="https://e.com/a.mp4"></video><video src="https://e.com/b.mp4"></video>'
+
+    expect(validateContent(two, { maxVideos: 1 }).errors).toContain('Too many videos (2). Maximum is 1.')
+    expect(validateContent(two, { maxVideos: 2 }).valid).toBe(true)
+  })
+
+  // Regression: a fixed cap of five images and 5,000 characters overrode
+  // whatever the forum's posting limits allowed.
+  it('imposes no length or image limit of its own', () => {
+    const six = `<p>${'<img src="https://e.com/a.png">'.repeat(6)}${'x'.repeat(6000)}</p>`
+
+    expect(validateContent(six).valid).toBe(true)
   })
 })

@@ -43,8 +43,8 @@ export default function ImageField({ alt, disabled = false, onChange, value }: I
   }
 
   return (
-    <div className="bc-flex bc-flex-col bc-gap-2">
-      <div className="bc-relative bc-flex bc-items-center bc-justify-center bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface-sunken bc-p-3">
+    <div className="bc-flex bc-w-fit bc-max-w-full bc-flex-col bc-gap-2">
+      <div className="bc-relative bc-flex bc-min-w-32 bc-items-center bc-justify-center bc-rounded-md bc-bg-surface-sunken bc-px-6 bc-py-4">
         <img alt={alt} className="bc-h-12 bc-max-w-full bc-object-contain" src={value} />
         <Button
           aria-label={__('Remove image')}
@@ -56,7 +56,7 @@ export default function ImageField({ alt, disabled = false, onChange, value }: I
           type="text"
         />
       </div>
-      <div className="bc-flex bc-items-center bc-justify-between bc-gap-2">
+      <div className="bc-flex bc-items-center bc-gap-2">
         <Button disabled={disabled} onClick={handlePick} size="small">
           {__('Replace')}
         </Button>

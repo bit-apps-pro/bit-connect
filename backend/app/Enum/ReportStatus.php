@@ -26,11 +26,11 @@ enum ReportStatus: string
     case PENDING = 'pending';
 
     // Reviewed, the content stays. Anything hidden by the report comes back.
-    #[Label('Reviewed — content kept')]
+    #[Label('Kept after review')]
     case RESOLVED_KEPT = 'resolved_kept';
 
     // Reviewed, the content goes. It stays hidden.
-    #[Label('Reviewed — content removed')]
+    #[Label('Removed after review')]
     case RESOLVED_REMOVED = 'resolved_removed';
 
     // Not a real problem. Same effect on the content as kept.
@@ -57,8 +57,8 @@ enum ReportStatus: string
     {
         return match ($status) {
             self::PENDING          => __('Awaiting review', 'bit-connect'),
-            self::RESOLVED_KEPT    => __('Reviewed — content kept', 'bit-connect'),
-            self::RESOLVED_REMOVED => __('Reviewed — content removed', 'bit-connect'),
+            self::RESOLVED_KEPT    => __('Kept after review', 'bit-connect'),
+            self::RESOLVED_REMOVED => __('Removed after review', 'bit-connect'),
             self::DISMISSED        => __('Dismissed', 'bit-connect'),
         };
     }

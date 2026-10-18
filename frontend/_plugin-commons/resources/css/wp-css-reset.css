@@ -137,29 +137,78 @@ input[type='search']:focus {
 }
 
 .media-modal .media-frame .media-search-input-label {
-  position: absolute !important;
-  left: 0 !important;
-  top: 10px !important;
-  margin: 0 !important;
-  line-height: 1 !important;
+  position: static !important;
+  display: block !important;
+  margin: 0 0 4px !important;
+  line-height: 1.4 !important;
 }
 
-.media-modal-content .media-frame select.attachment-filters {
-  margin-top: 32px !important;
+.media-modal .attachments-browser .media-toolbar-secondary > .spinner {
+  position: absolute !important;
 }
 
 .media-frame .search {
-  margin: 32px 0 0 !important;
+  margin: 0 !important;
+}
+
+.media-modal .attachments-browser .media-toolbar .search {
+  min-height: 36px !important;
+  padding: 6px 12px !important;
+  line-height: 1.5 !important;
+  box-sizing: border-box !important;
+}
+
+.media-modal .attachments-browser .media-toolbar .attachment-filters {
+  min-height: 36px !important;
+  box-sizing: border-box !important;
 }
 
 .media-toolbar-primary > .media-button {
   margin-left: 10px !important;
-  float: left !important;
-  margin-top: 15px !important;
 }
 
 .thumbnail {
   overflow: hidden;
   border-radius: 8px;
 }
+
+.media-toolbar {
+  margin-left: 0 !important;
+  height: auto !important;
+}
+
+.media-modal .attachments-browser .media-toolbar {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  padding: 12px 16px !important;
+}
+
+.media-modal .attachments-browser .media-toolbar-secondary {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  margin: 0 !important;
+}
+
+.media-modal.mode-grid .attachments-browser .media-toolbar-primary,
+.media-modal .mode-grid .attachments-browser .media-toolbar-primary {
+  margin: 0 !important;
+  align-items: start !important;
+}
+
+.media-modal .attachments-browser .media-toolbar label[for='media-attachment-date-filters'],
+.media-modal .attachments-browser .media-toolbar label[for='media-attachment-filters'] {
+  margin: 0 0 4px !important;
+  line-height: 1.4 !important;
+}
 /* Media styles end */
+.media-toolbar-secondary {
+  width: auto !important;
+}
+
+.media-modal .attachments-browser:not(.has-load-more) .attachments,
+.media-modal .attachments-browser.has-load-more .attachments-wrapper,
+.media-modal .attachments-browser .uploader-inline {
+  top: 96px !important;
+}

@@ -2,7 +2,7 @@
 import { type CapabilityMap } from '@/store/helper/capabilities'
 
 if (typeof window === 'undefined') {
-  // @ts-ignore
+  // @ts-expect-error -- Node's `global` does not declare the page global BaseView.php prints.
   global.SERVER_VARIABLES = {}
 } else {
   // In built code every bare SERVER_VARIABLES read below is `define`d to
@@ -10,7 +10,7 @@ if (typeof window === 'undefined') {
   // BaseView.php prints before this module runs. This assignment only seeds
   // contexts without that define (tests, the SSR prerender), where the global
   // is absent and an empty object keeps the fallbacks in charge.
-  // @ts-ignore
+  // @ts-expect-error -- `window` does not declare the page global BaseView.php prints.
   window.SERVER_VARIABLES = (window as { bit_connect_?: typeof SERVER_VARIABLES }).bit_connect_ ?? {}
 }
 type GetServerVariableType = <K extends keyof typeof SERVER_VARIABLES>(
@@ -53,8 +53,69 @@ interface UserInfo {
   username: string
 }
 
+interface ContextLimits {
+  /** Attached files other than videos. */
+  attachments: number
+  characters: number
+  images: number
+  videos: number
+}
+
+/** The kinds of file an upload's size is held to separately (PostingLimits::FILE_KINDS). */
+export type FileKind = 'document' | 'image' | 'video'
+
+/**
+ * The limits in force, with "no limit" as Infinity rather than the server's
+ * null, so every check is a plain comparison: nothing is ever >= Infinity, and
+ * Infinity > 0 keeps a control on screen.
+ */
+export interface PostingLimits {
+  comment: ContextLimits
+  maxFileSize: number
+  maxFileSizeByKind: Record<FileKind, number>
+  topic: ContextLimits
+}
+
+const NO_LIMIT = Number.POSITIVE_INFINITY
+
+const toContextLimits = (raw?: Partial<Record<keyof ContextLimits, null | number>>): ContextLimits => ({
+  attachments: raw?.attachments ?? NO_LIMIT,
+  characters: raw?.characters ?? NO_LIMIT,
+  images: raw?.images ?? NO_LIMIT,
+  videos: raw?.videos ?? NO_LIMIT
+})
+
+/**
+ * Read once from the page (PostingLimits::all()). Missing only during the SSR
+ * prerender, where nothing is posted; the fallbacks are this plugin's own
+ * answer — no limit, and the server's upload cap for every kind of file.
+ */
+function readPostingLimits(): PostingLimits {
+  const raw = SERVER_VARIABLES?.postingLimits
+  const maxFileSize = raw?.maxFileSize ?? SERVER_VARIABLES?.wpMediaSettings?.maxUploadBytes ?? 5 * 1024 * 1024
+
+  return {
+    comment: toContextLimits(raw?.comment),
+    maxFileSize,
+    maxFileSizeByKind: raw?.maxFileSizeByKind ?? { document: maxFileSize, image: maxFileSize, video: maxFileSize },
+    topic: toContextLimits(raw?.topic)
+  }
+}
+
+/** A term archive: the topics filter its segment pins, and the taxonomy behind it. */
+export interface PortalArchive {
+  filter: string
+  /** The follow target a term is followed by (`tag`), or '' when it cannot be. */
+  follow: string
+  /** What one of its terms is called, as the site shows it — "Tag". */
+  label: string
+  taxonomy: string
+}
+
 interface ConfigType {
   API_URL: string
+  /** Missing only where there is no page — the SSR prerender and tests. */
+  ATTACHMENT_TYPES?: Record<string, string[]>
   AUTH_MODE: 'custom_url' | 'plugin_default'
   CAN_REGISTER: boolean
   COMMUNITY_TITLE: string
@@ -75,8 +136,17 @@ interface ConfigType {
   NONCE: string
   PLUGIN_SLUG: string
   PORTAL_ACCESS: 'everyone' | 'logged_in'
-  PORTAL_FILTERS: { product: boolean; sort: boolean; tags: boolean }
+  /**
+   * URL segment of each term archive the portal serves → the topics filter it
+   * pins and the taxonomy behind it. Mirrors PortalTaxonomies::map() on the
+   * server, which a plugin may add to — see BaseView::portalArchives().
+   */
+  PORTAL_ARCHIVES: Record<string, PortalArchive>
+  PORTAL_FILTERS: { sort: boolean; tags: boolean; types: boolean }
   POST_URL: string
+  /** How long a topic or reply may be and what media it may carry — see PostingLimits.php. */
+  POSTING_LIMITS: PostingLimits
+  PRO_API_URL: string
   PRODUCT_NAME: string
   /**
    * The sidebar promo card: the admin's opt-in and every word on it. An empty
@@ -91,8 +161,16 @@ interface ConfigType {
     prefix: string
     url: string
   }
+  /** The WordPress site title, for page titles when no community title is set. */
+  SITE_NAME: string
   SITE_URL: string
   TIME_FORMAT: string
+  /** Settings → General → Timezone: an IANA name, or `±HH:MM` for a manual offset. */
+  TIME_ZONE: string
+  /** Topics per server-rendered list page, so `/page/N` starts where the server's did; 0 means one page. */
+  TOPIC_LIST_PAGE_SIZE: number
+  /** Whether portal URLs end in a slash — see utils/route-path.ts. */
+  TRAILING_SLASH: boolean
   /** Seed for the bell's badge, so it is right on first paint. */
   UNREAD_NOTIFICATIONS: number
   WP_LOGIN_URL: string
@@ -120,16 +198,31 @@ const portalFilters = getServerVariable('portalFilters', {}) ?? {}
 // about a "missing" server variable on every load of every portal that did not.
 const promo = getServerVariable('promo', {}) ?? {}
 
+// This plugin's own archives. Missing from the server variables only during
+// the SSR prerender, where these stand in.
+const ownArchives: Record<string, PortalArchive> = {
+  stage: { filter: 'stages', follow: '', label: 'Stage', taxonomy: 'bit-connect-stages' },
+  status: { filter: 'statuses', follow: '', label: 'Status', taxonomy: 'bit-connect-statuses' },
+  tag: { filter: 'tags', follow: 'tag', label: 'Tag', taxonomy: 'bit-connect-tags' },
+  topic: { filter: 'topic-types', follow: '', label: 'Topic Type', taxonomy: 'bit-connect-topic-types' }
+}
+
 const config = {
   // Endpoint URLs come only from the server (wp_login_url(), get_rest_url()):
   // a site can move the login page or the REST prefix, so no path is guessed.
   API_URL: getServerVariable('apiURL'),
+  // Off the payload directly: getServerVariable would warn during the SSR
+  // prerender, where its absence is expected and the upload check falls back.
+  ATTACHMENT_TYPES: SERVER_VARIABLES?.attachmentTypes,
   AUTH_MODE:
     (getServerVariable('authMode', 'plugin_default') as 'custom_url' | 'plugin_default') ??
     'plugin_default',
   CAN_REGISTER:
     getServerVariable('canRegister', false) === true || getServerVariable('canRegister', false) === '1',
   COMMUNITY_TITLE: getServerVariable('communityTitle', '') ?? '',
+  // The server prints `null` for a signed-out visitor, and the auth store's
+  // `User | null` contract carries that value as it is.
+  // eslint-disable-next-line unicorn/no-null
   CURRENT_USER: (getServerVariable('currentUser', null) as null | UserInfo) ?? null,
   CURRENT_USER_AVATAR: getServerVariable('currentUserAvatar', ''),
   CUSTOM_LOGIN_URL: getServerVariable('customLoginUrl', '') ?? '',
@@ -163,12 +256,20 @@ const config = {
   PORTAL_ACCESS: (getServerVariable('portalAccess', 'everyone') ?? 'everyone') as
     | 'everyone'
     | 'logged_in',
+  PORTAL_ARCHIVES: SERVER_VARIABLES?.portalArchives ?? ownArchives,
   PORTAL_FILTERS: {
-    product: portalFilters.product !== false,
     sort: portalFilters.sort !== false,
-    tags: portalFilters.tags !== false
+    tags: portalFilters.tags !== false,
+    // Rode Sort's switch before it had one of its own; the server fills it in
+    // from Sort where it was never saved, and so does this.
+    types: (portalFilters.types ?? portalFilters.sort) !== false
   },
   POST_URL: getServerVariable('postURL', ''),
+  // Pro routes register under their own REST namespace (bit-connect-pro/v1),
+  // so they cannot be addressed through API_URL, which names the free
+  // plugin's. Sent by the pro plugin; the fallback only matters before it has
+  // loaded, when nothing is calling a pro route anyway.
+  PRO_API_URL: getServerVariable('proApiURL', `${siteURL}/wp-json/bit-connect-pro/v1`),
   PRODUCT_NAME: 'Bit Connect',
   PROMO: {
     cta: promo.cta ?? '',
@@ -179,12 +280,21 @@ const config = {
     prefix: promo.prefix ?? '',
     url: promo.url ?? ''
   },
+  SITE_NAME: getServerVariable('siteName', '') ?? '',
   SITE_URL: siteURL,
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),
+  TIME_ZONE: getServerVariable('timeZone', '') ?? '',
+  // Through Number(), not as a fallback: 0 (every topic on one page) is falsy.
+  TOPIC_LIST_PAGE_SIZE: Number(SERVER_VARIABLES?.topicListPageSize ?? 30),
+  // Read straight off the payload rather than through getServerVariable, which
+  // treats `false` — the answer on any site without trailing slashes — as a
+  // missing value.
+  TRAILING_SLASH: SERVER_VARIABLES?.trailingSlash === true,
   // Read through Number() rather than as a fallback default: zero is the
   // commonest correct answer, and getServerVariable treats a falsy value as
   // "missing" — so a member with nothing unread would otherwise warn on every
   // page load and fall through to whatever default was passed.
+  POSTING_LIMITS: readPostingLimits(),
   UNREAD_NOTIFICATIONS: Number(SERVER_VARIABLES?.unreadNotifications ?? 0) || 0,
   WP_LOGIN_URL: getServerVariable('wpLoginURL'),
   WP_MEDIA_SETTINGS: getServerVariable('wpMediaSettings', {

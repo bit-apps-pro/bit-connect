@@ -24,6 +24,12 @@ final class GeneralSettingsController
         }
 
         $settings = array_merge($this->getDefaultSettings(), $settings);
+        // Every switch filled in, the type chips' from Sort where it was never
+        // saved — the same answer the portal is given.
+        $settings['portalFilters'] = GeneralSettings::portalFilters($settings);
+        // The card's copy is the plugin's, not stored: resolve it so the admin
+        // preview shows exactly what the portal will.
+        $settings['promo'] = GeneralSettings::promo($settings);
 
         return Response::success($settings);
     }
@@ -38,7 +44,7 @@ final class GeneralSettingsController
             Config::updateOption(GeneralSettings::OPTION_NAME->value, $data);
         }
 
-        return Response::success($data);
+        return Response::success(array_merge($data, ['promo' => GeneralSettings::promo($data)]));
     }
 
     private function getDefaultSettings(): array
@@ -52,22 +58,15 @@ final class GeneralSettingsController
             // Portal topic-list filter controls. Visible unless an admin turns
             // one off, so installs that predate this setting keep their toolbar.
             'portalFilters' => [
-                'sort'    => true,
-                'product' => true,
-                'tags'    => true,
+                'sort'  => true,
+                'tags'  => true,
+                'types' => true,
             ],
-            // The promo card at the foot of the portal sidebar. Off until an
-            // admin asks for it: it links off the owner's own public pages. Every
-            // line is theirs to write, and an empty one is a row the card does
-            // not have — so a card with nothing filled in renders nothing.
+            // The Bit Apps credit card at the foot of the portal sidebar. Off
+            // until an admin asks for it: it links off the owner's own public
+            // pages. Its copy is fixed — see GeneralSettings::promo().
             'promo' => [
-                'enabled'  => false,
-                'url'      => '',
-                'eyebrow'  => '',
-                'headline' => '',
-                'prefix'   => '',
-                'phrases'  => [],
-                'cta'      => '',
+                'enabled' => false,
             ],
         ];
     }

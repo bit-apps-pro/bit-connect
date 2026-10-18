@@ -1,7 +1,13 @@
 /* eslint-disable translate-obj-prop/translate-obj-prop -- fixtures are wire data, not user-facing copy */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import queryRequest, { extractUploadError, proxyRequest, request, uploadRequest } from './request'
+import queryRequest, {
+  extractUploadError,
+  isRetryableFailure,
+  proxyRequest,
+  request,
+  uploadRequest
+} from './request'
 
 vi.mock('@config/config', () => ({
   default: { API_URL: 'https://example.test/wp-json/bit-connect/v1' }
@@ -323,12 +329,52 @@ describe('uploadRequest', () => {
     })
   })
 
-  it('reports a network failure in the same envelope', async () => {
+  it('reports a network failure in the same envelope, as worth retrying', async () => {
     const pending = uploadRequest('users/7/avatar', body())
 
     FakeXhr.last.fail('error')
 
-    await expect(pending).rejects.toMatchObject({ data: 'Network error while uploading.' })
+    const error = await pending.catch(error_ => error_)
+    expect(error).toMatchObject({
+      data: 'The connection dropped while uploading. Check your connection and try again.'
+    })
+    expect(isRetryableFailure(error)).toBe(true)
+  })
+
+  // A web server or a proxy that stops an upload answers with its own HTML
+  // page, which says nothing a member can act on.
+  it('says the file is too large when the web server refuses the body', async () => {
+    const pending = uploadRequest('attachments', body())
+
+    FakeXhr.last.finish(413, '<html>413 Request Entity Too Large</html>')
+
+    const error = await pending.catch(error_ => error_)
+    expect(error).toEqual({
+      code: 'ERROR',
+      data: 'This file is larger than the server accepts. Try a smaller file.',
+      status: 'error'
+    })
+    expect(isRetryableFailure(error)).toBe(false)
+  })
+
+  it('says the upload took too long when a proxy gives up on it', async () => {
+    const pending = uploadRequest('attachments', body())
+
+    FakeXhr.last.finish(524, '<html>A timeout occurred</html>')
+
+    const error = await pending.catch(error_ => error_)
+    expect(error).toMatchObject({
+      data: 'The server took too long to receive the upload. Try again, or use a smaller file or a faster connection.'
+    })
+    expect(isRetryableFailure(error)).toBe(true)
+  })
+
+  it('does not offer a refusal for a retry', async () => {
+    const pending = uploadRequest('attachments', body())
+
+    FakeXhr.last.finish(400, JSON.stringify({ code: 'ERROR', data: 'File type .exe is not allowed.', status: 'error' }))
+
+    expect(isRetryableFailure(await pending.catch(error_ => error_))).toBe(false)
   })
 
   it('reports a timeout in the same envelope', async () => {

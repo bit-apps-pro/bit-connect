@@ -1,11 +1,8 @@
-import { commentAnchorId, commentIdFromFragment } from '@features/share'
+import { commentAnchorId, commentIdFromFragment, parseCommentId } from '@features/share'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 
 import { useSinglePostStore } from '@/store/single-post.zustand'
-
-/** How long the linked-to reply stays marked once it has been scrolled to. */
-const HIGHLIGHT_MS = 4000
 
 /**
  * How long to keep waiting for the comment's element to appear.
@@ -16,6 +13,14 @@ const HIGHLIGHT_MS = 4000
  * — deleted, or hidden from this reader — stops being waited on.
  */
 const APPEAR_TIMEOUT_MS = 5000
+
+/**
+ * How long to keep looking once the server has said the comment is not there.
+ *
+ * Long enough for the first page of the list to land, which can still bring the
+ * comment in; short enough that a deleted reply is reported almost at once.
+ */
+const NOT_FOUND_GRACE_MS = 1500
 
 /** How often the scroll is re-checked against the target's current position. */
 const SETTLE_INTERVAL_MS = 100
@@ -32,8 +37,22 @@ const SETTLE_INTERVAL_MS = 100
  */
 const SETTLED_FOR_MS = 700
 
+export interface CommentFocus {
+  /** The comment to mark, while the page is still on the link that named it. */
+  focusedCommentId?: number
+  /**
+   * The link named a comment this topic cannot show: deleted, held for
+   * moderation, from another topic, or not an id at all.
+   */
+  isMissing: boolean
+}
+
 /**
- * Take the reader to the comment a `#comment-N` link names.
+ * Take the reader to the comment a link names.
+ *
+ * Two forms name one: the portal's own `/{topic}/comment/{id}`, and WordPress's
+ * `#comment-{id}` fragment, which links written before the path existed still
+ * carry. Both land the same way.
  *
  * Three things have to happen in order and none of them is instant: the page
  * holding the comment may not be loaded, the branch leading to it starts
@@ -41,45 +60,68 @@ const SETTLED_FOR_MS = 700
  * So this asks the store for the thread, then watches for the element rather
  * than assuming a frame is enough.
  *
- * Returns the comment to mark, which the list passes down so the row on the path
- * opens itself and the target draws its highlight.
+ * The mark stays for as long as the address names the comment, the way a
+ * permalink to a reply reads on Reddit: the URL says "this one", so the page
+ * keeps saying it too. Leaving the link — "View all comments", or following
+ * anything out of the thread — is what releases it.
  */
-export default function useCommentFocus(isTopicReady: boolean): number | undefined {
+export default function useCommentFocus(isTopicReady: boolean): CommentFocus {
   const { hash } = useLocation()
+  const { commentId: commentParam } = useParams()
   const fetchCommentThread = useSinglePostStore(state => state.fetchCommentThread)
 
   const [focusedCommentId, setFocusedCommentId] = useState<number | undefined>()
+  const [isMissing, setIsMissing] = useState(false)
 
   // What the last run acted on. Without it, every unrelated re-render would
-  // re-scroll the page out from under someone who had scrolled away, and the
-  // highlight would keep restarting.
+  // re-scroll the page out from under someone who had scrolled away.
   const handledRef = useRef<string>('')
 
-  useEffect(() => {
-    const commentId = commentIdFromFragment(hash)
+  // The path wins over a fragment when a URL somehow carries both. Keyed on the
+  // raw text rather than the parsed id, so `comment/abc` is still a link that
+  // asked for something — and gets told it is not there — rather than no link.
+  const target = commentParam === undefined ? hash : `comment/${commentParam}`
 
-    // Navigating away from the fragment — following a link out of the comment,
-    // say — releases the mark and lets the same link work again later.
-    if (!commentId) {
+  useEffect(() => {
+    const commentId =
+      commentParam === undefined ? commentIdFromFragment(hash) : parseCommentId(commentParam)
+
+    // No link at all — or one that left: following something out of the
+    // comment releases the mark and lets the same link work again later.
+    if (commentParam === undefined && !commentId) {
       handledRef.current = ''
       setFocusedCommentId(undefined)
+      setIsMissing(false)
 
       return
     }
 
     // The topic itself has to be on screen first: the comment list does not
     // exist until it is, and the store has no post id to fetch against.
-    if (!isTopicReady || handledRef.current === hash) return
-    handledRef.current = hash
+    if (!isTopicReady || handledRef.current === target) return
+    handledRef.current = target
+
+    // A path whose id is not an id names nothing this topic could hold.
+    if (!commentId) {
+      setFocusedCommentId(undefined)
+      setIsMissing(true)
+
+      return
+    }
 
     let cancelled = false
-    let clearTimer: number | undefined
     let frame: number | undefined
     let settleTimer: number | undefined
+
+    const giveUp = () => {
+      setFocusedCommentId(undefined)
+      setIsMissing(true)
+    }
 
     // Marked before the element is found, not after: this is what makes the row
     // on the path open itself, which is what brings the element into existence.
     setFocusedCommentId(commentId)
+    setIsMissing(false)
 
     const findNode = () =>
       // CSS.escape guards the selector against an id that is not a bare word.
@@ -125,6 +167,11 @@ export default function useCommentFocus(isTopicReady: boolean): number | undefin
       if (!node) {
         if (Date.now() < deadline) {
           frame = requestAnimationFrame(() => scrollWhenPresent(deadline))
+        } else {
+          // Never rendered: deleted, held for moderation, or not in this topic.
+          // Said once the wait is over rather than left silent, so a reader
+          // who followed a dead link is told why nothing happened.
+          giveUp()
         }
 
         return
@@ -167,21 +214,11 @@ export default function useCommentFocus(isTopicReady: boolean): number | undefin
         }
 
         // Still for long enough, or out of time — either way this stops chasing
-        // and leaves the page to the reader.
+        // and leaves the page to the reader. The mark itself stays: it belongs
+        // to the address, not to the scroll.
         if (Date.now() - movedAt < SETTLED_FOR_MS && Date.now() < deadline) {
           settleTimer = window.setTimeout(settle, SETTLE_INTERVAL_MS)
-
-          return
         }
-
-        // The highlight is only worth timing from the moment the reader can
-        // actually see the row. Started when the element first appeared, most
-        // of it would be spent off-screen on exactly the long threads where the
-        // mark matters most, and the reader would arrive at a row that had
-        // already stopped saying it was the one they came for.
-        clearTimer = window.setTimeout(() => {
-          if (!cancelled) setFocusedCommentId(undefined)
-        }, HIGHLIGHT_MS)
       }
 
       settleTimer = window.setTimeout(settle, SETTLE_INTERVAL_MS)
@@ -190,20 +227,25 @@ export default function useCommentFocus(isTopicReady: boolean): number | undefin
     // Already loaded resolves immediately; otherwise the server is asked which
     // page holds it. Either way the wait for the element starts afterwards, so
     // the deadline covers the unfolding rather than the request.
+    //
+    // A "not found" answer only shortens the wait rather than ending it. The
+    // store also answers false when the page-1 load running alongside overtook
+    // this one, or when the request failed — and in both of those the comment
+    // may still arrive with the list. The short grace covers that without
+    // leaving a dead link silent for long.
     fetchCommentThread(commentId)
       .catch(() => false)
-      .then(() => {
+      .then(landed => {
         if (cancelled) return
-        scrollWhenPresent(Date.now() + APPEAR_TIMEOUT_MS)
+        scrollWhenPresent(Date.now() + (landed ? APPEAR_TIMEOUT_MS : NOT_FOUND_GRACE_MS))
       })
 
     return () => {
       cancelled = true
-      if (clearTimer) clearTimeout(clearTimer)
       if (settleTimer) clearTimeout(settleTimer)
       if (frame) cancelAnimationFrame(frame)
     }
-  }, [hash, isTopicReady, fetchCommentThread])
+  }, [commentParam, hash, isTopicReady, fetchCommentThread, target])
 
-  return focusedCommentId
+  return { focusedCommentId, isMissing }
 }

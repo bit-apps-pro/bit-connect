@@ -2,10 +2,12 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import NotifyContext from '@common/context/NotifyContext'
 import { __ } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
+import usePageTitle from '@common/hooks/usePageTitle'
 import { type WPAttachmentData } from '@features/file-uploader/state/use-file-store'
 import ReportModal from '@features/report-modal'
 import ShareDialog from '@features/share'
 import { normalizeAttachments, type TopicAttachmentInfo } from '@features/topic-modal/shared/type'
+import { routePath } from '@utils/route-path'
 import { isSameSlug } from '@utils/slug'
 import { Alert, Button, Flex, Space, Tag, Typography } from 'antd'
 import { useContext, useEffect, useMemo } from 'react'
@@ -13,6 +15,8 @@ import { useNavigate, useParams } from 'react-router'
 
 import LoginGate from '@/components/features/login-warning-modal/ui/login-gate'
 import { useAdminSettingsStore } from '@/store/admin-settings.zustand'
+import { useAuthStore } from '@/store/auth.zustand'
+import { TopicNotFoundError } from '@/store/data/fetch-post-api'
 import { type ForumCapability } from '@/store/helper/capabilities'
 import { useSinglePostStore } from '@/store/single-post.zustand'
 import { type Comment } from '@/types/post'
@@ -25,6 +29,7 @@ import PostHeader from './PostHeader'
 import useCommentFocus from './shared/use-comment-focus'
 import AttachmentList from './ui/attachment-list'
 import CommentSortSelect from './ui/comment-sort-select'
+import MissingCommentNotice from './ui/missing-comment-notice'
 import PostDetailsSkeleton from './ui/post-details-skeleton'
 import PostSidebar from './ui/PostSidebar'
 import RelatedTopics from './ui/RelatedTopics'
@@ -61,11 +66,15 @@ export default function PostDetailsPage() {
     transformedComments,
     updateComment
   } = useSinglePostStore()
+  const { can, isLoggedIn } = useAuthStore()
   const canAct = useCapabilityGate()
 
   useEffect(() => {
     if (postName) {
       fetchPostByName(postName).catch(error_ => {
+        // The page itself says the topic is not there; a toast over it would
+        // only say it twice.
+        if (error_ instanceof TopicNotFoundError) return
         notificationApi?.error({
           message: (error_ as { message?: string })?.message ?? __('Failed to load post')
         })
@@ -167,16 +176,26 @@ export default function PostDetailsPage() {
 
   // The topic this page is actually showing, which is not the same question as
   // "is a topic loaded" — the store is a singleton and can still be holding the
-  // previous one (see the guard below). A `#comment-N` link must not start
+  // previous one (see the guard below). A link to one comment must not start
   // fetching threads against that. Computed here rather than after the guard
   // because the hook below it cannot be called conditionally.
   const isTopicReady = Boolean(post && isSameSlug(post.post_name, postName ?? ''))
-  const focusedCommentId = useCommentFocus(isTopicReady)
+  const { focusedCommentId, isMissing: isLinkedCommentMissing } = useCommentFocus(isTopicReady)
+
+  // Only once this topic is the one loaded, so the previous topic's title
+  // never lands on this URL.
+  usePageTitle(isTopicReady ? post?.post_title : undefined)
 
   const totalCommentCount = countComments(transformedComments)
   const { comment: canComment, upvote: canPostUpvote } = settings.topicAccess
   // Empty unless something supplies a control to draw. See use-comment-vote.ts.
   const { renderVote } = useCommentVote()
+
+  // A member the role settings deny cannot vote; a disabled control says so up
+  // front rather than a 400 after the click. A guest keeps a live control, and
+  // the click asks them to sign in. Replies have no such check here: upvoting
+  // one is the add-on's feature, and its handler brings its own gate.
+  const memberMayVotePost = !isLoggedIn || can('bit_connect_forum_vote_post')
 
   // Back must stay inside the SPA: when the post URL was opened directly
   // (shared link, search result — the entry point SSR/SEO promotes) there is no
@@ -205,13 +224,16 @@ export default function PostDetailsPage() {
     return error ? <Error404 /> : <PostDetailsSkeleton />
   }
 
-  const postVoteBox = (
-    <VoteBox
-      isVote={post.vote.hasVoted}
-      onVote={canPostUpvote ? handlePostVote : undefined}
-      votes={post.vote.total}
-    />
-  )
+  // The server lets moderators comment past a lock (CommentController), so
+  // the page does too.
+  const mayCommentWhenLocked = isLoggedIn && can('bit_connect_forum_moderate')
+  const commentsClosed = Boolean(post.is_locked) && !mayCommentWhenLocked
+
+  const voteBoxProps = {
+    isVote: post.vote.hasVoted,
+    onVote: canPostUpvote && memberMayVotePost ? handlePostVote : undefined,
+    votes: post.vote.total
+  }
 
   return (
     // On phones the page supplies the whole gutter, because the panel below
@@ -238,7 +260,12 @@ export default function PostDetailsPage() {
         {/* `overflow-clip`, not `hidden`: both trim wide content to the rounded
             panel, but `hidden` makes this a scrollport, and the comment
             editor's sticky toolbar would resolve against it — a box that never
-            scrolls — instead of the page's scroller. */}
+            scrolls — instead of the page's scroller.
+
+            The 8px clip margin lets the panel behind a linked-to reply reach
+            past the row it marks (see `.focused` in CommentThread.module.css).
+            On a phone the frame has no padding, so without it the panel's
+            sides were cut flat against the edge of the content. */}
         {/* The frame — border, radius and padding — starts at sm. On a phone
             this panel fills the screen, so its border drew a second box just
             inside the content area's own, and the two paddings together took
@@ -250,14 +277,16 @@ export default function PostDetailsPage() {
           align="start"
           className="bc-min-w-0 bc-flex-1 bc-max-w-full bc-overflow-clip sm:bc-rounded-md sm:bc-border sm:bc-border-solid sm:bc-border-line sm:bc-px-3 sm:bc-py-4 lg:bc-px-4 lg:bc-py-6"
           gap="middle"
-          style={{ minWidth: 0 }}
+          style={{ minWidth: 0, overflowClipMargin: '8px' }}
         >
           {/* One dialog for the page: the topic header and every comment row
               open it through the store with their own target. */}
           <ReportModal />
           <ShareDialog />
 
-          <div className="bc-hidden lg:bc-block">{postVoteBox}</div>
+          <div className="bc-hidden lg:bc-block">
+            <VoteBox {...voteBoxProps} />
+          </div>
 
           <Space className="bc-w-full bc-max-w-full bc-min-w-0 bc-py-1" direction="vertical">
             {/* Below lg the vote control is handed to the header, which puts it
@@ -275,7 +304,7 @@ export default function PostDetailsPage() {
                 so the block closes at the same distance from the comments
                 whether or not the topic has files. */}
             <div className="bc-mb-3 lg:bc-mb-6">
-              <PostHeader post={post} voteBox={postVoteBox} />
+              <PostHeader post={post} voteBox={<VoteBox compact {...voteBoxProps} />} />
 
               {attachments.length > 0 && (
                 <AttachmentList attachments={attachments} className="bc-mt-2 lg:bc-mt-4" />
@@ -297,20 +326,32 @@ export default function PostDetailsPage() {
             </Flex>
 
             {/* A locked topic says so where the editor would be, instead of
-              offering a box the server will refuse. */}
-            {post.is_locked ? (
+              offering a box the server will refuse. A moderator is the one
+              exception the server makes, so they keep the editor under it. */}
+            {post.is_locked && (
               <Alert
                 className="bc-mb-4"
-                message={__('This topic is locked. New comments are closed.')}
+                message={
+                  mayCommentWhenLocked
+                    ? __('This topic is locked. Only moderators can comment.')
+                    : __('This topic is locked. New comments are closed.')
+                }
                 showIcon
                 type="info"
               />
-            ) : (
-              canComment && (
-                <LoginGate message={__('Log in to post a comment.')}>
-                  <CommentEditor onSubmit={handlePostComment} />
-                </LoginGate>
-              )
+            )}
+            {!commentsClosed && canComment && (
+              <LoginGate message={__('Log in to post a comment.')}>
+                <CommentEditor onSubmit={handlePostComment} />
+              </LoginGate>
+            )}
+
+            {/* A link to a reply that is gone: a gap at the head of the thread,
+                scrolled to the way the reply would have been. The topic stays —
+                the discussion the reply was part of is usually what the reader
+                wanted. */}
+            {isLinkedCommentMissing && (
+              <MissingCommentNotice onViewAll={() => navigate(routePath(`/${post.post_name}`))} />
             )}
 
             <CommentList
@@ -321,9 +362,10 @@ export default function PostDetailsPage() {
               onDelete={handleDeleteComment}
               onEdit={handleEditComment}
               onLoadMore={fetchMoreComments}
-              onReply={post.is_locked ? undefined : handleReply}
+              onReply={commentsClosed ? undefined : handleReply}
               renderVote={renderVote}
               sortOption={sortOption}
+              topicAuthorId={Number(post.post_author) || 0}
               topicSlug={post.post_name}
               topicTitle={post.post_title}
             />

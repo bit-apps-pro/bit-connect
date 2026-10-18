@@ -61,12 +61,16 @@ class ShortCode
         $viewManager = $this->ssrHandler->getViewManager(); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
         $topicService = new TopicService();
 
+        // A members-only portal's guest gets no topics in the hydration state —
+        // see TopicsView::isClosed().
+        $isClosed = TopicsView::isClosed();
+
         $stateData = [
-            'data' => $topicService->getAllTopics()
+            'data' => $isClosed ? [] : $topicService->getAllTopics()
         ];
 
         // If we're on a single bit-connect post page, add topic details and comments for SSR
-        if (is_singular(PostTypes::BIT_CONNECT->value) && get_the_ID()) {
+        if (!$isClosed && is_singular(PostTypes::BIT_CONNECT->value) && get_the_ID()) {
             global $post;
             // Add topic details to state in the new format
             $stateData['topicDetails'] = [
@@ -79,7 +83,7 @@ class ShortCode
             $stateData,
             [
                 'data'   => (new PostController())->all()->getData(),
-                'stages' => StageService::ordered(),
+                'stages' => $isClosed ? [] : StageService::ordered(),
             ]
         );
 
@@ -103,8 +107,8 @@ class ShortCode
 <rect width="38" height="38" rx="9.45449" fill="#3266EA"/>
 <rect x="0.247669" y="0.247669" width="37.5047" height="37.5047" rx="9.20682" stroke="white" stroke-opacity="0.2" stroke-width="0.495339"/>
 <path d="M28.7995 16.9998H24.658C23.8343 14.6698 21.6119 12.9994 18.9997 12.9994C18.2979 12.9994 17.625 13.1194 17 13.3412V9.20065C17.6461 9.06913 18.3152 9 18.9997 9C23.8382 9 27.8731 12.4349 28.7995 16.9998Z" fill="white"/>
-<path d="M28.7993 21C27.8729 25.5648 23.837 28.9998 18.9995 28.9998C13.4765 28.9998 9 24.5223 9 18.9993C9 15.7276 10.5706 12.8235 12.9994 10.9995V18.9993C12.9994 22.3133 15.6865 24.9994 18.9995 24.9994C21.6117 24.9994 23.8341 23.3299 24.6578 21L28.7993 21Z" fill="white"/>
-<path d="M21.0004 18.9992C21.0004 20.1042 20.1047 20.9999 18.9997 20.9999C17.8957 20.9999 17 20.1042 17 18.9992C17 17.8952 17.8957 16.9995 18.9997 16.9995C20.1047 16.9995 21.0004 17.8952 21.0004 18.9992Z" fill="white"/>
+<path d="M28.7993 21.0004C27.8729 25.5653 23.837 29.0003 18.9995 29.0003C13.4765 29.0003 9 24.5227 9 18.9998C9 15.7281 10.5706 12.824 12.9994 11V18.9998C12.9994 22.3138 15.6865 24.9999 18.9995 24.9999C21.6117 24.9999 23.8341 23.3304 24.6578 21.0005L28.7993 21.0004Z" fill="white"/>
+<path d="M21.0004 18.9997C21.0004 20.1047 20.1047 21.0004 18.9997 21.0004C17.8957 21.0004 17 20.1047 17 18.9997C17 17.8957 17.8957 17 18.9997 17C20.1047 17 21.0004 17.8957 21.0004 18.9997Z" fill="white"/>
 </svg>
 SVG;
                 // phpcs:enable Generic.Files.LineLength

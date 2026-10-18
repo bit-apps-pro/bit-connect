@@ -7,10 +7,10 @@ import { commentAnchorId, ShareButton } from '@features/share'
 import EditedNote from '@utilities/edited-note'
 import MemberBadge from '@utilities/member-badge'
 import { userProfilePath } from '@utilities/user-link'
-import { Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { App as AntApp, Avatar, Button, Dropdown, type MenuProps, Modal } from 'antd'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { type ReactNode, useEffect, useState } from 'react'
-import { LuEyeOff } from 'react-icons/lu'
+import { LuEyeOff, LuPin } from 'react-icons/lu'
 import { Link } from 'react-router'
 
 import { parseMaybeGmt, timeAgo } from '@/common/helpers/globalHelpers'
@@ -18,16 +18,18 @@ import useLoginWarningStore from '@/components/features/login-warning-modal/stat
 import { useAuthStore } from '@/store/auth.zustand'
 import { type Comment } from '@/types/post'
 import { flattenReplies, getVisualDepth, MAX_VISUAL_DEPTH, repliesContain } from '@/utils/commentTree'
+import { formatSiteTime } from '@/utils/site-time'
 
 import CommentEditor from './CommentEditor'
 import styles from './CommentThread.module.css'
 import ContentBox from './ContentBox'
+import useCommentPinItem from './data/use-comment-pin-item'
 import AttachmentList from './ui/attachment-list'
 
 interface CommentItemProps {
   comment: Comment
   depth?: number
-  /** The comment a `#comment-N` link asked for, if the page was opened with one. */
+  /** The comment a link asked for, if the page was opened with one. */
   focusedCommentId?: number
   onDelete?: (commentId: number) => void
   onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
@@ -35,6 +37,8 @@ interface CommentItemProps {
   /** Draws the upvote control for this reply, when the forum offers one. */
   renderVote?: (comment: Comment) => ReactNode
   replyParentId?: number
+  /** Who opened the topic — the only member who may pin a reply in it. */
+  topicAuthorId: number
   topicSlug: string
   topicTitle: string
 }
@@ -48,6 +52,7 @@ export default function CommentItem({
   onReply,
   renderVote,
   replyParentId,
+  topicAuthorId,
   topicSlug,
   topicTitle
 }: CommentItemProps) {
@@ -77,6 +82,8 @@ export default function CommentItem({
     ? { duration: 0 }
     : { height: { duration: 0.25, ease: 'easeInOut' }, opacity: { duration: 0.2 } }
 
+  const app = AntApp.useApp()
+
   const handleReply = (content: string, attachments?: WPAttachmentData[]) => {
     if (onReply) {
       onReply(replyParentId ?? comment.id, content, attachments)
@@ -96,7 +103,10 @@ export default function CommentItem({
   }
 
   const handleDelete = () => {
-    Modal.confirm({
+    // The context-aware modal follows the portal theme; the static one is the
+    // fallback for a render outside AppRoutes (tests), where no App exists.
+    const confirm = app.modal?.confirm ?? Modal.confirm
+    confirm({
       cancelText: __('Cancel'),
       content: 'This will permanently delete this comment and all its replies.',
       okButtonProps: { danger: true },
@@ -144,9 +154,22 @@ export default function CommentItem({
       ? mentionHtml({ name: comment.user, slug: comment.userSlug })
       : undefined
 
+  // Nothing on a free install: the dispatch resolves to an implementation that
+  // returns no entry at all. Called unconditionally and before the menu is
+  // assembled, because it is a hook — which implementation runs is fixed at
+  // build time, but that it runs cannot be.
+  const pinMenuItem = useCommentPinItem({ comment, topicAuthorId })
+
   // On mobile, Edit/Delete are collapsed into a single "More" (⋯) menu
   // (text-only items, no icons).
   const moreMenuItems: MenuProps['items'] = []
+
+  // First in the menu. Pinning is the topic author's own judgement about their
+  // own thread, and it sits above the entries that act on the reply itself.
+  if (pinMenuItem) {
+    moreMenuItems.push(pinMenuItem)
+  }
+
   if (canEdit) {
     moreMenuItems.push({
       key: 'edit',
@@ -178,9 +201,9 @@ export default function CommentItem({
   }
 
   return (
-    // The id is what `#comment-N` lands on. `comment-{id}` is WordPress's own
-    // fragment, so links the server wrote long before the portal answered to
-    // them — notification targets, report links — resolve here too.
+    // The id is what a link to this reply scrolls to, whether it arrived as
+    // `/{topic}/comment/{id}` or as WordPress's own `#comment-{id}` fragment,
+    // which links the server wrote before the path existed still carry.
     <div className={styles.thread} data-depth={visualDepth} id={commentAnchorId(comment.id)}>
       {/* Comment row: avatar + content */}
       <div
@@ -257,13 +280,39 @@ export default function CommentItem({
                       {__('under review')}
                     </span>
                   )}
+                  {/* Why this reply is sitting at the top of the thread when the
+                      reader asked for oldest-first. Without it the ordering
+                      looks broken rather than deliberate.
+
+                      Shown to everyone, including readers of a forum that has
+                      no pinning: `pinned` is false on every comment there, so
+                      this never renders. Rendering a flag the server sent is
+                      not the same as holding the feature — nothing in this
+                      plugin can set it. */}
+                  {comment.pinned && (
+                    <span
+                      // The word is dropped on a phone and the pin stands on
+                      // its own — the byline row is avatar, name, badge, chip
+                      // and timestamp, and that is already more than fits.
+                      // `aria-label` carries what the hidden word said:
+                      // `bc-hidden` takes the text from a screen reader too, so
+                      // without it the icon would announce as nothing at the
+                      // width where it is the only thing left.
+                      aria-label={__('Pinned')}
+                      className="bc-inline-flex bc-shrink-0 bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-1.5 bc-py-0.5 bc-text-[11px] bc-font-medium bc-text-ink sm:bc-px-2"
+                      title={__('Singled out by the author of this topic')}
+                    >
+                      <LuPin size={12} />
+                      <span className="bc-hidden sm:bc-inline">{__('Pinned')}</span>
+                    </span>
+                  )}
                   {comment.createdAt && (
                     <span
                       // #8c8c8c at 11px measured 3.10:1 — below the 4.5:1 AA
                       // floor for body text. #65676b at 12px clears it and
                       // matches the action row beneath.
                       className="bc-text-ink-muted bc-text-[12px] bc-leading-tight"
-                      title={parseMaybeGmt(comment.createdAt).toLocaleString('en-US', {
+                      title={formatSiteTime(parseMaybeGmt(comment.createdAt), {
                         day: 'numeric',
                         hour: 'numeric',
                         hour12: true,
@@ -388,7 +437,7 @@ export default function CommentItem({
               {/* Reply editor */}
               <AnimatePresence initial={false}>
                 {showReplyEditor && (
-                  <motion.div
+                  <m.div
                     animate={{ height: 'auto', opacity: 1, transitionEnd: { overflow: 'visible' } }}
                     className={`${styles.editorBreakout} bc-mt-2`}
                     data-depth={visualDepth}
@@ -408,7 +457,7 @@ export default function CommentItem({
                       // smaller of the two type sizes.
                       replyTo={replyMention ? undefined : comment.user}
                     />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </>
@@ -424,7 +473,7 @@ export default function CommentItem({
             const replies = childrenAtMaxDepth ? flattenReplies(comment.replies) : comment.replies
 
             return (
-              <motion.ul
+              <m.ul
                 animate={{ height: 'auto', opacity: 1, transitionEnd: { overflow: 'visible' } }}
                 className={styles.replies}
                 exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
@@ -444,12 +493,13 @@ export default function CommentItem({
                       onReply={onReply}
                       renderVote={renderVote}
                       replyParentId={childrenAtMaxDepth ? comment.id : undefined}
+                      topicAuthorId={topicAuthorId}
                       topicSlug={topicSlug}
                       topicTitle={topicTitle}
                     />
                   </li>
                 ))}
-              </motion.ul>
+              </m.ul>
             )
           })()}
       </AnimatePresence>

@@ -1,5 +1,5 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Pagination, Skeleton, Tabs, Typography } from 'antd'
+import { Alert, ConfigProvider, Pagination, Segmented, Skeleton, theme, Typography } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { LuInbox, LuShieldCheck } from 'react-icons/lu'
@@ -12,15 +12,18 @@ import ReportCard from './ui/report-card'
 const { Text, Title } = Typography
 
 /**
- * The panels are left off deliberately: every tab shows the same list, only
- * filtered, so it is rendered once below the bar rather than four times inside
- * it — one AnimatePresence tree instead of one per visited tab.
+ * A switch between three views of one list, not three panels: every option shows
+ * the same list, only filtered, so it is rendered once below the bar — one
+ * AnimatePresence tree instead of one per visited view.
+ *
+ * Two endings, not three. Dismissing did exactly what keeping did, and a choice
+ * between two buttons that change nothing differently is a question a moderator
+ * cannot answer. Reports dismissed before that show under Kept.
  */
 const STATUS_TABS = [
-  { key: 'pending', label: __('Awaiting review') },
-  { key: 'resolved_kept', label: __('Kept') },
-  { key: 'resolved_removed', label: __('Removed') },
-  { key: 'dismissed', label: __('Dismissed') }
+  { label: __('Needs review'), value: 'pending' },
+  { label: __('Kept'), value: 'resolved_kept' },
+  { label: __('Removed'), value: 'resolved_removed' }
 ]
 
 /**
@@ -31,15 +34,25 @@ const STATUS_TABS = [
  * is one thing to look at.
  */
 const TAB_TOTALS: Record<string, string> = {
-  dismissed: __('items dismissed'),
-  pending: __('items awaiting review'),
+  pending: __('items need review'),
   resolved_kept: __('items kept'),
   resolved_removed: __('items removed')
 }
 
+/**
+ * One line under the tabs saying what the open one holds and what, if anything,
+ * a moderator does there — so the tab names never have to explain themselves.
+ */
+const TAB_HELP: Record<string, string> = {
+  pending: __(
+    'Reported topics and replies waiting for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.'
+  ),
+  resolved_kept: __('Reviewed and left up. The reporters were told; the author was not.'),
+  resolved_removed: __('Reviewed and deleted for good. The reporters and the author were both told.')
+}
+
 const EMPTY_TEXT: Record<string, string> = {
-  dismissed: __('No report has been dismissed yet.'),
-  pending: __('Nothing is waiting for review.'),
+  pending: __('Nothing needs review.'),
   resolved_kept: __('No reported content has been kept yet.'),
   resolved_removed: __('No reported content has been removed yet.')
 }
@@ -49,7 +62,7 @@ function LoadingCards() {
     <div className="bc-flex bc-flex-col bc-gap-4">
       {[0, 1, 2].map(index => (
         <div
-          className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-5"
+          className="bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-5"
           key={index}
         >
           <Skeleton active paragraph={{ rows: 3 }} title={{ width: '40%' }} />
@@ -66,7 +79,7 @@ function EmptyQueue({ status }: { status: string }) {
   const Icon = isPending ? LuShieldCheck : LuInbox
 
   return (
-    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-dashed bc-border-line-strong bc-bg-surface-sunken bc-px-6 bc-py-16 bc-text-center">
+    <div className="bc-flex bc-flex-col bc-items-center bc-gap-2 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-px-6 bc-py-16 bc-text-center">
       <Icon
         aria-hidden
         className={`bc-text-3xl ${isPending ? 'bc-text-positive' : 'bc-text-ink-subtle'}`}
@@ -74,7 +87,7 @@ function EmptyQueue({ status }: { status: string }) {
       <Text strong>{EMPTY_TEXT[status] ?? __('Nothing here yet.')}</Text>
       {isPending && (
         <Text className="bc-text-sm" type="secondary">
-          {__('Reports members file from the forum land here for a decision.')}
+          {__('When members report a topic or reply, it shows up here. Keep it if it is fine, or remove it.')}
         </Text>
       )}
     </div>
@@ -86,6 +99,7 @@ export default function Reports() {
   const { isReportsError, isReportsFetching, isReportsStale, reports } = useReports(filters)
   const cardMotion = useCardMotion()
   const swapMotion = useSwapMotion()
+  const { token } = theme.useToken()
 
   const status = filters.status ?? 'pending'
   const isPending = status === 'pending'
@@ -101,12 +115,9 @@ export default function Reports() {
     <div className="bc-p-6">
       <div className="bc-mb-5 bc-flex bc-flex-wrap bc-items-start bc-justify-between bc-gap-4">
         <div>
-          <Title className="bc-mb-1" level={3}>
+          <Title className="bc-mb-0" level={3}>
             {__('Reports')}
           </Title>
-          <Text type="secondary">
-            {__('Grouped by what was reported — several people reporting one item is one decision.')}
-          </Text>
         </div>
 
         {total > 0 && (
@@ -131,11 +142,33 @@ export default function Reports() {
         )}
       </div>
 
-      <Tabs
-        activeKey={status}
-        items={STATUS_TABS}
-        onChange={key => setFilters(previous => ({ ...previous, page: 1, status: key }))}
-      />
+      {/* The same filled pill as the Settings screen's tab bar, so a switch
+          between views looks the same wherever it appears. */}
+      <ConfigProvider
+        theme={{
+          components: {
+            Segmented: {
+              itemHoverBg: token.colorFillTertiary,
+              itemSelectedBg: token.colorPrimary,
+              itemSelectedColor: token.colorTextLightSolid,
+              trackBg: 'var(--bc-surface)',
+              trackPadding: 6
+            }
+          },
+          token: { borderRadius: 12, borderRadiusSM: 8, controlHeight: 44, controlPaddingHorizontal: 18 }
+        }}
+      >
+        <Segmented
+          className="bc-mb-3 bc-max-w-full bc-overflow-x-auto bc-border bc-border-solid bc-border-line [&_.ant-segmented-group]:bc-gap-1 [&_.ant-segmented-item-selected]:bc-font-semibold"
+          onChange={value => setFilters(previous => ({ ...previous, page: 1, status: value }))}
+          options={STATUS_TABS}
+          value={status}
+        />
+      </ConfigProvider>
+
+      <Text className="bc-mb-5 bc-block bc-text-sm" type="secondary">
+        {TAB_HELP[status]}
+      </Text>
 
       {isReportsError && (
         <Alert

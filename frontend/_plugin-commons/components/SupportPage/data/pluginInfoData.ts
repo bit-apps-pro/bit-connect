@@ -12,6 +12,7 @@ export default {
         'A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.'
       ),
       docLink: 'https://bitapps.pro/docs/bit-connect/',
+      privacyPolicyLink: 'https://bitapps.pro/privacy-policy/',
       reviewLink: 'https://wordpress.org/support/plugin/bit-connect/reviews/',
       title: 'Bit Connect',
       website: 'https://bitapps.pro/bit-connect/',
@@ -23,6 +24,7 @@ export default {
         'WordPress CRM to manage contacts, leads, deals, and invoices and run your whole sales pipeline right from your WordPress dashboard.'
       ),
       docLink: 'https://bitapps.pro/docs/bit-crm/',
+      privacyPolicyLink: 'https://bit-crm.com/privacy-policy/',
       reviewLink: 'https://wordpress.org/support/plugin/bit-crm-sales-marketing-automation/reviews/',
       title: 'Bit CRM',
       website: 'https://bit-crm.com/',
@@ -32,6 +34,7 @@ export default {
       buyLink: 'https://bit-flows.com/#pricing/',
       description: 'Bit Flows - ' + __('Zapier Alternative in WordPress Unlimited Task.'),
       docLink: 'https://bit-flows.com/users-guide/',
+      privacyPolicyLink: 'https://bitapps.pro/privacy-policy/',
       reviewLink: 'https://wordpress.org/support/plugin/bit-pi/reviews/',
       title: 'Bit Flows',
       website: 'https://bit-flows.com',
@@ -43,6 +46,7 @@ export default {
         'An social media management plugin for WordPress, that allows you to share your post to different social media platform, schedule post, manage social media account and many more feature.'
       ),
       docLink: 'https://bit-social.com/documentation/',
+      privacyPolicyLink: 'https://bitapps.pro/privacy-policy/',
       reviewLink: 'https://wordpress.org/support/plugin/bit-social/reviews/',
       title: 'Bit Social',
       website: 'https://bit-social.com',

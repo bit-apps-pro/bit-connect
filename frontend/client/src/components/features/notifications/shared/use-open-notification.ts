@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router'
 
 import { type NotificationItem, useMarkNotificationsRead } from '../data/use-notifications'
+import routerTarget from './router-target'
 
 /**
  * Failing to clear a badge is not worth interrupting someone who has already
@@ -33,19 +34,23 @@ export default function useOpenNotification(onOpen?: () => void) {
 
     const url = item.context.url
 
-    // A row whose target is gone is still worth reading — it says what happened
-    // — but there is nowhere to send anyone. The row already says so.
-    if (!url || !item.target.exists) return
+    // The server clears the link when nothing is left to open — a row whose
+    // comment was removed still carries its topic's. A row with no link is
+    // still worth reading; it says what happened, and says it is gone.
+    if (!url) return
 
     try {
       const parsed = new URL(url, window.location.origin)
 
-      // Same-origin links belong to the SPA, so route internally and keep the
-      // page state. Anything else — a link a future channel or an extension put
-      // there — leaves the app properly rather than being fed to the router,
-      // which would turn it into a 404 inside the portal.
-      if (parsed.origin === window.location.origin) {
-        navigate(`${parsed.pathname}${parsed.search}${parsed.hash}`)
+      // Same-origin links under the portal belong to the SPA, so route
+      // internally and keep the page state. Anything else — a link a future
+      // channel or an extension put there, or an older row's post-type URL the
+      // server redirects — leaves the app properly rather than being fed to
+      // the router, which would turn it into a 404 inside the portal.
+      const inApp = parsed.origin === window.location.origin ? routerTarget(parsed) : undefined
+
+      if (inApp !== undefined) {
+        navigate(inApp)
 
         return
       }

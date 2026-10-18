@@ -27,8 +27,6 @@ class Follow
 {
     public const TARGET_TOPIC = 'topic';
 
-    public const TARGET_DEPARTMENT = 'department';
-
     public const TARGET_TAG = 'tag';
 
     public const TARGET_FORUM = 'forum';
@@ -54,6 +52,24 @@ class Follow
                 // entire mute feature rests on.
                 && (int) ($row['muted'] ?? 0) === 0
             ) {
+                $ids[] = (int) $row['user_id'];
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * Everyone with a row on this target, muted or not.
+     *
+     * @return array<int, int>
+     */
+    public static function userIdsFor(string $targetType, int $targetId): array
+    {
+        $ids = [];
+
+        foreach (self::rows() as $row) {
+            if (($row['target_type'] ?? '') === $targetType && (int) ($row['target_id'] ?? 0) === $targetId) {
                 $ids[] = (int) $row['user_id'];
             }
         }

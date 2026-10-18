@@ -59,6 +59,7 @@ final class TermArchiveTest extends TestCase
     {
         $GLOBALS['__wp_posts'] = [];
         $GLOBALS['__wp_terms'] = [];
+        $GLOBALS['__wp_taxonomies'] = [];
 
         PortalLocation::resetCache();
     }
@@ -85,16 +86,18 @@ final class TermArchiveTest extends TestCase
         }
     }
 
-    public function testWorkflowArchivesAreServedButNotIndexedByDefault(): void
+    public function testStatusArchivesAreServedButNotIndexedByDefault(): void
     {
         // Served, so a visitor following one gets the topics…
         $this->assertSame(Taxonomies::STATUSES->value, PortalTaxonomies::taxonomyFor('status'));
         $this->assertSame(Taxonomies::STAGES->value, PortalTaxonomies::taxonomyFor('stage'));
 
-        // …but not offered to the index, because nobody searches for a workflow
-        // state and the listing churns constantly.
+        // …but status is not offered to the index: nothing links to it, so it
+        // is a filter rather than a page the portal navigates by.
         $this->assertFalse(PortalTaxonomies::isIndexable('status'));
-        $this->assertFalse(PortalTaxonomies::isIndexable('stage'));
+
+        // Stage is the exception — the sidebar navigates by it.
+        $this->assertTrue(PortalTaxonomies::isIndexable('stage'));
     }
 
     public function testAnUnknownSegmentResolvesToNothing(): void
@@ -125,6 +128,79 @@ final class TermArchiveTest extends TestCase
         );
     }
 
+    public function testAnAddedArchiveAnswersToItsOwnSegment(): void
+    {
+        $this->addTeamsTaxonomy('squad');
+
+        $this->assertSame('https://example.com/community/squad/platform', PortalTaxonomies::url('team', 'platform'));
+        $this->assertInstanceOf(WP_Term::class, PortalTaxonomies::resolve('squad', 'platform'));
+        $this->assertStringContainsString('squad', PortalTaxonomies::segmentPattern());
+
+        // The key stays what SEO settings and sitemap names store…
+        $this->assertSame('team', PortalTaxonomies::segmentFor('example-teams'));
+        // …and the key itself does not answer, rather than serving a duplicate.
+        $this->assertNull(PortalTaxonomies::resolve('team', 'platform'));
+    }
+
+    public function testARenamedArchiveRedirectsFromItsOriginalSegment(): void
+    {
+        $this->addTeamsTaxonomy('squad');
+
+        // Still routed, so links indexed before the rename reach the redirect…
+        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'team');
+        $this->assertSame('https://example.com/community/squad/platform', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
+
+        // …while a term that does not exist stays a 404.
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'no-such-term'));
+    }
+
+    public function testAnUnrenamedArchiveHasNothingToRedirect(): void
+    {
+        $this->addTeamsTaxonomy('team');
+
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+    }
+
+    public function testATermWhoseSlugWasEditedRedirectsFromItsOldSlug(): void
+    {
+        $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
+
+        $this->assertSame('https://example.com/community/topic/billing', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
+        // The current slug is served, not redirected; an unknown one stays a 404.
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'refunds'));
+
+        unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
+    }
+
+    public function testATermFilteredFromTheReaderIsNeverNamedByARedirect(): void
+    {
+        $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
+        $GLOBALS['__wp_filters']['bit_connect_portal_terms'] = [];
+
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
+
+        unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
+    }
+
+    public function testAnAddedArchiveCannotTakeASegmentThePortalRoutes(): void
+    {
+        $this->addTeamsTaxonomy('stage');
+
+        $this->assertSame('', PortalTaxonomies::segmentFor('example-teams'));
+        $this->assertSame(Taxonomies::STAGES->value, PortalTaxonomies::taxonomyFor(PortalTaxonomies::segmentForSlug('stage')));
+    }
+
+    public function testAnArchiveForATaxonomyThatIsNotRegisteredIsNotServed(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => ['taxonomy' => 'example-teams', 'archive' => 'team', 'slug' => 'team'],
+        ];
+
+        $this->assertNotContains('team', PortalTaxonomies::segments());
+    }
+
     // -----------------------------------------------------------------------
     // What a crawler receives.
     // -----------------------------------------------------------------------
@@ -143,7 +219,7 @@ final class TermArchiveTest extends TestCase
             $head
         );
         $this->assertSame(
-            ['title' => 'Billing — Acme Community'],
+            ['title' => 'Billing | Acme Community'],
             SeoMeta::filterTitle(['title' => 'Community — Acme'])
         );
     }
@@ -246,40 +322,78 @@ final class TermArchiveTest extends TestCase
 
         $this->assertSame('', SeoContent::forArchive($term, [$this->makeTopic()]));
 
+        // Kept out of the index and named only by the community, never the term.
         SeoMeta::forArchive($term, [$this->makeTopic()]);
-        $this->assertSame('', SeoMeta::head());
+        $head = SeoMeta::head();
+        $this->assertStringContainsString('<meta name="robots" content="noindex,nofollow" />', $head);
+        $this->assertStringNotContainsString('Billing', $head);
+        $this->assertStringNotContainsString('canonical', $head);
     }
 
     // -----------------------------------------------------------------------
     // Workflow taxonomies are routes, not index entries.
     // -----------------------------------------------------------------------
 
-    public function testStageArchivesAreKeptOutOfTheIndex(): void
+    public function testStageArchivesAreIndexedBecauseTheSidebarNavigatesByThem(): void
     {
         $term = $this->makeTerm('in-progress', 'In Progress', Taxonomies::STAGES->value);
 
         SeoMeta::forArchive($term, [$this->makeTopic()]);
         $head = SeoMeta::head();
 
-        // Nobody searches "in progress", and an archive per workflow state is a
-        // thin, churning listing of topics that are already indexed on their own.
-        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', $head);
-        $this->assertStringNotContainsString('application/ld+json', $head);
+        // Every page in the portal links here, so keeping it out of the index
+        // would spend that internal linking on a page that cannot rank.
+        $this->assertStringNotContainsString('noindex', $head);
+        $this->assertStringContainsString('application/ld+json', $head);
 
-        // Still self-canonical: a noindex page pointing its canonical somewhere
-        // else can carry the noindex across to the target.
         $this->assertStringContainsString(
             '<link rel="canonical" href="https://example.com/community/stage/in-progress" />',
             $head
         );
     }
 
+    public function testStatusArchivesAreKeptOutOfTheIndex(): void
+    {
+        $term = $this->makeTerm('needs-approval', 'Needs Approval', Taxonomies::STATUSES->value);
+
+        SeoMeta::forArchive($term, [$this->makeTopic()]);
+        $head = SeoMeta::head();
+
+        // Nobody searches "needs approval", and nothing links to it.
+        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', $head);
+        $this->assertStringNotContainsString('application/ld+json', $head);
+
+        // Still self-canonical: a noindex page pointing its canonical somewhere
+        // else can carry the noindex across to the target.
+        $this->assertStringContainsString(
+            '<link rel="canonical" href="https://example.com/community/status/needs-approval" />',
+            $head
+        );
+    }
+
+    public function testOneTermOfAnIndexedTaxonomyCanBeKeptOutOfTheIndex(): void
+    {
+        $billing = $this->makeTerm('billing', 'Billing', Taxonomies::TOPIC_TYPES->value);
+        $GLOBALS['__wp_filters']['bit_connect_archive_term_indexable'] = static fn (bool $indexable, WP_Term $term): bool => $indexable && $term->slug !== 'billing';
+
+        SeoMeta::forArchive($billing, [$this->makeTopic()]);
+
+        $this->assertStringContainsString('<meta name="robots" content="noindex,follow" />', SeoMeta::head());
+        $this->assertTrue(PortalTaxonomies::isTermIndexable($this->makeTerm('shipping', 'Shipping', Taxonomies::TOPIC_TYPES->value)));
+    }
+
     public function testSubjectArchivesStayIndexable(): void
     {
         $this->assertTrue(PortalTaxonomies::isIndexable('topic'));
         $this->assertTrue(PortalTaxonomies::isIndexable('tag'));
-        $this->assertTrue(PortalTaxonomies::isIndexable('department'));
-        $this->assertFalse(PortalTaxonomies::isIndexable('stage'));
+        $this->assertFalse(PortalTaxonomies::isIndexable('status'));
+    }
+
+    public function testAnAddedArchiveStartsIndexable(): void
+    {
+        $this->addTeamsTaxonomy('team');
+
+        $this->assertTrue(PortalTaxonomies::isIndexable('team'));
     }
 
     // -----------------------------------------------------------------------
@@ -362,6 +476,25 @@ final class TermArchiveTest extends TestCase
 
         $this->assertStringContainsString('/community/tag/api', $html);
         $this->assertStringContainsString('/community/tag/webhooks', $html);
+    }
+
+    /**
+     * A taxonomy another plugin files topics under, with an archive keyed
+     * `team` and served under `$slug`, holding one term.
+     */
+    private function addTeamsTaxonomy(string $slug): void
+    {
+        $GLOBALS['__wp_taxonomies'] = ['example-teams'];
+        $GLOBALS['__wp_terms'][] = $this->makeTerm('platform', 'Platform', 'example-teams');
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies'] = [
+            'teams' => [
+                'taxonomy' => 'example-teams',
+                'singular' => 'Team',
+                'plural'   => 'Teams',
+                'archive'  => 'team',
+                'slug'     => $slug,
+            ],
+        ];
     }
 
     private function makeTerm(string $slug, string $name, string $taxonomy): WP_Term

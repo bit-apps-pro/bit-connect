@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\GetFollowsRequest;
+use BitApps\BitConnect\Http\Requests\GetFollowStateRequest;
 use BitApps\BitConnect\Http\Requests\ToggleFollowRequest;
 use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\FollowService;
@@ -50,6 +51,28 @@ final class FollowController
         }
 
         return Response::success(FollowService::stateFor($userId, $targetType, $targetId));
+    }
+
+    /**
+     * Whether the signed-in member follows one thing.
+     *
+     * A topic arrives with its follow state attached; an archive has no payload
+     * of its own to carry one, so its Follow button asks here. Read, never
+     * assumed: a guest is told "not following" without a query.
+     */
+    public function state(GetFollowStateRequest $request)
+    {
+        $validated = $request->validated();
+        $targetType = (string) $validated['target_type'];
+
+        if (!FollowService::isValidTargetType($targetType)) {
+            return Response::error([], 422)
+                ->message(__('That is not something this forum lets you follow.', 'bit-connect'));
+        }
+
+        return Response::success(
+            FollowService::stateFor(get_current_user_id(), $targetType, (int) $validated['target_id'])
+        );
     }
 
     public function mine(GetFollowsRequest $request)

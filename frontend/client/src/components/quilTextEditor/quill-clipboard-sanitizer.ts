@@ -20,6 +20,7 @@ import {
   isSafeUrl,
   sanitizeHtml
 } from './quill-validation'
+import { unwrapVideoFigures } from './quill-video-file'
 
 const DeltaCtor = Quill.import('delta') as new (ops?: unknown[]) => Delta
 
@@ -137,10 +138,12 @@ class ClipboardSanitizerModule {
 
         // Step 4: Let Quill convert the sanitized HTML into Delta format
         const range = this.quill.getSelection(true)
-        const delta = this.quill.clipboard.convert({ html: sanitizedHtml })
+        const delta = this.quill.clipboard.convert({ html: unwrapVideoFigures(sanitizedHtml) })
 
         this.quill.updateContents(
-          // Delete selected text, then insert pasted content
+          // Delete selected text, then insert pasted content. This is
+          // Delta#concat, not Array#concat — there is no spread equivalent.
+          // eslint-disable-next-line unicorn/prefer-spread
           new DeltaCtor().retain(range.index).delete(range.length).concat(delta),
           'user'
         )

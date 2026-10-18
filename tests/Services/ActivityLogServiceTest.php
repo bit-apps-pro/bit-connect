@@ -4,6 +4,7 @@ namespace BitApps\BitConnect\Tests\Services;
 
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Services\ActivityLogService;
+use BitApps\BitConnect\Services\ExtensionPoints;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,6 +37,7 @@ final class ActivityLogServiceTest extends TestCase
     {
         $GLOBALS['__bc_activity_log'] = [];
         $GLOBALS['__wp_current_user_id'] = 0;
+        unset($GLOBALS['__wp_filters']['bit_connect_activity_actions']);
     }
 
     // -----------------------------------------------------------------------
@@ -78,7 +80,7 @@ final class ActivityLogServiceTest extends TestCase
      */
     public function testAnEmptyContextIsStoredAsNothing(): void
     {
-        ActivityLogService::record(ActivityActions::PIN_POST, ActivityLogService::TARGET_POST, 10, self::AUTHOR);
+        ActivityLogService::record(ActivityActions::LOCK_POST, ActivityLogService::TARGET_POST, 10, self::AUTHOR);
 
         $this->assertNull($this->onlyRow()['context']);
     }
@@ -101,6 +103,37 @@ final class ActivityLogServiceTest extends TestCase
         ActivityLogService::record(ActivityActions::HIDE, ActivityLogService::TARGET_POST, 0, self::AUTHOR);
 
         $this->assertSame([], $GLOBALS['__bc_activity_log']);
+    }
+
+    // -----------------------------------------------------------------------
+    // Another plugin's actions
+    // -----------------------------------------------------------------------
+
+    public function testAnActionAnotherPluginNamedIsRecordedUnderItsSlug(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_activity_actions'] = ['feature_post' => 'Featured a topic'];
+
+        ActivityLogService::record('feature_post', ActivityLogService::TARGET_POST, 10, self::AUTHOR);
+
+        $this->assertSame('feature_post', $this->onlyRow()['action']);
+    }
+
+    /**
+     * A slug nobody named would be a row the log cannot label, written by a
+     * caller that misspelt it.
+     */
+    public function testASlugNobodyNamedIsNotRecorded(): void
+    {
+        ActivityLogService::record('feature_post', ActivityLogService::TARGET_POST, 10, self::AUTHOR);
+
+        $this->assertSame([], $GLOBALS['__bc_activity_log']);
+    }
+
+    public function testAnotherPluginCannotTakeOverOneOfThisPluginsSlugs(): void
+    {
+        $GLOBALS['__wp_filters']['bit_connect_activity_actions'] = ['hide' => 'Something else', 'feature_post' => 'Featured a topic'];
+
+        $this->assertSame(['feature_post' => 'Featured a topic'], ExtensionPoints::activityActions());
     }
 
     // -----------------------------------------------------------------------
@@ -225,6 +258,38 @@ final class ActivityLogServiceTest extends TestCase
         $bengali = str_repeat('অ', 1500);
 
         $this->assertSame($bengali, ActivityLogService::excerpt($bengali));
+    }
+
+    /**
+     * A rolling window starts at a midnight and stays open, so a row written a
+     * moment ago is never left out of "Today".
+     */
+    public function testARollingPeriodStartsAtAMidnightAndHasNoEnd(): void
+    {
+        $today = gmdate('Y-m-d 00:00:00');
+
+        $this->assertSame([$today, null], ActivityLogService::periodWindow('today'));
+        $this->assertSame(
+            [gmdate('Y-m-d 00:00:00', strtotime('-6 days', strtotime($today))), null],
+            ActivityLogService::periodWindow('7d')
+        );
+    }
+
+    /** Yesterday is the one window that closes, at today's midnight. */
+    public function testYesterdayEndsWhereTodayBegins(): void
+    {
+        $today = gmdate('Y-m-d 00:00:00');
+
+        $this->assertSame(
+            [gmdate('Y-m-d 00:00:00', strtotime('-1 day', strtotime($today))), $today],
+            ActivityLogService::periodWindow('yesterday')
+        );
+    }
+
+    public function testAnUnknownPeriodIsNoWindow(): void
+    {
+        $this->assertNull(ActivityLogService::periodWindow(''));
+        $this->assertNull(ActivityLogService::periodWindow('forever'));
     }
 
     /**
