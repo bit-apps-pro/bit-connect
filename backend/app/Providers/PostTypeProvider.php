@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BitApps\BitConnect\Providers;
 
+use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\DefaultValues;
 use BitApps\BitConnect\Enum\PostTypes;
@@ -179,6 +180,31 @@ class PostTypeProvider
         // Create default stages after registration
         $this->createDefaultStages();
         $this->createDefaultStatuses();
+        $this->createFirstTopicType();
+    }
+
+    /**
+     * Give a new forum one topic type, once.
+     *
+     * Each topic needs a type, and the topic form asks for one. A forum with no
+     * types cannot take a topic at all, and the new-topic form shows an empty
+     * list. Unlike the default stage and status this term has no protection:
+     * after the first time, an admin can rename it or delete it, and it is not
+     * made again.
+     */
+    public function createFirstTopicType(): void
+    {
+        if (Config::getOption('first_topic_type_created') || !taxonomy_exists(Taxonomies::TOPIC_TYPES->value)) {
+            return;
+        }
+
+        $count = wp_count_terms(['taxonomy' => Taxonomies::TOPIC_TYPES->value, 'hide_empty' => false]);
+
+        if (!is_wp_error($count) && (int) $count === 0) {
+            wp_insert_term(__('Question', 'bit-connect'), Taxonomies::TOPIC_TYPES->value);
+        }
+
+        Config::updateOption('first_topic_type_created', 1, false);
     }
 
     /**

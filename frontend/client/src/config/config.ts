@@ -269,7 +269,11 @@ const config = {
   // so they cannot be addressed through API_URL, which names the free
   // plugin's. Sent by the pro plugin; the fallback only matters before it has
   // loaded, when nothing is calling a pro route anyway.
-  PRO_API_URL: getServerVariable('proApiURL', `${siteURL}/wp-json/bit-connect-pro/v1`),
+  // Read directly, not through getServerVariable(): this plugin never sends
+  // the key — only an add-on that registers routes does — so its absence is
+  // the normal state and not worth a console warning on every page.
+  PRO_API_URL:
+    (SERVER_VARIABLES as Partial<{ proApiURL: string }>).proApiURL || `${siteURL}/wp-json/bit-connect-pro/v1`,
   PRODUCT_NAME: 'Bit Connect',
   PROMO: {
     cta: promo.cta ?? '',

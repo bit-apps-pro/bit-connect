@@ -1,7 +1,9 @@
 import { __ } from '@common/helpers/i18nWrap'
 import useCheckSlug from '@pages/general/data/use-check-slug'
 import useCreatePortalPage from '@pages/general/data/use-create-portal-page'
+import usePortalPage from '@pages/general/data/use-portal-page'
 import useUpdatePortalRoot from '@pages/general/data/use-update-portal-root'
+import PlainPermalinksAlert from '@pages/general/internal/plain-permalinks-alert'
 import SlugStatus from '@pages/general/internal/slug-status'
 import { Alert, Button, Card, Input, Space, Typography } from 'antd'
 import { useState } from 'react'
@@ -39,6 +41,9 @@ export default function StepPortalSettings({ onNext }: Props) {
   const { check, isChecking } = useCheckSlug(slug)
   const { createPortalPage, isCreatingPortalPage } = useCreatePortalPage()
   const { isUpdatingPortalRoot, updatePortalRoot } = useUpdatePortalRoot()
+  // Said here, before the page is made: the address shown below as available
+  // does not open until the site has a permalink structure.
+  const { portalPage } = usePortalPage()
 
   const isExistingPortal = check?.isPortal === true
   // Not only an existing page: a reserved address, or a name WordPress would
@@ -88,6 +93,8 @@ export default function StepPortalSettings({ onNext }: Props) {
           {__('We will create a page for it. You can change this later in Settings.')}
         </Text>
       </div>
+
+      {portalPage.prettyPermalinks === false && <PlainPermalinksAlert permalinksUrl={portalPage.permalinksUrl} />}
 
       <div className="bc-flex bc-flex-col bc-gap-3">
         <Card className={cardClass(placement === 'slug')} onClick={() => setPlacement('slug')}>

@@ -243,7 +243,7 @@ return [
 
     'Logged-in users only' => __('Logged-in users only', 'bit-connect'),
 
-    'Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.' => __('Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.', 'bit-connect'),
+    'Select the filters that visitors can use to narrow the topic list. Links that people already shared continue to work when you hide a filter.' => __('Select the filters that visitors can use to narrow the topic list. Links that people already shared continue to work when you hide a filter.', 'bit-connect'),
 
     'Topic list filters' => __('Topic list filters', 'bit-connect'),
 
@@ -589,7 +589,7 @@ return [
 
     'Welcome to Bit Connect' => __('Welcome to Bit Connect', 'bit-connect'),
 
-    'Let\'s set up your community portal in a few steps.' => __('Let\'s set up your community portal in a few steps.', 'bit-connect'),
+    'Set up your community portal in a few steps.' => __('Set up your community portal in a few steps.', 'bit-connect'),
 
     'Authentication' => __('Authentication', 'bit-connect'),
 
@@ -935,7 +935,7 @@ return [
 
     'SEO settings could not be loaded.' => __('SEO settings could not be loaded.', 'bit-connect'),
 
-    'Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines won’t see them.' => __('Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines won’t see them.', 'bit-connect'),
+    'Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines do not see them.' => __('Each term gets a page that lists its topics. These pages can rank for a whole subject, not just one question. When on, a taxonomy’s archives are indexed and added to the sitemap. When off, visitors can still open them, but search engines do not see them.', 'bit-connect'),
 
     'Term archives' => __('Term archives', 'bit-connect'),
 

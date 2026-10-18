@@ -33,7 +33,7 @@ export default function Onboarding() {
           <Typography.Title className="bc-mb-2" level={2}>
             {__('Welcome to Bit Connect')}
           </Typography.Title>
-          <Text type="secondary">{__("Let's set up your community portal in a few steps.")}</Text>
+          <Text type="secondary">{__('Set up your community portal in a few steps.')}</Text>
         </div>
 
         <Card className="bc-shadow-sm">

@@ -47,7 +47,7 @@ export default function TopicListFiltersSection({ disabled, form, onPatchFilter 
   return (
     <SectionCard
       subtitle={__(
-        'Pick which filters visitors can use to narrow the topic list. Hiding one won’t break links people have already shared.'
+        'Select the filters that visitors can use to narrow the topic list. Links that people already shared continue to work when you hide a filter.'
       )}
       title={__('Topic list filters')}
     >
