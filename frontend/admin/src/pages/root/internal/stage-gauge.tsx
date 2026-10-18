@@ -100,7 +100,7 @@ export default function StageGauge({ hues, stages }: StageGaugeProps) {
   })
 
   return (
-    <div className="bc-relative bc-mx-auto bc-w-full bc-max-w-80">
+    <div className="bc-mx-auto bc-w-full bc-max-w-80">
       <svg
         aria-label={sprintf(
           __('%d topics: %s'),
@@ -122,15 +122,19 @@ export default function StageGauge({ hues, stages }: StageGaugeProps) {
         ) : (
           paths
         )}
-      </svg>
 
-      {/* In the bowl of the ring, as on a dial. */}
-      <div aria-hidden className="bc-absolute bc-inset-x-0 bc-bottom-0 bc-text-center">
-        <div className="bc-text-base bc-text-ink-muted">{__('Total topics')}</div>
-        <div className="bc-text-5xl bc-font-bold bc-leading-tight bc-text-ink">
-          {total.toLocaleString()}
-        </div>
-      </div>
+        {/* In the bowl of the ring, as on a dial. Drawn in the SVG, not laid
+            over it, so the text scales with the ring and stays inside it in a
+            narrow card. */}
+        <g aria-hidden className="bc-fill-current" textAnchor="middle">
+          <text className="bc-text-ink-muted" fontSize={12} x={CX} y={66}>
+            {__('Total topics')}
+          </text>
+          <text className="bc-font-bold bc-text-ink" fontSize={38} x={CX} y={CY - 4}>
+            {total.toLocaleString()}
+          </text>
+        </g>
+      </svg>
     </div>
   )
 }
