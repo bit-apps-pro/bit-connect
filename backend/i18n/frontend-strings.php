@@ -380,10 +380,6 @@ return [
 
     'No community page yet. Enter an address slug below and create the page, or add the Bit Connect block or shortcode to a page of your own and publish it.' => __('No community page yet. Enter an address slug below and create the page, or add the Bit Connect block or shortcode to a page of your own and publish it.', 'bit-connect'),
 
-    'Open Permalinks' => __('Open Permalinks', 'bit-connect'),
-
-    'Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.' => __('Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.', 'bit-connect'),
-
     'Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off "Serve at the site root".' => __('Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off "Serve at the site root".', 'bit-connect'),
 
     'Where your community can be reached right now.' => __('Where your community can be reached right now.', 'bit-connect'),
@@ -415,6 +411,10 @@ return [
     'To show the community on a page of your own, add the "Bit Connect" block to it in the block editor. In any other editor or page builder, paste this shortcode instead. If you have no community page yet, the page you publish with either one becomes the community page.' => __('To show the community on a page of your own, add the "Bit Connect" block to it in the block editor. In any other editor or page builder, paste this shortcode instead. If you have no community page yet, the page you publish with either one becomes the community page.', 'bit-connect'),
 
     'Add to your own page' => __('Add to your own page', 'bit-connect'),
+
+    'Open Permalinks' => __('Open Permalinks', 'bit-connect'),
+
+    'Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.' => __('Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.', 'bit-connect'),
 
     'Checking…' => __('Checking…', 'bit-connect'),
 
@@ -609,7 +609,7 @@ return [
 
     'Welcome to Bit Connect' => __('Welcome to Bit Connect', 'bit-connect'),
 
-    'Let\'s set up your community portal in a few steps.' => __('Let\'s set up your community portal in a few steps.', 'bit-connect'),
+    'Set up your community portal in a few steps.' => __('Set up your community portal in a few steps.', 'bit-connect'),
 
     'Authentication' => __('Authentication', 'bit-connect'),
 

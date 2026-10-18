@@ -9,6 +9,7 @@ import useCreatePortalPage from '../data/use-create-portal-page'
 import { type PortalPage } from '../data/use-portal-page'
 import useUpdatePortalRoot from '../data/use-update-portal-root'
 import { revealVariants } from './motion'
+import PlainPermalinksAlert from './plain-permalinks-alert'
 import SectionCard from './section-card'
 import SettingRow from './setting-row'
 import SlugStatus from './slug-status'
@@ -201,20 +202,9 @@ export default function LocationSection({
             key="permalinks"
             variants={revealVariants}
           >
-            <Alert
-              action={
-                portalPage.permalinksUrl && (
-                  <Button href={portalPage.permalinksUrl} size="small">
-                    {__('Open Permalinks')}
-                  </Button>
-                )
-              }
+            <PlainPermalinksAlert
               className="bc-mb-3 bc-mt-2 bc-py-2 bc-text-sm"
-              message={__(
-                'Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks.'
-              )}
-              showIcon
-              type="error"
+              permalinksUrl={portalPage.permalinksUrl}
             />
           </motion.div>
         )}

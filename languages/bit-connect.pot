@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-18T08:54:30+00:00\n"
+"POT-Creation-Date: 2026-10-18T09:02:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 
@@ -721,69 +721,73 @@ msgstr ""
 msgid "Bit Connect Portal Template"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:103
+#: backend/app/Providers/PostTypeProvider.php:104
 msgctxt "Post Type General Name"
 msgid "Bit Connect Posts"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:104
+#: backend/app/Providers/PostTypeProvider.php:105
 msgctxt "Post Type Singular Name"
 msgid "Bit Connect Post"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:113
+#: backend/app/Providers/PostTypeProvider.php:114
 msgid "Bit Connect Post"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:114
+#: backend/app/Providers/PostTypeProvider.php:115
 msgid "Bit Connect custom post type"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:153
+#: backend/app/Providers/PostTypeProvider.php:154
 msgctxt "Taxonomy Singular Name"
 msgid "Topic"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:154
+#: backend/app/Providers/PostTypeProvider.php:155
 msgctxt "Taxonomy General Name"
 msgid "Topics"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:159
+#: backend/app/Providers/PostTypeProvider.php:160
 msgctxt "Taxonomy Singular Name"
 msgid "Stage"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:160
+#: backend/app/Providers/PostTypeProvider.php:161
 msgctxt "Taxonomy General Name"
 msgid "Stages"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:165
+#: backend/app/Providers/PostTypeProvider.php:166
 msgctxt "Taxonomy Singular Name"
 msgid "Status"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:166
+#: backend/app/Providers/PostTypeProvider.php:167
 msgctxt "Taxonomy General Name"
 msgid "Statuses"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:171
+#: backend/app/Providers/PostTypeProvider.php:172
 msgctxt "Taxonomy Singular Name"
 msgid "Tag"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:172
+#: backend/app/Providers/PostTypeProvider.php:173
 msgctxt "Taxonomy General Name"
 msgid "Tags"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:197
+#: backend/app/Providers/PostTypeProvider.php:205
+msgid "Discussion"
+msgstr ""
+
+#: backend/app/Providers/PostTypeProvider.php:224
 msgid "Questions"
 msgstr ""
 
-#: backend/app/Providers/PostTypeProvider.php:211
+#: backend/app/Providers/PostTypeProvider.php:238
 msgid "Need Approval"
 msgstr ""
 
@@ -2108,75 +2112,75 @@ msgid "No community page yet. Enter an address slug below and create the page, o
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:383
-msgid "Open Permalinks"
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:385
-msgid "Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks."
-msgstr ""
-
-#: backend/i18n/frontend-strings.php:387
 msgid "Your homepage is not set to the community page. Choose it in Settings → Reading, or turn off \"Serve at the site root\"."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:389
+#: backend/i18n/frontend-strings.php:385
 msgid "Where your community can be reached right now."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:391
+#: backend/i18n/frontend-strings.php:387
 msgid "Live address"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:393
+#: backend/i18n/frontend-strings.php:389
 msgid "Edit this page"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:395
+#: backend/i18n/frontend-strings.php:391
 msgid "Your community is your homepage, so it has no slug of its own."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:397
+#: backend/i18n/frontend-strings.php:393
 msgid "The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that shows the community. If you change it, every post link changes."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:399
+#: backend/i18n/frontend-strings.php:395
 msgid "Address slug"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:401
+#: backend/i18n/frontend-strings.php:397
 msgid "e.g. community"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:403
+#: backend/i18n/frontend-strings.php:399
 msgid "This page does not contain the Bit Connect block or the [bit-connect] shortcode, so the community will not show on it."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:405
+#: backend/i18n/frontend-strings.php:401
 msgid "Serve the portal from the site root instead of a slug, so it becomes your homepage. Use this only if the whole WordPress site is for the forum."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:407
+#: backend/i18n/frontend-strings.php:403
 msgid "Serve at the site root"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:409
+#: backend/i18n/frontend-strings.php:405
 msgid "Applies immediately"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:411
+#: backend/i18n/frontend-strings.php:407
 msgid "Needs the page first"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:413
+#: backend/i18n/frontend-strings.php:409
 msgid "Only a site administrator can change the homepage"
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:415
+#: backend/i18n/frontend-strings.php:411
 msgid "To show the community on a page of your own, add the \"Bit Connect\" block to it in the block editor. In any other editor or page builder, paste this shortcode instead. If you have no community page yet, the page you publish with either one becomes the community page."
 msgstr ""
 
-#: backend/i18n/frontend-strings.php:417
+#: backend/i18n/frontend-strings.php:413
 msgid "Add to your own page"
+msgstr ""
+
+#: backend/i18n/frontend-strings.php:415
+msgid "Open Permalinks"
+msgstr ""
+
+#: backend/i18n/frontend-strings.php:417
+msgid "Your site uses plain permalinks, so community addresses will not open. Choose any other structure in Settings → Permalinks."
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:419
@@ -2558,7 +2562,7 @@ msgid "Welcome to Bit Connect"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:612
-msgid "Let's set up your community portal in a few steps."
+msgid "Set up your community portal in a few steps."
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:614

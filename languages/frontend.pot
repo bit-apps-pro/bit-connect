@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Sun Oct 18 2026 14:54:30 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Sun Oct 18 2026 15:02:43 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -73,7 +73,7 @@ msgid "Save changes"
 msgstr ""
 
 #: frontend/admin/src/common/helpers/i18nWrap.test.ts:40
-#: frontend/admin/src/pages/general/internal/location-section.tsx:113
+#: frontend/admin/src/pages/general/internal/location-section.tsx:114
 #: frontend/admin/src/pages/reports/ui/report-card.tsx:275
 #: frontend/admin/src/pages/stages/internal/stage-modal.tsx:83
 #: frontend/admin/src/pages/stages/stages.tsx:152
@@ -709,8 +709,8 @@ msgstr ""
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:125
 #: frontend/admin/src/pages/general/internal/auth-section.tsx:136
 #: frontend/admin/src/pages/general/internal/branding-section.tsx:87
-#: frontend/admin/src/pages/general/internal/location-section.tsx:253
-#: frontend/admin/src/pages/general/internal/location-section.tsx:328
+#: frontend/admin/src/pages/general/internal/location-section.tsx:243
+#: frontend/admin/src/pages/general/internal/location-section.tsx:318
 #: frontend/client/src/components/features/share/ui/share-dialog.tsx:116
 msgid "Copy"
 msgstr ""
@@ -837,181 +837,171 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:73
+#: frontend/admin/src/pages/general/internal/location-section.tsx:74
 msgid "Your community page has been created"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:76
+#: frontend/admin/src/pages/general/internal/location-section.tsx:77
 msgid "Could not create the page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:87
+#: frontend/admin/src/pages/general/internal/location-section.tsx:88
 msgid "The community is now your homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:88
+#: frontend/admin/src/pages/general/internal/location-section.tsx:89
 msgid "The community is back on its own page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:92
+#: frontend/admin/src/pages/general/internal/location-section.tsx:93
 msgid "Could not change the community address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:107
+#: frontend/admin/src/pages/general/internal/location-section.tsx:108
 msgid "Create the community page first, then turn this on."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:108
+#: frontend/admin/src/pages/general/internal/location-section.tsx:109
 msgid "There is no community page yet"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:115
+#: frontend/admin/src/pages/general/internal/location-section.tsx:116
 msgid ""
 "The community replaces your current homepage, and post links change from "
 "/slug/post-name to /post-name. Links that people already shared will stop "
 "working."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:118
+#: frontend/admin/src/pages/general/internal/location-section.tsx:119
 msgid ""
 "The community goes back to yoursite.com/slug and post links change again. "
 "Your homepage goes back to what it was before."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:121
+#: frontend/admin/src/pages/general/internal/location-section.tsx:122
 msgid "Yes, make it my homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:121
+#: frontend/admin/src/pages/general/internal/location-section.tsx:122
 msgid "Yes, move it back"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:124
+#: frontend/admin/src/pages/general/internal/location-section.tsx:125
 msgid "Show the community as your homepage?"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:125
+#: frontend/admin/src/pages/general/internal/location-section.tsx:126
 msgid "Move the community back to its own page?"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:134
+#: frontend/admin/src/pages/general/internal/location-section.tsx:135
 msgid ""
 "The address visitors land on, and the WordPress page that carries the "
 "portal."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:143
+#: frontend/admin/src/pages/general/internal/location-section.tsx:144
 msgid "Site root"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:144
+#: frontend/admin/src/pages/general/internal/location-section.tsx:145
 msgid "Own page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:145
+#: frontend/admin/src/pages/general/internal/location-section.tsx:146
 msgid "Not set up"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:148
+#: frontend/admin/src/pages/general/internal/location-section.tsx:149
 msgid "Portal address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:175
+#: frontend/admin/src/pages/general/internal/location-section.tsx:176
 msgid "Create page at /%s"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:182
+#: frontend/admin/src/pages/general/internal/location-section.tsx:183
 msgid ""
 "There is no published page at this address, so your community cannot be "
 "reached. Create the page, or change the slug below to a page that contains "
 "the Bit Connect block or shortcode."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:185
+#: frontend/admin/src/pages/general/internal/location-section.tsx:186
 msgid ""
 "No community page yet. Enter an address slug below and create the page, or "
 "add the Bit Connect block or shortcode to a page of your own and publish it."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:208
-msgid "Open Permalinks"
-msgstr ""
-
-#: frontend/admin/src/pages/general/internal/location-section.tsx:213
-msgid ""
-"Your site uses plain permalinks, so community addresses will not open. "
-"Choose any other structure in Settings → Permalinks."
-msgstr ""
-
-#: frontend/admin/src/pages/general/internal/location-section.tsx:233
+#: frontend/admin/src/pages/general/internal/location-section.tsx:223
 msgid ""
 "Your homepage is not set to the community page. Choose it in Settings → "
 "Reading, or turn off \"Serve at the site root\"."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:245
+#: frontend/admin/src/pages/general/internal/location-section.tsx:235
 msgid "Where your community can be reached right now."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:247
+#: frontend/admin/src/pages/general/internal/location-section.tsx:237
 msgid "Live address"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:258
+#: frontend/admin/src/pages/general/internal/location-section.tsx:248
 msgid "Edit this page"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:268
+#: frontend/admin/src/pages/general/internal/location-section.tsx:258
 msgid "Your community is your homepage, so it has no slug of its own."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:269
+#: frontend/admin/src/pages/general/internal/location-section.tsx:259
 msgid ""
 "The last part of the address, e.g. yoursite.com/community. It must match "
 "the slug of the page that shows the community. If you change it, every post "
 "link changes."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:273
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:131
+#: frontend/admin/src/pages/general/internal/location-section.tsx:263
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:138
 msgid "Address slug"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:282
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:140
+#: frontend/admin/src/pages/general/internal/location-section.tsx:272
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:147
 msgid "e.g. community"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:288
+#: frontend/admin/src/pages/general/internal/location-section.tsx:278
 msgid ""
 "This page does not contain the Bit Connect block or the [bit-connect] "
 "shortcode, so the community will not show on it."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:297
+#: frontend/admin/src/pages/general/internal/location-section.tsx:287
 msgid ""
 "Serve the portal from the site root instead of a slug, so it becomes your "
 "homepage. Use this only if the whole WordPress site is for the forum."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:301
-#: frontend/admin/src/pages/general/internal/location-section.tsx:304
+#: frontend/admin/src/pages/general/internal/location-section.tsx:291
+#: frontend/admin/src/pages/general/internal/location-section.tsx:294
 msgid "Serve at the site root"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:313
+#: frontend/admin/src/pages/general/internal/location-section.tsx:303
 msgid "Applies immediately"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:314
+#: frontend/admin/src/pages/general/internal/location-section.tsx:304
 msgid "Needs the page first"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:315
+#: frontend/admin/src/pages/general/internal/location-section.tsx:305
 msgid "Only a site administrator can change the homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:320
+#: frontend/admin/src/pages/general/internal/location-section.tsx:310
 msgid ""
 "To show the community on a page of your own, add the \"Bit Connect\" block "
 "to it in the block editor. In any other editor or page builder, paste this "
@@ -1019,8 +1009,18 @@ msgid ""
 "with either one becomes the community page."
 msgstr ""
 
-#: frontend/admin/src/pages/general/internal/location-section.tsx:323
+#: frontend/admin/src/pages/general/internal/location-section.tsx:313
 msgid "Add to your own page"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/plain-permalinks-alert.tsx:22
+msgid "Open Permalinks"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/plain-permalinks-alert.tsx:27
+msgid ""
+"Your site uses plain permalinks, so community addresses will not open. "
+"Choose any other structure in Settings → Permalinks."
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/slug-status.tsx:27
@@ -1473,7 +1473,7 @@ msgid "Welcome to Bit Connect"
 msgstr ""
 
 #: frontend/admin/src/pages/onboarding/onboarding.tsx:36
-msgid "Let's set up your community portal in a few steps."
+msgid "Set up your community portal in a few steps."
 msgstr ""
 
 #: frontend/admin/src/pages/onboarding/steps/step-authentication.tsx:52
@@ -1573,67 +1573,67 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:59
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:64
 msgid "Could not create the page. Please try again."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:70
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:75
 msgid ""
 "The page was created, but it could not be set as your homepage. You can "
 "turn that on later in Settings."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:85
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:90
 msgid "Where should your community live?"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:88
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:93
 msgid "We will create a page for it. You can change this later in Settings."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:97
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:104
 msgid "On its own page"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:99
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:106
 msgid ""
 "yoursite.com/community. The rest of your website stays as it is. "
 "Recommended."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:109
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:116
 msgid "As the homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:111
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:118
 msgid "yoursite.com. Visitors land on the community first."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:116
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:123
 msgid ""
 "Your current homepage is replaced, and post links use the site root "
 "(yoursite.com/post-name). Best for a site that is only the community."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:119
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:126
 msgid "This replaces your homepage"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:131
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:138
 msgid "Page name"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:153
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:160
 msgid ""
 "This is only the page name inside WordPress. Visitors will just see "
 "yoursite.com."
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:165
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:172
 msgid "Continue"
 msgstr ""
 
-#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:165
+#: frontend/admin/src/pages/onboarding/steps/step-portal-settings.tsx:172
 msgid "Create page and continue"
 msgstr ""
 

@@ -98,10 +98,11 @@ describe('StepPortalSettings', () => {
     await user.click(next)
 
     await waitFor(() => expect(onNext).toHaveBeenCalled())
-    const calls = mockRequest.mock.calls
+    // The writes only: the step also reads the portal page and checks the slug.
+    const writes = mockRequest.mock.calls
+      .filter(([, options]) => (options as undefined | { method?: string })?.method === 'POST')
       .map(call => call[0])
-      .filter(u => !u.startsWith('portal-page/check'))
-    expect(calls).toEqual(['portal-page', 'portal-page/root'])
+    expect(writes).toEqual(['portal-page', 'portal-page/root'])
   })
 
   it('refuses a name WordPress would rename, even with no page there', async () => {
@@ -149,6 +150,32 @@ describe('StepPortalSettings', () => {
     await user.click(next)
 
     await waitFor(() => expect(onNext).toHaveBeenCalled())
-    expect(mockRequest).not.toHaveBeenCalledWith('portal-page', expect.anything())
+    expect(mockRequest).not.toHaveBeenCalledWith('portal-page', expect.objectContaining({ method: 'POST' }))
+  })
+
+  // With plain permalinks the address reported as available below does not
+  // open, so the step says so before the page is made.
+  it('warns about plain permalinks before the page is made', async () => {
+    mockSlugCheck(false)
+    const slugCheck = mockRequest.getMockImplementation()
+    mockRequest.mockImplementation(((url: string, options?: unknown) =>
+      url === 'portal-page'
+        ? Promise.resolve(ok({ permalinksUrl: 'https://x/wp-admin/options-permalink.php', prettyPermalinks: false }))
+        : slugCheck?.(url, options as never)) as typeof request)
+    renderStep()
+
+    await waitFor(() => expect(screen.getByText(/Your site uses plain permalinks/)).toBeVisible())
+    expect(screen.getByRole('link', { name: 'Open Permalinks' })).toHaveAttribute(
+      'href',
+      'https://x/wp-admin/options-permalink.php'
+    )
+  })
+
+  it('says nothing about permalinks when the site has a structure', async () => {
+    mockSlugCheck(false)
+    renderStep()
+
+    await waitFor(() => expect(screen.getByText(/is available\./)).toBeVisible())
+    expect(screen.queryByText(/Your site uses plain permalinks/)).not.toBeInTheDocument()
   })
 })
