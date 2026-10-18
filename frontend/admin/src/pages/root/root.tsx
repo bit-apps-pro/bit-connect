@@ -103,37 +103,42 @@ export default function Root() {
         >
           <StatCards period={shownPeriod} stats={dashboard.stats} topicTypes={dashboard.topicTypes} />
 
-          {/* Activity comes first, beside Stage progress. What needs doing
-              follows, beside how quickly members get an answer. Top
-              contributors sits beside both topic tables, in the column under
-              Response time. */}
+          {/* Activity comes first, beside Stage progress. Below them, each
+              column stacks on its own, so a short card leaves no gap under
+              it: what needs doing and the topic tables on the left, Response
+              time and Top contributors on the right. In one column the
+              wrappers drop out and `order` puts each card under its pair. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
             <ActivityChart activity={dashboard.activity} className="xl:bc-col-span-2" period={shownPeriod} />
             <StageProgress hues={hues} period={shownPeriod} stages={dashboard.stages} />
-            <NeedsAttention
-              attention={dashboard.attention}
-              className="xl:bc-col-span-2"
-              topics={dashboard.unanswered}
-            />
-            <ResponseTime className="xl:bc-self-start" period={shownPeriod} response={dashboard.response} />
-            <MostRequested
-              className="xl:bc-col-span-2"
-              hues={hues}
-              period={shownPeriod}
-              portalUrl={dashboard.portalUrl}
-              topics={dashboard.mostRequested}
-            />
-            <TopContributors
-              className="xl:bc-row-span-2 xl:bc-self-start"
-              contributors={dashboard.contributors}
-              period={shownPeriod}
-            />
-            <RecentTopics
-              className="xl:bc-col-span-2"
-              hues={hues}
-              portalUrl={dashboard.portalUrl}
-              topics={dashboard.recentTopics}
-            />
+            <div className="max-xl:bc-contents xl:bc-col-span-2 xl:bc-flex xl:bc-flex-col xl:bc-gap-5">
+              <NeedsAttention
+                attention={dashboard.attention}
+                className="max-xl:bc-order-1"
+                topics={dashboard.unanswered}
+              />
+              <MostRequested
+                className="max-xl:bc-order-3"
+                hues={hues}
+                period={shownPeriod}
+                portalUrl={dashboard.portalUrl}
+                topics={dashboard.mostRequested}
+              />
+              <RecentTopics
+                className="max-xl:bc-order-5"
+                hues={hues}
+                portalUrl={dashboard.portalUrl}
+                topics={dashboard.recentTopics}
+              />
+            </div>
+            <div className="max-xl:bc-contents xl:bc-flex xl:bc-flex-col xl:bc-gap-5">
+              <ResponseTime className="max-xl:bc-order-2" period={shownPeriod} response={dashboard.response} />
+              <TopContributors
+                className="max-xl:bc-order-4"
+                contributors={dashboard.contributors}
+                period={shownPeriod}
+              />
+            </div>
           </div>
         </div>
       )}
