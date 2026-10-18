@@ -100,7 +100,7 @@ final class TopicModerationController
         };
 
         if (!$allowed) {
-            return Response::error(__('You do not have permission to do that to topics.', 'bit-connect'), 403);
+            return Response::error(__('You do not have permission to do that to posts.', 'bit-connect'), 403);
         }
 
         $termId = null;

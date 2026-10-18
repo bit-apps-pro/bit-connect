@@ -243,31 +243,31 @@ final class NotificationMailer
         int $count,
         array $context
     ): string {
-        $named = $title === '' ? __('a topic', 'bit-connect') : '"' . $title . '"';
+        $named = $title === '' ? __('a post', 'bit-connect') : '"' . $title . '"';
 
         switch ($type) {
             case NotificationTypes::TOPIC_REPLY:
-                // translators: 1: member name, 2: topic title
+                // translators: 1: member name, 2: post title
                 return \sprintf(__('%1$s commented on %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::COMMENT_REPLY:
-                // translators: 1: member name, 2: topic title
+                // translators: 1: member name, 2: post title
                 return \sprintf(__('%1$s replied to you in %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::TOPIC_NEW:
             case NotificationTypes::TOPIC_POSTED:
-                // translators: 1: member name, 2: topic title
-                return \sprintf(__('%1$s posted a new topic: %2$s', 'bit-connect'), $who, $named);
+                // translators: 1: member name, 2: post title
+                return \sprintf(__('%1$s created a new post: %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::MENTION:
-                // translators: 1: member name, 2: topic title
+                // translators: 1: member name, 2: post title
                 return \sprintf(__('%1$s mentioned you in %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::VOTE_RECEIVED:
                 return $count > 1
-                    // translators: 1: number of people, 2: topic title
+                    // translators: 1: number of people, 2: post title
                     ? \sprintf(__('%1$d people upvoted your post in %2$s', 'bit-connect'), $count, $named)
-                    // translators: 1: member name, 2: topic title
+                    // translators: 1: member name, 2: post title
                     : \sprintf(__('%1$s upvoted your post in %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::REPORT_RESOLVED:
@@ -288,7 +288,7 @@ final class NotificationMailer
                 );
 
             case NotificationTypes::TOPIC_STATUS_CHANGED:
-                // translators: %s: topic title
+                // translators: %s: post title
                 return \sprintf(__('The status changed on %s', 'bit-connect'), $named);
 
             case NotificationTypes::REPORT_FILED:
@@ -296,7 +296,7 @@ final class NotificationMailer
 
             case NotificationTypes::TAG_SUGGESTED:
                 return \sprintf(
-                    // translators: 1: member name, 2: tag name, 3: topic title
+                    // translators: 1: member name, 2: tag name, 3: post title
                     __('%1$s suggested a new tag "%2$s" on %3$s', 'bit-connect'),
                     $who,
                     (string) ($context['tag_name'] ?? ''),

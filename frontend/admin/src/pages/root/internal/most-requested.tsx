@@ -83,13 +83,13 @@ export default function MostRequested({ className, hues, period, portalUrl, topi
     <DashboardCard
       className={className}
       flush
-      link={portalUrl ? { label: __('All topics'), to: portalUrl } : undefined}
+      link={portalUrl ? { label: __('All posts'), to: portalUrl } : undefined}
       subtitle={__('Posts ranked by votes')}
       title={__('Most upvoted posts')}
     >
       <TopicTable
         columns={columns}
-        empty={__('No topic has a vote yet.')}
+        empty={__('No post has a vote yet.')}
         rowKey={topic => topic.id}
         rows={topics}
       />

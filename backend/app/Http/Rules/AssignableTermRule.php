@@ -38,7 +38,7 @@ final class AssignableTermRule extends Rule
 
     public function message()
     {
-        return __('You cannot post a topic there.', 'bit-connect');
+        return __('You cannot create a post there.', 'bit-connect');
     }
 
     public function getParamKeys()

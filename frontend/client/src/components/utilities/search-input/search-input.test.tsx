@@ -152,7 +152,7 @@ describe('SearchInput', () => {
     renderAt('/tag/api')
 
     fireEvent.keyDown(field(), { key: 'Backspace' })
-    expect(field().getAttribute('placeholder')).toBe('Search topic, tag, etc.')
+    expect(field().getAttribute('placeholder')).toBe('Search post, tag, etc.')
 
     fireEvent.change(field(), { target: { value: 'pagination' } })
     fireEvent.keyDown(field(), { key: 'Enter' })
@@ -163,7 +163,7 @@ describe('SearchInput', () => {
     renderAt('/tag/api')
 
     fireEvent.click(screen.getByRole('button', { name: 'Search everywhere, not only in api' }))
-    expect(field().getAttribute('placeholder')).toBe('Search topic, tag, etc.')
+    expect(field().getAttribute('placeholder')).toBe('Search post, tag, etc.')
   })
 
   it('shows the term searched for inside an archive', () => {

@@ -56,7 +56,7 @@ function Harness({
   return <TopicForm form={form} isEditMode={isEditMode} taxonomies={taxonomies} />
 }
 
-const title = () => screen.getByLabelText('Topic title')
+const title = () => screen.getByLabelText('Post title')
 const slugBox = () => screen.getByLabelText('Permalink')
 const openSlugButton = (name = 'Set a custom permalink') => screen.getByRole('button', { name })
 
@@ -76,7 +76,7 @@ describe('TopicForm slug field', () => {
     const labels = [...document.querySelectorAll('.ant-form-item-label label')].map(l =>
       l.textContent?.trim()
     )
-    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Topic title') + 1)
+    expect(labels.indexOf('Permalink')).toBe(labels.indexOf('Post title') + 1)
   })
 
   // The whole point of hiding it: an author who does not care about permalinks
@@ -84,7 +84,7 @@ describe('TopicForm slug field', () => {
   it('shows nothing but an opener until the author asks for it', () => {
     render(<Harness />)
 
-    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('post-slug')).not.toBeInTheDocument()
     expect(screen.queryByText('Permalink')).not.toBeInTheDocument()
     expect(openSlugButton()).toBeInTheDocument()
   })
@@ -177,7 +177,7 @@ describe('TopicForm slug field', () => {
     await userEvent.type(slugBox(), 'a chosen slug')
     await userEvent.click(screen.getByRole('button', { name: 'Done' }))
 
-    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('post-slug')).not.toBeInTheDocument()
 
     await openSlug('Edit permalink')
     expect(slugBox()).toHaveValue('a-chosen-slug')
@@ -190,7 +190,7 @@ describe('TopicForm slug field', () => {
     await userEvent.type(title(), 'My First Topic')
 
     expect(screen.getByText('my-first-topic')).toBeInTheDocument()
-    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('post-slug')).not.toBeInTheDocument()
   })
 
   it('confirms on Enter without submitting the topic', async () => {
@@ -199,7 +199,7 @@ describe('TopicForm slug field', () => {
     await openSlug()
     await userEvent.type(slugBox(), 'a chosen slug{Enter}')
 
-    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('post-slug')).not.toBeInTheDocument()
     expect(screen.getByText('a-chosen-slug')).toBeInTheDocument()
   })
 
@@ -210,7 +210,7 @@ describe('TopicForm slug field', () => {
     await userEvent.clear(slugBox())
     await userEvent.type(slugBox(), 'second-thoughts{Escape}')
 
-    expect(screen.queryByPlaceholderText('topic-slug')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('post-slug')).not.toBeInTheDocument()
     expect(screen.getByText('original-slug')).toBeInTheDocument()
   })
 })
@@ -260,7 +260,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic')).toBeInTheDocument()
   })
 
   it('splits the row with a field a plugin adds', () => {
@@ -268,7 +268,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Topic type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic')).toBeInTheDocument()
     expect(screen.getByLabelText('Team')).toBeInTheDocument()
   })
 
@@ -278,7 +278,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.queryByLabelText('Topic Type')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Topic')).not.toBeInTheDocument()
   })
 
   it('drops the row entirely when nothing is left in it', () => {
@@ -291,12 +291,12 @@ describe('TopicForm taxonomy row', () => {
   it('marks Topic Type required only when it is', () => {
     mockTopicFormFields.topicType = 'required'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Topic type')).not.toBeNull()
+    expect(requiredLabel('Topic')).not.toBeNull()
     cleanup()
 
     mockTopicFormFields.topicType = 'optional'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Topic type')).toBeNull()
+    expect(requiredLabel('Topic')).toBeNull()
   })
 })
 

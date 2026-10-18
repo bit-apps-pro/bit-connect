@@ -75,7 +75,7 @@ export default function TopicsTable({
       ),
       sorter: true,
       sortOrder: sortOrder('title'),
-      title: __('Topic')
+      title: __('Post')
     },
     {
       key: 'author',
@@ -134,7 +134,7 @@ export default function TopicsTable({
       align: 'center',
       key: 'locked',
       render: (_value, row) => (
-        <Tooltip title={abilities.lock ? undefined : __('You cannot lock topics.')}>
+        <Tooltip title={abilities.lock ? undefined : __('You cannot lock posts.')}>
           <Switch
             aria-label={__('Locked')}
             checked={row.is_locked}
@@ -210,7 +210,7 @@ export default function TopicsTable({
       columns={columns}
       dataSource={rows}
       loading={isLoading}
-      locale={{ emptyText: __('No topics match.') }}
+      locale={{ emptyText: __('No posts match.') }}
       onChange={(pagination: TablePaginationConfig, _filters, sorter) => {
         const sort = (Array.isArray(sorter) ? sorter[0] : sorter) as SorterResult<ModerationTopicRow>
         const column = String(sort?.columnKey ?? '')
@@ -227,7 +227,7 @@ export default function TopicsTable({
         current: filters.page,
         pageSize: filters.per_page,
         showSizeChanger: true,
-        showTotal: count => sprintf(__('%d topics'), count),
+        showTotal: count => sprintf(__('%d posts'), count),
         total
       }}
       rowKey="id"

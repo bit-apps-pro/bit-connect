@@ -19,7 +19,7 @@ export default function AccessSection({ disabled, form, onPatch }: AccessSection
       title={__('Access')}
     >
       <SettingRow
-        description={__('Decide whether visitors can read topics without signing in.')}
+        description={__('Decide whether visitors can read posts without signing in.')}
         full
         label={__('Who can see the portal')}
       >
@@ -31,7 +31,7 @@ export default function AccessSection({ disabled, form, onPatch }: AccessSection
           <ChoiceCard
             checked={form.portalAccess === 'everyone'}
             description={__(
-              'Anyone can read topics, and search engines can index them. Posting still needs an account.'
+              'Anyone can read posts, and search engines can index them. To create a post, a visitor still needs an account.'
             )}
             disabled={disabled}
             label={__('Everyone')}

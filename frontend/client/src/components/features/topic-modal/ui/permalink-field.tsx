@@ -163,7 +163,7 @@ export default function PermalinkField({
         onBlur={handleBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder={__('topic-slug')}
+        placeholder={__('post-slug')}
         // Confirm and cancel live inside the field, as an inline edit's do:
         // they act on this one value, not the form, and a row of full-size
         // buttons beside the modal's own Submit/Cancel read as a second form.
@@ -187,7 +187,7 @@ export default function PermalinkField({
       {(isEditMode || !slug) && (
         <span className="bc-text-xs bc-text-ink-subtle">
           {isEditMode
-            ? __('Links that already point at this topic will stop working.')
+            ? __('Links that already point at this post will stop working.')
             : __('Leave blank to build one from the title.')}
         </span>
       )}
@@ -262,7 +262,7 @@ function SlugStatus({
     <span className="bc-flex bc-items-start bc-gap-1.5 bc-text-xs bc-text-info">
       <LuInfo className="bc-mt-0.5 bc-shrink-0" size={13} />
       <span>
-        {__('That one is taken, so this topic will be saved as')} <strong>{resolved}</strong>
+        {__('That one is taken, so this post will be saved as')} <strong>{resolved}</strong>
       </span>
     </span>
   )

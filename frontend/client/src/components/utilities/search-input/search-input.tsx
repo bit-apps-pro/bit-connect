@@ -115,7 +115,7 @@ export default function SearchInput({
         ? [
             {
               key: 'topics',
-              label: __('Topics'),
+              label: __('Posts'),
               loading: suggestions.isFetching,
               options: suggestions.topics.map(topic => ({ kind: 'topic' as const, topic }))
             }
@@ -316,7 +316,7 @@ export default function SearchInput({
         aria-autocomplete="list"
         aria-controls={panelOpen ? listId : undefined}
         aria-expanded={panelOpen}
-        aria-label={__('Search topics')}
+        aria-label={__('Search posts')}
         autoComplete="off"
         className={cn([
           'bc-h-10 bc-rounded-[8px] bc-border-line bc-bg-surface-hover bc-pl-3 bc-text-[14px] focus-within:bc-border-primary hover:bc-border-primary',
@@ -343,7 +343,7 @@ export default function SearchInput({
           activeScope
             ? // translators: %s: the board, tag or other term the search is limited to
               sprintf(__('Search in %s'), activeScope.name)
-            : __('Search topic, tag, etc.')
+            : __('Search post, tag, etc.')
         }
         prefix={
           <>

@@ -9,6 +9,7 @@ import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
 import TopicCard from '@utilities/topic-card'
 import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
+import { deleteFilter, readFilter } from '@utils/portal-query'
 import { Button, Drawer } from 'antd'
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -65,13 +66,13 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const search = searchParams.get('search') || ''
   const sortBy = searchParams.get('sort') || 'newest'
   const visibility = searchParams.get('visibility') || ''
-  const myTopics = searchParams.get('my_topics') || ''
+  const myTopics = readFilter(searchParams, 'my_topics')
   // A named list counts only while the sort control offers it; a stale
   // `?view=` is the ordinary listing.
   const viewParam = searchParams.get('view') || ''
   const activeView = useAddedViews().find(offered => offered.value === viewParam)
   const view = activeView ? activeView.value : ''
-  const topicType = searchParams.get('topic-types') || ''
+  const topicType = readFilter(searchParams, 'topic-types')
   const tagSlugs = useMemo(() => parseTagParam(searchParams.get('tags')), [searchParams])
   // Normalised back to the wire format, so a re-render with an equivalent URL
   // (`tags=a,,a`) doesn't look like a new filter to the fetch effect below.
@@ -155,7 +156,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   const clearSort = () =>
     setSearchParams(prev => {
       for (const key of ['sort', 'visibility', 'my_topics', 'view']) {
-        prev.delete(key)
+        deleteFilter(prev, key)
       }
       if (prev.has('page')) prev.set('page', '1')
       return prev
@@ -163,7 +164,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
 
   const clearTopicType = () =>
     setSearchParams(prev => {
-      prev.delete('topic-types')
+      deleteFilter(prev, 'topic-types')
       if (prev.has('page')) prev.set('page', '1')
       return prev
     })
@@ -199,7 +200,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
         ...(showTagFilter ? ['tags'] : [])
       ]
       for (const key of keys) {
-        prev.delete(key)
+        deleteFilter(prev, key)
       }
       if (prev.has('page')) prev.set('page', '1')
       return prev
@@ -210,7 +211,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     if (activeView) {
       activeChips.push({ key: 'sort', label: activeView.label, onRemove: clearSort })
     } else if (myTopics === 'true') {
-      activeChips.push({ key: 'sort', label: __('My Topics'), onRemove: clearSort })
+      activeChips.push({ key: 'sort', label: __('My Posts'), onRemove: clearSort })
     } else if (visibility === 'private') {
       activeChips.push({ key: 'sort', label: __('Private'), onRemove: clearSort })
     } else if (sortBy !== 'newest') {
@@ -612,7 +613,7 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
 
           {hasPaginated && !hasMore && !isLoadingMore && (
             <div className="bc-flex bc-items-center bc-justify-center bc-p-4 bc-text-ink-subtle bc-text-sm">
-              <span>{__("🎉 You're all caught up. That's every topic!")}</span>
+              <span>{__('🎉 You saw all the posts.')}</span>
             </div>
           )}
         </div>

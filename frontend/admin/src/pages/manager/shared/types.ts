@@ -23,7 +23,7 @@ export const FORUM_CAPABILITY_LABELS: Record<ForumCapability, string> = {
   bit_connect_forum_delete_own_post: 'Delete Own Posts',
   bit_connect_forum_edit_own_comment: 'Edit Own Comments',
   bit_connect_forum_edit_own_post: 'Edit Own Posts',
-  bit_connect_forum_lock_post: 'Lock Topics',
+  bit_connect_forum_lock_post: 'Lock Posts',
   bit_connect_forum_manage: 'Manage Forum',
   bit_connect_forum_moderate: 'Moderate',
   bit_connect_forum_vote_post: 'Vote Posts'

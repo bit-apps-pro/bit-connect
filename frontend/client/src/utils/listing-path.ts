@@ -1,5 +1,6 @@
 import config from '@config/config'
 
+import { urlParam } from './portal-query'
 import { routePath } from './route-path'
 
 /**
@@ -27,7 +28,7 @@ export const ARCHIVE_SEGMENT_FILTER: Record<string, string> = Object.fromEntries
 export function archivePath(filter: string, slug: string): string {
   const segment = Object.entries(config.PORTAL_ARCHIVES).find(([, archive]) => archive.filter === filter)?.[0]
 
-  return routePath(segment ? `/${segment}/${slug}` : `/?${filter}=${encodeURIComponent(slug)}`)
+  return routePath(segment ? `/${segment}/${slug}` : `/?${urlParam(filter)}=${encodeURIComponent(slug)}`)
 }
 
 /**

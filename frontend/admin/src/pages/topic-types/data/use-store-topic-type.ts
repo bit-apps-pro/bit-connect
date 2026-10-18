@@ -39,7 +39,7 @@ export default function useStoreTopicType() {
     },
     mutationKey: ['topicTypes', 'store'],
     onSuccess: () => {
-      messageApi?.success(__('Topic type created successfully'))
+      messageApi?.success(__('Topic created successfully'))
       queryClient.invalidateQueries({ queryKey: ['topicTypes'] })
     }
   })

@@ -46,8 +46,8 @@ const isView = (value: null | string): value is View => value !== null && VIEWS.
 const EMPTY_MESSAGE: Record<ProfileTab, () => string> = {
   comments: () => __('No comments yet.'),
   overview: () => __('Nothing here yet.'),
-  topics: () => __('No topics yet.'),
-  votes: () => __('No upvoted topics yet.')
+  topics: () => __('No posts yet.'),
+  votes: () => __('No upvoted posts yet.')
 }
 
 const PERIOD_OPTIONS: { label: () => string; value: InsightPeriod }[] = [
@@ -153,7 +153,7 @@ export default function UserProfilePage() {
   const tabs: TabItem<View>[] = useMemo(() => {
     const list: TabItem<View>[] = [
       { key: 'overview', label: __('Overview') },
-      { key: 'topics', label: __('Topics') },
+      { key: 'topics', label: __('Posts') },
       { key: 'comments', label: __('Comments') }
     ]
     if (isOwnProfile) {

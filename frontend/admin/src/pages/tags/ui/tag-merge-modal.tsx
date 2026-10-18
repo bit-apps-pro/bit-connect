@@ -33,8 +33,8 @@ export default function TagMergeModal({ onClose, source, tags }: TagMergeModalPr
     .filter(tag => tag.id !== source?.id)
     .map(tag => ({
       label: sprintf(
-        // translators: 1: tag name, 2: number of topics
-        __('%1$s (%2$s topics)'),
+        // translators: 1: tag name, 2: number of posts
+        __('%1$s (%2$s posts)'),
         tag.name,
         String(tag.count)
       ),
@@ -69,9 +69,9 @@ export default function TagMergeModal({ onClose, source, tags }: TagMergeModalPr
       <Typography.Paragraph>
         {source &&
           sprintf(
-            // translators: 1: number of topics, 2: tag name
+            // translators: 1: number of posts, 2: tag name
             __(
-              'The %1$s topics tagged “%2$s” will be filed under the tag you choose, anyone following it will follow that tag instead, and “%2$s” will be deleted.'
+              'The %1$s posts with the tag “%2$s” will move to the tag that you select. Followers of “%2$s” will follow that tag instead. Then “%2$s” will be deleted.'
             ),
             String(source.count),
             source.name

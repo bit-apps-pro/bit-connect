@@ -27,7 +27,7 @@ enum Capabilities: string
     use EnumHelper;
 
     // Content authoring
-    #[Label('Create Topics/Posts')]
+    #[Label('Create Posts')]
     case CREATE_POST = 'bit_connect_forum_create_post';
 
     #[Label('Edit Own Posts')]
@@ -94,7 +94,7 @@ enum Capabilities: string
     #[Label('Moderate (Reports, Locked Threads)')]
     case MODERATE = 'bit_connect_forum_moderate';
 
-    #[Label('Lock/Unlock Topics')]
+    #[Label('Lock/Unlock Posts')]
     case LOCK_POST = 'bit_connect_forum_lock_post';
 
     // Administration
@@ -131,7 +131,7 @@ enum Capabilities: string
     public static function translatedLabel(Capabilities $capability): string
     {
         return match ($capability) {
-            self::CREATE_POST        => __('Create Topics/Posts', 'bit-connect'),
+            self::CREATE_POST        => __('Create Posts', 'bit-connect'),
             self::EDIT_OWN_POST      => __('Edit Own Posts', 'bit-connect'),
             self::DELETE_OWN_POST    => __('Delete Own Posts', 'bit-connect'),
             self::CREATE_COMMENT     => __('Create Comments/Replies', 'bit-connect'),
@@ -141,7 +141,7 @@ enum Capabilities: string
             self::VOTE_POST          => __('Vote on Posts', 'bit-connect'),
             self::DELETE_ANY         => __('Delete Any Content', 'bit-connect'),
             self::MODERATE           => __('Moderate (Reports, Locked Threads)', 'bit-connect'),
-            self::LOCK_POST          => __('Lock/Unlock Topics', 'bit-connect'),
+            self::LOCK_POST          => __('Lock/Unlock Posts', 'bit-connect'),
             self::MANAGE             => __('Manage Forum Settings', 'bit-connect'),
         };
     }

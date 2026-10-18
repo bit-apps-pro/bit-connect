@@ -300,7 +300,7 @@ export default function CommentItem({
                       // width where it is the only thing left.
                       aria-label={__('Pinned')}
                       className="bc-inline-flex bc-shrink-0 bc-items-center bc-gap-1 bc-rounded-full bc-bg-surface-sunken bc-px-1.5 bc-py-0.5 bc-text-[11px] bc-font-medium bc-text-ink sm:bc-px-2"
-                      title={__('Singled out by the author of this topic')}
+                      title={__('Singled out by the author of this post')}
                     >
                       <LuPin size={12} />
                       <span className="bc-hidden sm:bc-inline">{__('Pinned')}</span>

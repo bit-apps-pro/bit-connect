@@ -29,8 +29,8 @@ export default function RelatedTopics({
   if (!isLoadingRelated && relatedTopics.length === 0) return
 
   return (
-    <section aria-label={__('Related topics')} className={`${PANEL} ${className}`}>
-      <h3 className={PANEL_TITLE}>{__('Related topics')}</h3>
+    <section aria-label={__('Related posts')} className={`${PANEL} ${className}`}>
+      <h3 className={PANEL_TITLE}>{__('Related posts')}</h3>
 
       {isLoadingRelated ? (
         <Skeleton active paragraph={{ rows: 4 }} title={false} />

@@ -34,16 +34,16 @@ enum ActivityActions: string
 {
     use EnumHelper;
 
-    #[Label('Deleted a topic')]
+    #[Label('Deleted a post')]
     case DELETE_POST = 'delete_post';
 
     #[Label('Deleted a comment')]
     case DELETE_COMMENT = 'delete_comment';
 
-    #[Label('Locked a topic')]
+    #[Label('Locked a post')]
     case LOCK_POST = 'lock_post';
 
-    #[Label('Unlocked a topic')]
+    #[Label('Unlocked a post')]
     case UNLOCK_POST = 'unlock_post';
 
     #[Label('Hidden after a report')]
@@ -79,10 +79,10 @@ enum ActivityActions: string
     public static function translatedLabel(ActivityActions $action): string
     {
         return match ($action) {
-            self::DELETE_POST     => __('Deleted a topic', 'bit-connect'),
+            self::DELETE_POST     => __('Deleted a post', 'bit-connect'),
             self::DELETE_COMMENT  => __('Deleted a comment', 'bit-connect'),
-            self::LOCK_POST       => __('Locked a topic', 'bit-connect'),
-            self::UNLOCK_POST     => __('Unlocked a topic', 'bit-connect'),
+            self::LOCK_POST       => __('Locked a post', 'bit-connect'),
+            self::UNLOCK_POST     => __('Unlocked a post', 'bit-connect'),
             self::HIDE            => __('Hidden after a report', 'bit-connect'),
             self::RESTORE         => __('Restored after review', 'bit-connect'),
             self::HIDE_POST       => __('Hidden by a moderator', 'bit-connect'),

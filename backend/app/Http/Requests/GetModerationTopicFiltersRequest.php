@@ -23,10 +23,10 @@ final class GetModerationTopicFiltersRequest extends Request
     public function failedAuthorizationMessage(): string
     {
         if (!is_user_logged_in()) {
-            return 'You must be logged in to moderate topics.';
+            return 'You must be logged in to moderate posts.';
         }
 
-        return 'You do not have permission to moderate topics.';
+        return 'You do not have permission to moderate posts.';
     }
 
     public function rules()

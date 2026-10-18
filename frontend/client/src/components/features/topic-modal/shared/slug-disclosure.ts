@@ -18,8 +18,8 @@ export const slugDisclosure = (requested?: string, stored?: string): string | un
   if (!wasSlugTaken(requested ?? '', stored ?? '')) return undefined
 
   return sprintf(
-    // translators: %s is the URL slug the topic ended up with.
-    __('The link you chose was already taken, so this topic is at /%s'),
+    // translators: %s is the URL slug the post ended up with.
+    __('The link you chose was already taken, so this post is at /%s'),
     decodeSlug(stored ?? '')
   )
 }

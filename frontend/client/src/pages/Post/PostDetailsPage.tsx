@@ -333,8 +333,8 @@ export default function PostDetailsPage() {
                 className="bc-mb-4"
                 message={
                   mayCommentWhenLocked
-                    ? __('This topic is locked. Only moderators can comment.')
-                    : __('This topic is locked. New comments are closed.')
+                    ? __('This post is locked. Only moderators can comment.')
+                    : __('This post is locked. New comments are closed.')
                 }
                 showIcon
                 type="info"

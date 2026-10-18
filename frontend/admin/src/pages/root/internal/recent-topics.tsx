@@ -24,7 +24,7 @@ export default function RecentTopics({ className, hues, portalUrl, topics }: Rec
       className: 'bc-min-w-48',
       key: 'title',
       render: topic => <TopicTitleLink title={topic.title} url={topic.url} />,
-      title: __('Topic')
+      title: __('Post')
     },
     {
       key: 'author',
@@ -61,9 +61,9 @@ export default function RecentTopics({ className, hues, portalUrl, topics }: Rec
       className={className}
       flush
       link={portalUrl ? { label: __('View all'), to: portalUrl } : undefined}
-      title={__('Recent topics')}
+      title={__('Recent posts')}
     >
-      <TopicTable columns={columns} empty={__('No topics yet.')} rowKey={topic => topic.id} rows={topics} />
+      <TopicTable columns={columns} empty={__('No posts yet.')} rowKey={topic => topic.id} rows={topics} />
     </DashboardCard>
   )
 }

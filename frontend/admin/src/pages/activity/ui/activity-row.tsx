@@ -85,7 +85,7 @@ export default function ActivityRow({ index, isLast, onFilterActor, onFilterTarg
   const cardMotion = useCardMotion({ layout: false })
   const title = titleOf(row)
   const isComment = row.target.type === 'comment'
-  const kindLabel = isComment ? __('Comment') : __('Topic')
+  const kindLabel = isComment ? __('Comment') : __('Post')
   const at = parseGmt(row.created_at)
 
   return (
@@ -158,7 +158,7 @@ export default function ActivityRow({ index, isLast, onFilterActor, onFilterTarg
               describes, so a name and a date alone name nothing. */}
           <Text className="bc-text-xs" copyable={{ text: String(row.target.id) }} type="secondary">
             <FilterLink
-              label={isComment ? __('Show this comment’s history') : __('Show this topic’s history')}
+              label={isComment ? __('Show the history of this comment') : __('Show the history of this post')}
               onClick={() => onFilterTarget(row.target)}
             >
               {isComment && <LuMessageSquare aria-hidden className="bc-mr-1 bc-inline bc-align-[-2px]" />}
