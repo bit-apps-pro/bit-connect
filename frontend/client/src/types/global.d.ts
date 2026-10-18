@@ -91,6 +91,8 @@ declare const SERVER_VARIABLES: {
   }
   postURL: string
   proApiURL: string
+  /** Whether the sidebar shows a member the Following row — GeneralSettings::sidebarFollowing(). */
+  sidebarFollowing?: boolean
   promo?: {
     cta?: string
     enabled?: boolean

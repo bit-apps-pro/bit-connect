@@ -161,6 +161,8 @@ interface ConfigType {
     prefix: string
     url: string
   }
+  /** Whether the sidebar links a member to the Following page. Off unless an admin switched it on. */
+  SIDEBAR_FOLLOWING: boolean
   /** The WordPress site title, for page titles when no community title is set. */
   SITE_NAME: string
   SITE_URL: string
@@ -284,6 +286,9 @@ const config = {
     prefix: promo.prefix ?? '',
     url: promo.url ?? ''
   },
+  // Off the payload directly: `false` is the usual answer, and
+  // getServerVariable would warn about it as missing.
+  SIDEBAR_FOLLOWING: SERVER_VARIABLES?.sidebarFollowing === true,
   SITE_NAME: getServerVariable('siteName', '') ?? '',
   SITE_URL: siteURL,
   TIME_FORMAT: getServerVariable('timeFormat', 'g:i a'),

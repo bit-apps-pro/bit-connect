@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\AuthService;
  * @property string $portalAccess
  * @property array  $portalFilters
  * @property array  $promo
+ * @property mixed  $sidebarFollowing
  */
 final class UpdateGeneralSettingsRequest extends Request
 {
@@ -49,6 +50,7 @@ final class UpdateGeneralSettingsRequest extends Request
             'portalAccess'        => ['nullable', 'string'],
             'portalFilters'       => ['nullable', 'array'],
             'promo'               => ['nullable', 'array'],
+            'sidebarFollowing'    => ['nullable', 'boolean'],
         ];
     }
 
@@ -70,8 +72,24 @@ final class UpdateGeneralSettingsRequest extends Request
                 // keep following Sort, as they did — see GeneralSettings::portalFilters().
                 'types' => isset($portalFilters['types']) ? self::isFilterVisible($portalFilters, 'types') : $showSort,
             ],
-            'promo' => $this->promo(),
+            'promo'            => $this->promo(),
+            'sidebarFollowing' => $this->sidebarFollowing(),
         ];
+    }
+
+    /**
+     * The sidebar's Following row. As with promo(), a payload without the key
+     * leaves the stored switch as it is.
+     */
+    private function sidebarFollowing(): bool
+    {
+        if (!$this->has('sidebarFollowing')) {
+            return GeneralSettings::sidebarFollowing(
+                Config::getOption(GeneralSettings::OPTION_NAME->value)
+            );
+        }
+
+        return filter_var($this->sidebarFollowing, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**

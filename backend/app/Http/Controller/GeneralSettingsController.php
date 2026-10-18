@@ -68,6 +68,8 @@ final class GeneralSettingsController
             'promo' => [
                 'enabled' => false,
             ],
+            // The Following row in the portal sidebar. Off until an admin asks for it.
+            'sidebarFollowing' => false,
         ];
     }
 }

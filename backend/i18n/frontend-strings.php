@@ -457,6 +457,14 @@ return [
 
     'Filters visitors can use' => __('Filters visitors can use', 'bit-connect'),
 
+    'Sidebar' => __('Sidebar', 'bit-connect'),
+
+    'Select the links that the portal sidebar shows.' => __('Select the links that the portal sidebar shows.', 'bit-connect'),
+
+    'Show Following' => __('Show Following', 'bit-connect'),
+
+    'Show a link to the posts that the member follows. Visitors who are not logged in do not see this link.' => __('Show a link to the posts that the member follows. Visitors who are not logged in do not see this link.', 'bit-connect'),
+
     'Loading' => __('Loading', 'bit-connect'),
 
     'Dashboard' => __('Dashboard', 'bit-connect'),

@@ -4938,3 +4938,19 @@ msgstr ""
 #: frontend/client/src/pages/User/UserProfilePage.tsx:344
 msgid "Period"
 msgstr ""
+
+#: frontend/admin/src/pages/general/internal/sidebar-section.tsx
+msgid "Sidebar"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/sidebar-section.tsx
+msgid "Select the links that the portal sidebar shows."
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/sidebar-section.tsx
+msgid "Show Following"
+msgstr ""
+
+#: frontend/admin/src/pages/general/internal/sidebar-section.tsx
+msgid "Show a link to the posts that the member follows. Visitors who are not logged in do not see this link."
+msgstr ""

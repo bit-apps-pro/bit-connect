@@ -38,6 +38,21 @@ enum GeneralSettings: string
     }
 
     /**
+     * Whether the portal sidebar links a member to the topics they follow.
+     *
+     * Off unless an admin switched it on. The Following page itself stays at
+     * its address either way; only the sidebar row depends on this.
+     *
+     * @param mixed $settings the stored general_settings option
+     */
+    public static function sidebarFollowing($settings): bool
+    {
+        $stored = \is_array($settings) ? $settings : [];
+
+        return filter_var($stored['sidebarFollowing'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
      * The Bit Apps credit card at the foot of the portal sidebar: whether it
      * shows, and what it says.
      *

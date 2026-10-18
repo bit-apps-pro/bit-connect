@@ -5855,3 +5855,19 @@ msgstr ""
 msgctxt "block keyword"
 msgid "portal"
 msgstr ""
+
+#: backend/i18n/frontend-strings.php
+msgid "Sidebar"
+msgstr ""
+
+#: backend/i18n/frontend-strings.php
+msgid "Select the links that the portal sidebar shows."
+msgstr ""
+
+#: backend/i18n/frontend-strings.php
+msgid "Show Following"
+msgstr ""
+
+#: backend/i18n/frontend-strings.php
+msgid "Show a link to the posts that the member follows. Visitors who are not logged in do not see this link."
+msgstr ""

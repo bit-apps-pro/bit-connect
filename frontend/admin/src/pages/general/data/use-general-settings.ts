@@ -11,7 +11,8 @@ const defaultGeneralSettings: GeneralSettings = {
   logoPermalinkMode: 'default',
   portalAccess: 'everyone',
   portalFilters: { sort: true, tags: true, types: true },
-  promo: { cta: '', enabled: false, eyebrow: '', headline: '', phrases: [], prefix: '', url: '' }
+  promo: { cta: '', enabled: false, eyebrow: '', headline: '', phrases: [], prefix: '', url: '' },
+  sidebarFollowing: false
 }
 
 export default function useGeneralSettings() {
@@ -52,7 +53,9 @@ export default function useGeneralSettings() {
           phrases: Array.isArray(d.promo?.phrases) ? d.promo.phrases : [],
           prefix: d.promo?.prefix ?? '',
           url: d.promo?.url ?? ''
-        }
+        },
+        // `=== true`, as with the promo card: off unless someone turned it on.
+        sidebarFollowing: d.sidebarFollowing === true
       }
     }
   })

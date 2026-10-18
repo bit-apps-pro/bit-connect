@@ -144,6 +144,7 @@ class BaseView
             'portalAccess'        => $generalSettings['portalAccess'] ?? 'everyone',
             'portalFilters'       => GeneralSettings::portalFilters($generalSettings),
             'promo'               => GeneralSettings::promo($generalSettings),
+            'sidebarFollowing'    => GeneralSettings::sidebarFollowing($generalSettings),
             // URL segment => the topics filter its archive pins and the taxonomy
             // behind it, for every archive the portal serves — including any a
             // plugin adds, which the app cannot know of in advance.

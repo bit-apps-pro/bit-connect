@@ -39,6 +39,8 @@ export interface GeneralSettings {
   portalAccess: PortalAccess
   portalFilters: PortalFilters
   promo: Promo
+  /** Whether the portal sidebar shows a member the Following link. Off by default. */
+  sidebarFollowing: boolean
 }
 
 export type GeneralSettingsFormData = GeneralSettings

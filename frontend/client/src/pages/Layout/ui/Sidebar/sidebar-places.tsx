@@ -45,8 +45,8 @@ export default function SidebarPlaces(): ReactNode {
           }}
         />
       ))}
-      {/* The member's own list, so not offered to a guest. */}
-      {config.IS_LOGGED_IN && (
+      {/* The member's own list, so not offered to a guest, and only where an admin switched the row on. */}
+      {config.IS_LOGGED_IN && config.SIDEBAR_FOLLOWING && (
         <SidebarNavItem
           props={{
             glyph: <LuBookmarkCheck size={18} />,

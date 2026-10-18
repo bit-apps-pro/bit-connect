@@ -16,6 +16,7 @@ import AuthSection from './internal/auth-section'
 import BrandingExtras from './internal/branding-extras'
 import BrandingSection from './internal/branding-section'
 import LocationSection from './internal/location-section'
+import SidebarSection from './internal/sidebar-section'
 import TopicListFiltersSection from './internal/topic-list-filters-section'
 import { type GeneralSettings, type PortalFilters } from './shared/types'
 
@@ -117,6 +118,7 @@ export default function General({ section }: GeneralProps) {
       />
       {BrandingExtras && <BrandingExtras />}
       <TopicListFiltersSection disabled={disabled} form={form} onPatchFilter={patchPortalFilter} />
+      <SidebarSection disabled={disabled} form={form} onPatch={patch} />
       <LocationSection
         disabled={disabled}
         onCopy={copy}
