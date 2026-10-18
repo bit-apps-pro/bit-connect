@@ -101,9 +101,9 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Post Categories',
+            'name'       => 'Topics',
             'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/post-categories',
+            'slug'       => Config::SLUG . '#/topics',
         ];
     }
 

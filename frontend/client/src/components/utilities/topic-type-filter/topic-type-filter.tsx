@@ -95,7 +95,7 @@ export default function TopicTypeFilter({
   // since a scrolling box clips anything past its edges.
   return (
     <div
-      aria-label={__('Post category')}
+      aria-label={__('Topic')}
       className={cn([
         'bc-flex bc-items-center bc-gap-2',
         isStrip

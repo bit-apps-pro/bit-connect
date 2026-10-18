@@ -31,9 +31,9 @@ export default function TopicListFiltersSection({ disabled, form, onPatchFilter 
           label: __('Sort')
         },
         {
-          description: __('A row of chips above the list, one for each post category.'),
+          description: __('A row of chips above the list, one for each topic.'),
           key: 'types',
-          label: __('Post categories')
+          label: __('Topics')
         },
         {
           description: __('Narrow the list down to a tag.'),

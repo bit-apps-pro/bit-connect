@@ -326,14 +326,14 @@ export default function TopicForm({
           {showTopicType && (
             <Form.Item
               className="bc-mb-0"
-              label={__('Post category')}
+              label={__('Topic')}
               name="topic-types"
-              rules={[{ message: __('Please select a post category'), required: topicTypeMode === 'required' }]}
+              rules={[{ message: __('Please select a topic'), required: topicTypeMode === 'required' }]}
             >
               <Select
                 allowClear={topicTypeMode === 'optional'}
                 options={topicTypeOptions}
-                placeholder={__('Select a Post Category')}
+                placeholder={__('Select a Topic')}
               />
             </Form.Item>
           )}

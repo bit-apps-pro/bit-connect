@@ -14,7 +14,7 @@ Build a community, forum, feedback portal and public roadmap with posts, profile
 
 **Bit Connect is a community plugin and forum plugin for building discussion forums, customer communities, feedback portals and public roadmaps directly on your WordPress website.**
 
-Members can create posts, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap. They can organize posts with post categories, tags, stages and statuses.
+Members can create posts, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap. They can organize posts with topics, tags, stages and statuses.
 
 = Bit Connect Features =
 
@@ -25,7 +25,7 @@ Members can create posts, join threaded discussions, upvote ideas, follow conver
 * **@mentions:** Mention other members inside posts and replies.
 * **Post upvotes:** Let members vote on ideas, questions and feature requests.
 * **Feature requests and roadmap:** Collect ideas and feedback and move posts through stages and statuses.
-* **Post organization:** Use post categories, tags, stages and statuses.
+* **Post organization:** Use topics, tags, stages and statuses.
 * **Search, sorting and filters:** Help members find relevant community discussions.
 * **Attachments:** Allow supported files on posts and replies.
 * **Following:** Members can follow posts, tags or the whole community.
@@ -60,7 +60,7 @@ Create an easy-to-follow discussion forum with posts, threaded replies, @mention
 
 = Feature Requests and Public Roadmaps =
 
-Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote posts, while you organize feedback by category, tag, stage and status so everyone can follow progress clearly.
+Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote posts, while you organize feedback by topic, tag, stage and status so everyone can follow progress clearly.
 
 = Following and Notifications =
 
@@ -153,7 +153,7 @@ Both. Bit Connect includes forum-style posts, comments and threaded replies whil
 
 = Can I use Bit Connect for feature requests and a public roadmap? =
 
-Yes. Members can submit ideas and feedback, discuss requests and upvote posts. You can organize them with post categories, tags, stages and statuses.
+Yes. Members can submit ideas and feedback, discuss requests and upvote posts. You can organize them with topics, tags, stages and statuses.
 
 = Can I use Bit Connect for a SaaS or product community? =
 

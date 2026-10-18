@@ -8,7 +8,7 @@ const OWN_SEGMENT_LABELS: Record<string, string> = {
   stage: __('Stages'),
   status: __('Statuses'),
   tag: __('Tags'),
-  topic: __('Post categories')
+  topic: __('Topics')
 }
 
 interface ArchiveRowsProps {

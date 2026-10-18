@@ -34,8 +34,8 @@ function GeneralRedirect() {
 }
 
 /**
- * An address from before topics were called posts. A bookmark or a link in an
- * older email still lands on the screen, with its filters.
+ * An address a screen had before it was renamed. A bookmark still lands on the
+ * screen, with its filters.
  */
 function MovedTo({ to }: { to: string }) {
   const { search } = useLocation()
@@ -141,7 +141,6 @@ export default function AppRoutes() {
               <Route element={<Navigate replace to="/settings/seo" />} path="seo" />
               <Route element={manageOnly(<Manager />)} path="manager" />
               <Route element={<Topics />} path="posts" />
-              <Route element={<MovedTo to="/posts" />} path="topics" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
               <Route element={<MovedTo to="/settings/posts" />} path="settings/topics" />
@@ -150,8 +149,9 @@ export default function AppRoutes() {
               <Route element={manageOnly(<Support />)} path="support" />
               <Route element={manageOnly(<Tags />)} path="tags/:tab?" />
               <Route element={manageOnly(<Status />)} path="status" />
-              <Route element={manageOnly(<TopicTypes />)} path="post-categories" />
-              <Route element={<MovedTo to="/post-categories" />} path="topic-types" />
+              {/* `topics` is the topics screen; the list of posts is `posts`. */}
+              <Route element={manageOnly(<TopicTypes />)} path="topics" />
+              <Route element={<MovedTo to="/topics" />} path="topic-types" />
               {addedPages.map(page => (
                 <Route element={page.element} key={page.path} path={page.path} />
               ))}

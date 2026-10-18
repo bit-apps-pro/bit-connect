@@ -81,9 +81,9 @@ final class CreateTopicRequest extends Request
             'post_name.string'      => 'The post slug must be a string.',
             'post_name.max'         => 'The post slug cannot exceed 200 characters.',
             'post_content.max'      => 'The post description is too long.',
-            'topic-type'            => 'Each post category must be a valid ID.',
+            'topic-type'            => 'Each topic must be a valid ID.',
 
-            'topic-types.required' => 'Choose a post category.',
+            'topic-types.required' => 'Choose a topic.',
 
             'tags.max'       => \sprintf('A post may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING),
             'tags.*.integer' => \sprintf('Each tag must be a tag from the list or a name of up to %d characters.', TagResolverService::MAX_NAME_LENGTH),

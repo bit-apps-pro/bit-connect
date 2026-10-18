@@ -109,12 +109,12 @@ final class TermArchiveTest extends TestCase
     {
         // What keeps a mistyped archive URL a genuine 404 instead of a blank
         // page answering 200.
-        $this->assertNull(PortalTaxonomies::resolve('post-category', 'no-such-term'));
+        $this->assertNull(PortalTaxonomies::resolve('topic', 'no-such-term'));
     }
 
     public function testAKnownTermResolves(): void
     {
-        $term = PortalTaxonomies::resolve('post-category', 'billing');
+        $term = PortalTaxonomies::resolve('topic', 'billing');
 
         $this->assertInstanceOf(WP_Term::class, $term);
         $this->assertSame('Billing', $term->name);
@@ -123,22 +123,9 @@ final class TermArchiveTest extends TestCase
     public function testArchiveUrlIsBuiltFromTheSegmentNotTheTaxonomyName(): void
     {
         $this->assertSame(
-            'https://example.com/community/post-category/billing',
+            'https://example.com/community/topic/billing',
             PortalTaxonomies::url('topic', 'billing')
         );
-    }
-
-    // Post categories are served at `post-category`; the archive's key stays
-    // `topic`, and links from before the rename redirect.
-    public function testThePostCategoryArchiveRedirectsFromItsOldSegment(): void
-    {
-        $this->assertSame('post-category', PortalTaxonomies::slugFor('topic'));
-        $this->assertSame('topic', PortalTaxonomies::segmentFor(Taxonomies::TOPIC_TYPES->value));
-        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'topic');
-        $this->assertNull(PortalTaxonomies::resolve('topic', 'billing'));
-        $this->assertSame('https://example.com/community/post-category/billing', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'no-such-term'));
-        $this->assertTrue(PortalTaxonomies::isReservedSegment('post-category'));
     }
 
     public function testAnAddedArchiveAnswersToItsOwnSegment(): void
@@ -172,17 +159,17 @@ final class TermArchiveTest extends TestCase
         $this->addTeamsTaxonomy('team');
 
         $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('tag', 'billing'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
     }
 
     public function testATermWhoseSlugWasEditedRedirectsFromItsOldSlug(): void
     {
         $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
 
-        $this->assertSame('https://example.com/community/post-category/billing', PortalTaxonomies::renamedArchiveUrl('post-category', 'payments'));
+        $this->assertSame('https://example.com/community/topic/billing', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
         // The current slug is served, not redirected; an unknown one stays a 404.
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('post-category', 'billing'));
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('post-category', 'refunds'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'refunds'));
 
         unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
     }
@@ -192,7 +179,7 @@ final class TermArchiveTest extends TestCase
         $GLOBALS['__wp_term_meta'][crc32('billing')][PortalTaxonomies::PREVIOUS_SLUG_META] = 'payments';
         $GLOBALS['__wp_filters']['bit_connect_portal_terms'] = [];
 
-        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('post-category', 'payments'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'payments'));
 
         unset($GLOBALS['__wp_term_meta'][crc32('billing')]);
     }
@@ -228,7 +215,7 @@ final class TermArchiveTest extends TestCase
         // Never the portal page's canonical — that is what collapsed every
         // route into one indexable page.
         $this->assertStringContainsString(
-            '<link rel="canonical" href="https://example.com/community/post-category/billing" />',
+            '<link rel="canonical" href="https://example.com/community/topic/billing" />',
             $head
         );
         $this->assertSame(
@@ -431,7 +418,7 @@ final class TermArchiveTest extends TestCase
         // associative array, and iterating it walked scalar values that were all
         // skipped — so these terms rendered nowhere at all.
         $this->assertStringContainsString(
-            '<a href="https://example.com/community/post-category/billing">Billing</a>',
+            '<a href="https://example.com/community/topic/billing">Billing</a>',
             $html
         );
     }

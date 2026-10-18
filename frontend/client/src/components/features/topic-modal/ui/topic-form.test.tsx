@@ -260,7 +260,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Post category')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic')).toBeInTheDocument()
   })
 
   it('splits the row with a field a plugin adds', () => {
@@ -268,7 +268,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.getByLabelText('Post category')).toBeInTheDocument()
+    expect(screen.getByLabelText('Topic')).toBeInTheDocument()
     expect(screen.getByLabelText('Team')).toBeInTheDocument()
   })
 
@@ -278,7 +278,7 @@ describe('TopicForm taxonomy row', () => {
     render(<Harness taxonomies={taxonomies} />)
 
     expect(row()).not.toHaveClass('sm:bc-grid-cols-2')
-    expect(screen.queryByLabelText('Post category')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Topic')).not.toBeInTheDocument()
   })
 
   it('drops the row entirely when nothing is left in it', () => {
@@ -291,12 +291,12 @@ describe('TopicForm taxonomy row', () => {
   it('marks Topic Type required only when it is', () => {
     mockTopicFormFields.topicType = 'required'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Post category')).not.toBeNull()
+    expect(requiredLabel('Topic')).not.toBeNull()
     cleanup()
 
     mockTopicFormFields.topicType = 'optional'
     render(<Harness taxonomies={taxonomies} />)
-    expect(requiredLabel('Post category')).toBeNull()
+    expect(requiredLabel('Topic')).toBeNull()
   })
 })
 

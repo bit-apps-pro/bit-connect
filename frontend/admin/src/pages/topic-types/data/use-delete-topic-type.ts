@@ -24,10 +24,10 @@ export default function useDeleteTopicType() {
     },
     mutationKey: ['topicTypes', 'delete'],
     onError: () => {
-      messageApi?.error(__('Failed to delete post category'))
+      messageApi?.error(__('Failed to delete topic'))
     },
     onSuccess: () => {
-      messageApi?.success(__('Post category deleted successfully'))
+      messageApi?.success(__('Topic deleted successfully'))
       queryClient.invalidateQueries({ queryKey: ['topicTypes'] })
     }
   })

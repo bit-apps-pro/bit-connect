@@ -25,9 +25,9 @@ export default function TopicFormSection({ disabled = false, onChange, value }: 
     >
       <div className="bc-flex bc-flex-col bc-gap-3">
         <FieldModeRow
-          description={__('The category of the post, such as a question or a bug report.')}
+          description={__('The topic of the post, such as a question or a bug report.')}
           disabled={disabled}
-          label={__('Post category')}
+          label={__('Topic')}
           onChange={mode => onChange('topicType', mode)}
           value={value.topicType}
         />

@@ -443,9 +443,9 @@ return [
 
     'Sort' => __('Sort', 'bit-connect'),
 
-    'A row of chips above the list, one for each post category.' => __('A row of chips above the list, one for each post category.', 'bit-connect'),
+    'A row of chips above the list, one for each topic.' => __('A row of chips above the list, one for each topic.', 'bit-connect'),
 
-    'Post categories' => __('Post categories', 'bit-connect'),
+    'Topics' => __('Topics', 'bit-connect'),
 
     'Narrow the list down to a tag.' => __('Narrow the list down to a tag.', 'bit-connect'),
 
@@ -464,8 +464,6 @@ return [
     'Reports' => __('Reports', 'bit-connect'),
 
     'Members' => __('Members', 'bit-connect'),
-
-    'Post Categories' => __('Post Categories', 'bit-connect'),
 
     'Stages' => __('Stages', 'bit-connect'),
 
@@ -925,7 +923,7 @@ return [
 
     'This month' => __('This month', 'bit-connect'),
 
-    'No post categories yet' => __('No post categories yet', 'bit-connect'),
+    'No topics yet' => __('No topics yet', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d more' => __('%d more', 'bit-connect'),
@@ -1025,9 +1023,9 @@ return [
 
     'Post form' => __('Post form', 'bit-connect'),
 
-    'The category of the post, such as a question or a bug report.' => __('The category of the post, such as a question or a bug report.', 'bit-connect'),
+    'The topic of the post, such as a question or a bug report.' => __('The topic of the post, such as a question or a bug report.', 'bit-connect'),
 
-    'Post category' => __('Post category', 'bit-connect'),
+    'Topic' => __('Topic', 'bit-connect'),
 
     'Sign in' => __('Sign in', 'bit-connect'),
 
@@ -1268,37 +1266,37 @@ return [
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     '%s tags' => __('%s tags', 'bit-connect'),
 
-    'Failed to delete post category' => __('Failed to delete post category', 'bit-connect'),
+    'Failed to delete topic' => __('Failed to delete topic', 'bit-connect'),
 
-    'Post category deleted successfully' => __('Post category deleted successfully', 'bit-connect'),
+    'Topic deleted successfully' => __('Topic deleted successfully', 'bit-connect'),
 
-    'Post category created successfully' => __('Post category created successfully', 'bit-connect'),
+    'Topic created successfully' => __('Topic created successfully', 'bit-connect'),
 
-    'Failed to update post category' => __('Failed to update post category', 'bit-connect'),
+    'Failed to update topic' => __('Failed to update topic', 'bit-connect'),
 
-    'Post category updated successfully' => __('Post category updated successfully', 'bit-connect'),
+    'Topic updated successfully' => __('Topic updated successfully', 'bit-connect'),
 
-    'The category of each post, like a question or a bug report. Authors select one when they create a post.' => __('The category of each post, like a question or a bug report. Authors select one when they create a post.', 'bit-connect'),
+    'The topic of each post, like a question or a bug report. Authors select one when they create a post.' => __('The topic of each post, like a question or a bug report. Authors select one when they create a post.', 'bit-connect'),
 
-    'Add post category' => __('Add post category', 'bit-connect'),
+    'Add topic' => __('Add topic', 'bit-connect'),
 
-    'Edit Post Category' => __('Edit Post Category', 'bit-connect'),
+    'Edit Topic' => __('Edit Topic', 'bit-connect'),
 
-    'Category Name' => __('Category Name', 'bit-connect'),
+    'Topic Name' => __('Topic Name', 'bit-connect'),
 
-    'Category name is required' => __('Category name is required', 'bit-connect'),
+    'Topic name is required' => __('Topic name is required', 'bit-connect'),
 
     'For example, Question' => __('For example, Question', 'bit-connect'),
 
     'Write Description here' => __('Write Description here', 'bit-connect'),
 
-    'Create Post Category' => __('Create Post Category', 'bit-connect'),
+    'Create Topic' => __('Create Topic', 'bit-connect'),
 
-    'Edit post category' => __('Edit post category', 'bit-connect'),
+    'Edit topic' => __('Edit topic', 'bit-connect'),
 
-    'Delete Post Category' => __('Delete Post Category', 'bit-connect'),
+    'Delete Topic' => __('Delete Topic', 'bit-connect'),
 
-    'Delete post category' => __('Delete post category', 'bit-connect'),
+    'Delete topic' => __('Delete topic', 'bit-connect'),
 
     /* translators: %d are value(s) inserted by the plugin. Keep them in the translation. */
     '%d updated' => __('%d updated', 'bit-connect'),
@@ -1344,7 +1342,7 @@ return [
 
     'Any stage' => __('Any stage', 'bit-connect'),
 
-    'Any category' => __('Any category', 'bit-connect'),
+    'Any topic' => __('Any topic', 'bit-connect'),
 
     'Public' => __('Public', 'bit-connect'),
 
@@ -1643,9 +1641,9 @@ return [
 
     'Slug must contain at least one letter or number' => __('Slug must contain at least one letter or number', 'bit-connect'),
 
-    'Please select a post category' => __('Please select a post category', 'bit-connect'),
+    'Please select a topic' => __('Please select a topic', 'bit-connect'),
 
-    'Select a Post Category' => __('Select a Post Category', 'bit-connect'),
+    'Select a Topic' => __('Select a Topic', 'bit-connect'),
 
     'Write your post description...' => __('Write your post description...', 'bit-connect'),
 
@@ -2178,17 +2176,15 @@ return [
 
     'Post Title' => __('Post Title', 'bit-connect'),
 
-    'Category' => __('Category', 'bit-connect'),
-
     'Likes' => __('Likes', 'bit-connect'),
 
     'Replies' => __('Replies', 'bit-connect'),
 
-    'Posts by Category' => __('Posts by Category', 'bit-connect'),
+    'Posts by Topic' => __('Posts by Topic', 'bit-connect'),
 
-    'How their posts split across post categories' => __('How their posts split across post categories', 'bit-connect'),
+    'How their posts split across topics' => __('How their posts split across topics', 'bit-connect'),
 
-    'No categorised posts in this period.' => __('No categorised posts in this period.', 'bit-connect'),
+    'No posts with a topic in this period.' => __('No posts with a topic in this period.', 'bit-connect'),
 
     /* translators: %s are value(s) inserted by the plugin. Keep them in the translation. */
     '%s post' => __('%s post', 'bit-connect'),

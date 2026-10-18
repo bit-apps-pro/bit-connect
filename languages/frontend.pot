@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
-"POT-Creation-Date: Sun Oct 18 2026 14:39:58 GMT+0600 (Bangladesh Standard "
+"POT-Creation-Date: Sun Oct 18 2026 14:54:30 GMT+0600 (Bangladesh Standard "
 "Time)\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1080,12 +1080,14 @@ msgid "Sort"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/topic-list-filters-section.tsx:34
-msgid "A row of chips above the list, one for each post category."
+msgid "A row of chips above the list, one for each topic."
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/topic-list-filters-section.tsx:36
+#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:60
 #: frontend/admin/src/pages/seo/internal/archive-rows.tsx:11
-msgid "Post categories"
+#: frontend/admin/src/pages/topic-types/topic-types.tsx:19
+msgid "Topics"
 msgstr ""
 
 #: frontend/admin/src/pages/general/internal/topic-list-filters-section.tsx:39
@@ -1137,11 +1139,6 @@ msgstr ""
 #: frontend/admin/src/pages/manager/manager.tsx:67
 #: frontend/admin/src/pages/root/internal/stat-cards.tsx:62
 msgid "Members"
-msgstr ""
-
-#: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:60
-#: frontend/admin/src/pages/topic-types/topic-types.tsx:19
-msgid "Post Categories"
 msgstr ""
 
 #: frontend/admin/src/pages/Layout/ui/Sidebar/Sidebar.tsx:61
@@ -2114,7 +2111,7 @@ msgid "This month"
 msgstr ""
 
 #: frontend/admin/src/pages/root/shared/format.ts:63
-msgid "No post categories yet"
+msgid "No topics yet"
 msgstr ""
 
 #: frontend/admin/src/pages/root/shared/format.ts:67
@@ -2344,13 +2341,14 @@ msgid "Post form"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:28
-msgid "The category of the post, such as a question or a bug report."
+msgid "The topic of the post, such as a question or a bug report."
 msgstr ""
 
 #: frontend/admin/src/pages/settings/internal/topic-form-section.tsx:30
 #: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:329
 #: frontend/client/src/components/utilities/topic-type-filter/topic-type-filter.tsx:98
-msgid "Post category"
+#: frontend/client/src/pages/User/ui/InsightsOverview.tsx:170
+msgid "Topic"
 msgstr ""
 
 #: frontend/admin/src/pages/settings/settings.tsx:57
@@ -2880,46 +2878,46 @@ msgid "%s tags"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/data/use-delete-topic-type.ts:27
-msgid "Failed to delete post category"
+msgid "Failed to delete topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/data/use-delete-topic-type.ts:30
-msgid "Post category deleted successfully"
+msgid "Topic deleted successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/data/use-store-topic-type.ts:42
-msgid "Post category created successfully"
+msgid "Topic created successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/data/use-update-topic-type.ts:28
-msgid "Failed to update post category"
+msgid "Failed to update topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/data/use-update-topic-type.ts:31
-msgid "Post category updated successfully"
+msgid "Topic updated successfully"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/topic-types.tsx:21
 msgid ""
-"The category of each post, like a question or a bug report. Authors select "
-"one when they create a post."
+"The topic of each post, like a question or a bug report. Authors select one "
+"when they create a post."
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/topic-types.tsx:24
-msgid "Add post category"
+msgid "Add topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-type-edit-modal.tsx:97
-msgid "Edit Post Category"
+msgid "Edit Topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:23
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:46
-msgid "Category Name"
+msgid "Topic Name"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:25
-msgid "Category name is required"
+msgid "Topic name is required"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-type-form.tsx:27
@@ -2932,19 +2930,19 @@ msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:54
 #: frontend/admin/src/pages/topic-types/ui/topic-types-create-modal.tsx:58
-msgid "Create Post Category"
+msgid "Create Topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:86
-msgid "Edit post category"
+msgid "Edit topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:98
-msgid "Delete Post Category"
+msgid "Delete Topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topic-types/ui/topic-types-table.tsx:101
-msgid "Delete post category"
+msgid "Delete topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topics/shared/bulk-summary.ts:14
@@ -3035,7 +3033,7 @@ msgid "Any stage"
 msgstr ""
 
 #: frontend/admin/src/pages/topics/ui/topics-filters.tsx:80
-msgid "Any category"
+msgid "Any topic"
 msgstr ""
 
 #: frontend/admin/src/pages/topics/ui/topics-filters.tsx:100
@@ -3651,11 +3649,11 @@ msgid "Slug must contain at least one letter or number"
 msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:331
-msgid "Please select a post category"
+msgid "Please select a topic"
 msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:336
-msgid "Select a Post Category"
+msgid "Select a Topic"
 msgstr ""
 
 #: frontend/client/src/components/features/topic-modal/ui/topic-form.tsx:376
@@ -4755,10 +4753,6 @@ msgstr ""
 msgid "Post Title"
 msgstr ""
 
-#: frontend/client/src/pages/User/ui/InsightsOverview.tsx:170
-msgid "Category"
-msgstr ""
-
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:176
 msgid "Likes"
 msgstr ""
@@ -4769,15 +4763,15 @@ msgstr ""
 
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:222
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:225
-msgid "Posts by Category"
+msgid "Posts by Topic"
 msgstr ""
 
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:224
-msgid "How their posts split across post categories"
+msgid "How their posts split across topics"
 msgstr ""
 
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:233
-msgid "No categorised posts in this period."
+msgid "No posts with a topic in this period."
 msgstr ""
 
 #: frontend/client/src/pages/User/ui/InsightsOverview.tsx:248

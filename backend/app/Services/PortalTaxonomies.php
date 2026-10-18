@@ -42,17 +42,6 @@ final class PortalTaxonomies
     private const ROUTED_SEGMENTS = ['page', 'user', 'notifications', 'following'];
 
     /**
-     * A built-in archive served under a segment other than its key.
-     *
-     * The members' items are called posts and their kinds post categories, so
-     * the `topic` archive is served at `post-category`. Not `category`: with
-     * the portal at the site root that would be WordPress's own blog-category
-     * base. The key stays `topic` — SEO settings and sitemap names store it —
-     * and the old `/topic/{term}` URLs redirect (renamedArchiveUrl()).
-     */
-    private const BUILT_IN_SLUGS = ['topic' => 'post-category'];
-
-    /**
      * Archive key => taxonomy name.
      *
      * The key is what SEO settings and sitemap names store, so it never
@@ -85,9 +74,7 @@ final class PortalTaxonomies
      */
     public static function isReservedSegment(string $segment): bool
     {
-        return isset(self::builtIn()[$segment])
-            || \in_array($segment, self::BUILT_IN_SLUGS, true)
-            || \in_array($segment, self::ROUTED_SEGMENTS, true);
+        return isset(self::builtIn()[$segment]) || \in_array($segment, self::ROUTED_SEGMENTS, true);
     }
 
     /**
@@ -165,10 +152,6 @@ final class PortalTaxonomies
      */
     public static function slugFor(string $segment): string
     {
-        if (isset(self::BUILT_IN_SLUGS[$segment])) {
-            return self::BUILT_IN_SLUGS[$segment];
-        }
-
         foreach (TopicTaxonomies::all() as $entry) {
             if ($entry['archive'] === $segment) {
                 return $entry['slug'];

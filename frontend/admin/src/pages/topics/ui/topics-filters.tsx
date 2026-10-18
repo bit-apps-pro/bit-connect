@@ -77,7 +77,7 @@ export default function TopicsFilters({
         allowClear
         className="bc-min-w-[150px]"
         onChange={topicType => onChange({ topic_type: topicType })}
-        placeholder={__('Any category')}
+        placeholder={__('Any topic')}
         terms={topicTypes}
         value={filters.topic_type}
       />

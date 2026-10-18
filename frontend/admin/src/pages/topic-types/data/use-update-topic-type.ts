@@ -25,10 +25,10 @@ export default function useUpdateTopicType() {
     },
     mutationKey: ['topicTypes', 'update'],
     onError: () => {
-      messageApi?.error(__('Failed to update post category'))
+      messageApi?.error(__('Failed to update topic'))
     },
     onSuccess: () => {
-      messageApi?.success(__('Post category updated successfully'))
+      messageApi?.success(__('Topic updated successfully'))
       queryClient.invalidateQueries({ queryKey: ['topicTypes'] })
     }
   })

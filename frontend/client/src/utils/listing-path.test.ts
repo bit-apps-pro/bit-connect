@@ -15,7 +15,7 @@ describe('archivePath', () => {
 
   it("opens the term's archive, under the segment that serves its filter", () => {
     expect(archivePath('tags', 'api')).toBe('/tag/api')
-    expect(archivePath('topic-types', 'question')).toBe('/post-category/question')
+    expect(archivePath('topic-types', 'question')).toBe('/topic/question')
   })
 
   it("keeps the site's permalink form", () => {
