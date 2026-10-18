@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -176,6 +176,16 @@ Yes. Members can create profiles and receive supported in-app and email notifica
 One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.2 =
+* The plugin now calls topics "posts" and topic types "topics".
+* The admin can show the Following link in the portal sidebar.
+* The dashboard shows Activity before Needs Attention. The stat labels do not show "Total".
+* Fixed: a new forum can take its first post. Its first topic is named Discussion.
+* Fixed: on a slow host, image uploads do not repeat.
+* Fixed: the post column does not push the other columns out of view.
+* Fixed: dashboard cards have no gap under short content, and the stage gauge total stays inside the ring.
+* Fixed: options saved with autoload set to false stay that way.
 
 = 1.0.1 =
 * Removed reply upvoting and author-only private topics.
