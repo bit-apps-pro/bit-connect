@@ -11,8 +11,10 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities;
 use BitApps\BitConnect\Http\Requests\AbortChunkedUploadRequest;
 use BitApps\BitConnect\Http\Requests\DeleteAttachmentRequest;
+use BitApps\BitConnect\Http\Requests\ProcessAttachmentRequest;
 use BitApps\BitConnect\Http\Requests\UploadAttachmentRequest;
 use BitApps\BitConnect\Http\Requests\UploadChunkRequest;
+use BitApps\BitConnect\Services\AttachmentProcessing;
 use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\ChunkedUpload;
@@ -90,6 +92,57 @@ final class AttachmentController
     }
 
     /**
+     * Make the picture sizes and other metadata for an upload the member made
+     * through the portal. Safe to ask again: each request does only the work
+     * still missing.
+     */
+    public function process(ProcessAttachmentRequest $request)
+    {
+        $attachmentId = (int) $request->id;
+        $attachment = get_post($attachmentId);
+
+        if (!$attachment || $attachment->post_type !== 'attachment' || !get_post_meta($attachmentId, UploadClaims::PORTAL_META, true)) {
+            return Response::error('Attachment not found')->httpStatus(404);
+        }
+
+        if ((int) $attachment->post_author !== get_current_user_id() && !Capabilities::check(AuthService::CAP_MODERATE)) {
+            return Response::error('You do not have permission to change this attachment')->httpStatus(403);
+        }
+
+        $result = AttachmentProcessing::run($attachmentId);
+
+        if (is_wp_error($result)) {
+            return Response::error($result->get_error_message())->httpStatus(500);
+        }
+
+        return Response::success(['id' => $attachmentId]);
+    }
+
+    public function delete(DeleteAttachmentRequest $request)
+    {
+        $attachmentId = $request->id;
+
+        $attachment = get_post($attachmentId);
+
+        if (!$attachment || $attachment->post_type !== 'attachment') {
+            return Response::error('Attachment not found')->httpStatus(404);
+        }
+
+        $currentUserId = get_current_user_id();
+        if ((int) $attachment->post_author !== $currentUserId && !Capabilities::check(AuthService::CAP_MODERATE)) {
+            return Response::error('You do not have permission to delete this attachment')->httpStatus(403);
+        }
+
+        $deleted = wp_delete_attachment($attachmentId, true);
+
+        if (!$deleted) {
+            return Response::error('Failed to delete attachment')->httpStatus(500);
+        }
+
+        return Response::success(['id' => $attachmentId]);
+    }
+
+    /**
      * Hand a checked file to WordPress and record it as an attachment,
      * pending until a saved post uses it (UploadClaims).
      *
@@ -124,15 +177,13 @@ final class AttachmentController
             return Response::error('Failed to create attachment: ' . $attachId->get_error_message())->httpStatus(500);
         }
 
-        // wp_generate_attachment_metadata() is admin-side too, and for a video
-        // or audio file it calls wp_read_video_metadata(), which lives in media.php.
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-        require_once ABSPATH . 'wp-admin/includes/media.php';
-        $attachData = wp_generate_attachment_metadata($attachId, $uploadedFile['file']);
-        wp_update_attachment_metadata($attachId, $attachData);
-
+        // Recorded before anything else can fail, so an upload this request
+        // does not finish is still the daily cleanup's to delete.
         UploadClaims::recordUpload((int) $attachId);
 
+        // The picture sizes and other metadata are not made here: they can take
+        // longer than a host allows one request. The browser asks for them next
+        // (process(), AttachmentProcessing).
         return Response::success(
             [
                 'id'       => $attachId,
@@ -142,29 +193,5 @@ final class AttachmentController
                 'filesize' => filesize($uploadedFile['file']),
             ]
         );
-    }
-
-    public function delete(DeleteAttachmentRequest $request)
-    {
-        $attachmentId = $request->id;
-
-        $attachment = get_post($attachmentId);
-
-        if (!$attachment || $attachment->post_type !== 'attachment') {
-            return Response::error('Attachment not found')->httpStatus(404);
-        }
-
-        $currentUserId = get_current_user_id();
-        if ((int) $attachment->post_author !== $currentUserId && !Capabilities::check(AuthService::CAP_MODERATE)) {
-            return Response::error('You do not have permission to delete this attachment')->httpStatus(403);
-        }
-
-        $deleted = wp_delete_attachment($attachmentId, true);
-
-        if (!$deleted) {
-            return Response::error('Failed to delete attachment')->httpStatus(500);
-        }
-
-        return Response::success(['id' => $attachmentId]);
     }
 }

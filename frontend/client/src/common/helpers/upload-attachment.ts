@@ -13,6 +13,17 @@ export const CHUNK_BYTES = 4 * 1024 * 1024
 /** How many times one piece is sent again before the upload gives up. */
 export const MAX_RETRIES = 4
 
+/**
+ * How many times the upload starts again from the first piece because the
+ * server no longer has the pieces it was sent. Once is a server that was
+ * restarted or cleared its files; more is a server that loses them every time,
+ * and sending the whole file again would not end.
+ */
+export const MAX_RESTARTS = 1
+
+/** How many times the server is asked to finish its work on an upload. */
+export const MAX_PROCESS_ATTEMPTS = 3
+
 /** The wait before the first retry; it doubles with each one after. */
 const FIRST_RETRY_DELAY_MS = 1000
 
@@ -64,11 +75,43 @@ const isReceipt = (data: unknown): data is ChunkReceipt =>
  *
  * Progress covers the whole file. Cancelling stops the piece in flight and
  * tells the server to throw away what it has.
+ *
+ * The upload is done once the file is stored. The picture sizes and other
+ * metadata are asked for after that, without waiting (processUpload).
  */
-export default async function uploadAttachment<T>(
-  file: File,
-  { onProgress, signal }: UploadOptions = {}
-): Promise<Response<T>> {
+export default async function uploadAttachment<T>(file: File, options: UploadOptions = {}): Promise<Response<T>> {
+  const response = await sendFile<T>(file, options)
+
+  const id = (response.data as undefined | { id?: unknown })?.id
+  if (typeof id === 'number' && id > 0) {
+    void processUpload(id)
+  }
+
+  return response
+}
+
+/**
+ * Ask the server to make the picture sizes and other metadata for an upload
+ * (AttachmentProcessing.php), again after a pause if a request fails.
+ *
+ * Each request continues where the last one stopped. Nothing waits on this: a
+ * post shows the stored file itself, so an upload whose sizes are never made
+ * still works.
+ */
+export async function processUpload(id: number): Promise<boolean> {
+  for (let attempt = 1; attempt <= MAX_PROCESS_ATTEMPTS; attempt += 1) {
+    const response = await request('attachments/process', { id })
+    if (response?.status === 'success') return true
+
+    if (attempt < MAX_PROCESS_ATTEMPTS) {
+      await wait(FIRST_RETRY_DELAY_MS * 2 ** (attempt - 1))
+    }
+  }
+
+  return false
+}
+
+async function sendFile<T>(file: File, { onProgress, signal }: UploadOptions): Promise<Response<T>> {
   const size = chunkBytes()
 
   if (file.size <= size) {
@@ -86,6 +129,7 @@ export default async function uploadAttachment<T>(
 
   let offset = 0
   let failures = 0
+  let restarts = 0
 
   for (;;) {
     if (signal?.aborted) {
@@ -115,8 +159,17 @@ export default async function uploadAttachment<T>(
 
       // A receipt that does not move the upload forward means a piece went
       // missing on the way — sent again from where the server is. One that
-      // keeps not moving it is a server that cannot keep the pieces.
-      if (response.data.received > start) {
+      // keeps not moving it is a server that cannot keep the pieces. One that
+      // goes back means the server lost what it had, and the file is sent
+      // again from there — but not without end: progress after a restart
+      // clears the failure count, so without this limit a server that loses
+      // the file at the last piece every time would be sent it forever.
+      if (response.data.received < start) {
+        if (++restarts > MAX_RESTARTS) {
+          discard()
+          throw { code: 'ERROR', data: 'The upload could not be completed. Try again.', status: 'error' } as Response<T>
+        }
+      } else if (response.data.received > start) {
         failures = 0
       } else if (++failures > MAX_RETRIES) {
         discard()

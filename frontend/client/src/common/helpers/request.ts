@@ -171,6 +171,11 @@ function uploadStatusMessage(status: number): string {
   if (status === 413) {
     return 'This file is larger than the server accepts. Try a smaller file.'
   }
+  // PHP stopped — out of time or memory — rather than a slow connection, so
+  // a smaller file or a faster connection is not the advice.
+  if (status === 500) {
+    return 'The server could not complete the upload (error 500). Try again. If the problem continues, tell the site administrator.'
+  }
   if (TRANSIENT_STATUSES.has(status)) {
     return 'The server took too long to receive the upload. Try again, or use a smaller file or a faster connection.'
   }
