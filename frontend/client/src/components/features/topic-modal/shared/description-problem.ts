@@ -45,7 +45,7 @@ export const descriptionProblem = (
   }
 
   if (characters > maxLength) {
-    // translators: %s is the most characters a topic description may hold.
+    // translators: %s is the most characters a post description may hold.
     return sprintf(__('Description cannot exceed %s characters'), maxLength.toLocaleString())
   }
 

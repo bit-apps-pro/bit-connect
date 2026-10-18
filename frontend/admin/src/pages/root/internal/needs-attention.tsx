@@ -138,15 +138,15 @@ export default function NeedsAttention({ attention, className, topics }: NeedsAt
           urgent
         />
         <Queue
-          action={__('Open topics')}
+          action={__('Open posts')}
           count={attention.unanswered}
-          label={__('Topics waiting for a comment')}
+          label={__('Posts that wait for a comment')}
           stacked={stacked}
-          to="topics"
+          to="posts"
         />
       </div>
 
-      <TopicTable columns={columns} empty={__('No topic is waiting for a comment.')} rowKey={topic => topic.id} rows={topics} />
+      <TopicTable columns={columns} empty={__('No post waits for a comment.')} rowKey={topic => topic.id} rows={topics} />
     </DashboardCard>
   )
 }

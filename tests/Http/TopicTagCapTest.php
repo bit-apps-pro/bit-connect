@@ -39,7 +39,7 @@ final class TopicTagCapTest extends TestCase
 
         $this->assertTrue($validator->fails());
         $this->assertSame(
-            [\sprintf('A topic may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING)],
+            [\sprintf('A post may carry at most %d tags.', PostingLimits::TOPIC_TAGS_CEILING)],
             $validator->errors()['tags']
         );
     }

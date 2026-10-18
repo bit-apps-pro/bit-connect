@@ -114,10 +114,10 @@ export default function LocationSection({
         cancelText: __('Cancel'),
         content: enabled
           ? __(
-              'Your current homepage is replaced by the community, and topic links change from /slug/topic to /topic. Links people already shared will stop working.'
+              'The community replaces your current homepage, and post links change from /slug/post-name to /post-name. Links that people already shared will stop working.'
             )
           : __(
-              'The community goes back to yoursite.com/slug and topic links change again. Your homepage goes back to what it was before.'
+              'The community goes back to yoursite.com/slug and post links change again. Your homepage goes back to what it was before.'
             ),
         okText: enabled ? __('Yes, make it my homepage') : __('Yes, move it back'),
         onOk: () => applyRootMode(enabled),
@@ -257,7 +257,7 @@ export default function LocationSection({
           portalPage.root
             ? __('Your community is your homepage, so it has no slug of its own.')
             : __(
-                'The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that shows the community. Changing it changes every topic link.'
+                'The last part of the address, e.g. yoursite.com/community. It must match the slug of the page that shows the community. If you change it, every post link changes.'
               )
         }
         label={__('Address slug')}

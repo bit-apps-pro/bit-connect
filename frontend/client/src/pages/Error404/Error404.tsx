@@ -38,7 +38,7 @@ export default function Error404() {
             </h1>
             <p className="bc-m-0 bc-text-sm bc-leading-relaxed bc-text-ink-subtle sm:bc-text-base">
               {__(
-                'The link may be broken, or the topic could have been moved or removed. Everything else in the community is still here.'
+                'The link is possibly broken, or someone moved or removed the post. Everything else in the community is still here.'
               )}
             </p>
           </div>

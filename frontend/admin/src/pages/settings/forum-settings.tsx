@@ -76,13 +76,13 @@ export default function ForumSettings({ section }: ForumSettingsProps) {
     if (!form?.topicAccess) return []
     return [
       {
-        description: __('Let members upvote topics.'),
+        description: __('Let members upvote posts.'),
         key: 'upvote',
         label: __('Upvotes'),
         value: form.topicAccess.upvote ?? false
       },
       {
-        description: __('Let members comment on topics.'),
+        description: __('Let members comment on posts.'),
         key: 'comment',
         label: __('Comments'),
         value: form.topicAccess.comment ?? false
@@ -100,7 +100,7 @@ export default function ForumSettings({ section }: ForumSettingsProps) {
     return [
       {
         description: __(
-          'When the plugin is deleted, remove every topic and reply, its terms and settings, and the portal page. This can’t be undone.'
+          'When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.'
         ),
         key: 'deleteDataOnUninstall',
         label: __('Delete data on uninstall'),

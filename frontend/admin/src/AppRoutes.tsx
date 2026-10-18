@@ -6,7 +6,7 @@ import useApplyTheme from '@shared/theme/use-apply-theme'
 import { ConfigProvider, message, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
 import { lazy, type ReactNode, Suspense, useEffect, useMemo } from 'react'
-import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router'
 
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
@@ -34,12 +34,21 @@ function GeneralRedirect() {
 }
 
 /**
+ * An address a screen had before it was renamed. A bookmark still lands on the
+ * screen, with its filters.
+ */
+function MovedTo({ to }: { to: string }) {
+  const { search } = useLocation()
+  return <Navigate replace to={`${to}${search}`} />
+}
+
+/**
  * A screen only a forum manager may use. A moderator reaching one by its
  * address used to get the form drawn with wrong defaults and every save
  * refused; they land on Topics, as the dashboard already sends them.
  */
 function manageOnly(screen: ReactNode) {
-  return config.CAN_MANAGE ? screen : <Navigate replace to="/topics" />
+  return config.CAN_MANAGE ? screen : <Navigate replace to="/posts" />
 }
 
 const Root = lazy(() => import('./pages/root/root'))
@@ -124,22 +133,25 @@ export default function AppRoutes() {
               path="onboarding"
             />
             <Route element={<OnboardingGuard />} path="/">
-              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="topics" />} index />
+              <Route element={config.CAN_MANAGE ? <Root /> : <Navigate replace to="posts" />} index />
               <Route element={manageOnly(<Stages />)} path="stages" />
               {/* Folded into Settings; the old addresses still land there. */}
               <Route element={<GeneralRedirect />} path="general/:tab?" />
               <Route element={<Navigate replace to="/settings/notifications" />} path="notifications" />
               <Route element={<Navigate replace to="/settings/seo" />} path="seo" />
               <Route element={manageOnly(<Manager />)} path="manager" />
-              <Route element={<Topics />} path="topics" />
+              <Route element={<Topics />} path="posts" />
               <Route element={<Activity />} path="activity" />
               <Route element={<Reports />} path="reports" />
+              <Route element={<MovedTo to="/settings/posts" />} path="settings/topics" />
               <Route element={manageOnly(<Settings />)} path="settings/:tab?" />
               {/* Support, the changelog and what the add-on adds. */}
               <Route element={manageOnly(<Support />)} path="support" />
               <Route element={manageOnly(<Tags />)} path="tags/:tab?" />
               <Route element={manageOnly(<Status />)} path="status" />
-              <Route element={manageOnly(<TopicTypes />)} path="topic-types" />
+              {/* `topics` is the topics screen; the list of posts is `posts`. */}
+              <Route element={manageOnly(<TopicTypes />)} path="topics" />
+              <Route element={<MovedTo to="/topics" />} path="topic-types" />
               {addedPages.map(page => (
                 <Route element={page.element} key={page.path} path={page.path} />
               ))}

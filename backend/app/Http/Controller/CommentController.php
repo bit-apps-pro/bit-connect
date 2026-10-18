@@ -163,7 +163,7 @@ final class CommentController
         // And only topics the commenter may read: a topic they cannot open is
         // answered as missing, the way reading its comments already is.
         if (!$post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
-            return Response::error('Topic not found', 404);
+            return Response::error('Post not found', 404);
         }
 
         if (!TopicAccess::allows(TopicAccess::COMMENT)) {
@@ -172,7 +172,7 @@ final class CommentController
 
         // Respect topic lock (comment_status closed). Moderators bypass the lock.
         if ($post->comment_status !== 'open' && !WpCapabilities::check(Capabilities::MODERATE->value)) {
-            return Response::error('This topic is locked.', 403);
+            return Response::error('This post is locked.', 403);
         }
 
         $sanitizer = new CommentSanitizerService();

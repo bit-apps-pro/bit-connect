@@ -178,7 +178,7 @@ export default function Stages() {
           <Title className="bc-mb-0" level={3}>
             {__('Stages')}
           </Title>
-          <Text type="secondary">{__('The sections of your forum, like Questions or Bug Reports. Each topic is filed under one.')}</Text>
+          <Text type="secondary">{__('The sections of your forum, like Questions or Bug Reports. Each post goes in one section.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={handleCreate} type="primary">
           {__('Add stage')}

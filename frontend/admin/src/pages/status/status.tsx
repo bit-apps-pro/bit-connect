@@ -17,7 +17,7 @@ export default function Status() {
           <Title className="bc-mb-0" level={3}>
             {__('Statuses')}
           </Title>
-          <Text type="secondary">{__('Where a topic stands, like Open, Planned or Resolved. Moderators change it as work moves on.')}</Text>
+          <Text type="secondary">{__('The progress of a post, like Open, Planned or Resolved. Moderators change it when the work continues.')}</Text>
         </div>
         <Button icon={<LuPlus />} onClick={() => setIsCreateStatusModalOpen(true)} type="primary">
           {__('Add status')}

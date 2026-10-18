@@ -34,12 +34,12 @@ export default function useUpdateTopic(form: FormInstance) {
         return
       }
 
-      notificationApi?.error({ message: error.data || __('Could not update topic') })
+      notificationApi?.error({ message: error.data || __('Could not update post') })
     },
     onSuccess: (response, payload) => {
       notificationApi?.success({
         description: slugDisclosure(payload.post_name, response.data?.post_name),
-        message: __('Topic updated successfully')
+        message: __('Post updated successfully')
       })
       queryClient.invalidateQueries({ queryKey: ['topics'] })
       // The next check must not be answered from the cache with the verdict

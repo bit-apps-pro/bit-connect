@@ -170,7 +170,7 @@ export default function NotificationPreferencesForm() {
       <SettingsCard
         extra={
           <Switch
-            aria-label={__('Tell me about every new topic')}
+            aria-label={__('Tell me about every new post')}
             checked={preferences.followsForum}
             loading={isTogglingForumFollow}
             onChange={next => {
@@ -179,9 +179,9 @@ export default function NotificationPreferencesForm() {
           />
         }
         subtitle={__(
-          'Get a notification for every topic posted anywhere on the portal, not only under what you follow.'
+          'Get a notification for every new post on the portal, not only under what you follow.'
         )}
-        title={__('Tell me about every new topic')}
+        title={__('Tell me about every new post')}
       />
 
       <SettingsCard

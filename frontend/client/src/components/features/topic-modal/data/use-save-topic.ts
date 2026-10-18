@@ -40,7 +40,7 @@ export default function useSaveTopic(form: FormInstance) {
         typeof error.data === 'string'
           ? error.data
           : ((error as unknown as { message?: string }).message ??
-            __('Could not save the topic. Please check your connection and try again.'))
+            __('Could not save the post. Please check your connection and try again.'))
 
       notificationApi?.error({ message: msg })
     },
@@ -54,11 +54,11 @@ export default function useSaveTopic(form: FormInstance) {
               description: __(
                 'Only you and the moderators can see it until a moderator has reviewed it.'
               ),
-              message: __('Topic submitted for review')
+              message: __('Post submitted for review')
             }
           : {
               description: slugDisclosure(payload.post_name, response.data?.post_name),
-              message: __('Topic created successfully')
+              message: __('Post created successfully')
             }
       )
       // The new topic belongs at the top of the lists it fits; the one on screen

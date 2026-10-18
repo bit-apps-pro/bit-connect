@@ -51,7 +51,7 @@ export default function ShareDialog() {
       footer={null}
       onCancel={close}
       open={isOpen}
-      title={isComment ? __('Share this reply') : __('Share this topic')}
+      title={isComment ? __('Share this reply') : __('Share this post')}
       width={440}
     >
       {/* What is being sent, so the link in the field below is never a guess.

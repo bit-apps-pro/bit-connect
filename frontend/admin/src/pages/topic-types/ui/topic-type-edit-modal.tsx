@@ -94,7 +94,7 @@ export default function TopicTypeEditModal() {
       onCancel={handleCancel}
       onOk={handleOk}
       open={isTopicTypeEditModalOpen}
-      title={__('Edit Topic Type')}
+      title={__('Edit Topic')}
     >
       <ProductForm form={form} isEditMode open={isTopicTypeEditModalOpen} />
       {errorMessage && <Alert message={errorMessage} type="error" />}

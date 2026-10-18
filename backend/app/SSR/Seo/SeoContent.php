@@ -138,7 +138,7 @@ HTML,
 
         $heading = esc_html($term->name);
         $backUrl = esc_url(self::portalUrl());
-        $backLabel = esc_html__('Back to all topics', 'bit-connect');
+        $backLabel = esc_html__('Back to all posts', 'bit-connect');
 
         $intro = $term->description === ''
             ? ''
@@ -148,7 +148,7 @@ HTML,
         // may fill up later — so it renders its heading rather than collapsing
         // to nothing the way an empty topic list does.
         $list = $items === ''
-            ? '<p class="bc-text-gray-500">' . esc_html__('No topics here yet.', 'bit-connect') . '</p>'
+            ? '<p class="bc-text-gray-500">' . esc_html__('No posts here yet.', 'bit-connect') . '</p>'
             : '<ul class="bc-m-0 bc-flex bc-list-none bc-flex-col bc-gap-3 bc-p-0">' . $items . '</ul>';
 
         return strtr(
@@ -190,7 +190,7 @@ HTML,
         $terms = self::terms($topic);
         $replies = self::comments($topic);
         $backUrl = esc_url(self::portalUrl());
-        $backLabel = esc_html__('Back to all topics', 'bit-connect');
+        $backLabel = esc_html__('Back to all posts', 'bit-connect');
 
         return strtr(
             <<<'HTML'
@@ -292,12 +292,12 @@ HTML,
 
         if ($page > 1) {
             $href = esc_url(self::pageUrl($page - 1));
-            $links[] = '<a href="' . $href . '" rel="prev">' . esc_html__('Newer topics', 'bit-connect') . '</a>';
+            $links[] = '<a href="' . $href . '" rel="prev">' . esc_html__('Newer posts', 'bit-connect') . '</a>';
         }
 
         if ($page < $totalPages) {
             $href = esc_url(self::pageUrl($page + 1));
-            $links[] = '<a href="' . $href . '" rel="next">' . esc_html__('Older topics', 'bit-connect') . '</a>';
+            $links[] = '<a href="' . $href . '" rel="next">' . esc_html__('Older posts', 'bit-connect') . '</a>';
         }
 
         if (empty($links)) {
@@ -387,7 +387,7 @@ HTML,
         if (isset($topic['comments_count'])) {
             $count = (int) $topic['comments_count'];
             $parts[] = '<span class="bc-whitespace-nowrap">'
-                // translators: %s: number of replies on a topic.
+                // translators: %s: number of replies on a post.
                 . esc_html(\sprintf(_n('%s reply', '%s replies', $count, 'bit-connect'), number_format_i18n($count)))
                 . '</span>';
         }

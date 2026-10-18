@@ -101,9 +101,9 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Topic Types',
+            'name'       => 'Topics',
             'capability' => Capabilities::MANAGE->value,
-            'slug'       => Config::SLUG . '#/topic-types',
+            'slug'       => Config::SLUG . '#/topics',
         ];
     }
 
@@ -139,9 +139,9 @@ final class Menu
         return [
             'parent'     => Config::SLUG,
             'type'       => 'submenu',
-            'name'       => 'Topics',
+            'name'       => 'Posts',
             'capability' => Capabilities::MODERATE->value,
-            'slug'       => Config::SLUG . '#/topics',
+            'slug'       => Config::SLUG . '#/posts',
         ];
     }
 

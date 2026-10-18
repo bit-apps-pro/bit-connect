@@ -105,7 +105,7 @@ export default function StageModal({
         <SlugField isEditMode={isEditMode} onChange={onSlugChange} />
 
         <Form.Item
-          extra={__('Used for the stage badge on topic cards.')}
+          extra={__('The color of the stage badge on post cards.')}
           label={__('Color')}
           name="color"
           normalize={value => {

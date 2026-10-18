@@ -26,14 +26,14 @@ export default function TopicListFiltersSection({ disabled, form, onPatchFilter 
     () =>
       [
         {
-          description: __('How the topic list is sorted: newest, oldest or most active.'),
+          description: __('The sort order of the post list: newest, oldest or most active.'),
           key: 'sort',
           label: __('Sort')
         },
         {
-          description: __('A row of chips over the list, one per topic type.'),
+          description: __('A row of chips above the list, one for each topic.'),
           key: 'types',
-          label: __('Topic types')
+          label: __('Topics')
         },
         {
           description: __('Narrow the list down to a tag.'),
@@ -47,9 +47,9 @@ export default function TopicListFiltersSection({ disabled, form, onPatchFilter 
   return (
     <SectionCard
       subtitle={__(
-        'Select the filters that visitors can use to narrow the topic list. Links that people already shared continue to work when you hide a filter.'
+        'Select the filters that visitors can use to narrow the post list. If you hide a filter, links that people already shared continue to work.'
       )}
-      title={__('Topic list filters')}
+      title={__('Post list filters')}
     >
       <SettingRow full label={__('Filters visitors can use')}>
         <div className="bc-flex bc-flex-wrap bc-gap-3">

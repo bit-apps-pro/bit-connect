@@ -127,7 +127,7 @@ export default function FollowingPage() {
       <header className="bc-flex bc-flex-col bc-gap-1">
         <h1 className="bc-m-0 bc-text-2xl bc-font-semibold bc-text-ink">{__('Following')}</h1>
         <p className="bc-m-0 bc-text-sm bc-text-ink-muted">
-          {__('Topics and tags you follow. You are notified when they get new activity.')}
+          {__('Posts and tags you follow. You get a notification when they have new activity.')}
         </p>
       </header>
 
@@ -137,7 +137,7 @@ export default function FollowingPage() {
             <Chip
               count={topics.pagination?.total}
               isActive={tab === 'topics'}
-              label={__('Topics')}
+              label={__('Posts')}
               onClick={() => setTab('topics')}
             />
             <Chip
@@ -164,7 +164,7 @@ export default function FollowingPage() {
             </Button>
           }
           icon={<LuBookmarkCheck size={22} />}
-          text={__('Sign in to see the topics and tags you follow.')}
+          text={__('Sign in to see the posts and tags you follow.')}
         />
       )}
     </div>
@@ -232,9 +232,9 @@ function TopicsTab({
   if (topics.length === 0) {
     return (
       <EmptyState
-        action={<Button onClick={() => navigate(routePath('/'))}>{__('Browse topics')}</Button>}
+        action={<Button onClick={() => navigate(routePath('/'))}>{__('Browse posts')}</Button>}
         icon={<LuMessagesSquare size={22} />}
-        text={__('You are not following any topics yet. Follow one from its page, or take part in it.')}
+        text={__('You do not follow any posts yet. Follow a post from its page, or take part in it.')}
       />
     )
   }
@@ -271,9 +271,9 @@ function TermsTab({ isLoading, terms }: { isLoading: boolean; terms: FollowedTer
   if (terms.length === 0) {
     return (
       <EmptyState
-        action={<Button onClick={() => navigate(routePath('/'))}>{__('Browse topics')}</Button>}
+        action={<Button onClick={() => navigate(routePath('/'))}>{__('Browse posts')}</Button>}
         icon={<LuHash size={22} />}
-        text={__('You are not following any tags yet. Open a tag and follow it to hear about its new topics.')}
+        text={__('You do not follow any tags yet. Open a tag and follow it to get notified about its new posts.')}
       />
     )
   }
@@ -297,9 +297,9 @@ function TermCard({ archive, term }: FollowedTerm) {
 
   const count =
     term.count === 1
-      ? __('1 topic')
-      : // translators: %d: how many topics the tag has.
-        sprintf(__('%d topics'), term.count)
+      ? __('1 post')
+      : // translators: %d: how many posts the tag has.
+        sprintf(__('%d posts'), term.count)
 
   return (
     <article className="bc-flex bc-flex-col bc-gap-3 bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-4">
@@ -327,7 +327,7 @@ function TermCard({ archive, term }: FollowedTerm) {
 
       <div className="bc-mt-auto bc-flex bc-gap-2">
         <Button block onClick={() => navigate(to)}>
-          {__('View topics')}
+          {__('View posts')}
         </Button>
         <UnfollowButton archive={archive} term={term} />
       </div>

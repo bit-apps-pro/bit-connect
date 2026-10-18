@@ -27,7 +27,7 @@ const PUBLIC_ONLY: VisibilityOption[] = [
       'div',
       { className: 'bc-flex bc-items-center bc-gap-2' },
       h(LuGlobe, { size: 16 }),
-      __('Public Topic')
+      __('Public Post')
     ),
     value: 'publish'
   }

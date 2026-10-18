@@ -56,7 +56,7 @@ export default function useFollowMenuItem({
         notificationApi?.success({
           message: follow
             ? __('You will be notified about new replies.')
-            : __('You will no longer be notified about this topic.')
+            : __('You will no longer be notified about this post.')
         })
       },
       () => {
@@ -75,8 +75,8 @@ export default function useFollowMenuItem({
     if (following && source === 'auto') {
       return __('You are following this because you took part.')
     }
-    if (following) return __('You chose to follow this topic.')
-    if (muted) return __('You muted this topic.')
+    if (following) return __('You chose to follow this post.')
+    if (muted) return __('You muted this post.')
 
     return __('Notify me when someone replies.')
   })()

@@ -90,7 +90,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
 
   const severity = severityOf(entry.count)
   const isComment = entry.target_type === 'comment'
-  const kindLabel = isComment ? __('Comment') : __('Topic')
+  const kindLabel = isComment ? __('Comment') : __('Post')
   const heading = entry.title || plain(entry.excerpt).slice(0, 90) || __('(no content)')
   const isBusy = deciding !== undefined
   // The same people can report more than one thing, and the queue lists a name
@@ -276,7 +276,7 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
               description={
                 isComment
                   ? __('The reply and everything posted underneath it are deleted for good.')
-                  : __('The topic and its replies are deleted for good.')
+                  : __('The post and its replies are deleted for good.')
               }
               okButtonProps={{ danger: true }}
               okText={__('Remove it')}

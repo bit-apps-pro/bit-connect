@@ -64,7 +64,7 @@ class NotificationMailerTest extends TestCase
         $line = NotificationMailer::line(self::row(NotificationTypes::TOPIC_REPLY, []));
 
         $this->assertStringNotContainsString('""', $line, 'an empty pair of quotes reads as a bug');
-        $this->assertStringContainsString('a topic', $line);
+        $this->assertStringContainsString('a post', $line);
     }
 
     /**
