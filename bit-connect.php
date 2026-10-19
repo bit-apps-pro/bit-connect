@@ -4,7 +4,7 @@
  * Plugin Name:  Bit Connect
  * Plugin URI:   https://bitconnect.pro/
  * Description:  A community forum for WordPress where users raise feature requests, report issues, send feedback and vote on what gets built next.
- * Version:     1.0.3
+ * Version:     1.0.4
  * Author:       Bit Apps
  * Author URI:   https://bitapps.pro
  * Text Domain:  bit-connect

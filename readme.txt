@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -195,6 +195,11 @@ Yes. Bit Connect Pro lets you create public or private groups, add different typ
 One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.4 =
+* The authentication settings show if WordPress lets visitors register.
+* The plugin name is now "Bit Connect".
+* Fixed: translated text shows numbered placeholders and percent signs correctly.
 
 = 1.0.3 =
 * The portal loads faster. The page includes the data for its first requests.
