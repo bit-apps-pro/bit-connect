@@ -50,24 +50,49 @@ describe('the number on the bell', () => {
     expect(result.current.unreadCount).toBe(4)
   })
 
-  it('takes the server’s number once the poll answers', async () => {
+  // The page printed the number a moment ago; asking again at once was a full
+  // WordPress load for nothing on every page a member opened.
+  it('does not ask the server for the number the page just sent', async () => {
     vi.mocked(get).mockResolvedValue({ data: { unread: 9 } } as never)
     const { wrapper } = createQueryWrapper()
 
     const { result } = renderHook(() => useUnreadCount(), { wrapper })
+    await new Promise(resolve => setTimeout(resolve, 50))
 
-    await waitFor(() => expect(result.current.unreadCount).toBe(9))
+    expect(get).not.toHaveBeenCalled()
+    expect(result.current.unreadCount).toBe(4)
+  })
+
+  it('takes the server’s number once the poll answers', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      vi.mocked(get).mockResolvedValue({ data: { unread: 9 } } as never)
+      const { wrapper } = createQueryWrapper()
+
+      const { result } = renderHook(() => useUnreadCount(), { wrapper })
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      await waitFor(() => expect(result.current.unreadCount).toBe(9))
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   // A response the shape of which the client did not expect must read as zero
   // rather than as NaN on the badge.
   it('reads an unexpected answer as none rather than as nonsense', async () => {
-    vi.mocked(get).mockResolvedValue({ data: {} } as never)
-    const { wrapper } = createQueryWrapper()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      vi.mocked(get).mockResolvedValue({ data: {} } as never)
+      const { wrapper } = createQueryWrapper()
 
-    const { result } = renderHook(() => useUnreadCount(), { wrapper })
+      const { result } = renderHook(() => useUnreadCount(), { wrapper })
+      await vi.advanceTimersByTimeAsync(60_000)
 
-    await waitFor(() => expect(result.current.unreadCount).toBe(0))
+      await waitFor(() => expect(result.current.unreadCount).toBe(0))
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('wears the same envelope the cache holds', () => {
@@ -215,7 +240,7 @@ describe('the full list', () => {
 describe('marking notifications read', () => {
   // Clearing the bell *is* the receipt for the click, and a receipt that
   // arrives a round trip later reads as nothing having happened.
-  it('drops the badge to zero the moment "mark all" is confirmed', async () => {
+  it('drops the badge to zero when "mark all" lands', async () => {
     vi.mocked(post).mockResolvedValue({ data: { read: 4 } } as never)
     const { queryClient, wrapper } = createQueryWrapper()
 
@@ -294,5 +319,55 @@ describe('marking notifications read', () => {
     await expect(result.current.markRead({ all: true })).rejects.toThrow('Not allowed.')
 
     expect(queryClient.getQueryData([UNREAD_KEY])).toEqual(unreadEnvelope(5))
+  })
+
+  // On a slow site the server can take a second or more to answer. The bell
+  // must not wait for it.
+  it('clears the badge at the click, before the server answers', async () => {
+    vi.mocked(post).mockReturnValue(
+      new Promise(() => {
+        /* never settles */
+      })
+    )
+    const { queryClient, wrapper } = createQueryWrapper()
+
+    queryClient.setQueryData([UNREAD_KEY], unreadEnvelope(4))
+
+    const { result } = renderHook(() => useMarkNotificationsRead(), { wrapper })
+
+    void result.current.markRead({ all: true })
+
+    await waitFor(() => expect(queryClient.getQueryData([UNREAD_KEY])).toEqual(unreadEnvelope(0)))
+  })
+
+  it('shows the marked rows as read in the list at the click', async () => {
+    vi.mocked(post).mockReturnValue(
+      new Promise(() => {
+        /* never settles */
+      })
+    )
+    const { queryClient, wrapper } = createQueryWrapper()
+    const listKey = [NOTIFICATIONS_KEY, { page: 1 }]
+
+    queryClient.setQueryData(listKey, {
+      data: {
+        data: [
+          { id: 1, read: false },
+          { id: 2, read: false }
+        ],
+        pagination: { current_page: 1, per_page: 10, total: 2, total_pages: 1 },
+        unread: 2
+      }
+    })
+
+    const { result } = renderHook(() => useMarkNotificationsRead(), { wrapper })
+
+    void result.current.markRead({ ids: [1] })
+
+    await waitFor(() =>
+      expect(queryClient.getQueryData(listKey)).toMatchObject({
+        data: { data: [{ id: 1, read: true }, { id: 2, read: false }], unread: 1 }
+      })
+    )
   })
 })

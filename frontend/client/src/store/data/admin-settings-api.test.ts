@@ -2,7 +2,12 @@ import getRequest from '@utils/request/get'
 import postRequest from '@utils/request/post'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { defaultSettings, fetchAdminSettingsApi, updateAdminSettingsApi } from './admin-settings-api'
+import {
+  defaultSettings,
+  fetchAdminSettingsApi,
+  resetAdminSettingsForTests,
+  updateAdminSettingsApi
+} from './admin-settings-api'
 
 vi.mock('@utils/request/get', () => ({ default: vi.fn() }))
 vi.mock('@utils/request/post', () => ({ default: vi.fn() }))
@@ -13,6 +18,7 @@ vi.mock('@utils/request/post', () => ({ default: vi.fn() }))
 // never opened the screen would silently lose the controls it always had.
 beforeEach(() => {
   vi.clearAllMocks()
+  resetAdminSettingsForTests()
 })
 
 describe('reading the portal settings', () => {
@@ -105,5 +111,35 @@ describe('writing the portal settings', () => {
 
     expect(stored.topicAccess.upvote).toBe(true)
     expect(stored.topicFormFields).toEqual(defaultSettings.topicFormFields)
+  })
+})
+
+describe('asking once per page', () => {
+  it('sends one request for callers that ask at the same time', async () => {
+    vi.mocked(getRequest).mockResolvedValue({ data: defaultSettings } as never)
+
+    await Promise.all([fetchAdminSettingsApi(), fetchAdminSettingsApi()])
+
+    expect(getRequest).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks again after a request that failed', async () => {
+    vi.mocked(getRequest).mockRejectedValueOnce(new Error('offline'))
+    await expect(fetchAdminSettingsApi()).rejects.toThrow('offline')
+
+    vi.mocked(getRequest).mockResolvedValue({ data: defaultSettings } as never)
+    await fetchAdminSettingsApi()
+
+    expect(getRequest).toHaveBeenCalledTimes(2)
+  })
+
+  it('reads back what a save stored, without asking', async () => {
+    const saved = { ...defaultSettings, topicAccess: { comment: true, upvote: true } }
+    vi.mocked(postRequest).mockResolvedValue({ data: saved } as never)
+
+    await updateAdminSettingsApi(saved)
+
+    await expect(fetchAdminSettingsApi()).resolves.toEqual(saved)
+    expect(getRequest).not.toHaveBeenCalled()
   })
 })

@@ -31,9 +31,9 @@ interface CommentItemProps {
   depth?: number
   /** The comment a link asked for, if the page was opened with one. */
   focusedCommentId?: number
-  onDelete?: (commentId: number) => void
-  onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
-  onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
+  onDelete?: (commentId: number) => Promise<void>
+  onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => Promise<boolean>
+  onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => Promise<boolean>
   /** Draws the upvote control for this reply, when the forum offers one. */
   renderVote?: (comment: Comment) => ReactNode
   replyParentId?: number
@@ -84,18 +84,24 @@ export default function CommentItem({
 
   const app = AntApp.useApp()
 
-  const handleReply = (content: string, attachments?: WPAttachmentData[]) => {
-    if (onReply) {
-      onReply(replyParentId ?? comment.id, content, attachments)
-    }
+  // The editor stays open, its button spinning, until the server answers: it
+  // used to close at the click and leave nothing on screen until the comment
+  // arrived, and a failure threw away what the member wrote.
+  const handleReply = async (content: string, attachments?: WPAttachmentData[]) => {
+    const landed = onReply ? await onReply(replyParentId ?? comment.id, content, attachments) : true
+    if (landed === false) return false
     setShowReplyEditor(false)
+    // Open the thread, or the new comment lands behind a closed "1 comment"
+    // toggle and the member cannot see what they just posted.
+    setRepliesCollapsed(false)
+    return true
   }
 
-  const handleEdit = (content: string, attachments?: WPAttachmentData[]) => {
-    if (onEdit) {
-      onEdit(comment.id, content, attachments)
-    }
+  const handleEdit = async (content: string, attachments?: WPAttachmentData[]) => {
+    const landed = onEdit ? await onEdit(comment.id, content, attachments) : true
+    if (landed === false) return false
     setIsEditing(false)
+    return true
   }
 
   const handleCancelEdit = () => {
@@ -111,11 +117,9 @@ export default function CommentItem({
       content: 'This will permanently delete this comment and all its replies.',
       okButtonProps: { danger: true },
       okText: __('Delete'),
-      onOk: () => {
-        if (onDelete) {
-          onDelete(comment.id)
-        }
-      },
+      // Returned, so the dialog holds its spinner until the comment is gone
+      // rather than closing on a comment that is still on screen.
+      onOk: () => onDelete?.(comment.id),
       title: __('Delete comment?')
     })
   }
@@ -382,7 +386,7 @@ export default function CommentItem({
                     size="small"
                     type="text"
                   >
-                    {__('Reply')}
+                    {__('Comment')}
                   </Button>
                 )}
                 {/* Out in the row rather than in the menu beside it: a link to
@@ -428,7 +432,7 @@ export default function CommentItem({
                     type="text"
                   >
                     {repliesCollapsed
-                      ? `${comment.replies.length} ${comment.replies.length === 1 ? __('reply') : __('replies')}`
+                      ? `${comment.replies.length} ${comment.replies.length === 1 ? __('comment') : __('comments')}`
                       : __('Hide')}
                   </Button>
                 </div>

@@ -14,18 +14,22 @@ Build a community, forum, feedback portal and public roadmap with posts, profile
 
 **Bit Connect is a community plugin and forum plugin for building discussion forums, customer communities, feedback portals and public roadmaps directly on your WordPress website.**
 
-Members can create posts, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap. They can organize posts with topics, tags, stages and statuses.
+Members can create posts, join threaded discussions, upvote ideas, follow conversations, manage profiles and receive notifications. Product and service teams can also use Bit Connect as a feature request board, customer feedback portal and roadmap by organizing posts with topics, tags, stages and statuses. With Bit Connect Pro, you can also create public or private groups, run polls and manage private discussions.
+
+= 🔗 Useful Links =
+
+🚀 [Try Full Version Demo](https://towp.io/) | 🚀 [Docs](https://bitconnect.pro/docs/) | 🚀 [Support](https://tawk.to/chat/60eac4b6d6e7610a49aab375/1faah0r3e) | 🚀 [Facebook Group](https://www.facebook.com/groups/3308027439209387) | 🚀 [Upgrade to Pro](https://bitconnect.pro/) | 🚀 [Bit Connect Repository](https://github.com/Bit-Apps-Pro/bit-connect)
 
 = Bit Connect Features =
 
 * **Front-end community portal:** Create a dedicated community or discussion forum on your own website.
 * **Public or members-only community:** Allow everyone to view the portal or limit access to logged-in members.
-* **Posts and discussions:** Members can create posts. If permitted, they can edit or delete their own posts.
+* **Posts and discussions:** Members can create posts and, when permitted, edit or delete their own posts.
 * **Comments and threaded replies:** Keep conversations organized with nested replies.
 * **@mentions:** Mention other members inside posts and replies.
-* **Post upvotes:** Let members vote on ideas, questions and feature requests.
+* **Post upvotes:** Let members vote on ideas, questions, feature requests and discussions.
 * **Feature requests and roadmap:** Collect ideas and feedback and move posts through stages and statuses.
-* **Post organization:** Use topics, tags, stages and statuses.
+* **Post organization:** Use topics, tags, stages and statuses to organize discussions and feedback.
 * **Search, sorting and filters:** Help members find relevant community discussions.
 * **Attachments:** Allow supported files on posts and replies.
 * **Following:** Members can follow posts, tags or the whole community.
@@ -36,15 +40,32 @@ Members can create posts, join threaded discussions, upvote ideas, follow conver
 * **Custom authentication URLs:** Use an existing login or registration page when needed.
 * **Content reporting:** Let logged-in members report inappropriate posts or replies.
 * **Moderation queue:** Review reports and take action on community content.
-* **Moderation controls:** Remove content, pin useful posts, lock discussions and review moderation activity.
-* **Role-based permissions:** Control who can post, reply, vote, moderate, pin, lock or manage the community.
+* **Moderation controls:** Remove inappropriate content, lock discussions and review moderation activity.
+* **Role-based permissions:** Control who can post, reply, vote, moderate, lock or manage the community.
 * **Community dashboard:** Track posts, comments, members, votes, monthly activity, top posts and recent posts.
 * **Community branding:** Set the community title, logo and portal options.
 * **Community SEO:** Server-rendered portal content, titles, descriptions, canonical URLs, social tags, structured data, archive controls and community sitemaps.
 
+= More Features with Bit Connect Pro =
+
+Bit Connect Pro adds more ways to organize communities, engage members and manage discussions.
+
+* **Public and private groups:** Create dedicated spaces for products, departments, teams or interests, with membership and posting controls.
+* **Advanced polls:** Create single-choice, multiple-choice, image, ranking, meeting availability and yes/no polls.
+* **Private posts:** Let members create discussions visible only to themselves and moderators.
+* **Comment upvotes:** Allow members to upvote individual replies and sort discussions by the most-voted replies.
+* **Pinned posts and replies:** Highlight important posts and helpful answers.
+* **Profile badges:** Create and assign custom badges to recognize community members.
+* **Post approval:** Review new member posts before making them publicly visible.
+* **Advanced moderation:** Automatically hide reported content when it reaches a configured report threshold.
+* **Posting limits:** Control text length, attachments, file sizes and allowed file types.
+* **Portal banners:** Display configurable image banners inside the community portal.
+* **Advanced notifications:** Configure notification emails, custom sender details and daily or weekly email digests.
+* **Individual permissions:** Override role-based permissions for specific community members.
+
 = Easy Community Management =
 
-Run your community from one place. Manage posts, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress.
+Run your community from one place. Manage posts, member access, reports, moderation, permissions and community settings without sending users to a separate platform. Bit Connect keeps your forum, feedback portal and day-to-day community management inside WordPress easily.
 
 = User-Friendly Community Dashboard =
 
@@ -52,23 +73,23 @@ See what is happening across your community from a simple dashboard. Track total
 
 = Member Profiles =
 
-Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their posts, comments and activity across the community forum in one place.
+Give every member a clear identity inside your community. Users can add a profile photo, cover image, display name, custom profile URL, bio and supported social links, while profile areas show their posts, comments and activity across the community. With Bit Connect Pro, you can also assign custom profile badges to recognize members.
 
 = Organized Discussions and Engagement =
 
-Create an easy-to-follow discussion forum with posts, threaded replies, @mentions, attachments, search, filters and post upvotes. Members can ask questions, share ideas and join conversations, while the most popular posts rise to the top and good discussions stay easier to find, follow and revisit.
+Create an easy-to-follow WordPress discussion forum with posts, threaded replies, @mentions, attachments, search, filters and post upvotes. Members can ask questions, share ideas and join conversations, while useful community discussions stay easier to find, follow and revisit. Bit Connect Pro adds comment upvotes, pinned replies and interactive polls for more ways to engage members.
 
 = Feature Requests and Public Roadmaps =
 
-Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote posts, while you organize feedback by topic, tag, stage and status so everyone can follow progress clearly.
+Turn Bit Connect into a WordPress feature request plugin, customer feedback portal and public roadmap. Members can submit ideas, discuss requests and upvote posts, while you organize feedback by topic, tag, stage and status so everyone can follow progress clearly. With Bit Connect Pro, you can also create dedicated groups for different products, departments or teams.
 
 = Following and Notifications =
 
-Keep members connected to the conversations that matter. Users can follow posts, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, post activity and other relevant community updates automatically.
+Keep members connected to the conversations that matter. Users can follow posts, tags or the whole community, then receive supported in-app and email notifications for replies, mentions, post activity and other relevant community updates. Bit Connect Pro adds advanced notification controls, customizable emails and daily or weekly email digests.
 
 = Moderation and Role Permissions =
 
-Keep your forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content, pin useful posts and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community.
+Keep your WordPress forum organized with built-in community moderation. Members can report inappropriate content, while moderators can review reports, remove content and lock discussions. Role-based permissions control who can post, vote, moderate or manage the community. Bit Connect Pro adds post approval, automatic report-based hiding, post and reply pinning, and individual permission overrides.
 
 = SEO-Ready Community Content =
 
@@ -76,17 +97,17 @@ Make your community easier for search engines to understand. Bit Connect handles
 
 = Flexible Community Access and Authentication =
 
-Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed.
+Control who can enter your community and how members sign in. Keep the portal public or members-only, use Bit Connect login and signup, require email verification, support password and email changes, or connect your existing login and registration pages when needed easily.
 
 = Customizable Community Portal =
 
-Make the community feel like part of your own site. Set the community title and logo, choose the portal page and slug, control visible portal filters, and organize the experience around your forum, product community, customer community, feedback portal or member discussion area.
+Make the community feel like part of your own site. Set the community title and logo, choose the portal page and slug, control visible portal filters, and organize the experience around your forum, product community, customer community, feedback portal or member discussion area. With Bit Connect Pro, you can also display customizable banners inside the portal.
 
 = Who Can Use Bit Connect? =
 
 Bit Connect is built for product and service providers, SaaS teams, LMS platforms, WooCommerce stores, membership sites, support communities, creators, agencies, project teams, community owners and individuals who want to keep discussions, feedback and member activity on WordPress.
 
-It can work as a traditional forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
+It can work as a traditional WordPress forum, but it can also serve as a product community, customer feedback portal, feature request board or public roadmap. The same community can combine discussions, ideas, questions, votes and progress updates in one place.
 
 = Source Code =
 
@@ -116,12 +137,6 @@ The portal's text is set in **Inter** (© 2016 The Inter Project Authors) and it
 * [**Bit SMTP:**](https://bit-smtp.com/) SMTP email delivery plugin for WordPress.
 * [**Bit CRM:**](https://bit-crm.com/) CRM for managing leads, contacts, deals, invoices and sales activity.
 
-= Useful Links =
-
-Join our [Bit Apps Community](https://www.facebook.com/groups/bitcommunityusers) for the latest plugin updates.
-
-View the full, uncompiled source code and build instructions on [GitHub](https://github.com/bit-apps-pro/bit-connect/). See *Source Code* above.
-
 == External Services ==
 
 This plugin relies on one external service, the Bit Apps API, and only from a single admin screen. It receives none of your site's content, your members' details or your settings. The public forum portal contacts no third party at all: the **Inter** and **Outfit** typefaces it is set in ship inside the plugin (SIL Open Font License 1.1) and is served from your own site.
@@ -147,13 +162,13 @@ Alternatively, you can download the plugin zip file from [its WordPress.org page
 
 == Frequently Asked Questions ==
 
-= Is Bit Connect a forum plugin or community plugin? =
+= Is Bit Connect a WordPress forum plugin or community plugin? =
 
 Both. Bit Connect includes forum-style posts, comments and threaded replies while also supporting customer communities, product discussions, feature requests, feedback and public roadmaps.
 
 = Can I use Bit Connect for feature requests and a public roadmap? =
 
-Yes. Members can submit ideas and feedback, discuss requests and upvote posts. You can organize them with topics, tags, stages and statuses.
+Yes. Members can submit ideas and feedback, discuss requests and upvote posts. You can organize them with topics, tags, stages and statuses. Bit Connect Pro also lets you create dedicated groups for different products or teams.
 
 = Can I use Bit Connect for a SaaS or product community? =
 
@@ -169,7 +184,11 @@ Yes. The portal can be public or limited to logged-in users. Role-based capabili
 
 = Does Bit Connect include member profiles and notifications? =
 
-Yes. Members can create profiles and receive supported in-app and email notifications for community activity.
+Yes. Members can create profiles and receive supported in-app and email notifications for community activity. Bit Connect Pro also adds custom profile badges, advanced notification controls and email digests.
+
+= Does Bit Connect support groups, polls and private discussions? =
+
+Yes. Bit Connect Pro lets you create public or private groups, add different types of polls to posts and allow members to create private discussions. It also includes comment upvotes, profile badges and additional moderation controls.
 
 = Does the plugin contact any external servers? =
 

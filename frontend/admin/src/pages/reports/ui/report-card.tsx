@@ -275,8 +275,8 @@ export default function ReportCard({ entry, isPending, outcome }: ReportCardProp
               cancelText={__('Cancel')}
               description={
                 isComment
-                  ? __('The reply and everything posted underneath it are deleted for good.')
-                  : __('The post and its replies are deleted for good.')
+                  ? __('This permanently deletes the comment and all comments under it.')
+                  : __('This permanently deletes the post and all its comments.')
               }
               okButtonProps={{ danger: true }}
               okText={__('Remove it')}

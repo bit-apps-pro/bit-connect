@@ -84,8 +84,11 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
     fetchSettings().catch(console.error)
   }, [fetchSettings])
 
+  // Only when the page said "logged in" but sent no user. A guest used to ask
+  // too, on every page, though the page had already answered: auth/me can only
+  // say "not logged in" to a request that sends no nonce, as a guest's does.
   useEffect(() => {
-    if (!isLoggedIn || !user) {
+    if (isLoggedIn && !user) {
       checkAuth()
     }
   }, [checkAuth, isLoggedIn, user])

@@ -37,9 +37,24 @@ function normalizeAdminSettings(data: unknown): AdminSettings {
   }
 }
 
-export async function fetchAdminSettingsApi(): Promise<AdminSettings> {
-  const response = await getRequest<AdminSettings>('settings')
-  return normalizeAdminSettings(response.data)
+let pending: Promise<AdminSettings> | undefined
+
+/**
+ * The forum options the portal reads — asked for once per page.
+ *
+ * The header and the topic page both asked for them as they mounted, which sent
+ * the request twice on every topic page. The first answer serves the page; a
+ * save replaces it (below), and a failed request is forgotten.
+ */
+export function fetchAdminSettingsApi(): Promise<AdminSettings> {
+  pending ??= getRequest<AdminSettings>('settings')
+    .then(response => normalizeAdminSettings(response.data))
+    .catch((error: unknown) => {
+      pending = undefined
+      throw error
+    })
+
+  return pending
 }
 
 export async function updateAdminSettingsApi(settings: AdminSettings): Promise<AdminSettings> {
@@ -47,7 +62,15 @@ export async function updateAdminSettingsApi(settings: AdminSettings): Promise<A
     body: settings
   })
 
-  return normalizeAdminSettings(response.data)
+  const saved = normalizeAdminSettings(response.data)
+  pending = Promise.resolve(saved)
+
+  return saved
+}
+
+/** Tests only: forget the shared answer, as a new page would. */
+export const resetAdminSettingsForTests = () => {
+  pending = undefined
 }
 
 export { defaultSettings }

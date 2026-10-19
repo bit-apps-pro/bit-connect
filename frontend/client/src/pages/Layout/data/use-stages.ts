@@ -1,6 +1,6 @@
-import { wpApi } from '@utils/request/wp-api'
-import sortByOrder from '@utils/sort-by-order'
 import { create } from 'zustand'
+
+import { fetchStagesApi } from '@/store/data/fetch-stages-api'
 
 export interface Stage {
   description?: string
@@ -37,11 +37,7 @@ export const useStagesStore = create<StagesStore>((set, get) => ({
 
     set({ error: undefined, isLoading: true })
     try {
-      const response = await wpApi<'', Stage[]>('bit-connect-stages', {
-        method: 'GET',
-        queryParam: { per_page: 100 }
-      })
-      set({ isLoading: false, stages: sortByOrder(response.data || []) })
+      set({ isLoading: false, stages: await fetchStagesApi<Stage>() })
     } catch (error) {
       const errorMessage = (error as Error).message || 'Failed to fetch stages'
       set({ error: errorMessage, isLoading: false })

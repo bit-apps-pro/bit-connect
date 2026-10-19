@@ -36,7 +36,7 @@ enum Capabilities: string
     #[Label('Delete Own Posts')]
     case DELETE_OWN_POST = 'bit_connect_forum_delete_own_post';
 
-    #[Label('Create Comments/Replies')]
+    #[Label('Create Comments')]
     case CREATE_COMMENT = 'bit_connect_forum_create_comment';
 
     #[Label('Edit Own Comments')]
@@ -134,7 +134,7 @@ enum Capabilities: string
             self::CREATE_POST        => __('Create Posts', 'bit-connect'),
             self::EDIT_OWN_POST      => __('Edit Own Posts', 'bit-connect'),
             self::DELETE_OWN_POST    => __('Delete Own Posts', 'bit-connect'),
-            self::CREATE_COMMENT     => __('Create Comments/Replies', 'bit-connect'),
+            self::CREATE_COMMENT     => __('Create Comments', 'bit-connect'),
             self::EDIT_OWN_COMMENT   => __('Edit Own Comments', 'bit-connect'),
             self::DELETE_OWN_COMMENT => __('Delete Own Comments', 'bit-connect'),
             self::CREATE_TAG         => __('Suggest New Tags', 'bit-connect'),

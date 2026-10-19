@@ -21,7 +21,7 @@ describe('Error404', () => {
   it('shows the not-found message instead of navigating away on mount', () => {
     render(<Error404 />)
 
-    expect(screen.getByText('We can’t find that page')).toBeTruthy()
+    expect(screen.getByText('We cannot find that page')).toBeTruthy()
     expect(navigate).not.toHaveBeenCalled()
   })
 

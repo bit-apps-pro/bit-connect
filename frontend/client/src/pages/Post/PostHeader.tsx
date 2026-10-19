@@ -181,7 +181,14 @@ export default function PostHeader({
     return options
   }, [stages, isDarkTheme, postStage])
 
+  // The select shows the chosen term while the request is on its way. It used
+  // to snap back to the old one until the server answered, which on a slow
+  // site read as the choice not having taken.
+  const [pendingStatus, setPendingStatus] = useState<number>()
+  const [pendingStage, setPendingStage] = useState<number>()
+
   const handleStatusChange = async (termId: number) => {
+    setPendingStatus(termId)
     try {
       const updatedTopic = await updatePostStatus(post.ID, termId)
       setPost(updatedTopic)
@@ -190,10 +197,13 @@ export default function PostHeader({
       notificationApi?.error({
         message: (error_ as { message?: string })?.message ?? __('Failed to update status')
       })
+    } finally {
+      setPendingStatus(undefined)
     }
   }
 
   const handleStageChange = async (termId: number) => {
+    setPendingStage(termId)
     try {
       const updatedTopic = await updatePostStage(post.ID, termId)
       setPost(updatedTopic)
@@ -202,6 +212,8 @@ export default function PostHeader({
       notificationApi?.error({
         message: (error_ as { message?: string })?.message ?? __('Failed to update stage')
       })
+    } finally {
+      setPendingStage(undefined)
     }
   }
 
@@ -234,6 +246,9 @@ export default function PostHeader({
 
     const nextLocked = !post.is_locked
     setIsLocking(true)
+    // Flipped at the click, so the menu and the comment box change at once
+    // rather than a round trip later. A failure puts the flag back.
+    setPost({ ...post, is_locked: nextLocked })
 
     try {
       const updatedTopic = await updatePostLockApi(post.ID, nextLocked)
@@ -247,6 +262,7 @@ export default function PostHeader({
           : __('Post unlocked. Members can comment again.')
       })
     } catch (error_) {
+      setPost({ ...post, is_locked: !nextLocked })
       notificationApi?.error({
         message: (error_ as { message?: string })?.message ?? __('Failed to update the post')
       })
@@ -385,13 +401,13 @@ export default function PostHeader({
           aria-label={__('Post stage')}
           className="bc-max-w-full"
           disabled={isUpdatingStage}
-          loading={isStageLoading}
+          loading={isStageLoading || isUpdatingStage}
           onChange={handleStageChange}
           options={stageOptions}
           popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Post stage')}
-          value={post.terms.stages?.term_id}
+          value={pendingStage ?? post.terms.stages?.term_id}
           variant="filled"
         />
       )}
@@ -400,13 +416,13 @@ export default function PostHeader({
           aria-label={__('Post status')}
           className="bc-max-w-full"
           disabled={isUpdatingStatus}
-          loading={isLoading}
+          loading={isLoading || isUpdatingStatus}
           onChange={handleStatusChange}
           options={statusOptions}
           popupMatchSelectWidth={STATUS_MENU_WIDTH}
           size="small"
           title={__('Post status')}
-          value={post.terms.statuses?.term_id}
+          value={pendingStatus ?? post.terms.statuses?.term_id}
           variant="filled"
         />
       ) : (

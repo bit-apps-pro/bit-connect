@@ -179,7 +179,7 @@ export default function InsightsOverview({
                       className="bc-whitespace-nowrap bc-py-3.5 bc-pl-4 bc-pr-5 bc-text-right bc-font-medium"
                       scope="col"
                     >
-                      {__('Replies')}
+                      {__('Comments')}
                     </th>
                   </tr>
                 </thead>

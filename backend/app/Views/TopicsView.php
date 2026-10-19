@@ -99,15 +99,6 @@ class TopicsView extends SSRView
         // });
         $this->baseView->registerAssets();
 
-        // Add asset enqueuing callback
-        $this->getViewAsset()->addEnqueueCallback(
-            function () {
-                if (!wp_script_is('media-upload')) {
-                    wp_enqueue_media();
-                }
-            }
-        );
-
         // Get stages data, in the order an admin arranged them
         $stages = StageService::ordered();
 

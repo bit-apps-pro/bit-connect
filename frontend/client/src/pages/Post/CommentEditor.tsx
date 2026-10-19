@@ -52,7 +52,9 @@ interface CommentEditorProps {
   maxAttachments?: number
   maxVideos?: number
   onCancel?: () => void
-  onSubmit?: (content: string, attachments?: WPAttachmentData[]) => void
+  /** Resolve to `false` when the comment did not land: the editor then keeps
+   *  the text and the files so the member can send them again. */
+  onSubmit?: (content: string, attachments?: WPAttachmentData[]) => Promise<boolean>
   placeholder?: string
   replyTo?: string
   submitButtonText?: string
@@ -392,13 +394,13 @@ export default function CommentEditor({
   }, [revokeAllUrls])
 
   const handleSubmit = useCallback(
-    (html: string) => {
-      if (!onSubmitRef.current) return
+    async (html: string) => {
+      if (!onSubmitRef.current) return false
 
       // Format to WordPress comment-compatible HTML and enforce length limit
       const formatted = formatCommentForWordPress(html)
       // The editor has already said why when this holds; this is the backstop.
-      if (!formatted || countCharacters(formatted) > maxLength) return
+      if (!formatted || countCharacters(formatted) > maxLength) return false
 
       const attachments: WPAttachmentData[] = filesRef.current
         .filter(f => f.wpId)
@@ -410,11 +412,13 @@ export default function CommentEditor({
           url: f.wpUrl || ''
         }))
 
-      onSubmitRef.current(formatted, attachments.length > 0 ? attachments : undefined)
+      const landed = await onSubmitRef.current(formatted, attachments.length > 0 ? attachments : undefined)
+      if (landed === false) return false
 
       revokeAllUrls()
       setFiles([])
       setKey(prev => prev + 1)
+      return true
     },
     [maxLength, revokeAllUrls]
   )
@@ -444,7 +448,7 @@ export default function CommentEditor({
     <div className={styles.commentEditorWrapper}>
       {replyTo && (
         <div className="bc-mb-1 bc-text-[12px] bc-text-ink-muted">
-          {__('Replying to')} <span className="bc-font-semibold">{replyTo}</span>
+          {__('Your comment to')} <span className="bc-font-semibold">{replyTo}</span>
         </div>
       )}
       <div key={key}>

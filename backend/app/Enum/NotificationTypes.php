@@ -37,8 +37,8 @@ enum NotificationTypes: string
     #[Description('A new top-level comment on a post you wrote or follow.')]
     case TOPIC_REPLY = 'topic_reply';
 
-    #[Label('Someone replies to your comment')]
-    #[Description('A direct reply to something you wrote in a thread.')]
+    #[Label('Someone comments on your comment')]
+    #[Description('A comment directly on a comment that you wrote.')]
     case COMMENT_REPLY = 'comment_reply';
 
     #[Label('A new post is published')]
@@ -109,7 +109,7 @@ enum NotificationTypes: string
     {
         return match ($type) {
             self::TOPIC_REPLY          => __('Someone comments on your post', 'bit-connect'),
-            self::COMMENT_REPLY        => __('Someone replies to your comment', 'bit-connect'),
+            self::COMMENT_REPLY        => __('Someone comments on your comment', 'bit-connect'),
             self::TOPIC_NEW            => __('A new post is published', 'bit-connect'),
             self::MENTION              => __('Someone mentions you', 'bit-connect'),
             self::VOTE_RECEIVED        => __('Someone upvotes your post', 'bit-connect'),
@@ -132,7 +132,7 @@ enum NotificationTypes: string
     {
         return match ($type) {
             self::TOPIC_REPLY          => __('A new top-level comment on a post you wrote or follow.', 'bit-connect'),
-            self::COMMENT_REPLY        => __('A direct reply to something you wrote in a thread.', 'bit-connect'),
+            self::COMMENT_REPLY        => __('A comment directly on a comment that you wrote.', 'bit-connect'),
             self::TOPIC_NEW            => __('A post appears under something you follow.', 'bit-connect'),
             self::MENTION              => __('Your name is used in a post or comment.', 'bit-connect'),
             self::VOTE_RECEIVED        => __('Collapsed into one entry per item, so a popular post is one line and not fifty.', 'bit-connect'),

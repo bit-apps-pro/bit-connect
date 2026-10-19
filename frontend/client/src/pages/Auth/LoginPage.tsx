@@ -5,12 +5,13 @@ import { routePath } from '@utils/route-path'
 import { Alert, Button, Checkbox, Form, Input } from 'antd'
 import { useEffect } from 'react'
 import { LuLogIn } from 'react-icons/lu'
-import { Link, useNavigate, useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 
 import config from '@/config/config'
 import { useAuthStore } from '@/store/auth.zustand'
 
 import AuthCard from './AuthCard'
+import useLeaveWhenSignedIn from './use-leave-when-signed-in'
 
 interface LoginFormValues {
   password: string
@@ -20,16 +21,11 @@ interface LoginFormValues {
 
 export default function LoginPage() {
   usePageTitle(__('Log in'))
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
   const { error, isLoading, isLoggedIn, login, setError } = useAuthStore()
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate(redirectTo, { replace: true })
-    }
-  }, [isLoggedIn, navigate, redirectTo])
+  useLeaveWhenSignedIn(isLoggedIn, redirectTo)
 
   // Custom-URL mode hands sign-in over to another page. externalLoginUrl()
   // always resolves to something reachable — the configured page when it is
@@ -50,8 +46,8 @@ export default function LoginPage() {
   const handleSubmit = async (values: LoginFormValues) => {
     setError(undefined)
     try {
+      // useLeaveWhenSignedIn takes the visitor on once the store says so.
       await login({ password: values.password, remember: values.remember, username: values.username })
-      navigate(redirectTo, { replace: true })
     } catch {
       // error is set in the store
     }

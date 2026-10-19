@@ -252,7 +252,7 @@ final class NotificationMailer
 
             case NotificationTypes::COMMENT_REPLY:
                 // translators: 1: member name, 2: post title
-                return \sprintf(__('%1$s replied to you in %2$s', 'bit-connect'), $who, $named);
+                return \sprintf(__('%1$s commented on your comment in %2$s', 'bit-connect'), $who, $named);
 
             case NotificationTypes::TOPIC_NEW:
             case NotificationTypes::TOPIC_POSTED:

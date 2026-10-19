@@ -1,6 +1,7 @@
 import { wpApi } from '@utils/request/wp-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { resetStagesForTests } from './data/fetch-stages-api'
 import { updatePostStageApi } from './data/update-post-stage-api'
 import { useStagesStore } from './stages.zustand'
 
@@ -16,6 +17,7 @@ const stage = (id: number, slug: string, order?: number) => ({
 
 beforeEach(() => {
   vi.clearAllMocks()
+  resetStagesForTests()
   useStagesStore.setState({ error: undefined, isLoading: false, isUpdatingStage: false, stages: [] })
 })
 
@@ -104,5 +106,18 @@ describe('moving a topic to another stage', () => {
 
     expect(useStagesStore.getState().isUpdatingStage).toBe(false)
     expect(useStagesStore.getState().error).toBe('Not allowed.')
+  })
+})
+
+describe('asking once per page', () => {
+  // The sidebar and the topic header each hold the list, and the header asked
+  // again whenever the status list changed length.
+  it('sends one request however many times the list is asked for', async () => {
+    vi.mocked(wpApi).mockResolvedValue({ data: [] } as never)
+
+    await Promise.all([useStagesStore.getState().fetchStages(), useStagesStore.getState().fetchStages()])
+    await useStagesStore.getState().fetchStages()
+
+    expect(wpApi).toHaveBeenCalledTimes(1)
   })
 })

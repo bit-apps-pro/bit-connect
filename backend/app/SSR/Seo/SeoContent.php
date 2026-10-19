@@ -387,8 +387,8 @@ HTML,
         if (isset($topic['comments_count'])) {
             $count = (int) $topic['comments_count'];
             $parts[] = '<span class="bc-whitespace-nowrap">'
-                // translators: %s: number of replies on a post.
-                . esc_html(\sprintf(_n('%s reply', '%s replies', $count, 'bit-connect'), number_format_i18n($count)))
+                // translators: %s: number of comments on a post.
+                . esc_html(\sprintf(_n('%s comment', '%s comments', $count, 'bit-connect'), number_format_i18n($count)))
                 . '</span>';
         }
 
@@ -510,7 +510,7 @@ HTML,
             return '';
         }
 
-        $heading = esc_html__('Replies', 'bit-connect');
+        $heading = esc_html__('Comments', 'bit-connect');
 
         return strtr(
             <<<'HTML'

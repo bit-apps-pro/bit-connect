@@ -21,15 +21,31 @@ export interface Status {
   slug: string
 }
 
+let pending: Promise<Status[]> | undefined
+
 /**
- * Fetch all statuses from bit-connect-statuses endpoint
- * @returns Promise<Status[]> - Array of fetched statuses
+ * Every status, in the order an admin arranged them — asked for once per page.
+ *
+ * The topic header's effect ran again whenever the stage list changed length,
+ * which sent this request twice on one topic page. Statuses change only on the
+ * admin's Status screen, so the first answer serves the whole page; a failed
+ * request is forgotten, so the next caller tries again.
  */
-export async function fetchStatusesApi(): Promise<Status[]> {
-  const response = await wpApi<never, Status[]>('bit-connect-statuses', {
+export function fetchStatusesApi(): Promise<Status[]> {
+  pending ??= wpApi<never, Status[]>('bit-connect-statuses', {
     method: 'GET',
     queryParam: { per_page: 100 }
   })
+    .then(response => (Array.isArray(response.data) ? sortByOrder(response.data) : []))
+    .catch((error: unknown) => {
+      pending = undefined
+      throw error
+    })
 
-  return Array.isArray(response.data) ? sortByOrder(response.data) : []
+  return pending
+}
+
+/** Tests only: forget the shared answer, as a new page would. */
+export const resetStatusesForTests = () => {
+  pending = undefined
 }

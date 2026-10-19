@@ -45,10 +45,10 @@ const TAB_TOTALS: Record<string, string> = {
  */
 const TAB_HELP: Record<string, string> = {
   pending: __(
-    'Reported posts and replies that wait for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.'
+    'Reported posts and comments that wait for a decision. If an item is fine, keep it. The content that the reports hid shows again. If it is not fine, remove it permanently.'
   ),
-  resolved_kept: __('Reviewed and left up. The reporters were told; the author was not.'),
-  resolved_removed: __('Reviewed and deleted for good. The reporters and the author were both told.')
+  resolved_kept: __('Reviewed and kept. The reporters got a notification. The author did not.'),
+  resolved_removed: __('Reviewed and deleted permanently. The reporters and the author got a notification.')
 }
 
 const EMPTY_TEXT: Record<string, string> = {
@@ -87,7 +87,7 @@ function EmptyQueue({ status }: { status: string }) {
       <Text strong>{EMPTY_TEXT[status] ?? __('Nothing here yet.')}</Text>
       {isPending && (
         <Text className="bc-text-sm" type="secondary">
-          {__('When members report a post or reply, it shows here. Keep it if it is fine, or remove it.')}
+          {__('When members report a post or comment, it shows here. Keep it if it is fine, or remove it.')}
         </Text>
       )}
     </div>

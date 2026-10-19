@@ -5,12 +5,13 @@ import { routePath } from '@utils/route-path'
 import { Alert, Button, Form, Input, Result } from 'antd'
 import { useEffect } from 'react'
 import { LuMailCheck, LuUserPlus, LuUserX } from 'react-icons/lu'
-import { Link, useNavigate, useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 
 import config from '@/config/config'
 import { useAuthStore } from '@/store/auth.zustand'
 
 import AuthCard from './AuthCard'
+import useLeaveWhenSignedIn from './use-leave-when-signed-in'
 
 interface RegisterFormValues {
   display_name?: string
@@ -21,7 +22,6 @@ interface RegisterFormValues {
 
 export default function RegisterPage() {
   usePageTitle(__('Sign up'))
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect_to') || '/'
   const {
@@ -34,11 +34,7 @@ export default function RegisterPage() {
     signup
   } = useAuthStore()
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate(redirectTo, { replace: true })
-    }
-  }, [isLoggedIn, navigate, redirectTo])
+  useLeaveWhenSignedIn(isLoggedIn, redirectTo)
 
   // Custom-URL mode sends sign-ups to the site's own page; the resolver always
   // yields a reachable URL, falling back to the WordPress registration URL.

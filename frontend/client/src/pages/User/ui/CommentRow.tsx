@@ -20,7 +20,7 @@ export default function CommentRow({ comment }: { comment: UserComment }) {
     <article className="bc-border-0 bc-border-b bc-border-solid bc-border-line bc-px-4 bc-py-3 last:bc-border-b-0 hover:bc-bg-surface-sunken sm:bc-px-5">
       <div className="bc-mb-1 bc-flex bc-min-w-0 bc-items-center bc-gap-2 bc-text-[12px] bc-text-ink-subtle">
         <LuMessageSquare className="bc-shrink-0" size={13} />
-        <span className="bc-shrink-0">{__('replied to')}</span>
+        <span className="bc-shrink-0">{__('commented on')}</span>
         <Link
           className="bc-truncate bc-font-medium bc-text-primary bc-no-underline hover:bc-underline"
           to={routePath(`/${comment.post_name}`)}

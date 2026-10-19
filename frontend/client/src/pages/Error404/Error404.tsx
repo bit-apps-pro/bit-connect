@@ -34,7 +34,7 @@ export default function Error404() {
               {__('404')}
             </span>
             <h1 className="bc-m-0 bc-text-2xl bc-font-semibold bc-text-ink sm:bc-text-3xl">
-              {__('We can’t find that page')}
+              {__('We cannot find that page')}
             </h1>
             <p className="bc-m-0 bc-text-sm bc-leading-relaxed bc-text-ink-subtle sm:bc-text-base">
               {__(

@@ -1,6 +1,7 @@
 import {
   type InfiniteData,
   keepPreviousData,
+  type QueryKey,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -73,6 +74,9 @@ export const UNREAD_KEY = 'notifications-unread'
 /** How often the bell asks. Paused entirely while the tab is hidden. */
 const POLL_MS = 60_000
 
+/** When the server printed the count the bell starts from. */
+const PAGE_LOADED_AT = Date.now()
+
 type UnreadResponse = ResponseType<{ unread: number }>
 
 /** The cache holds the server's envelope, so the seed has to wear it too. */
@@ -90,6 +94,10 @@ export function useUnreadCount() {
   const { data } = useQuery<UnreadResponse, Error, number>({
     enabled: config.IS_LOGGED_IN,
     initialData: unreadEnvelope(config.UNREAD_NOTIFICATIONS),
+    // The seed is as new as the page, so it stands until the first poll. It
+    // used to count as stale at once, and every page load asked the server for
+    // the number it had just printed — a full WordPress load for each member.
+    initialDataUpdatedAt: PAGE_LOADED_AT,
     queryFn: ({ signal }) => get<{ unread: number }>('notifications/count', { signal }),
     queryKey: [UNREAD_KEY],
     refetchInterval: POLL_MS,
@@ -98,7 +106,8 @@ export function useUnreadCount() {
     // loses focus and refetches on return, which is what we want anyway.
     refetchIntervalInBackground: false,
     retry: false,
-    select: response => Number(response?.data?.unread ?? 0)
+    select: response => Number(response?.data?.unread ?? 0),
+    staleTime: POLL_MS
   })
 
   return { unreadCount: data ?? 0 }
@@ -205,13 +214,40 @@ interface MarkReadPayload {
   ids?: number[]
 }
 
+/** What the caches held before an optimistic mark, to put back on failure. */
+interface MarkReadContext {
+  snapshot: [QueryKey, unknown][]
+}
+
+type FeedCache = InfiniteData<ResponseType<NotificationFeed>> | ResponseType<NotificationFeed>
+
+/** A feed page with the given rows shown as read, and its unread total moved to match. */
+const markFeedRead = (
+  feed: ResponseType<NotificationFeed>,
+  isTarget: (item: NotificationItem) => boolean
+): ResponseType<NotificationFeed> => {
+  if (!feed?.data) return feed
+
+  const marked = feed.data.data.filter(item => !item.read && isTarget(item)).length
+
+  return {
+    ...feed,
+    data: {
+      ...feed.data,
+      data: feed.data.data.map(item => (!item.read && isTarget(item) ? { ...item, read: true } : item)),
+      unread: Math.max(0, feed.data.unread - marked)
+    }
+  }
+}
+
 /**
  * Marks notifications read.
  *
- * The badge is dropped from the cache the moment the server confirms rather
- * than a round trip later: clearing the bell *is* the receipt for the click,
- * and a receipt that arrives after a network wait reads as nothing having
- * happened.
+ * The bell and the rows change at the click, not when the server answers:
+ * clearing the bell *is* the receipt for the click, and on a slow site a
+ * receipt one round trip late reads as nothing having happened. A failed
+ * request puts back what was there, and the refetch after it still runs,
+ * because a number moved locally is a guess until the server agrees.
  */
 export function useMarkNotificationsRead() {
   const queryClient = useQueryClient()
@@ -219,24 +255,45 @@ export function useMarkNotificationsRead() {
   const { isPending, mutateAsync } = useMutation({
     mutationFn: (payload: MarkReadPayload) =>
       post<MarkReadPayload, { read: number }>('notifications/read', { body: payload }),
-    onSuccess: (_response, payload) => {
-      // Written straight into the cache the moment the server confirms rather
-      // than waiting for the refetch below — clearing the bell *is* the receipt
-      // for the click, and a receipt a round trip late reads as nothing having
-      // happened. The refetch still runs, because a number decremented locally
-      // is a guess until the server agrees.
+    onError: (_error, _payload, context: MarkReadContext | undefined) => {
+      for (const [key, data] of context?.snapshot ?? []) queryClient.setQueryData(key, data)
+    },
+    onMutate: async payload => {
+      // A poll landing after this would write the old count back over it.
+      await queryClient.cancelQueries({ queryKey: [UNREAD_KEY] })
+      await queryClient.cancelQueries({ queryKey: [NOTIFICATIONS_KEY] })
+
+      const snapshot = [
+        ...queryClient.getQueriesData({ queryKey: [UNREAD_KEY] }),
+        ...queryClient.getQueriesData({ queryKey: [NOTIFICATIONS_KEY] })
+      ]
+
+      const ids = new Set(payload.ids ?? [])
+      const isTarget = (item: NotificationItem) => Boolean(payload.all) || ids.has(item.id)
+
       queryClient.setQueryData<UnreadResponse>([UNREAD_KEY], cached => {
         const current = Number(cached?.data?.unread ?? 0)
-        const next = payload.all ? 0 : Math.max(0, current - (payload.ids?.length ?? 0))
+        const next = payload.all ? 0 : Math.max(0, current - ids.size)
 
         return unreadEnvelope(next)
       })
 
-      return Promise.all([
+      queryClient.setQueriesData<FeedCache>({ queryKey: [NOTIFICATIONS_KEY] }, cached => {
+        if (!cached) return cached
+        if ('pages' in cached) {
+          return { ...cached, pages: cached.pages.map(page => markFeedRead(page, isTarget)) }
+        }
+
+        return markFeedRead(cached, isTarget)
+      })
+
+      return { snapshot } satisfies MarkReadContext
+    },
+    onSettled: () =>
+      Promise.all([
         queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_KEY] }),
         queryClient.invalidateQueries({ queryKey: [UNREAD_KEY] })
       ])
-    }
   })
 
   return { isMarkingRead: isPending, markRead: mutateAsync }
