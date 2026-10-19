@@ -35,7 +35,7 @@ return [
 
     'Cancel' => __('Cancel', 'bit-connect'),
 
-    'Can’t reach the server.' => __('Can’t reach the server.', 'bit-connect'),
+    'Cannot reach the server.' => __('Cannot reach the server.', 'bit-connect'),
 
     'You’re offline. Changes save when the connection is back.' => __('You’re offline. Changes save when the connection is back.', 'bit-connect'),
 
@@ -183,13 +183,13 @@ return [
 
     'Deleted comment' => __('Deleted comment', 'bit-connect'),
 
-    'Took' => __('Took', 'bit-connect'),
+    'Also deleted' => __('Also deleted', 'bit-connect'),
 
-    'reply' => __('reply', 'bit-connect'),
+    'comment' => __('comment', 'bit-connect'),
 
-    'replies' => __('replies', 'bit-connect'),
+    'comments' => __('comments', 'bit-connect'),
 
-    'down with it.' => __('down with it.', 'bit-connect'),
+    'under it.' => __('under it.', 'bit-connect'),
 
     'report was' => __('report was', 'bit-connect'),
 
@@ -705,11 +705,11 @@ return [
 
     'items removed' => __('items removed', 'bit-connect'),
 
-    'Reported posts and replies that wait for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.' => __('Reported posts and replies that wait for a decision. If something looks fine, keep it and anything the reports hid will come back. Otherwise, remove it for good.', 'bit-connect'),
+    'Reported posts and comments that wait for a decision. If an item is fine, keep it. The content that the reports hid shows again. If it is not fine, remove it permanently.' => __('Reported posts and comments that wait for a decision. If an item is fine, keep it. The content that the reports hid shows again. If it is not fine, remove it permanently.', 'bit-connect'),
 
-    'Reviewed and left up. The reporters were told; the author was not.' => __('Reviewed and left up. The reporters were told; the author was not.', 'bit-connect'),
+    'Reviewed and kept. The reporters got a notification. The author did not.' => __('Reviewed and kept. The reporters got a notification. The author did not.', 'bit-connect'),
 
-    'Reviewed and deleted for good. The reporters and the author were both told.' => __('Reviewed and deleted for good. The reporters and the author were both told.', 'bit-connect'),
+    'Reviewed and deleted permanently. The reporters and the author got a notification.' => __('Reviewed and deleted permanently. The reporters and the author got a notification.', 'bit-connect'),
 
     'Nothing needs review.' => __('Nothing needs review.', 'bit-connect'),
 
@@ -719,7 +719,7 @@ return [
 
     'Nothing here yet.' => __('Nothing here yet.', 'bit-connect'),
 
-    'When members report a post or reply, it shows here. Keep it if it is fine, or remove it.' => __('When members report a post or reply, it shows here. Keep it if it is fine, or remove it.', 'bit-connect'),
+    'When members report a post or comment, it shows here. Keep it if it is fine, or remove it.' => __('When members report a post or comment, it shows here. Keep it if it is fine, or remove it.', 'bit-connect'),
 
     'items' => __('items', 'bit-connect'),
 
@@ -761,9 +761,9 @@ return [
 
     'Looks fine, keep it' => __('Looks fine, keep it', 'bit-connect'),
 
-    'The reply and everything posted underneath it are deleted for good.' => __('The reply and everything posted underneath it are deleted for good.', 'bit-connect'),
+    'This permanently deletes the comment and all comments under it.' => __('This permanently deletes the comment and all comments under it.', 'bit-connect'),
 
-    'The post and its replies are deleted for good.' => __('The post and its replies are deleted for good.', 'bit-connect'),
+    'This permanently deletes the post and all its comments.' => __('This permanently deletes the post and all its comments.', 'bit-connect'),
 
     'Remove it' => __('Remove it', 'bit-connect'),
 
@@ -989,7 +989,7 @@ return [
 
     'Let members comment on posts.' => __('Let members comment on posts.', 'bit-connect'),
 
-    'When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.' => __('When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.', 'bit-connect'),
+    'When the plugin is deleted, remove every post and comment, its terms and settings, and the portal page. You cannot undo this.' => __('When the plugin is deleted, remove every post and comment, its terms and settings, and the portal page. You cannot undo this.', 'bit-connect'),
 
     'Delete data on uninstall' => __('Delete data on uninstall', 'bit-connect'),
 
@@ -1451,9 +1451,9 @@ return [
 
     'Nothing yet' => __('Nothing yet', 'bit-connect'),
 
-    'New replies and mentions will appear here.' => __('New replies and mentions will appear here.', 'bit-connect'),
+    'New comments and mentions will appear here.' => __('New comments and mentions will appear here.', 'bit-connect'),
 
-    'Replies, mentions and moderation decisions will show up here.' => __('Replies, mentions and moderation decisions will show up here.', 'bit-connect'),
+    'Comments, mentions and moderation decisions will appear here.' => __('Comments, mentions and moderation decisions will appear here.', 'bit-connect'),
 
     'Your administrator has set this for everyone.' => __('Your administrator has set this for everyone.', 'bit-connect'),
 
@@ -1498,7 +1498,7 @@ return [
 
     'badge' => __('badge', 'bit-connect'),
 
-    'replied to you in' => __('replied to you in', 'bit-connect'),
+    'commented on your comment in' => __('commented on your comment in', 'bit-connect'),
 
     'Something you wrote was removed after review' => __('Something you wrote was removed after review', 'bit-connect'),
 
@@ -1522,7 +1522,7 @@ return [
 
     'No longer available' => __('No longer available', 'bit-connect'),
 
-    'You will be notified about new replies.' => __('You will be notified about new replies.', 'bit-connect'),
+    'You will get a notification about new comments.' => __('You will get a notification about new comments.', 'bit-connect'),
 
     'You will no longer be notified about this post.' => __('You will no longer be notified about this post.', 'bit-connect'),
 
@@ -1532,7 +1532,7 @@ return [
 
     'You muted this post.' => __('You muted this post.', 'bit-connect'),
 
-    'Notify me when someone replies.' => __('Notify me when someone replies.', 'bit-connect'),
+    'Notify me when someone comments.' => __('Notify me when someone comments.', 'bit-connect'),
 
     'Unfollow' => __('Unfollow', 'bit-connect'),
 
@@ -1558,11 +1558,11 @@ return [
 
     'Share' => __('Share', 'bit-connect'),
 
-    'Share this reply' => __('Share this reply', 'bit-connect'),
+    'Share this comment' => __('Share this comment', 'bit-connect'),
 
     'Share this post' => __('Share this post', 'bit-connect'),
 
-    'Links straight to this reply in' => __('Links straight to this reply in', 'bit-connect'),
+    'Links directly to this comment in' => __('Links directly to this comment in', 'bit-connect'),
 
     'Or copy the link' => __('Or copy the link', 'bit-connect'),
 
@@ -1871,7 +1871,7 @@ return [
 
     'Page not found' => __('Page not found', 'bit-connect'),
 
-    'We can’t find that page' => __('We can’t find that page', 'bit-connect'),
+    'We cannot find that page' => __('We cannot find that page', 'bit-connect'),
 
     'The link is possibly broken, or someone moved or removed the post. Everything else in the community is still here.' => __('The link is possibly broken, or someone moved or removed the post. Everything else in the community is still here.', 'bit-connect'),
 
@@ -1930,7 +1930,7 @@ return [
 
     'Your account does not have permission to comment.' => __('Your account does not have permission to comment.', 'bit-connect'),
 
-    'Replying to' => __('Replying to', 'bit-connect'),
+    'Your comment to' => __('Your comment to', 'bit-connect'),
 
     'Delete comment?' => __('Delete comment?', 'bit-connect'),
 
@@ -1943,8 +1943,6 @@ return [
     'Singled out by the author of this post' => __('Singled out by the author of this post', 'bit-connect'),
 
     'Out of public view while a moderator reviews a report about it' => __('Out of public view while a moderator reviews a report about it', 'bit-connect'),
-
-    'Reply' => __('Reply', 'bit-connect'),
 
     'Loading more...' => __('Loading more...', 'bit-connect'),
 
@@ -1961,10 +1959,6 @@ return [
     'Comment posted successfully' => __('Comment posted successfully', 'bit-connect'),
 
     'Failed to post comment' => __('Failed to post comment', 'bit-connect'),
-
-    'Reply posted successfully' => __('Reply posted successfully', 'bit-connect'),
-
-    'Failed to post reply' => __('Failed to post reply', 'bit-connect'),
 
     'Comment updated successfully' => __('Comment updated successfully', 'bit-connect'),
 
@@ -2161,8 +2155,6 @@ return [
 
     'Change profile picture' => __('Change profile picture', 'bit-connect'),
 
-    'replied to' => __('replied to', 'bit-connect'),
-
     'Could not update your cover' => __('Could not update your cover', 'bit-connect'),
 
     'Cover image updated' => __('Cover image updated', 'bit-connect'),
@@ -2185,8 +2177,6 @@ return [
     'Post Title' => __('Post Title', 'bit-connect'),
 
     'Likes' => __('Likes', 'bit-connect'),
-
-    'Replies' => __('Replies', 'bit-connect'),
 
     'Posts by Topic' => __('Posts by Topic', 'bit-connect'),
 

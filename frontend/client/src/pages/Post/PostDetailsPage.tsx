@@ -135,11 +135,11 @@ export default function PostDetailsPage() {
         commentId,
         attachments?.map(a => a.id)
       )
-      notificationApi?.success({ message: __('Reply posted successfully') })
+      notificationApi?.success({ message: __('Comment posted successfully') })
       return true
     } catch (error_) {
       notificationApi?.error({
-        message: (error_ as { message?: string })?.message ?? __('Failed to post reply')
+        message: (error_ as { message?: string })?.message ?? __('Failed to post comment')
       })
       return false
     }

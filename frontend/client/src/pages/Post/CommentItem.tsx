@@ -91,6 +91,9 @@ export default function CommentItem({
     const landed = onReply ? await onReply(replyParentId ?? comment.id, content, attachments) : true
     if (landed === false) return false
     setShowReplyEditor(false)
+    // Open the thread, or the new comment lands behind a closed "1 comment"
+    // toggle and the member cannot see what they just posted.
+    setRepliesCollapsed(false)
     return true
   }
 
@@ -383,7 +386,7 @@ export default function CommentItem({
                     size="small"
                     type="text"
                   >
-                    {__('Reply')}
+                    {__('Comment')}
                   </Button>
                 )}
                 {/* Out in the row rather than in the menu beside it: a link to
@@ -429,7 +432,7 @@ export default function CommentItem({
                     type="text"
                   >
                     {repliesCollapsed
-                      ? `${comment.replies.length} ${comment.replies.length === 1 ? __('reply') : __('replies')}`
+                      ? `${comment.replies.length} ${comment.replies.length === 1 ? __('comment') : __('comments')}`
                       : __('Hide')}
                   </Button>
                 </div>

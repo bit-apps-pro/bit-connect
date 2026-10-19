@@ -448,7 +448,7 @@ export default function CommentEditor({
     <div className={styles.commentEditorWrapper}>
       {replyTo && (
         <div className="bc-mb-1 bc-text-[12px] bc-text-ink-muted">
-          {__('Replying to')} <span className="bc-font-semibold">{replyTo}</span>
+          {__('Your comment to')} <span className="bc-font-semibold">{replyTo}</span>
         </div>
       )}
       <div key={key}>

@@ -100,7 +100,7 @@ export default function ForumSettings({ section }: ForumSettingsProps) {
     return [
       {
         description: __(
-          'When the plugin is deleted, remove every post and reply, its terms and settings, and the portal page. You cannot undo this.'
+          'When the plugin is deleted, remove every post and comment, its terms and settings, and the portal page. You cannot undo this.'
         ),
         key: 'deleteDataOnUninstall',
         label: __('Delete data on uninstall'),

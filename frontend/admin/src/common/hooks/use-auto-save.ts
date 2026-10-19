@@ -143,7 +143,7 @@ export default function useAutoSave<T>({
         retries.current += 1
         if (wait !== undefined) retryTimer.current = setTimeout(() => void run(), wait)
         setState({
-          error: __('Can’t reach the server.'),
+          error: __('Cannot reach the server.'),
           retrying: wait !== undefined,
           status: 'error'
         })

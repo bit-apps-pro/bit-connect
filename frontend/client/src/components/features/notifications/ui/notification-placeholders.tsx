@@ -40,8 +40,8 @@ export function NotificationsEmpty({ caughtUp = false, compact = false }: EmptyP
       </p>
       <p className="bc-m-0 bc-max-w-[16rem] bc-text-xs bc-text-ink-subtle">
         {caughtUp
-          ? __('New replies and mentions will appear here.')
-          : __('Replies, mentions and moderation decisions will show up here.')}
+          ? __('New comments and mentions will appear here.')
+          : __('Comments, mentions and moderation decisions will appear here.')}
       </p>
     </div>
   )

@@ -95,7 +95,7 @@ function describe(item: NotificationItem) {
     case 'comment_reply': {
       return (
         <>
-          {name} {__('replied to you in')} {subject}
+          {name} {__('commented on your comment in')} {subject}
         </>
       )
     }

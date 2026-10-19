@@ -100,7 +100,7 @@ export default function ActivityDetail({ row }: { row: ActivityRow }) {
           // is the part nobody expects to read in a log either.
           <Note>
             <span className="bc-text-negative">
-              {__('Took')} {lost} {lost === 1 ? __('reply') : __('replies')} {__('down with it.')}
+              {__('Also deleted')} {lost} {lost === 1 ? __('comment') : __('comments')} {__('under it.')}
             </span>
           </Note>
         )}

@@ -51,14 +51,14 @@ export default function ShareDialog() {
       footer={null}
       onCancel={close}
       open={isOpen}
-      title={isComment ? __('Share this reply') : __('Share this post')}
+      title={isComment ? __('Share this comment') : __('Share this post')}
       width={440}
     >
       {/* What is being sent, so the link in the field below is never a guess.
           A reply says so in words rather than showing its own text: the row it
           was opened from is still on screen behind the dialog. */}
       <Text className="bc-mb-3 bc-block bc-text-sm bc-text-ink-muted" ellipsis={{ tooltip: title }}>
-        {isComment ? __('Links straight to this reply in') : ''} {title}
+        {isComment ? __('Links directly to this comment in') : ''} {title}
       </Text>
 
       <div className={styles.channels}>
