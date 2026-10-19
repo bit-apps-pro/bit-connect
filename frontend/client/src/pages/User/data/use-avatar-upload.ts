@@ -30,7 +30,9 @@ export default function useAvatarUpload(userId: number | string | undefined) {
 
   /** Refresh everything that renders this member's picture. */
   const invalidate = async () => {
-    await queryClient.invalidateQueries({ queryKey: ['user-profile', id] })
+    // The profile is cached under its URL slug, so a key with the numeric id
+    // would never match it — invalidate every cached profile instead.
+    await queryClient.invalidateQueries({ queryKey: ['user-profile'] })
     // Topic and comment lists embed the avatar URL in their payloads, so they
     // keep showing the old picture until refetched.
     await queryClient.invalidateQueries({ queryKey: ['user-content'] })

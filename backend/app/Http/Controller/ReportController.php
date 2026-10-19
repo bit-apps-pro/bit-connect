@@ -82,7 +82,7 @@ final class ReportController
                     $targetType,
                     (int) $validated['target_id'],
                     (int) ReportService::targetAuthor($targetType, (int) $validated['target_id']),
-                    ['pending_reports' => $result['pending']]
+                    [...ActivityLogService::titleContext($targetType, (int) $validated['target_id']), 'pending_reports' => $result['pending']]
                 );
             }
         }
@@ -186,6 +186,7 @@ final class ReportController
         // reports have to still be open for the content to go.
         $author = (int) ReportService::targetAuthor($targetType, $targetId);
         $removalContext = $isRemoval ? ContentRemovalService::describe($targetType, $targetId) : [];
+        $titleContext = ActivityLogService::titleContext($targetType, $targetId);
 
         // Both read here for the same reason as the two above, and each would
         // fail differently if left later. The reporters, because resolveTarget()
@@ -258,7 +259,7 @@ final class ReportController
             $targetType,
             $targetId,
             $author,
-            ['closed' => $closed, 'decision' => $status->value],
+            [...$titleContext, 'closed' => $closed, 'decision' => $status->value],
             (string) ($validated['note'] ?? '')
         );
 

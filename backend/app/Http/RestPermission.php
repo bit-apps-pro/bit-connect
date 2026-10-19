@@ -13,6 +13,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\RouteRegister;
 use ReflectionMethod;
 use ReflectionNamedType;
+use WeakMap;
 use WP_Error;
 use WP_REST_Request;
 
@@ -48,6 +49,13 @@ final class RestPermission
      * The router's registration for this route, which the Request binds to.
      */
     private ?RouteRegister $route;
+
+    /**
+     * The checks already built, by the registration they guard.
+     *
+     * @var null|WeakMap<RouteRegister, self>
+     */
+    private static ?WeakMap $checks = null;
 
     /**
      * Holds the action to reflect and the route the Request is built against.
@@ -97,7 +105,7 @@ final class RestPermission
                     continue;
                 }
 
-                $endpoints[$route][$index]['permission_callback'] = [new self($action, $handler['callback'][0]), 'check'];
+                $endpoints[$route][$index]['permission_callback'] = [self::checkFor($action, $handler['callback'][0]), 'check'];
             }
         }
 
@@ -172,6 +180,22 @@ final class RestPermission
         }
 
         return null;
+    }
+
+    /**
+     * One check per route registration for the whole request.
+     *
+     * WordPress filters the route table on every `get_routes()` call — each
+     * dispatch, each Allow header, each nested `rest_do_request()` — so a new
+     * object per route per call adds up on a host with little memory.
+     *
+     * @param array{0: class-string, 1: string} $action
+     */
+    private static function checkFor(array $action, RouteRegister $route): self
+    {
+        self::$checks ??= new WeakMap();
+
+        return self::$checks[$route] ??= new self($action, $route);
     }
 
     /**

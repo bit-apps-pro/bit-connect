@@ -2366,8 +2366,14 @@ if (!class_exists('WP_REST_Request')) {
         public function __construct(
             private array $body = [],
             private array $query = [],
-            private array $url = []
+            private array $url = [],
+            private string $route = ''
         ) {
+        }
+
+        public function get_route()
+        {
+            return $this->route;
         }
 
         public function get_body_params()
@@ -2388,6 +2394,26 @@ if (!class_exists('WP_REST_Request')) {
         public function get_url_params()
         {
             return $this->url;
+        }
+    }
+}
+
+if (!class_exists('WP_HTTP_Response')) {
+    /**
+     * Only the headers, which is all RestNoCache touches.
+     */
+    class WP_HTTP_Response
+    {
+        private array $headers = [];
+
+        public function header($key, $value, $replace = true)
+        {
+            $this->headers[$key] = $value;
+        }
+
+        public function get_headers()
+        {
+            return $this->headers;
         }
     }
 }

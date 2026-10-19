@@ -12,9 +12,11 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Http\RestNoCache;
 use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\DashboardCache;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\ForumUploadsInLibrary;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
@@ -104,6 +106,9 @@ class HookProvider
         // and comments change, including from wp-admin, which the portal's own
         // API never sees.
         UserStatsService::registerHooks();
+
+        // The dashboard's cached answer, dropped the same way — see DashboardCache.
+        DashboardCache::registerHooks();
 
         // Pending reports close when their topic or comment is deleted, from
         // the portal or from wp-admin.
@@ -234,6 +239,9 @@ class HookProvider
 
         // Each route's permission_callback asks its Request's authorize().
         RestPermission::register();
+
+        // No page cache may keep an answer; see RestNoCache.
+        RestNoCache::register(Config::SLUG . '/v1');
     }
 
     /**
