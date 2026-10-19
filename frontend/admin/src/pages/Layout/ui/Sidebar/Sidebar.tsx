@@ -23,6 +23,7 @@ import { Link } from 'react-router'
 import { $isDarkTheme } from '../../../../common/globalStates/$appConfig'
 import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
+import supportNavLabel from '../../../support/support-nav-label'
 import useAddedPages from '../../../use-added-pages'
 import SidebarNavItem from './SidebarNavItem'
 
@@ -64,7 +65,7 @@ const navItems: NavItem[] = [
   { group: 'settings', icon: LuSettings, label: __('Settings'), path: '../settings', requires: 'manage' },
   // Last: it is the one screen here that is about the plugin rather than
   // about the forum.
-  { group: 'settings', icon: LuLifeBuoy, label: __('Support'), path: '../support', requires: 'manage' }
+  { group: 'settings', icon: LuLifeBuoy, label: supportNavLabel, path: '../support', requires: 'manage' }
 ]
 
 export default function Sidebar() {
