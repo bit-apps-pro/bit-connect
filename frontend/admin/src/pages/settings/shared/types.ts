@@ -52,11 +52,15 @@ export interface AuthLoginPageCustomization {
 }
 
 export interface AuthSettings {
+  /** Read-only — WordPress's "Anyone can register", provided by server */
+  canRegister: boolean
   customLoginUrl: string
   customRegistrationUrl: string
   loginPageCustomization: AuthLoginPageCustomization
   /** Read-only — provided by server, not sent on update */
   loginPageUrl: string
+  /** Read-only — the screen with that switch, '' when the user cannot open it */
+  membershipSettingsUrl: string
   mode: AuthMode
   redirectAfterLogin: string
   redirectAfterLogout: string

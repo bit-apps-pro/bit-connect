@@ -23,6 +23,11 @@ interface ChoiceCardProps {
  * arrow keys move between them, with nothing reimplemented here. The marker is
  * drawn instead — a filled square with a check — and the card shows the focus
  * ring the hidden input cannot.
+ *
+ * The card is `relative` so the hidden input sits inside it. Without that, the
+ * input is placed against a far ancestor, off the visible area, and focusing it
+ * makes the browser scroll WordPress's `overflow: hidden` wrapper to reach it —
+ * which moves the whole screen out of view.
  */
 export default function ChoiceCard({
   checked,
@@ -36,7 +41,7 @@ export default function ChoiceCard({
   return (
     <label
       className={cn([
-        'bc-flex bc-w-60 bc-max-w-full bc-gap-2.5 bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-3 bc-transition-colors',
+        'bc-relative bc-flex bc-w-60 bc-max-w-full bc-gap-2.5 bc-rounded-md bc-border bc-border-solid bc-border-line bc-bg-surface bc-p-3 bc-transition-colors',
         'has-[:focus-visible]:bc-ring-2 has-[:focus-visible]:bc-ring-primary/50',
         disabled ? 'bc-cursor-not-allowed bc-opacity-60' : 'bc-cursor-pointer hover:bc-border-line-strong'
       ])}

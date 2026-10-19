@@ -26,6 +26,11 @@ final class AuthSettingsController
                 [
                     'loginPageUrl'        => $forumUrl . '/login',
                     'registrationPageUrl' => $forumUrl . '/register',
+                    // The built-in form follows WordPress's own "Anyone can
+                    // register". This plugin never changes that option; the
+                    // screen only says it is off and links to where it is set.
+                    'canRegister'           => AuthService::canRegister(),
+                    'membershipSettingsUrl' => self::membershipSettingsUrl(),
                 ]
             )
         );
@@ -50,5 +55,18 @@ final class AuthSettingsController
         }
 
         return Response::success($data);
+    }
+
+    /**
+     * The screen that holds the registration switch, or '' when the current
+     * user cannot open it — managing the forum does not mean managing the site.
+     */
+    private static function membershipSettingsUrl(): string
+    {
+        if (is_multisite()) {
+            return current_user_can('manage_network_options') ? network_admin_url('settings.php') : '';
+        }
+
+        return current_user_can('manage_options') ? admin_url('options-general.php') : '';
     }
 }
