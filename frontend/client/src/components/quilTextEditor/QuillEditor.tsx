@@ -201,8 +201,17 @@ function triggerMediaUpload(
     track.controllers.delete(loadingId)
     const idx = findIdx()
     if (idx >= 0) {
-      quill.deleteText(idx, 1, 'user')
-      quill.insertEmbed(idx, blot, url, 'user')
+      // The swap stays out of the undo history: recorded, one undo would bring
+      // back a placeholder that nothing uploads any more. The swap keeps the
+      // length, so the entry that inserted the placeholder removes the picture.
+      const history = quill.getModule('history') as { ignoreChange: boolean } | undefined
+      if (history) history.ignoreChange = true
+      try {
+        quill.deleteText(idx, 1, 'user')
+        quill.insertEmbed(idx, blot, url, 'user')
+      } finally {
+        if (history) history.ignoreChange = false
+      }
       quill.setSelection(idx + 1, 0, 'user')
     }
   }
@@ -607,10 +616,19 @@ function QuillEditorInner({
       hideDeleteBtn()
     }
 
+    // The button is fixed to the viewport, placed once on hover. A scroll of the
+    // modal, the page or the editor moves the image out from under it, so any
+    // scroll or resize hides it until the pointer comes back to the image.
+    const handleViewportChange = () => {
+      if (hoveredMedia) hideDeleteBtn()
+    }
+
     quill.root.addEventListener('mouseover', handleMouseOver)
     quill.root.addEventListener('mouseleave', handleMouseLeave)
     deleteBtn.addEventListener('mouseleave', handleDeleteBtnMouseLeave)
     deleteBtn.addEventListener('click', handleDeleteClick)
+    document.addEventListener('scroll', handleViewportChange, { capture: true, passive: true })
+    window.addEventListener('resize', handleViewportChange)
 
     // The uploading placeholder is its own cancel button: a click on it stops
     // the upload, and the failed upload's own clean-up takes the placeholder
@@ -638,6 +656,8 @@ function QuillEditorInner({
       quill.root.removeEventListener('mouseleave', handleMouseLeave)
       deleteBtn.removeEventListener('mouseleave', handleDeleteBtnMouseLeave)
       deleteBtn.removeEventListener('click', handleDeleteClick)
+      document.removeEventListener('scroll', handleViewportChange, { capture: true })
+      window.removeEventListener('resize', handleViewportChange)
       deleteBtn.remove()
       // The picker's list is on document.body, out of this container's reach —
       // clearing the container below would leave it behind on every remount.

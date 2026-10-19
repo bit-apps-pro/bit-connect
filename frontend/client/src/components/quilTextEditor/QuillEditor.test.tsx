@@ -17,6 +17,16 @@ const settled = { timeout: 5000 }
 
 const submit = () => screen.getByRole('button', { name: /Comment/ })
 
+/** The floating remove button the editor puts on document.body. */
+const deleteButton = () => document.querySelector<HTMLElement>('button[aria-label^="Remove"]')
+
+const hoverImage = () => {
+  const image = document.createElement('img')
+  image.src = 'https://example.test/a.png'
+  editor().append(image)
+  image.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+}
+
 describe('QuillEditor block formats', () => {
   afterEach(cleanup)
 
@@ -160,5 +170,33 @@ describe('QuillEditor submit', () => {
     await waitFor(() => expect(submit()).not.toHaveClass('ant-btn-loading'), settled)
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(editor()).toHaveTextContent('hello')
+  })
+})
+
+describe('QuillEditor media delete button', () => {
+  afterEach(cleanup)
+
+  // The button is fixed to the viewport, so a scroll would leave it over
+  // whatever slid under it — the modal title, in the composer.
+  it('hides when a scroll container moves the image away', () => {
+    render(<QuillEditor />)
+    hoverImage()
+    expect(deleteButton()?.style.display).toBe('flex')
+
+    const modalBody = document.createElement('div')
+    document.body.append(modalBody)
+    modalBody.dispatchEvent(new Event('scroll'))
+
+    expect(deleteButton()?.style.display).toBe('none')
+    modalBody.remove()
+  })
+
+  it('hides when the window resizes', () => {
+    render(<QuillEditor />)
+    hoverImage()
+
+    window.dispatchEvent(new Event('resize'))
+
+    expect(deleteButton()?.style.display).toBe('none')
   })
 })
