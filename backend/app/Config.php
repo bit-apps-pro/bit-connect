@@ -32,7 +32,7 @@ class Config
 
     public const PORTAL_PAGE_POST_TYPE = 'bit_connect_portal';
 
-    public const VERSION = '1.0.4';
+    public const VERSION = '1.0.5';
 
     public const DB_VERSION = '1.0.0';
 
