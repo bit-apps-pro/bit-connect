@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -195,6 +195,14 @@ Yes. Bit Connect Pro lets you create public or private groups, add different typ
 One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.3 =
+* The portal loads faster. The page includes the data for its first requests.
+* Comments, pins and status changes show at once, before the server answers.
+* The plugin says "comment", not "reply", in buttons, notices and emails.
+* Fixed: after a member signs in, notifications show without a reload.
+* Fixed: a new comment on a comment shows at once. Its thread opens.
+* Fixed: a cached guest page does not fail because of an old security token.
 
 = 1.0.2 =
 * The plugin now calls topics "posts" and topic types "topics".
