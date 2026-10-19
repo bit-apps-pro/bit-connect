@@ -12,6 +12,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\RequestType;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\Router;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Http\RestNoCache;
 use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
@@ -234,6 +235,9 @@ class HookProvider
 
         // Each route's permission_callback asks its Request's authorize().
         RestPermission::register();
+
+        // No page cache may keep an answer; see RestNoCache.
+        RestNoCache::register(Config::SLUG . '/v1');
     }
 
     /**
