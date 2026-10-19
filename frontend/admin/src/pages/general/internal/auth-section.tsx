@@ -10,6 +10,7 @@ import {
 import ChoiceCard from './choice-card'
 import ImageField from './image-field'
 import { swapVariants } from './motion'
+import RegistrationStatus from './registration-status'
 import SectionCard from './section-card'
 import SettingRow from './setting-row'
 
@@ -136,8 +137,18 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
                       enterButton={__('Copy')}
                       onSearch={() => onCopy(form.registrationPageUrl)}
                       readOnly
+                      status={form.canRegister ? undefined : 'warning'}
                       value={form.registrationPageUrl}
                     />
+                    {/* A link copied from here and shared must not surprise
+                        anyone: with registration off it opens no form. */}
+                    {!form.canRegister && (
+                      <Text className="bc-mt-1 bc-block bc-text-xs" type="warning">
+                        {__(
+                          'This page shows "Registration is closed" because "Anyone can register" is off.'
+                        )}
+                      </Text>
+                    )}
                   </div>
                 </div>
               </SettingRow>
@@ -151,6 +162,14 @@ export default function AuthSection({ disabled, form, onCopy, onPatch }: AuthSec
               subtitle={__('Rules for people who sign up through the built-in form.')}
               title={__('New accounts')}
             >
+              {/* Not while loading: the default would say "On" and then flip. */}
+              {!disabled && (
+                <RegistrationStatus
+                  canRegister={form.canRegister}
+                  settingsUrl={form.membershipSettingsUrl}
+                />
+              )}
+
               <SettingRow
                 description={__(
                   'New members have to confirm their email address before they can sign in.'

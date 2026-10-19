@@ -5,10 +5,12 @@ import { useQuery } from '@tanstack/react-query'
 import { type AuthSettings } from '../shared/types'
 
 const defaultAuthSettings: AuthSettings = {
+  canRegister: true,
   customLoginUrl: '',
   customRegistrationUrl: '',
   loginPageCustomization: { banner: '', description: '', title: '' },
   loginPageUrl: '',
+  membershipSettingsUrl: '',
   mode: 'plugin_default',
   redirectAfterLogin: '',
   redirectAfterLogout: '',
@@ -30,6 +32,7 @@ export default function useAuthSettings() {
       if (!d || typeof d !== 'object') return defaultAuthSettings
       const customization = d.loginPageCustomization ?? {}
       return {
+        canRegister: d.canRegister ?? defaultAuthSettings.canRegister,
         customLoginUrl: d.customLoginUrl ?? '',
         customRegistrationUrl: d.customRegistrationUrl ?? '',
         loginPageCustomization: {
@@ -38,6 +41,7 @@ export default function useAuthSettings() {
           title: customization.title ?? ''
         },
         loginPageUrl: d.loginPageUrl ?? '',
+        membershipSettingsUrl: d.membershipSettingsUrl ?? '',
         mode: d.mode === 'custom_url' ? 'custom_url' : 'plugin_default',
         redirectAfterLogin: d.redirectAfterLogin ?? '',
         redirectAfterLogout: d.redirectAfterLogout ?? '',

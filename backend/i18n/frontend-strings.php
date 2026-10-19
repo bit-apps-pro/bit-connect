@@ -289,6 +289,22 @@ return [
 
     'New accounts' => __('New accounts', 'bit-connect'),
 
+    'Anyone can register' => __('Anyone can register', 'bit-connect'),
+
+    'On' => __('On', 'bit-connect'),
+
+    'Off' => __('Off', 'bit-connect'),
+
+    'Open settings' => __('Open settings', 'bit-connect'),
+
+    'This page shows "Registration is closed" because "Anyone can register" is off.' => __('This page shows "Registration is closed" because "Anyone can register" is off.', 'bit-connect'),
+
+    'People can create an account on the portal. WordPress controls this setting.' => __('People can create an account on the portal. WordPress controls this setting.', 'bit-connect'),
+
+    'People cannot create an account on the portal. To allow it, turn on this setting in WordPress.' => __('People cannot create an account on the portal. To allow it, turn on this setting in WordPress.', 'bit-connect'),
+
+    'People cannot create an account on the portal. Ask a site administrator to turn on this setting in WordPress.' => __('People cannot create an account on the portal. Ask a site administrator to turn on this setting in WordPress.', 'bit-connect'),
+
     'New members have to confirm their email address before they can sign in.' => __('New members have to confirm their email address before they can sign in.', 'bit-connect'),
 
     'Require email verification' => __('Require email verification', 'bit-connect'),
