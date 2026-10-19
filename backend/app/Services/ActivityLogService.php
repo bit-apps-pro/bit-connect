@@ -12,6 +12,7 @@ use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Model\ActivityLog;
 use DateTimeImmutable;
 use DateTimeZone;
+use WP_Post;
 
 /**
  * Records and reads what people did to content they did not write.
@@ -157,6 +158,27 @@ final class ActivityLogService
     }
 
     /**
+     * The name a row shows for its target, as context to store with it.
+     *
+     * A topic's title, so the Activity screen can head the row with it, as it
+     * does every other row about a topic. Read at write time because the topic
+     * may be deleted by the time anyone looks. A comment has no name of its
+     * own, so it gets nothing.
+     *
+     * @return array{post_title?: string}
+     */
+    public static function titleContext(string $targetType, int $targetId): array
+    {
+        if ($targetType !== self::TARGET_POST) {
+            return [];
+        }
+
+        $post = get_post($targetId);
+
+        return $post instanceof WP_Post ? ['post_title' => (string) $post->post_title] : [];
+    }
+
+    /**
      * The admin feed: newest first, filterable, paginated.
      *
      * @param array{actor?: int, action?: string, target_type?: string, target_id?: int, period?: string, page?: int, per_page?: int} $filters
@@ -201,7 +223,13 @@ final class ActivityLogService
 
         // Newest first: orderBy() only names the column, desc() sets the
         // direction — it takes no second argument.
-        $result = $query->orderBy('created_at')->desc()->paginate($page, $perPage);
+        //
+        // id breaks the tie. created_at holds whole seconds, and one bulk action
+        // or report decision writes several rows in the same second. Ordered by
+        // created_at alone, MySQL returns those in any order it likes — so a
+        // lock showed under the unlock that followed it, and paging skipped
+        // some rows and repeated others.
+        $result = $query->orderBy('created_at')->desc()->orderBy('id')->desc()->paginate($page, $perPage);
 
         return [
             'data'       => array_map([self::class, 'format'], self::asList($result['data'] ?? [])),
