@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { __, sprintf } from './i18nWrap'
+import { __, fallbackSprintf, sprintf } from './i18nWrap'
 
 /**
  * Seeds the translations the server injected into the page.
@@ -69,5 +69,26 @@ describe('sprintf', () => {
 
   it('leaves a string with nothing to substitute alone', () => {
     expect(sprintf('No placeholders here')).toBe('No placeholders here')
+  })
+})
+
+// The portal loads no WordPress scripts, so every sprintf there runs this.
+describe('fallbackSprintf', () => {
+  it('substitutes plain placeholders in order', () => {
+    expect(fallbackSprintf('%s closed %d reports', 'Nadia', 2)).toBe('Nadia closed 2 reports')
+  })
+
+  it('substitutes positional placeholders', () => {
+    expect(fallbackSprintf('%1$d yes · %2$d if need be', 3, 1)).toBe('3 yes · 1 if need be')
+    expect(fallbackSprintf('%2$d reports closed by %1$s', 'Nadia', 2)).toBe('2 reports closed by Nadia')
+  })
+
+  it('keeps a literal percent sign and text with no placeholders', () => {
+    expect(fallbackSprintf('100%% done')).toBe('100% done')
+    expect(fallbackSprintf('No placeholders here')).toBe('No placeholders here')
+  })
+
+  it('leaves a placeholder with no value as it is', () => {
+    expect(fallbackSprintf('%s and %s', 'one')).toBe('one and %s')
   })
 })
