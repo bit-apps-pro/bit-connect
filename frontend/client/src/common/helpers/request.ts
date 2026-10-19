@@ -1,5 +1,6 @@
 import { normalizeFailure } from '@shared/request/failure'
-import { getNonce } from '@utils/request/nonce'
+import { nonceHeader } from '@utils/request/nonce'
+import { takePreloaded } from '@utils/request/preload'
 
 import config from '../../config/config'
 
@@ -81,7 +82,7 @@ const createRequestOptions = (
   if (!(data instanceof FormData)) {
     fetchOptions.headers['Content-Type'] = 'application/json'
   }
-  fetchOptions.headers['X-WP-Nonce'] = getNonce()
+  Object.assign(fetchOptions.headers, nonceHeader())
 
   return fetchOptions
 }
@@ -95,6 +96,11 @@ export default async function queryRequest<T>(
   options?: RequestOptions
 ): Promise<Response<T>> {
   const uri = createUrl(action, queryParam)
+
+  // The page may already carry the answer — see preload.ts.
+  const preloaded = takePreloaded(uri, method)
+  if (preloaded !== undefined) return preloaded as Response<T>
+
   const fetchOptions = createRequestOptions(method, data, options)
   try {
     const response = await fetch(uri, fetchOptions)
@@ -205,7 +211,7 @@ export function uploadRequest<T>(
     const xhr = new XMLHttpRequest()
 
     xhr.open('POST', createUrl(action).toString())
-    xhr.setRequestHeader('X-WP-Nonce', getNonce())
+    for (const [name, value] of Object.entries(nonceHeader())) xhr.setRequestHeader(name, value)
     // Cookie auth: WordPress validates the nonce against the logged-in session.
     xhr.withCredentials = true
 

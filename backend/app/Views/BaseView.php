@@ -11,6 +11,7 @@ use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PortalLocation;
+use BitApps\BitConnect\Services\PortalPreload;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\PostingLimits;
 use BitApps\BitConnect\Services\StageService;
@@ -100,7 +101,12 @@ class BaseView
         $userInfo = Config::getCurrentUserInfo();
         $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
         $frontendVars = [
-            'nonce' => wp_create_nonce('wp_rest'),
+            // Members only. WordPress needs the nonce only to trust a login
+            // cookie, and a guest has none. A guest nonce also expires within a
+            // day, so a page cache that held this HTML longer made every portal
+            // request from that copy fail with "Cookie check failed". Without
+            // it, every guest gets the same page and a cache may keep it.
+            'nonce' => is_user_logged_in() ? wp_create_nonce('wp_rest') : '',
             // The config atom keys its localStorage blob `${pluginSlug}-config`;
             // ThemeBoot::script() reads the same key server-side, so the two
             // fall out of sync on any route that omits this.
@@ -203,8 +209,21 @@ class BaseView
         // template_redirect, before wp_head, so both are readable here — the
         // routers claim the request, and SeoMeta is the belt to that braces for
         // any route that renders without registering a matching router filter.
-        if ($hasShortcode || ShortCode::isServerRendered() || SeoMeta::meta() !== null) {
+        $rendersPortal = $hasShortcode || ShortCode::isServerRendered() || SeoMeta::meta() !== null;
+
+        if ($rendersPortal) {
             PrePaint::enqueue();
+        }
+
+        $configVariable = self::createConfigVariable();
+
+        // The app's first requests, answered in the page — see PortalPreload.
+        // Only where the portal is drawn: it runs those routes, which a page
+        // without the portal has no use for.
+        if ($rendersPortal) {
+            $configVariable['preload'] = PortalPreload::responses();
+            // wp_enqueue_scripts runs inside wp_head, at priority 1.
+            Hooks::addAction('wp_head', [PortalPreload::class, 'printChunkHints']);
         }
 
         // This inline global is the bundle's only config transport: the Vite
@@ -230,7 +249,7 @@ class BaseView
             \sprintf(
                 'window[%s]=%s;',
                 wp_json_encode(Config::VAR_PREFIX),
-                wp_json_encode(self::createConfigVariable(), JSON_HEX_TAG | JSON_HEX_AMP)
+                wp_json_encode($configVariable, JSON_HEX_TAG | JSON_HEX_AMP)
             )
         );
 
@@ -245,9 +264,11 @@ class BaseView
             wp_enqueue_script_module($this->slug . '-MODULE-main');
             wp_enqueue_style($this->slug . '-styles');
         }
-        if (!wp_script_is('media-upload')) {
-            wp_enqueue_media();
-        }
+
+        // No wp_enqueue_media() here. The portal uploads through its own REST
+        // routes and never calls wp.media, and this method runs on every
+        // front-end request: the media library cost each page of the site about
+        // twenty scripts and its attachment queries. Only the admin needs it (Head).
     }
 
     /**

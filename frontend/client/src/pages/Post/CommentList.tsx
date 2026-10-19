@@ -15,10 +15,10 @@ interface CommentListProps {
   focusedCommentId?: number
   hasMore?: boolean
   isLoadingMore?: boolean
-  onDelete?: (commentId: number) => void
-  onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
+  onDelete?: (commentId: number) => Promise<void>
+  onEdit?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => Promise<boolean>
   onLoadMore?: () => void
-  onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => void
+  onReply?: (commentId: number, content: string, attachments?: WPAttachmentData[]) => Promise<boolean>
   /** Draws the upvote control for a reply, when the forum offers one. See use-comment-vote. */
   renderVote?: (comment: Comment) => ReactNode
   sortOption: SortOption

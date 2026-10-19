@@ -268,7 +268,9 @@ export interface QuillEditorProps {
   onChange?: (html: string) => void
   onImageInsert?: MediaHandler
   onImagePaste?: MediaHandler
-  onSubmit?: (html: string) => void
+  /** The button holds its spinner until this settles, and the text is cleared
+   *  only if it resolves to anything but `false`. */
+  onSubmit?: (html: string) => Promise<boolean>
   /** Uploads a video to play where it is placed in the text, as a picture
    *  is placed. Given only where the forum takes video files at all; the
    *  editor hands its picker to the further tools (see editor-extras). */
@@ -340,6 +342,7 @@ function QuillEditorInner({
   const isInternalChange = useRef(false)
   const [hasContent, setHasContent] = useState(false)
   const [uploadsInFlight, setUploadsInFlight] = useState(0)
+  const [isSending, setIsSending] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -931,7 +934,9 @@ function QuillEditorInner({
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // A second click while the first is on its way would post the comment twice.
+    if (isSending) return
     if (!editorRef.current || !hasSubmittableContent(editorRef.current) || !onSubmitRef.current) return
 
     // Sending now would post the draft without the picture and leave the
@@ -950,8 +955,20 @@ function QuillEditorInner({
     }
 
     setValidationErrors([])
-    onSubmitRef.current(contentRef.current)
-    clearContent()
+
+    // Cleared only once the server has the text. On a slow site, clearing at
+    // the click left an empty editor and no sign of the comment for a second
+    // or more, and a failed request lost what the member wrote.
+    setIsSending(true)
+    editorRef.current.enable(false)
+    try {
+      if ((await onSubmitRef.current(contentRef.current)) !== false) clearContent()
+    } catch {
+      // The caller reports the failure; the text stays so it can be sent again.
+    } finally {
+      editorRef.current?.enable(true)
+      setIsSending(false)
+    }
   }
 
   const showSubmitButton = Boolean(onSubmit)
@@ -1286,7 +1303,7 @@ function QuillEditorInner({
               <Button
                 disabled={!hasContent || isUploadingImage}
                 icon={validationErrors.length > 0 ? <WarningOutlined /> : ''}
-                loading={isUploadingImage}
+                loading={isUploadingImage || isSending}
                 onClick={handleSubmit}
                 type="primary"
               >

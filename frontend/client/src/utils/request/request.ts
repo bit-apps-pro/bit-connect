@@ -1,6 +1,7 @@
 import config from '@config/config'
 
-import { getNonce } from './nonce'
+import { nonceHeader } from './nonce'
+import { takePreloaded } from './preload'
 import { type QueryParam, type ResponseType } from './types'
 
 export async function request<PAYLOAD, RESPONSE_DATA>(
@@ -24,13 +25,17 @@ export async function request<PAYLOAD, RESPONSE_DATA>(
       }
     }
   }
+  // The page may already carry the answer — see preload.ts.
+  const preloaded = takePreloaded(url, method)
+  if (preloaded !== undefined) return preloaded as ResponseType<RESPONSE_DATA>
+
   const response = await fetch(url, {
     body: body ? JSON.stringify(body) : undefined,
     credentials: 'include',
     headers: {
       ...(['POST', 'PUT'].includes(method || 'GET') ? { 'Content-Type': 'application/json' } : {}),
       Accept: 'application/json',
-      'X-WP-Nonce': getNonce(),
+      ...nonceHeader(),
       ...headers
     },
     method: method,

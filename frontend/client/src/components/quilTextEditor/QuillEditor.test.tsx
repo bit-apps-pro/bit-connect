@@ -15,6 +15,8 @@ const button = (name: string) => screen.getByRole('button', { name })
 // genuine failure still reports as one.
 const settled = { timeout: 5000 }
 
+const submit = () => screen.getByRole('button', { name: /Comment/ })
+
 describe('QuillEditor block formats', () => {
   afterEach(cleanup)
 
@@ -120,5 +122,43 @@ describe('QuillEditor block formats', () => {
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith(expect.not.stringContaining('<ul'))
     }, settled)
+  })
+})
+
+describe('QuillEditor submit', () => {
+  afterEach(cleanup)
+
+  it('keeps the text and spins until the server answers, then clears it', async () => {
+    const answers: ((landed: boolean) => void)[] = []
+    const onSubmit = vi.fn(() => new Promise<boolean>(resolve => answers.push(resolve)))
+    render(<QuillEditor onSubmit={onSubmit} />)
+
+    await userEvent.click(editor())
+    await userEvent.keyboard('hello')
+    await userEvent.click(submit())
+
+    await waitFor(() => expect(submit()).toHaveClass('ant-btn-loading'), settled)
+    expect(editor()).toHaveTextContent('hello')
+
+    // A second click while the first is on its way must not post it twice.
+    await userEvent.click(submit())
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+
+    answers[0](true)
+    await waitFor(() => expect(submit()).not.toHaveClass('ant-btn-loading'), settled)
+    expect(editor()).not.toHaveTextContent('hello')
+  })
+
+  it('keeps the text when the comment did not land', async () => {
+    const onSubmit = vi.fn(() => Promise.resolve(false))
+    render(<QuillEditor onSubmit={onSubmit} />)
+
+    await userEvent.click(editor())
+    await userEvent.keyboard('hello')
+    await userEvent.click(submit())
+
+    await waitFor(() => expect(submit()).not.toHaveClass('ant-btn-loading'), settled)
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(editor()).toHaveTextContent('hello')
   })
 })

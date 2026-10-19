@@ -17,7 +17,7 @@ vi.mock('../../config/config', () => ({
   default: { API_URL: 'https://example.test/wp-json/bit-connect/v1' }
 }))
 
-vi.mock('@utils/request/nonce', () => ({ getNonce: () => 'test-nonce' }))
+vi.mock('@utils/request/nonce', () => ({ nonceHeader: () => ({ 'X-WP-Nonce': 'test-nonce' }) }))
 
 const respond = (status: number, body: unknown) =>
   vi.fn().mockResolvedValue({

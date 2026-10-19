@@ -1,7 +1,8 @@
 import config from '@config/config'
 import { decodeTermFields } from '@shared/text/decode-terms'
 
-import { getNonce } from './nonce'
+import { nonceHeader } from './nonce'
+import { takePreloaded } from './preload'
 import { type QueryParam, type ResponseType } from './types'
 
 // eslint-disable-next-line unicorn/no-null
@@ -31,6 +32,10 @@ export async function wpApi<PAYLOAD, RESPONSE_DATA>(
     }
   }
 
+  // The page may already carry the answer — see preload.ts.
+  const preloaded = takePreloaded(url, method)
+  if (preloaded !== undefined) return { data: decodeTermFields(preloaded) } as ResponseType<RESPONSE_DATA>
+
   const response = await fetch(url, {
     body: body ? JSON.stringify(body, replaceUndefined) : undefined,
     credentials: 'include',
@@ -39,7 +44,7 @@ export async function wpApi<PAYLOAD, RESPONSE_DATA>(
         ? { 'Content-Type': 'application/json' }
         : {}),
       Accept: 'application/json',
-      'X-WP-Nonce': getNonce(),
+      ...nonceHeader(),
       ...headers
     },
     method,

@@ -70,6 +70,13 @@ export default defineConfig(({ command, mode }) => {
             return `${PLUGIN_SLUG}-[hash].[ext]`
           },
           chunkFileNames: fInfo => {
+            // The topic page's chunk carries the build's code name rather than
+            // a hash, so the server can name it in a modulepreload hint and the
+            // browser fetches it beside the main bundle — see PortalPreload.php.
+            if (fInfo.facadeModuleId?.endsWith('/pages/Post/PostDetailsPage.tsx')) {
+              return `post-details-${codeName}.js`
+            }
+
             const name = typeof fInfo.name === 'string' ? fInfo.name.slice(0, 8).toLowerCase() : ''
             const chunkName = `${name}-[hash].js`
             return chunkName

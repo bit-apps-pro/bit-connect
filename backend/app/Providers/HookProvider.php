@@ -203,18 +203,37 @@ class HookProvider
 
     public function loadAppApiHooks()
     {
-        if (
-            is_readable($this->_pluginBackend . 'hooks' . DIRECTORY_SEPARATOR . 'api.php')
-            && RequestType::is(RequestType::API)
-        ) {
-            $router = new Router(RequestType::API, Config::SLUG, 'v1');
-
-            include $this->_pluginBackend . 'hooks' . DIRECTORY_SEPARATOR . 'api.php';
-            $router->register();
-
-            // Each route's permission_callback asks its Request's authorize().
-            RestPermission::register();
+        if (RequestType::is(RequestType::API)) {
+            self::registerApiRoutes();
         }
+    }
+
+    /**
+     * Registers the plugin's REST routes, once per request.
+     *
+     * A REST request does it on rest_api_init. A portal page does it too, when
+     * it answers the app's first requests in the page itself — see
+     * PortalPreload — and it is the same routes either way.
+     */
+    public static function registerApiRoutes(): void
+    {
+        static $registered = false;
+
+        $file = Config::get('BASEDIR') . DIRECTORY_SEPARATOR . 'hooks' . DIRECTORY_SEPARATOR . 'api.php';
+
+        if ($registered || !is_readable($file)) {
+            return;
+        }
+
+        $registered = true;
+
+        $router = new Router(RequestType::API, Config::SLUG, 'v1');
+
+        include $file;
+        $router->register();
+
+        // Each route's permission_callback asks its Request's authorize().
+        RestPermission::register();
     }
 
     /**

@@ -8,7 +8,9 @@ if (!defined('ABSPATH')) {
 }
 
 
+use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Request\Request;
+use BitApps\BitConnect\Services\PortalPreload;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\SSRHandler;
 use BitApps\BitConnect\Views\TopicsView;
@@ -69,6 +71,22 @@ class TopicDetailsController
         }
 
         SeoMeta::forTopic($viewData['topic'] ?? null);
+
+        // The topic and its first page of comments are what the page asks for
+        // first, one after the other — see PortalPreload. The paths are the
+        // app's own: fetchPostByNameApi(), then fetchCommentsApi() with its
+        // defaults.
+        if (\is_string($slug) && $slug !== '') {
+            PortalPreload::add('/' . Config::SLUG . '/v1/topics?name=' . rawurlencode($slug));
+        }
+
+        // The topic page's own code, fetched beside the main bundle.
+        PortalPreload::chunk('post-details');
+
+        $topicId = (int) ($viewData['topic']['ID'] ?? 0);
+        if ($topicId > 0) {
+            PortalPreload::add('/' . Config::SLUG . '/v1/posts/' . $topicId . '/comments?page=1&per_page=10&sort=newest');
+        }
 
         // Generate the view using the SSR system
         $route = '/' . $slug;

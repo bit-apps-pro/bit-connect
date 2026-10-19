@@ -107,21 +107,25 @@ export default function PostDetailsPage() {
     })
   }
 
+  // The comment handlers answer whether the comment landed, so the editor keeps
+  // the text when it did not and the member does not have to write it again.
   const handlePostComment = async (content: string, attachments?: WPAttachmentData[]) => {
-    requireCapability('bit_connect_forum_create_comment', async () => {
-      try {
-        await createComment(
-          content,
-          undefined,
-          attachments?.map(a => a.id)
-        )
-        notificationApi?.success({ message: __('Comment posted successfully') })
-      } catch (error_) {
-        notificationApi?.error({
-          message: (error_ as { message?: string })?.message ?? __('Failed to post comment')
-        })
-      }
-    })
+    if (!canAct('bit_connect_forum_create_comment')) return false
+
+    try {
+      await createComment(
+        content,
+        undefined,
+        attachments?.map(a => a.id)
+      )
+      notificationApi?.success({ message: __('Comment posted successfully') })
+      return true
+    } catch (error_) {
+      notificationApi?.error({
+        message: (error_ as { message?: string })?.message ?? __('Failed to post comment')
+      })
+      return false
+    }
   }
 
   const handleReply = async (commentId: number, content: string, attachments?: WPAttachmentData[]) => {
@@ -132,10 +136,12 @@ export default function PostDetailsPage() {
         attachments?.map(a => a.id)
       )
       notificationApi?.success({ message: __('Reply posted successfully') })
+      return true
     } catch (error_) {
       notificationApi?.error({
         message: (error_ as { message?: string })?.message ?? __('Failed to post reply')
       })
+      return false
     }
   }
 
@@ -151,10 +157,12 @@ export default function PostDetailsPage() {
         attachments?.map(a => a.id)
       )
       notificationApi?.success({ message: __('Comment updated successfully') })
+      return true
     } catch (error_) {
       notificationApi?.error({
         message: (error_ as { message?: string })?.message ?? __('Failed to update comment')
       })
+      return false
     }
   }
 

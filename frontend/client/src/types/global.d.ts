@@ -90,6 +90,8 @@ declare const SERVER_VARIABLES: {
     topic: { attachments: null | number; characters: null | number; images: null | number; videos?: null | number }
   }
   postURL: string
+  /** REST path → the body the server answered it with — see PortalPreload. */
+  preload?: Record<string, unknown>
   proApiURL: string
   /** Whether the sidebar shows a member the Following row — GeneralSettings::sidebarFollowing(). */
   sidebarFollowing?: boolean

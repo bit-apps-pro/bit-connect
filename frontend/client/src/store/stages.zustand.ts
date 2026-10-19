@@ -1,8 +1,7 @@
 import { type Topic } from '@features/topic-modal/shared/type'
-import { wpApi } from '@utils/request/wp-api'
-import sortByOrder from '@utils/sort-by-order'
 import { create } from 'zustand'
 
+import { fetchStagesApi } from './data/fetch-stages-api'
 import { updatePostStageApi } from './data/update-post-stage-api'
 
 interface Stage {
@@ -44,12 +43,7 @@ export const useStagesStore = create<StagesStore>((set, get) => ({
     set({ error: undefined, isLoading: true })
 
     try {
-      const response = await wpApi<never, Stage[]>('bit-connect-stages', {
-        method: 'GET',
-        queryParam: { per_page: 100 }
-      })
-
-      const stages = Array.isArray(response.data) ? sortByOrder(response.data) : []
+      const stages = await fetchStagesApi<Stage>()
 
       set({
         isLoading: false,
