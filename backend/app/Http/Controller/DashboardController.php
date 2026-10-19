@@ -14,6 +14,7 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\ReportStatus;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Http\Requests\GetDashboardRequest;
+use BitApps\BitConnect\Services\DashboardCache;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\SiteCalendar;
 use BitApps\BitConnect\Services\StageService;
@@ -47,6 +48,25 @@ final class DashboardController
     public function get(GetDashboardRequest $request)
     {
         $period = \is_string($request->period) && $request->period !== '' ? $request->period : self::DEFAULT_PERIOD;
+
+        // A refresh drops every period, not only this one: the admin asked for
+        // current numbers, and the next period they switch to should be too.
+        if (\in_array($request->fresh, [true, 1, '1', 'true'], true)) {
+            DashboardCache::forget();
+        }
+
+        $data = DashboardCache::get($period);
+
+        if ($data === null) {
+            $data = $this->compute($period);
+            DashboardCache::put($period, $data);
+        }
+
+        return Response::success($data);
+    }
+
+    private function compute(string $period): array
+    {
         $since = $this->periodStart($period);
 
         $postType = PostTypes::BIT_CONNECT->value;
@@ -64,22 +84,20 @@ final class DashboardController
             )
         );
 
-        return Response::success(
-            [
-                'period'        => $period,
-                'portalUrl'     => PortalLocation::url(),
-                'stats'         => $this->getStats($postType, $votesTable, $since),
-                'topicTypes'    => $this->getTopicTypeNames(),
-                'attention'     => $this->getAttention($postType),
-                'unanswered'    => $this->withStage($unansweredTopics, $stages),
-                'response'      => $this->getResponseTimes($postType, $since),
-                'activity'      => $this->getActivity($postType, $period, $since),
-                'stages'        => $this->getStageProgress($postType, $since),
-                'mostRequested' => $this->withStage($mostRequested, $stages),
-                'recentTopics'  => $this->withStage($recentTopics, $stages),
-                'contributors'  => $this->getTopContributors($postType, $votesTable, $since),
-            ]
-        );
+        return [
+            'period'        => $period,
+            'portalUrl'     => PortalLocation::url(),
+            'stats'         => $this->getStats($postType, $votesTable, $since),
+            'topicTypes'    => $this->getTopicTypeNames(),
+            'attention'     => $this->getAttention($postType),
+            'unanswered'    => $this->withStage($unansweredTopics, $stages),
+            'response'      => $this->getResponseTimes($postType, $since),
+            'activity'      => $this->getActivity($postType, $period, $since),
+            'stages'        => $this->getStageProgress($postType, $since),
+            'mostRequested' => $this->withStage($mostRequested, $stages),
+            'recentTopics'  => $this->withStage($recentTopics, $stages),
+            'contributors'  => $this->getTopContributors($postType, $votesTable, $since),
+        ];
     }
 
     /**
@@ -342,70 +360,68 @@ final class DashboardController
     {
         $wpdbComments = Connection::prop('comments');
         $wpdbPosts = Connection::prop('posts');
-        $now = gmdate('Y-m-d H:i:s');
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $rows = Connection::get_results(
+        // One row per topic of the period: its age and how long its first
+        // answer took. Counted and ranked in the database — a year of a busy
+        // forum is tens of thousands of rows, too many to hold in PHP on a
+        // small host just to read a median off them.
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $perTopic = Connection::prepare(
+            "SELECT TIMESTAMPDIFF(SECOND, p.post_date_gmt, %s) AS age,
+                    GREATEST(0, TIMESTAMPDIFF(SECOND, p.post_date_gmt, MIN(c.comment_date_gmt))) AS waited
+             FROM {$wpdbPosts} p
+             LEFT JOIN {$wpdbComments} c
+               ON c.comment_post_ID = p.ID
+              AND c.comment_approved = '1'
+              AND c.user_id <> p.post_author
+             WHERE p.post_type = %s AND p.post_status = 'publish' AND p.post_date_gmt >= %s
+             GROUP BY p.ID",
+            gmdate('Y-m-d H:i:s'),
+            $postType,
+            $since
+        );
+
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $totals = Connection::get_row(
             Connection::prepare(
-                "SELECT TIMESTAMPDIFF(SECOND, p.post_date_gmt, %s) AS age,
-                        TIMESTAMPDIFF(SECOND, p.post_date_gmt, MIN(c.comment_date_gmt)) AS waited
-                 FROM {$wpdbPosts} p
-                 LEFT JOIN {$wpdbComments} c
-                   ON c.comment_post_ID = p.ID
-                  AND c.comment_approved = '1'
-                  AND c.user_id <> p.post_author
-                 WHERE p.post_type = %s AND p.post_status = 'publish' AND p.post_date_gmt >= %s
-                 GROUP BY p.ID",
-                $now,
-                $postType,
-                $since
+                "SELECT COUNT(*) AS topics,
+                        COUNT(waited) AS answered,
+                        SUM(age >= %d) AS eligible,
+                        SUM(age >= %d AND waited <= %d) AS prompt
+                 FROM ({$perTopic}) t",
+                self::PROMPT_REPLY_SECONDS,
+                self::PROMPT_REPLY_SECONDS,
+                self::PROMPT_REPLY_SECONDS
             )
         );
 
-        $waits = [];
-        $eligible = 0;
-        $prompt = 0;
+        $answered = (int) ($totals->answered ?? 0);
+        $median = null;
 
-        foreach (\is_array($rows) ? $rows : [] as $row) {
-            $waited = $row->waited === null ? null : max(0, (int) $row->waited);
-
-            if ($waited !== null) {
-                $waits[] = $waited;
-            }
-
-            if ((int) $row->age >= self::PROMPT_REPLY_SECONDS) {
-                ++$eligible;
-
-                if ($waited !== null && $waited <= self::PROMPT_REPLY_SECONDS) {
-                    ++$prompt;
-                }
-            }
+        if ($answered > 0) {
+            // The middle value, or the two middle values of an even count.
+            $middle = Connection::get_col(
+                Connection::prepare(
+                    "SELECT waited FROM ({$perTopic}) t
+                     WHERE waited IS NOT NULL
+                     ORDER BY waited
+                     LIMIT %d OFFSET %d",
+                    $answered % 2 === 1 ? 1 : 2,
+                    intdiv($answered - 1, 2)
+                )
+            );
+            $middle = array_map('intval', \is_array($middle) ? $middle : []);
+            $median = $middle === [] ? null : intdiv(array_sum($middle), \count($middle));
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return [
-            'topics'           => \is_array($rows) ? \count($rows) : 0,
-            'answered'         => \count($waits),
-            'medianSeconds'    => $this->median($waits),
-            'promptEligible'   => $eligible,
-            'answeredPromptly' => $prompt,
+            'topics'           => (int) ($totals->topics ?? 0),
+            'answered'         => $answered,
+            'medianSeconds'    => $median,
+            'promptEligible'   => (int) ($totals->eligible ?? 0),
+            'answeredPromptly' => (int) ($totals->prompt ?? 0),
         ];
-    }
-
-    /**
-     * @param int[] $values
-     */
-    private function median(array $values): ?int
-    {
-        if ($values === []) {
-            return null;
-        }
-
-        sort($values);
-        $middle = intdiv(\count($values), 2);
-
-        return \count($values) % 2 === 1
-            ? $values[$middle]
-            : intdiv($values[$middle - 1] + $values[$middle], 2);
     }
 
     /**

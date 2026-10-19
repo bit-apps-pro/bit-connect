@@ -907,6 +907,12 @@ return [
 
     'Visit portal' => __('Visit portal', 'bit-connect'),
 
+    'Refresh' => __('Refresh', 'bit-connect'),
+
+    'Get the latest numbers. The dashboard updates every few minutes.' => __('Get the latest numbers. The dashboard updates every few minutes.', 'bit-connect'),
+
+    'The dashboard could not be refreshed.' => __('The dashboard could not be refreshed.', 'bit-connect'),
+
     'Try again' => __('Try again', 'bit-connect'),
 
     'The dashboard could not be loaded.' => __('The dashboard could not be loaded.', 'bit-connect'),

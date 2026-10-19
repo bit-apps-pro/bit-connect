@@ -440,6 +440,9 @@ final class ReportService
     public static function flushPendingCount(): void
     {
         delete_transient(self::PENDING_COUNT_KEY);
+
+        // The dashboard counts the same queue.
+        DashboardCache::forget();
     }
 
     /**

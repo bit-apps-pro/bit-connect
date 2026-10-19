@@ -1,7 +1,7 @@
 import { __ } from '@common/helpers/i18nWrap'
-import { Alert, Button, ConfigProvider, Segmented, theme, Typography } from 'antd'
+import { Alert, Button, ConfigProvider, Segmented, theme, Tooltip, Typography } from 'antd'
 import { useMemo, useState } from 'react'
-import { LuArrowUpRight } from 'react-icons/lu'
+import { LuArrowUpRight, LuRefreshCw } from 'react-icons/lu'
 
 import useDashboard from './data/use-dashboard'
 import ActivityChart from './internal/activity-chart'
@@ -20,8 +20,15 @@ const { Title } = Typography
 
 export default function Root() {
   const [period, setPeriod] = useState<DashboardPeriod>('30d')
-  const { dashboard, isDashboardError, isDashboardPending, isDashboardStale, refetchDashboard } =
-    useDashboard(period)
+  const {
+    dashboard,
+    isDashboardError,
+    isDashboardPending,
+    isDashboardRefreshing,
+    isDashboardStale,
+    refetchDashboard,
+    refreshDashboard
+  } = useDashboard(period)
   const { token } = theme.useToken()
 
   const hues = useMemo(() => stageHues(dashboard?.stages ?? []), [dashboard?.stages])
@@ -63,6 +70,20 @@ export default function Root() {
               value={period}
             />
           </ConfigProvider>
+
+          {dashboard && (
+            <Tooltip title={__('Get the latest numbers. The dashboard updates every few minutes.')}>
+              <Button
+                className="bc-h-[38px] bc-font-medium"
+                disabled={isDashboardStale}
+                icon={<LuRefreshCw aria-hidden />}
+                loading={isDashboardRefreshing}
+                onClick={refreshDashboard}
+              >
+                {__('Refresh')}
+              </Button>
+            </Tooltip>
+          )}
 
           {dashboard?.portalUrl && (
             <Button
@@ -109,7 +130,11 @@ export default function Root() {
               time and Top contributors on the right. In one column the
               wrappers drop out and `order` puts each card under its pair. */}
           <div className="bc-grid bc-gap-5 xl:bc-grid-cols-3">
-            <ActivityChart activity={dashboard.activity} className="xl:bc-col-span-2" period={shownPeriod} />
+            <ActivityChart
+              activity={dashboard.activity}
+              className="xl:bc-col-span-2"
+              period={shownPeriod}
+            />
             <StageProgress hues={hues} period={shownPeriod} stages={dashboard.stages} />
             <div className="max-xl:bc-contents xl:bc-col-span-2 xl:bc-flex xl:bc-flex-col xl:bc-gap-5">
               <NeedsAttention
@@ -132,7 +157,11 @@ export default function Root() {
               />
             </div>
             <div className="max-xl:bc-contents xl:bc-flex xl:bc-flex-col xl:bc-gap-5">
-              <ResponseTime className="max-xl:bc-order-2" period={shownPeriod} response={dashboard.response} />
+              <ResponseTime
+                className="max-xl:bc-order-2"
+                period={shownPeriod}
+                response={dashboard.response}
+              />
               <TopContributors
                 className="max-xl:bc-order-4"
                 contributors={dashboard.contributors}
