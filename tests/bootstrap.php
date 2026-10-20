@@ -1021,10 +1021,13 @@ if (!class_exists('WP_Error')) {
 
         private $message;
 
-        public function __construct($code = '', $message = '')
+        private $data;
+
+        public function __construct($code = '', $message = '', $data = '')
         {
             $this->code = $code;
             $this->message = $message;
+            $this->data = $data;
         }
 
         public function get_error_code()
@@ -1035,6 +1038,17 @@ if (!class_exists('WP_Error')) {
         public function get_error_message()
         {
             return $this->message;
+        }
+
+        // The error's data, which carries the HTTP status a REST answer takes.
+        public function get_error_data()
+        {
+            return $this->data;
+        }
+
+        public function add_data($data)
+        {
+            $this->data = $data;
         }
 
         public function has_errors()
@@ -1255,6 +1269,15 @@ if (!function_exists('wp_generate_password')) {
         // Deterministic in tests; the real one is random, but nothing here
         // asserts on unpredictability.
         return substr(str_repeat('abcdef0123456789', 8), 0, (int) $length);
+    }
+}
+
+if (!function_exists('wp_generate_uuid4')) {
+    function wp_generate_uuid4()
+    {
+        $hex = bin2hex(random_bytes(16));
+
+        return \sprintf('%s-%s-4%s-a%s-%s', substr($hex, 0, 8), substr($hex, 8, 4), substr($hex, 13, 3), substr($hex, 17, 3), substr($hex, 20, 12));
     }
 }
 

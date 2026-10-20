@@ -11,6 +11,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\AuthSettings;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Services\Events\Events;
 use WP_Error;
 use WP_User;
 
@@ -502,6 +503,12 @@ final class AuthService
         );
 
         remove_filter('wp_pre_insert_user_data', $useStoredHash, 10);
+
+        // Here rather than at each register route: every one of them ends in
+        // this insert.
+        if (\is_int($userId) && $userId > 0) {
+            Events::memberRegistered($userId);
+        }
 
         return $userId;
     }

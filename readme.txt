@@ -123,6 +123,22 @@ To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 `pnpm install`
 `pnpm build:free`
 
+= For Developers: Event Hooks =
+
+Bit Connect fires a WordPress action when something happens in the community. Each action gets one argument: a flat array of the event data. Automation plugins can use these actions as triggers.
+
+* `bit_connect_topic_created` – a new post becomes public
+* `bit_connect_topic_status_changed` – the status or stage of a post changes
+* `bit_connect_comment_created` – a member adds a comment
+* `bit_connect_topic_voted` – a member votes for a post
+* `bit_connect_member_registered` – a person registers on the forum
+* `bit_connect_member_logged_in` – a member logs in on the forum
+* `bit_connect_report_filed` – a member reports a post or a comment
+* `bit_connect_report_resolved` – a moderator closes the reports on an item
+* `bit_connect_moderation_action` – a moderator or the forum acts on an item
+
+The `bit_connect_event` action fires for all events, with the event name and the data. To remove a field from the data, use the `bit_connect_event_payload` filter.
+
 = Bundled Fonts =
 
 The portal's text is set in **Inter** (© 2016 The Inter Project Authors) and its headings in **Outfit** (© 2021 The Outfit Project Authors). Both are included in the plugin and served from your own site, and both are licensed under the [SIL Open Font License 1.1](https://scripts.sil.org/OFL); see `LICENSE-Inter.txt` and `LICENSE-Outfit.txt`. Sources: https://github.com/rsms/inter and https://github.com/Outfitio/Outfit-Fonts

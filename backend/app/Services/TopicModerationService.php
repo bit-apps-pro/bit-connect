@@ -11,6 +11,7 @@ use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Services\Events\Events;
 use InvalidArgumentException;
 use WP_Post;
 use WP_Query;
@@ -397,6 +398,17 @@ final class TopicModerationService
             ],
             $id
         );
+
+        $post = get_post($id);
+
+        if ($post instanceof WP_Post) {
+            Events::topicStatusChanged(
+                $post,
+                self::termName($existingTopic, 'statuses'),
+                self::termName($existingTopic, 'stages'),
+                $moved
+            );
+        }
     }
 
     /**
