@@ -3027,10 +3027,10 @@ msgstr ""
 msgid "%1$s: %2$d"
 msgstr ""
 
-#. translators: %d, %s are value(s) inserted by the plugin. Keep them in the translation.
+#. translators: %1$d, %2$s are value(s) inserted by the plugin. Keep them in the translation.
 #: backend/i18n/frontend-strings.php:846
 #, php-format
-msgid "%d posts: %s"
+msgid "%1$d posts: %2$s"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:848

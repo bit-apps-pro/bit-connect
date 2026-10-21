@@ -78,6 +78,10 @@ final class ChunkedUpload
             self::assertRoomFor($userId);
         }
 
+        // A stream, not WP_Filesystem: the piece has to be written under a lock
+        // (flock), at an offset, after a truncate. WP_Filesystem writes whole
+        // files only, so two pieces arriving together would overwrite each other.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- WP_Filesystem has no lock, seek or truncate; see above.
         $handle = fopen($path, 'c+b');
         if ($handle === false) {
             throw new InvalidArgumentException('The upload could not be stored.');
@@ -104,9 +108,13 @@ final class ChunkedUpload
             ftruncate($handle, $offset);
             fseek($handle, $offset);
 
+            // Copied as a stream, so a piece of several megabytes is never read
+            // into memory whole.
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Streamed into the locked handle above; WP_Filesystem cannot.
             $source = fopen($chunk['tmp_name'], 'rb');
             $copied = $source === false ? 0 : (int) stream_copy_to_stream($source, $handle);
             if ($source !== false) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closes the stream opened above.
                 fclose($source);
             }
 
@@ -120,6 +128,7 @@ final class ChunkedUpload
             $received = $offset + $length;
         } finally {
             flock($handle, \LOCK_UN);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closes the locked stream opened above.
             fclose($handle);
 
             if ($failed) {

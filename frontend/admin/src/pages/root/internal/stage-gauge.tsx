@@ -103,7 +103,7 @@ export default function StageGauge({ hues, stages }: StageGaugeProps) {
     <div className="bc-mx-auto bc-w-full bc-max-w-80">
       <svg
         aria-label={sprintf(
-          __('%d posts: %s'),
+          __('%1$d posts: %2$s'),
           total,
           stages.map(stage => `${stage.name} ${stage.count}`).join(', ')
         )}

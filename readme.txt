@@ -1,4 +1,4 @@
-=== Bit Connect – Community, Discussion Forum, Feedback & Roadmap ===
+=== Bit Connect ===
 Contributors: bitpressadmin
 Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
