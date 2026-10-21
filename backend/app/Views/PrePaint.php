@@ -99,17 +99,20 @@ final class PrePaint
 
         // The view toggle: flips the body markup from the crawler view
         // (content) to the human view (loading spinner) — see the `.bc-js`
-        // rules above. The timeout is a safety valve: if the app bundle never
-        // mounts, the content is re-revealed rather than leaving the visitor on
-        // an endless spinner. Once React mounts, the `.bc-ssr` subtree no
-        // longer exists and removing the class is a no-op.
+        // rules above. If the app bundle never mounts, the content is shown
+        // again rather than leaving the visitor on an endless spinner: at once
+        // when one of this plugin's scripts fails to load or throws — a cached
+        // page that names a bundle an update removed, an optimiser that broke
+        // it — and otherwise after 12 seconds, which a slow connection needs.
+        // Once React mounts, the `.bc-ssr` subtree no longer exists and
+        // removing the class is a no-op.
         wp_register_script($handle, false, [], Config::VERSION, ['in_footer' => false]);
         wp_enqueue_script($handle);
         // phpcs:disable Generic.Files.LineLength -- Minified JS cannot be wrapped
         wp_add_inline_script(
             $handle,
             <<<'JS'
-            document.documentElement.classList.add("bc-js");setTimeout(function(){document.documentElement.classList.remove("bc-js")},8000);
+            (function(e){e.classList.add("bc-js");function s(){e.classList.remove("bc-js")}var t=setTimeout(s,12000);addEventListener("error",function(v){var n=v.target,f=v.filename||(n&&n.tagName==="SCRIPT"?n.src:"");if(f&&f.indexOf("bit-connect")>-1){clearTimeout(t);s()}},true)})(document.documentElement);
             JS
         );
         // phpcs:enable Generic.Files.LineLength

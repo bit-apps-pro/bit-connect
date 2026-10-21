@@ -21,8 +21,29 @@ final class RestNoCacheTest extends TestCase
 {
     private const PREFIX = '/bit-connect/v1/';
 
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['__wp_serving_rest']);
+    }
+
+    /**
+     * PortalPreload runs these routes inside a portal page, and core fires the
+     * same filter there. Marking the page then kept every portal page out of
+     * the page cache, for guests too.
+     */
+    public function testAPageThatRunsTheRoutesInProcessIsNotARestRequest(): void
+    {
+        $this->assertFalse(RestNoCache::servesRestRequest());
+
+        $GLOBALS['__wp_serving_rest'] = true;
+
+        $this->assertTrue(RestNoCache::servesRestRequest());
+    }
+
     public function testItMarksARouteInTheNamespace(): void
     {
+        $GLOBALS['__wp_serving_rest'] = true;
+
         $response = RestNoCache::mark(new WP_HTTP_Response(), $this->request('/bit-connect/v1/moderation/topics'), self::PREFIX);
 
         $headers = $response->get_headers();
