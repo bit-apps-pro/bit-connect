@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Config;
+use BitApps\BitConnect\Deps\BitApps\WPDatabase\Connection;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\AuthSettings;
 use BitApps\BitConnect\Enum\Capabilities;
@@ -72,7 +73,10 @@ final class AuthService
 
     public const MODERATOR_ROLE = 'bit_connect_moderator';
 
-    private const PENDING_TRANSIENT_PREFIX = 'bit_connect_pending_reg_';
+    /** Unprefixed: Config::withPrefix() adds `bit_connect_`. */
+    private const PENDING_OPTION_PREFIX = 'pending_registration_';
+
+    private const LEGACY_PENDING_TRANSIENT_PREFIX = 'bit_connect_pending_reg_';
 
     // -------------------------------------------------------------------------
     // Settings helpers
@@ -542,13 +546,24 @@ final class AuthService
      * No WordPress user exists yet; AuthApiController::verifyEmail() creates
      * one when the link is opened. What is parked is the login, the email, the
      * display name and the password's hash — never the password itself — under
-     * a single-use token that expires with the transient.
+     * a single-use token that expires after a day.
+     *
+     * An option, not a transient. On a site with a persistent object cache a
+     * transient lives only in Redis or Memcached, which drop entries when they
+     * run short of memory — and a dropped registration is a link that says it
+     * expired the moment it is opened. An option is kept in the database, and
+     * sweepPendingRegistrations() removes the ones nobody opened.
      */
     public static function storePendingAndSendVerification(array $data, string $email): void
     {
         $token = wp_generate_password(48, false);
 
-        set_transient(self::PENDING_TRANSIENT_PREFIX . $token, $data, DAY_IN_SECONDS);
+        add_option(
+            Config::withPrefix(self::PENDING_OPTION_PREFIX . $token),
+            ['data' => $data, 'expires' => time() + DAY_IN_SECONDS],
+            '',
+            false
+        );
 
         $verifyUrl = self::getForumPageUrl() . '?bit_connect_token=' . rawurlencode($token);
 
@@ -567,14 +582,58 @@ final class AuthService
      */
     public static function getPendingRegistration(string $token): ?array
     {
-        $key = self::PENDING_TRANSIENT_PREFIX . $token;
-        $data = get_transient($key);
+        $key = Config::withPrefix(self::PENDING_OPTION_PREFIX . $token);
+        $entry = get_option($key);
 
-        if (!\is_array($data)) {
+        if (!\is_array($entry)) {
+            return self::claimLegacyPendingRegistration($token);
+        }
+
+        // The delete is the claim: of two requests with one link, only the one
+        // whose delete removed the row goes on.
+        if (!delete_option($key)) {
             return null;
         }
 
-        if (!delete_transient($key)) {
+        if ((int) ($entry['expires'] ?? 0) < time() || !\is_array($entry['data'] ?? null)) {
+            return null;
+        }
+
+        return $entry['data'];
+    }
+
+    /**
+     * Removes the registrations whose link expired unopened. Daily, from
+     * CronProvider.
+     */
+    public static function sweepPendingRegistrations(): void
+    {
+        $names = Connection::get_col(
+            Connection::prepare(
+                'SELECT option_name FROM ' . Connection::prop('options') . ' WHERE option_name LIKE %s LIMIT 500',
+                Connection::esc_like(Config::withPrefix(self::PENDING_OPTION_PREFIX)) . '%'
+            )
+        );
+
+        foreach (\is_array($names) ? $names : [] as $name) {
+            $entry = get_option($name);
+
+            if (!\is_array($entry) || (int) ($entry['expires'] ?? 0) < time()) {
+                delete_option($name);
+            }
+        }
+    }
+
+    /**
+     * A registration parked as a transient, before the option above. Kept for
+     * one release, so a link mailed before the update still works.
+     */
+    private static function claimLegacyPendingRegistration(string $token): ?array
+    {
+        $key = self::LEGACY_PENDING_TRANSIENT_PREFIX . $token;
+        $data = get_transient($key);
+
+        if (!\is_array($data) || !delete_transient($key)) {
             return null;
         }
 

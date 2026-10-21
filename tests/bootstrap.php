@@ -88,6 +88,36 @@ if (!function_exists('delete_option')) {
     }
 }
 
+if (!function_exists('add_option')) {
+    // Core's add_option() writes nothing when the name is taken.
+    function add_option(string $key, $value = '', $deprecated = '', $autoload = null): bool
+    {
+        if (array_key_exists($key, $GLOBALS['__wp_options'] ?? [])) {
+            return false;
+        }
+
+        $GLOBALS['__wp_options'][$key] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('wp_is_serving_rest_request')) {
+    // Seed $GLOBALS['__wp_serving_rest'] = true for a REST request.
+    function wp_is_serving_rest_request(): bool
+    {
+        return !empty($GLOBALS['__wp_serving_rest']);
+    }
+}
+
+if (!function_exists('did_action')) {
+    // Seed $GLOBALS['__wp_did_actions'][$tag] with a count.
+    function did_action($tag): int
+    {
+        return (int) ($GLOBALS['__wp_did_actions'][$tag] ?? 0);
+    }
+}
+
 if (!function_exists('wp_clear_scheduled_hook')) {
     function wp_clear_scheduled_hook($hook, $args = [])
     {

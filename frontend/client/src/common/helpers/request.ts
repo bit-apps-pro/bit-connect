@@ -1,5 +1,5 @@
 import { normalizeFailure } from '@shared/request/failure'
-import { nonceHeader } from '@utils/request/nonce'
+import { nonceHeader, renewNonce, sendWithNonce } from '@utils/request/nonce'
 import { takePreloaded } from '@utils/request/preload'
 
 import config from '../../config/config'
@@ -82,7 +82,6 @@ const createRequestOptions = (
   if (!(data instanceof FormData)) {
     fetchOptions.headers['Content-Type'] = 'application/json'
   }
-  Object.assign(fetchOptions.headers, nonceHeader())
 
   return fetchOptions
 }
@@ -103,7 +102,9 @@ export default async function queryRequest<T>(
 
   const fetchOptions = createRequestOptions(method, data, options)
   try {
-    const response = await fetch(uri, fetchOptions)
+    const response = await sendWithNonce(nonce =>
+      fetch(uri, { ...fetchOptions, headers: { ...fetchOptions.headers, ...nonce } })
+    )
     let responseData: unknown
     try {
       responseData = await response.json()
@@ -205,8 +206,11 @@ export interface UploadOptions {
 export function uploadRequest<T>(
   action: string,
   formData: FormData,
-  { onProgress, signal }: UploadOptions = {}
+  options: UploadOptions = {},
+  renewed = false
 ): Promise<Response<T>> {
+  const { onProgress, signal } = options
+
   return new Promise<Response<T>>((resolve, reject) => {
     const xhr = new XMLHttpRequest()
 
@@ -231,6 +235,21 @@ export function uploadRequest<T>(
       } catch {
         const failure = transportFailure<T>(uploadStatusMessage(xhr.status))
         reject(transient ? retryable(failure) : failure)
+        return
+      }
+
+      // An expired nonce — see sendWithNonce(), which fetch requests go through.
+      if (
+        !renewed &&
+        xhr.status === 403 &&
+        Object.keys(nonceHeader()).length > 0 &&
+        (parsed as undefined | { code?: string })?.code === 'rest_cookie_invalid_nonce'
+      ) {
+        renewNonce()
+          .then(renewedNonce =>
+            renewedNonce ? uploadRequest<T>(action, formData, options, true) : Promise.reject(parsed)
+          )
+          .then(resolve, reject)
         return
       }
 
