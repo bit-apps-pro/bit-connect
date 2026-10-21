@@ -895,6 +895,7 @@ class TopicService
             return $args;
         }
 
+        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- Only the topics held back from this reader, a short list.
         $args['post__not_in'] = array_values(array_unique([...array_map('intval', (array) ($args['post__not_in'] ?? [])), ...$ids]));
 
         return $args;

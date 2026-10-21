@@ -67,7 +67,7 @@ final class ForumUploadsInLibrary
 
         $metaQuery = $query->get('meta_query');
         $args = self::withMeta(
-            ['meta_query' => \is_array($metaQuery) ? $metaQuery : []],
+            ['meta_query' => \is_array($metaQuery) ? $metaQuery : []], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- The Media Library list in wp-admin, one page at a time.
             self::isViewing() ? 'EXISTS' : 'NOT EXISTS'
         );
 
@@ -108,6 +108,7 @@ final class ForumUploadsInLibrary
         $existing = isset($args['meta_query']) && \is_array($args['meta_query']) ? $args['meta_query'] : [];
         $condition = ['key' => UploadClaims::PORTAL_META, 'compare' => $compare];
 
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Marks forum uploads; the media screens have no other way to tell them apart.
         $args['meta_query'] = $existing === []
             ? [$condition]
             : ['relation' => 'AND', $existing, $condition];

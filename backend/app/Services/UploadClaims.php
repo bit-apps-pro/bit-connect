@@ -149,7 +149,7 @@ final class UploadClaims
                 'fields'         => 'ids',
                 'posts_per_page' => self::BATCH,
                 'no_found_rows'  => true,
-                'meta_query'     => [
+                'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- A cron cleanup, in small batches, of unclaimed uploads.
                     [
                         'key'     => self::PENDING_META,
                         'value'   => time() - self::GRACE,

@@ -193,8 +193,11 @@ final class PostingLimits
     private static function assertStructure(string $content): void
     {
         $caps = [
+            // translators: %1$d: the number of links in the post, %2$d: the largest number permitted
             [self::MAX_LINKS, '/<a\b/i', __('Too many links (%1$d). Maximum is %2$d.', 'bit-connect')],
+            // translators: %1$d: the number of tables in the post, %2$d: the largest number permitted
             [self::MAX_TABLES, '/<table\b/i', __('Too many tables (%1$d). Maximum is %2$d.', 'bit-connect')],
+            // translators: %1$d: the number of headings in the post, %2$d: the largest number permitted
             [self::MAX_HEADINGS, '/<h[1-6]\b/i', __('Too many headings (%1$d). Maximum is %2$d.', 'bit-connect')],
         ];
 
