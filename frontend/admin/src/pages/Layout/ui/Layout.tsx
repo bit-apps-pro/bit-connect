@@ -11,6 +11,7 @@ import OfflineBanner from '../../../components/utilities/OfflineBanner'
 import ScreenErrorBoundary from '../../../components/utilities/screen-error-boundary'
 import globalCssInJs from '../../../resource/globalCssInJs'
 import cls from './Layout.module.css'
+import ScreenNotices from './screen-notices'
 import Sidebar from './Sidebar'
 
 const { useToken } = theme
@@ -56,6 +57,7 @@ export default function Layout() {
             crosses the window height makes it appear, and the whole screen
             jumps sideways by its width. */}
         <Content className="scroller thin" style={{ overflow: 'auto', scrollbarGutter: 'stable' }}>
+          {ScreenNotices && <ScreenNotices />}
           <ScreenErrorBoundary key={screen}>
             <Suspense fallback={fallbackOf()}>
               <Outlet />
