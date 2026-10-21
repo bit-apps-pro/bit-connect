@@ -125,6 +125,7 @@ class BaseView
             'version'                => Config::VERSION,
             'lang'                   => get_locale(),
             'wpRestURL'              => Config::get('WP_REST_URL'),
+            'ajaxURL'                => admin_url('admin-ajax.php'), // renews a member's nonce — see utils/request/nonce.ts
             'isLoggedIn'             => $userInfo['isLoggedIn'],
             'currentUser'            => $userInfo['user'],
             'currentUserAvatar'      => $userInfo['user'] ? $userInfo['user']['avatar'] : '',
@@ -196,20 +197,15 @@ class BaseView
         // Register up front when this request will render the shortcode; the
         // routed portal pages already register on template_redirect, and
         // registration is idempotent so the shortcode's later call is harmless.
-        $post = get_post();
-        $hasShortcode = is_singular() && $post instanceof WP_Post && PortalLocation::embedsPortal((string) $post->post_content);
-        if ($hasShortcode) {
+        if (self::embedsShortcode()) {
             $this->registerAssets();
         }
 
         // Pre-mount styles and the crawler/human view toggle. Scoped to the
         // requests that actually render the portal, because this method runs on
         // every front-end request: PrePaint puts `bc-js` on `<html>`, which has
-        // no business on a page this plugin does not draw. Both gates resolve on
-        // template_redirect, before wp_head, so both are readable here — the
-        // routers claim the request, and SeoMeta is the belt to that braces for
-        // any route that renders without registering a matching router filter.
-        $rendersPortal = $hasShortcode || ShortCode::isServerRendered() || SeoMeta::meta() !== null;
+        // no business on a page this plugin does not draw.
+        $rendersPortal = self::rendersPortal();
 
         if ($rendersPortal) {
             PrePaint::enqueue();
@@ -269,6 +265,29 @@ class BaseView
         // routes and never calls wp.media, and this method runs on every
         // front-end request: the media library cost each page of the site about
         // twenty scripts and its attachment queries. Only the admin needs it (Head).
+    }
+
+    /**
+     * Whether this request draws the portal.
+     *
+     * Both gates resolve on template_redirect, before wp_head — the routers
+     * claim the request, and SeoMeta is the belt to that braces for any route
+     * that renders without registering a matching router filter. PageCache
+     * reads this on template_redirect too, after the routers.
+     */
+    public static function rendersPortal(): bool
+    {
+        return self::embedsShortcode() || ShortCode::isServerRendered() || SeoMeta::meta() !== null;
+    }
+
+    /**
+     * Whether the requested page holds the `[bit-connect]` shortcode.
+     */
+    private static function embedsShortcode(): bool
+    {
+        $post = get_post();
+
+        return is_singular() && $post instanceof WP_Post && PortalLocation::embedsPortal((string) $post->post_content);
     }
 
     /**

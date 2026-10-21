@@ -466,10 +466,28 @@ final class CrawlabilityTest extends TestCase
         PrePaint::enqueue();
         $script = $this->inlineScript(PrePaint::handle());
 
-        $this->assertStringStartsWith('document.documentElement.classList.add("bc-js")', $script);
+        $this->assertStringStartsWith('(function(e){e.classList.add("bc-js")', $script);
+        $this->assertStringEndsWith('})(document.documentElement);', $script);
 
         // Safety valve: a bundle that never mounts re-reveals the content.
         $this->assertStringContainsString('classList.remove("bc-js")', $script);
+        $this->assertStringContainsString('setTimeout(s,12000)', $script);
+    }
+
+    /**
+     * A bundle that fails — a cached page naming a build an update removed, an
+     * optimiser that broke it — shows the content at once, not after the wait.
+     * The listener is on the capture phase, where a script's load error is
+     * seen, and it acts only on this plugin's scripts.
+     */
+    public function testShowsTheContentAtOnceWhenTheBundleFails(): void
+    {
+        PrePaint::enqueue();
+        $script = $this->inlineScript(PrePaint::handle());
+
+        $this->assertStringContainsString('addEventListener("error",', $script);
+        $this->assertStringContainsString('},true)', $script);
+        $this->assertStringContainsString('indexOf("bit-connect")>-1){clearTimeout(t);s()}', $script);
     }
 
     /**

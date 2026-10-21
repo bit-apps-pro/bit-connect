@@ -17,7 +17,14 @@ vi.mock('../../config/config', () => ({
   default: { API_URL: 'https://example.test/wp-json/bit-connect/v1' }
 }))
 
-vi.mock('@utils/request/nonce', () => ({ nonceHeader: () => ({ 'X-WP-Nonce': 'test-nonce' }) }))
+// Renewal has its own test (utils/request/nonce-renew.test.ts); here the nonce
+// is always valid, so a request is sent once with it.
+vi.mock('@utils/request/nonce', () => ({
+  nonceHeader: () => ({ 'X-WP-Nonce': 'test-nonce' }),
+  renewNonce: () => Promise.resolve(false),
+  sendWithNonce: (send: (headers: Record<string, string>) => Promise<Response>) =>
+    send({ 'X-WP-Nonce': 'test-nonce' })
+}))
 
 const respond = (status: number, body: unknown) =>
   vi.fn().mockResolvedValue({

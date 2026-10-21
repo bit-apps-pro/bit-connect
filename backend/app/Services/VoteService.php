@@ -129,6 +129,9 @@ class VoteService
     public function rebuildPostVoteCache(int $postId): void
     {
         update_post_meta($postId, self::META_VOTE_COUNT, Vote::getPostVoteCount($postId));
+
+        // A vote is no post save, so no cache plugin hears of it.
+        PageCache::topic($postId);
     }
 
     // -------------------------------------------------------------------------
