@@ -6,6 +6,7 @@ use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 use BitApps\BitConnect\SSR\Seo\SeoContent;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use PHPUnit\Framework\TestCase;
@@ -160,6 +161,27 @@ final class TermArchiveTest extends TestCase
 
         $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('team', 'platform'));
         $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('topic', 'billing'));
+    }
+
+    public function testAnArchiveRedirectsFromEachFormerSlug(): void
+    {
+        $this->addTeamsTaxonomy('squad');
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']['teams']['formerSlugs'] = ['crew'];
+
+        $this->assertMatchesRegularExpression('~^(' . PortalTaxonomies::segmentPattern() . ')$~', 'crew');
+        $this->assertSame('https://example.com/community/squad/platform', PortalTaxonomies::renamedArchiveUrl('crew', 'platform'));
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('crew', 'no-such-term'));
+        // The former slug only redirects; it does not serve the archive too.
+        $this->assertNull(PortalTaxonomies::resolve('crew', 'platform'));
+    }
+
+    public function testAFormerSlugThePortalRoutesIsIgnored(): void
+    {
+        $this->addTeamsTaxonomy('squad');
+        $GLOBALS['__wp_filters']['bit_connect_topic_taxonomies']['teams']['formerSlugs'] = ['stage', 'squad'];
+
+        $this->assertSame([], TopicTaxonomies::all()['teams']['formerSlugs']);
+        $this->assertSame('', PortalTaxonomies::renamedArchiveUrl('stage', 'platform'));
     }
 
     public function testATermWhoseSlugWasEditedRedirectsFromItsOldSlug(): void
