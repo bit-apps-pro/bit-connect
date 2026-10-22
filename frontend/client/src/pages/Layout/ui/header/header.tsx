@@ -56,7 +56,7 @@ export default function Header({ isScrolled = false, onMenuOpen }: HeaderProps) 
   // results page keeps the row open, so the term being shown stays on screen.
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchOpen, setSearchOpen] = useState(false)
-  // The root list, or an archive (a board, a tag) searched inside.
+  // The root list, or an archive (a group, a tag) searched inside.
   const showingResults = isListingPath(location.pathname) && !!searchParams.get('search')
   const searchRowOpen = isMobile && (searchOpen || showingResults)
 

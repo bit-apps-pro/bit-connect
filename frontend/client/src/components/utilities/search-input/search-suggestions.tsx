@@ -110,7 +110,7 @@ function OptionBody({ option, query }: { option: SuggestionOption; query: string
           title={
             <span className="bc-text-ink">
               {option.scope
-                ? // translators: 1: what the visitor typed into the search box, 2: the board, tag or other term searched in
+                ? // translators: 1: what the visitor typed into the search box, 2: the group, tag or other term searched in
                   sprintf(__('Search for “%1$s” in %2$s'), option.term, option.scope.name)
                 : // translators: %s: what the visitor typed into the search box
                   sprintf(__('Search for “%s”'), option.term)}

@@ -34,7 +34,7 @@ export interface TermSuggestion {
  * Members only for someone logged in — the lookup the "@" picker uses answers
  * nobody else, and a section that always comes back empty is worse than none.
  *
- * Inside a scope — the board or tag the reader is searching in — topics come
+ * Inside a scope — the group or tag the reader is searching in — topics come
  * from that archive only. Terms and members are not filed under one, so they
  * are offered as before.
  */
