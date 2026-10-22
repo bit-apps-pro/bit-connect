@@ -92,8 +92,8 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   //
   // A search drops the listing scope and any stage — even one the URL names.
   // It keeps a term archive, though: the header's search box only lands on an
-  // archive with `?search=` when the reader searched *in* it (a board, a tag),
-  // the way a forum's search stays inside the board you are on; a search for
+  // archive with `?search=` when the reader searched *in* it (a group, a tag),
+  // the way a forum's search stays inside the group you are on; a search for
   // everything goes to the root. The refinements the reader picked here (sort,
   // type, tags) still apply, since their chips stay on screen beside the
   // results.

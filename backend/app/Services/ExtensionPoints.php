@@ -558,7 +558,7 @@ final class ExtensionPoints
 
     /**
      * Portal paths this plugin does not route itself, which a plugin draws —
-     * one segment each, e.g. `boards` for `/boards` — with the page's title.
+     * one segment each, e.g. `groups` for `/groups` — with the page's title.
      *
      * The portal serves its shell at each and the plugin's own client route
      * draws the page. A path this plugin already uses, or one that is not a

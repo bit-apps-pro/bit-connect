@@ -12,7 +12,7 @@ export interface SearchScope {
 }
 
 /**
- * The term archive the reader is on — a board, a tag, a topic type — which
+ * The term archive the reader is on — a group, a tag, a topic type — which
  * the search box offers to search inside, as a chip the reader can remove.
  *
  * Read from the path alone, so it is whatever archive the server advertises:

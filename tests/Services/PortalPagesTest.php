@@ -27,9 +27,9 @@ final class PortalPagesTest extends TestCase
 
     public function testAPluginAddsAPageWithItsTitle(): void
     {
-        $GLOBALS['__wp_filters']['bit_connect_portal_pages'] = static fn (array $pages): array => ['boards' => 'Boards'] + $pages;
+        $GLOBALS['__wp_filters']['bit_connect_portal_pages'] = static fn (array $pages): array => ['groups' => 'Groups'] + $pages;
 
-        $this->assertSame(['boards' => 'Boards'], ExtensionPoints::portalPages());
+        $this->assertSame(['groups' => 'Groups'], ExtensionPoints::portalPages());
     }
 
     public function testAPathThePortalAlreadyUsesIsRefused(): void
