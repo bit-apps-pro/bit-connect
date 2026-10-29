@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -195,6 +195,13 @@ Yes. Bit Connect Pro lets you create public or private groups, add different typ
 One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.0.8 =
+* The portal loads faster. The first download is smaller, and the pickers, the notification panel and the preferences form load when you open them.
+* A topic opens at once from the list. The portal does not load the topic again.
+* Fixed: the portal shows the spinner until its files finish the download.
+* Fixed: the topic page shows the loading skeleton, not a blank page.
+* Fixed: the portal content does not stay invisible after an animation.
 
 = 1.0.7 =
 * Page cache plugins can keep the portal pages. The plugin clears them when a post, a comment, a vote or a setting changes.
