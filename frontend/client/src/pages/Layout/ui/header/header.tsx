@@ -2,7 +2,9 @@ import { cn } from '@common/helpers/globalHelpers'
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import config from '@config/config'
-import { NotificationBell } from '@features/notifications'
+// The module, not the `@features/notifications` index: the index also pulls in
+// the preferences form and its controls, which only the profile page draws.
+import NotificationBell from '@features/notifications/ui/notification-bell'
 import useTopicModalStore from '@features/topic-modal/state/use-topic-modal-store'
 import TopicModals from '@features/topic-modal/ui/topic-modals'
 import logo from '@resource/img/logo.svg'
