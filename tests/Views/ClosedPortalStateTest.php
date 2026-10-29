@@ -13,8 +13,9 @@ use WP_Term;
  *
  * The portal showed them a sign-in prompt, but the topic page's hydration
  * state carried the whole topic — title and body — and the list page every
- * topic on it, readable in the page source by anyone who looked. The state is
- * in the markup whatever the client does with it, so it must be empty.
+ * topic on it, readable in the page source by anyone who looked. The client
+ * never read that state, so it is gone for every visitor now; the crawler
+ * markup's view data is what must stay empty for a guest.
  *
  * @internal
  *
@@ -47,7 +48,7 @@ final class ClosedPortalStateTest extends TestCase
     {
         $view = (new TopicsView())->prepareTopicDetailsData('secret-topic');
 
-        $this->assertSame(['topicDetails' => ['topic' => null]], $view->getState());
+        $this->assertSame([], $view->getState());
         $this->assertNull($view->getViewData()['topic']);
         $this->assertTrue(TopicsView::isClosed());
     }
@@ -56,7 +57,7 @@ final class ClosedPortalStateTest extends TestCase
     {
         $view = (new TopicsView())->prepareData(1);
 
-        $this->assertSame(['data' => [], 'stages' => []], $view->getState());
+        $this->assertSame([], $view->getState());
         $this->assertSame([], $view->getViewData()['topics']);
     }
 
@@ -68,7 +69,7 @@ final class ClosedPortalStateTest extends TestCase
 
         $view = (new TopicsView())->prepareArchiveData($term);
 
-        $this->assertSame(['data' => [], 'stages' => []], $view->getState());
+        $this->assertSame([], $view->getState());
         $this->assertSame([], $view->getViewData()['topics']);
     }
 

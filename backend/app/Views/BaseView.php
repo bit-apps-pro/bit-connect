@@ -52,16 +52,21 @@ class BaseView
 
     public function registerAssets()
     {
+        // The bundle has no `@wordpress/interactivity` dependency: nothing in it
+        // imports the package, and declaring it made WordPress load the
+        // runtime (about 40 KB) and its state block on every portal page for
+        // nothing. A module that does import it must add it back here, or the
+        // bare import has no import map entry to resolve against.
         if (Config::isDev()) {
             $devUrl = Config::getClientEndDevUrl();
             wp_register_script_module($this->slug . '-MODULE-vite-client-helper', $devUrl . '/src/config/devHotModule.js', [], null);
             wp_register_script_module($this->slug . '-MODULE-vite-client', $devUrl . '/@vite/client', [], null);
-            wp_register_script_module($this->slug . '-MODULE-main', $devUrl . '/src/main.tsx', ['@wordpress/interactivity'], null);
+            wp_register_script_module($this->slug . '-MODULE-main', $devUrl . '/src/main.tsx', [], null);
         } else {
             $codeName = Config::get('BUILD_CODE_NAME_CLIENT');
             $slug = Config::SLUG;
             // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion, WordPress.WP.EnqueuedResourceParameters.NotInFooter -- Version is embedded in the filename via $codeName for cache busting.
-            wp_register_script_module($this->slug . '-MODULE-main', Config::get('ASSET_URI') . "/client/main-{$codeName}.js", ['@wordpress/interactivity'], null);
+            wp_register_script_module($this->slug . '-MODULE-main', Config::get('ASSET_URI') . "/client/main-{$codeName}.js", [], null);
             wp_register_style($this->slug . '-styles', Config::get('ASSET_URI') . "/client/main-{$slug}-ba-assets-{$codeName}.css", [], $this->version, 'screen');
         }
     }
@@ -194,6 +199,9 @@ class BaseView
         // shortcode page the bundle's bare `@wordpress/interactivity` import had
         // no map to resolve against and the portal never hydrated. Classic
         // themes print the map in the footer, which is why this stayed hidden.
+        // The bundle no longer imports that package (see registerAssets()), but
+        // registering early still puts the module in the head with everything
+        // else, and keeps the map in place should a dependency come back.
         // Register up front when this request will render the shortcode; the
         // routed portal pages already register on template_redirect, and
         // registration is idempotent so the shortcode's later call is harmless.

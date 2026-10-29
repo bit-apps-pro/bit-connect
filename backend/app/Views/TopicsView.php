@@ -102,15 +102,8 @@ class TopicsView extends SSRView
         // Get stages data, in the order an admin arranged them
         $stages = StageService::ordered();
 
-        // Set state data
-        $this->setState(
-            [
-                'data'   => $topicsData,
-                'stages' => $stages,
-            ]
-        );
-
-        // Set view data
+        // View data only: the crawler markup draws it. No hydration state —
+        // see ShortCode::render().
         $this->setViewData(
             [
                 'topics'     => $topicsData,
@@ -167,13 +160,6 @@ class TopicsView extends SSRView
 
         $stages = StageService::ordered();
 
-        $this->setState(
-            [
-                'data'   => $topicsData,
-                'stages' => $stages,
-            ]
-        );
-
         $this->setViewData(
             [
                 'topics' => $topicsData,
@@ -198,14 +184,6 @@ class TopicsView extends SSRView
 
         $topicData = self::isClosed() ? null : $this->topicService->getTopicBySlug($topicSlug);
 
-        $this->setState(
-            [
-                'topicDetails' => [
-                    'topic' => $topicData,
-                ],
-            ]
-        );
-
         $this->setViewData(
             [
                 'topic' => $topicData,
@@ -218,10 +196,10 @@ class TopicsView extends SSRView
     /**
      * Whether the render is for a visitor a members-only portal turns away.
      *
-     * The portal shows them a sign-in prompt, but the page's hydration state
-     * is in the markup whatever the client does with it — so a closed list
-     * carries no topics and a closed topic route no topic, rather than handing
-     * over what the REST routes refuse.
+     * The portal shows them a sign-in prompt, but the crawler markup is in the
+     * page whatever the client does with it — so a closed list carries no
+     * topics and a closed topic route no topic, rather than handing over what
+     * the REST routes refuse.
      */
     public static function isClosed(): bool
     {
@@ -237,13 +215,6 @@ class TopicsView extends SSRView
     {
         $postController = new PostController();
         $postData = $postController->all()->getData();
-
-        // Set state data
-        $this->setState(
-            [
-                'data' => $postData,
-            ]
-        );
 
         // Set view data
         $this->setViewData(
@@ -266,7 +237,6 @@ class TopicsView extends SSRView
     {
         $this->baseView->registerAssets();
 
-        $this->setState(['data' => [], 'stages' => []]);
         $this->setViewData($viewData + ['stages' => []]);
 
         return $this;
