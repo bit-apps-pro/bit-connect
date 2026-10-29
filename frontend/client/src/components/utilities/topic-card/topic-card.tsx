@@ -26,6 +26,7 @@ import TopicCardState from './topic-card-state'
 import TopicCardSummary from './topic-card-summary'
 import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
+import usePrefetchTopic from './use-prefetch-topic'
 
 /** "20 Nov 2025" — on the site's calendar, in the reader's own locale's order. */
 const DATE_OPTIONS: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
@@ -98,6 +99,8 @@ export default function TopicCard({
     cardRef.current?.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'nearest' })
   }, [isJustCreated])
 
+  const prefetchHandlers = usePrefetchTopic(topic)
+
   const handlePostVote = async () => {
     await onVote(postId)
   }
@@ -118,7 +121,7 @@ export default function TopicCard({
       <div className="bc-flex bc-min-w-0 bc-max-w-full bc-flex-1 bc-flex-col">
         {/* The link stretches over the whole card (see topic-card.css), so the
             target is the card rather than the title text alone. */}
-        <Link className="topic-card__link" to={routePath(`/${topic.post_name}`)}>
+        <Link className="topic-card__link" to={routePath(`/${topic.post_name}`)} {...prefetchHandlers}>
           {/* One chip holds the card's right edge, aligned down the list so the
               column can be scanned on its own. Which chip depends on the width:
               below md the topic type, since that is what a reader scans a phone
