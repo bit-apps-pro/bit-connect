@@ -6,7 +6,6 @@ import useTaxonomies from '@features/topic-modal/data/use-taxonomies'
 import getScrollParent from '@utils/get-scroll-parent'
 import { isListingPath } from '@utils/listing-path'
 import { Layout as AntLayout, Space, theme } from 'antd'
-import { m, useReducedMotion } from 'framer-motion'
 import { useAtomValue } from 'jotai'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
@@ -16,6 +15,8 @@ import { __ } from '../../../common/helpers/i18nWrap'
 import OfflineBanner from '../../../components/utilities/OfflineBanner'
 import globalCssInJs from '../../../resource/globalCssInJs'
 import Header from './header/header'
+import '@shared/motion/enter.css'
+
 import cls from './Layout.module.css'
 import Sidebar from './Sidebar'
 
@@ -52,8 +53,6 @@ export default function Layout() {
   useEffect(() => {
     setSidebarOpen(false)
   }, [locationKey])
-
-  const shouldReduceMotion = useReducedMotion()
 
   // Whether anything has scrolled under the header, which is the only moment
   // its rule has something to separate — see the bar itself in header.tsx.
@@ -114,17 +113,13 @@ export default function Layout() {
               fades it in. Deliberately no AnimatePresence exit here — animating
               the outgoing page requires snapshotting the outlet and doubles the
               transition time; an enter fade gives the perceived smoothness
-              without either cost. */}
-          <m.div
-            animate={{ opacity: 1, y: 0 }}
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
-            key={pageKey}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          >
+              without either cost. CSS, not framer-motion: see
+              shared/motion/enter.css for why. */}
+          <div className="motion-enter" key={pageKey}>
             <Suspense fallback={fallbackOf()} key={suspenseKey}>
               <Outlet />
             </Suspense>
-          </m.div>
+          </div>
         </Content>
       </AntLayout>
     </ThemeProvider>
