@@ -6,33 +6,10 @@ import { useSearchParams } from 'react-router'
 
 import { useTaxonomiesStoreSelect } from '@/store/use-taxonomies-store'
 
+import { parseTagParam, tagLabel } from './tag-params'
+
 /** Query param holding the selected tag slugs. */
 const TAGS_PARAM = 'tags'
-
-/**
- * Selected tag slugs from a raw query-string value.
- *
- * The backend ORs a comma separated slug list (`tax_query` with `operator =>
- * 'IN'`), so that is the wire format. Blank segments and repeats are dropped so
- * `?tags=a,,a` and `?tags=a` describe the same filter — otherwise the topics
- * list would see two different filter keys and refetch for nothing.
- */
-export const parseTagParam = (value: null | string): string[] => [
-  ...new Set(
-    (value ?? '')
-      .split(',')
-      .map(slug => slug.trim())
-      .filter(Boolean)
-  )
-]
-
-/**
- * How a tag is shown everywhere in the portal: a hash before the name as the
- * admin typed it. The hash says "this is a tag" where a type or status chip
- * beside it says nothing; the name is left alone so "API & Integrations" still
- * reads as words.
- */
-export const tagLabel = (name: string) => `#${name}`
 
 interface TagOption {
   count: number

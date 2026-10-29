@@ -1,24 +1,31 @@
 import { __ } from '@common/helpers/i18nWrap'
 import { routePath } from '@utils/route-path'
 import { Badge, Button, Dropdown, Grid } from 'antd'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { LuBell } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 
-import { useMarkNotificationsRead, useNotifications, useUnreadCount } from '../data/use-notifications'
-import useOpenNotification, { ignoreBadgeFailure } from '../shared/use-open-notification'
-import { NotificationsEmpty, NotificationsSkeleton } from './notification-placeholders'
-import NotificationRow from './notification-row'
+import { useUnreadCount } from '../data/use-notifications'
+import { PANEL_FRAME } from './notification-panel-frame'
+import { NotificationsSkeleton } from './notification-placeholders'
 
-/** How many rows the dropdown shows before sending you to the full list. */
-const PANEL_SIZE = 8
+// The panel loads on demand — see NotificationPanel. Hovering the bell starts
+// the download, so the panel is usually there by the click.
+const loadPanel = () => import('./notification-panel')
+const NotificationPanel = lazy(loadPanel)
+
+const preloadPanel = () => {
+  loadPanel().catch(() => {
+    // Only a head start. Opening the panel loads it again.
+  })
+}
 
 /**
  * The bell in the portal header.
  *
  * The panel's rows are only fetched once it is actually opened — most visits
  * never touch it, and the badge alone answers "is there anything new?" for a
- * fraction of the cost.
+ * fraction of the cost. The panel's code is not in the first download either.
  *
  * **On a phone the bell is a link, not a dropdown.** A panel wide enough to read
  * is within ~30px of the whole viewport, and the bell sits in the middle of the
@@ -42,14 +49,6 @@ export default function NotificationBell() {
   const isMobile = !screens.md
 
   const { unreadCount } = useUnreadCount()
-  const { isNotificationsFetching, notifications } = useNotifications(
-    { per_page: PANEL_SIZE },
-    open && !isMobile
-  )
-  const { markRead } = useMarkNotificationsRead()
-  // Closes the panel on the way out — a dropdown left open over the page it
-  // just navigated to has to be dismissed by hand.
-  const handleSelect = useOpenNotification(() => setOpen(false))
 
   // Crossing into mobile with the panel open leaves antd holding a portalled
   // dropdown that the mobile branch no longer renders a trigger for. It stayed
@@ -60,71 +59,18 @@ export default function NotificationBell() {
     if (isMobile && open) setOpen(false)
   }, [isMobile, open])
 
-  const items = notifications?.data ?? []
-
-  const isEmpty = items.length === 0
-  const isLoading = isNotificationsFetching && isEmpty
-
+  // Until the panel's code arrives, its frame with the same skeleton the
+  // panel shows while its rows load — one loading state, not two.
   const panel = (
-    // One resolved width rather than a fixed width plus a max-width, so antd
-    // measures exactly the box it draws. This is tidiness, not the mobile fix —
-    // the clamp already produced the right *width*; what did not fit was the
-    // *anchor*, which is why phones skip the dropdown entirely (see the class
-    // note). It still matters between md and the 22rem panel, where a narrow
-    // tablet window shrinks the panel rather than letting it hang.
-    <div className="bc-w-[min(23rem,calc(100vw-2rem))] bc-overflow-hidden bc-rounded-lg bc-border bc-border-solid bc-border-line bc-bg-surface bc-shadow-xl">
-      <div className="bc-flex bc-items-center bc-justify-between bc-gap-2 bc-px-4 bc-pb-2 bc-pt-3">
-        <span className="bc-flex bc-items-center bc-gap-2">
-          <span className="bc-font-semibold bc-text-base bc-text-ink">{__('Notifications')}</span>
-          {/* The count as a quiet pill rather than a second solid badge. The
-              bell already carries the signal; in here the number is just a
-              fact. */}
-          {unreadCount > 0 && (
-            <span className="bc-rounded-full bc-bg-info-soft bc-px-2 bc-py-0.5 bc-text-xs bc-font-medium bc-text-info">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-        </span>
-        {unreadCount > 0 && (
-          <Button
-            className="bc-px-0"
-            onClick={() => {
-              markRead({ all: true }).catch(ignoreBadgeFailure)
-            }}
-            size="small"
-            type="link"
-          >
-            {__('Mark all read')}
-          </Button>
-        )}
-      </div>
-
-      {/* Capped against the viewport as well as in absolute terms: 24rem is
-          taller than a landscape phone, where a fixed cap would run the list
-          off the bottom of the screen with its own scrollbar unreachable. */}
-      <div className="bc-max-h-[min(24rem,60vh)] bc-overflow-y-auto [&>button+button]:bc-border-t [&>button+button]:bc-border-solid [&>button+button]:bc-border-t-line">
-        {isLoading && <NotificationsSkeleton rows={4} />}
-        {!isLoading && isEmpty && <NotificationsEmpty compact />}
-        {!isLoading &&
-          items.map(item => <NotificationRow item={item} key={item.id} onSelect={handleSelect} />)}
-      </div>
-
-      {items.length > 0 && (
-        <div className="bc-border-0 bc-border-t bc-border-solid bc-border-line bc-p-2">
-          <Button
-            block
-            onClick={() => {
-              setOpen(false)
-              navigate(routePath('/notifications'))
-            }}
-            size="small"
-            type="text"
-          >
-            {__('See all notifications')}
-          </Button>
+    <Suspense
+      fallback={
+        <div className={PANEL_FRAME}>
+          <NotificationsSkeleton rows={4} />
         </div>
-      )}
-    </div>
+      }
+    >
+      <NotificationPanel isOpen={open} onClose={() => setOpen(false)} unreadCount={unreadCount} />
+    </Suspense>
   )
 
   const trigger = (
@@ -141,6 +87,8 @@ export default function NotificationBell() {
       // into that button's own padding.
       className="touch-target bc-flex bc-h-9 bc-w-9 bc-items-center bc-justify-center bc-px-0 md:bc-mr-2"
       onClick={isMobile ? () => navigate(routePath('/notifications')) : undefined}
+      onFocus={isMobile ? undefined : preloadPanel}
+      onMouseEnter={isMobile ? undefined : preloadPanel}
       type="text"
     >
       {/* `count` is capped by antd at `overflowCount`; 99+ is plenty and a

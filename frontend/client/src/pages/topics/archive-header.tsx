@@ -1,7 +1,7 @@
 // The module, not the `@features/notifications` index — see header.tsx.
 import FollowButton from '@features/notifications/ui/follow-button'
 import { type TaxonomyTerm } from '@features/topic-modal/data/use-taxonomies'
-import { tagLabel } from '@utilities/tag-filter'
+import { tagLabel } from '@utilities/tag-filter/tag-params'
 
 import { type PortalArchive } from '@/config/config'
 

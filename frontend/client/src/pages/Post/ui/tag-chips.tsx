@@ -1,7 +1,7 @@
 import { cn } from '@common/helpers/globalHelpers'
 import { __ } from '@common/helpers/i18nWrap'
 import { type Topic } from '@features/topic-modal/shared/type'
-import { tagLabel } from '@utilities/tag-filter'
+import { tagLabel } from '@utilities/tag-filter/tag-params'
 import { archivePath } from '@utils/listing-path'
 import { Tag } from 'antd'
 import { Link } from 'react-router'
