@@ -471,7 +471,38 @@ final class CrawlabilityTest extends TestCase
 
         // Safety valve: a bundle that never mounts re-reveals the content.
         $this->assertStringContainsString('classList.remove("bc-js")', $script);
-        $this->assertStringContainsString('setTimeout(s,12000)', $script);
+    }
+
+    /**
+     * A slow bundle is not a broken one. Before the page has loaded, each file
+     * that finishes restarts the wait, so a slow connection keeps the spinner
+     * instead of showing the crawler view and then the app; only a download
+     * that has stopped gives way. After `load`, the app has 5 seconds to mount.
+     */
+    public function testWaitsForProgressBeforeRevealingTheContent(): void
+    {
+        PrePaint::enqueue();
+        $script = $this->inlineScript(PrePaint::handle());
+
+        $this->assertStringContainsString('new PerformanceObserver(', $script);
+        $this->assertStringContainsString('o.observe({type:"resource"})', $script);
+        $this->assertStringContainsString('if(document.readyState!=="complete"){w(15000)}', $script);
+        $this->assertStringContainsString('addEventListener("load",l)', $script);
+        $this->assertStringContainsString('w(5000)', $script);
+        $this->assertStringNotContainsString('12000', $script);
+        $this->assertStringNotContainsString('45000', $script);
+    }
+
+    /**
+     * In development the bundle comes from the Vite server, whose URL does not
+     * name the plugin, so a failed script is recognised by its id as well.
+     */
+    public function testRecognisesAFailedScriptByItsId(): void
+    {
+        PrePaint::enqueue();
+        $script = $this->inlineScript(PrePaint::handle());
+
+        $this->assertStringContainsString('n.src+" "+n.id', $script);
     }
 
     /**

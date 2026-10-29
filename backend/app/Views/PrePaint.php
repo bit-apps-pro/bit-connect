@@ -103,7 +103,20 @@ final class PrePaint
         // again rather than leaving the visitor on an endless spinner: at once
         // when one of this plugin's scripts fails to load or throws — a cached
         // page that names a bundle an update removed, an optimiser that broke
-        // it — and otherwise after 12 seconds, which a slow connection needs.
+        // it — and otherwise 5 seconds after the page has loaded.
+        //
+        // Counted from `load`, not from the start: the bundle's scripts must
+        // all arrive before `load` fires, and on a slow connection that takes
+        // longer than any fixed timer. A fixed 12 seconds, and then a fixed 45,
+        // showed the crawler view to a visitor whose app was still downloading,
+        // and then swapped it for the app — two different pages for one visit.
+        //
+        // Before `load`, the wait is for progress instead: every file that
+        // finishes starts the 15 seconds again, so a slow download keeps the
+        // spinner and only one that has stopped gives way. The error check
+        // reads the script's id as well as its URL, because in development the
+        // bundle comes from the Vite server, whose URL does not name the plugin.
+        //
         // Once React mounts, the `.bc-ssr` subtree no longer exists and
         // removing the class is a no-op.
         wp_register_script($handle, false, [], Config::VERSION, ['in_footer' => false]);
@@ -112,7 +125,7 @@ final class PrePaint
         wp_add_inline_script(
             $handle,
             <<<'JS'
-            (function(e){e.classList.add("bc-js");function s(){e.classList.remove("bc-js")}var t=setTimeout(s,12000);addEventListener("error",function(v){var n=v.target,f=v.filename||(n&&n.tagName==="SCRIPT"?n.src:"");if(f&&f.indexOf("bit-connect")>-1){clearTimeout(t);s()}},true)})(document.documentElement);
+            (function(e){e.classList.add("bc-js");var t,o;function s(){e.classList.remove("bc-js")}function w(d){clearTimeout(t);t=setTimeout(s,d)}w(15000);try{o=new PerformanceObserver(function(){if(document.readyState!=="complete"){w(15000)}});o.observe({type:"resource"})}catch(x){}function l(){if(o){o.disconnect()}w(5000)}if(document.readyState==="complete"){l()}else{addEventListener("load",l)}addEventListener("error",function(v){var n=v.target,f=v.filename||(n&&n.tagName==="SCRIPT"?n.src+" "+n.id:"");if(f&&f.indexOf("bit-connect")>-1){clearTimeout(t);s()}},true)})(document.documentElement);
             JS
         );
         // phpcs:enable Generic.Files.LineLength
