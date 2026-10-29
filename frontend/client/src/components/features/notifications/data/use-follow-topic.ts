@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
+import { markTopicsStale } from '@/store/helper/topic-cache'
 import post from '@/utils/request/post'
 
 /**
@@ -26,6 +27,9 @@ interface TogglePayload {
 
 export const RESTING_FOLLOW_STATE: FollowState = { following: false, muted: false, source: '' }
 
+const isSameFollowState = (first: FollowState, second: FollowState) =>
+  first.following === second.following && first.muted === second.muted && first.source === second.source
+
 /**
  * Follow or unfollow one thing: a topic, a tag, or whatever else the server
  * lets a member follow (see FollowService::isValidTargetType).
@@ -39,6 +43,16 @@ export const RESTING_FOLLOW_STATE: FollowState = { following: false, muted: fals
 export function useFollowTarget(targetType: string, targetId: number, initial: FollowState) {
   const queryClient = useQueryClient()
   const [state, setState] = useState<FollowState>(initial)
+
+  // The topic page can open on a cached copy of the topic that has no follow
+  // state, and get the real one a moment later. Take the new value when the
+  // server's answer changes, compared by value so a re-render with an equal
+  // object does not undo a click.
+  const [seen, setSeen] = useState(initial)
+  if (!isSameFollowState(seen, initial)) {
+    setSeen(initial)
+    setState(initial)
+  }
 
   const { isPending, mutateAsync } = useMutation({
     mutationFn: (follow: boolean) =>
@@ -57,7 +71,9 @@ export function useFollowTarget(targetType: string, targetId: number, initial: F
       if (response?.data) setState(response.data)
 
       // The follow list on the profile is now wrong, and so is anything that
-      // counts what this member is subscribed to.
+      // counts what this member is subscribed to — and so is the follow state
+      // inside a cached topic.
+      if (targetType === 'topic') void markTopicsStale()
       return queryClient.invalidateQueries({ queryKey: ['follows'] })
     }
   })

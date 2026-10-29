@@ -1,5 +1,5 @@
 import './topics.css'
-
+import '@shared/motion/enter.css'
 import NotifyContext from '@common/context/NotifyContext'
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
@@ -11,8 +11,8 @@ import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
 import { deleteFilter, readFilter } from '@utils/portal-query'
 import { Button, Drawer } from 'antd'
-import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, m } from 'framer-motion'
+import { type CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useParams, useSearchParams } from 'react-router'
 
@@ -284,16 +284,20 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     })
   }, [posts, listKey])
 
-  const shouldReduceMotion = useReducedMotion()
-  const cardMotion = (topicId: number, index: number) => ({
-    animate: { opacity: 1, y: 0 },
-    initial:
-      shouldReduceMotion || listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
-        ? false
-        : { opacity: 0, y: 12 },
-    // Stagger is capped so late infinite-scroll pages don't accumulate delay.
-    transition: { delay: Math.min(index * 0.05, 0.3), duration: 0.3, ease: 'easeOut' as const }
-  })
+  // CSS rather than framer-motion — see shared/motion/enter.css, which also
+  // honours reduced motion.
+  const cardEnter = (topicId: number, index: number) =>
+    listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
+      ? {}
+      : {
+          className: 'motion-enter',
+          style: {
+            '--enter-duration': '0.3s',
+            '--enter-y': '12px',
+            // Stagger is capped so late infinite-scroll pages don't accumulate delay.
+            animationDelay: `${Math.min(index * 0.05, 0.3)}s`
+          } as CSSProperties
+        }
 
   // The "all caught up" note is only meaningful after the user has actually
   // paginated — a list that fits in the first page never shows it.
@@ -601,9 +605,9 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
       {!showSkeleton && posts.length > 0 && (
         <div aria-busy={isSwitching} className="bc-flex bc-flex-col bc-gap-4">
           {posts.map((topic, index) => (
-            <m.div key={topic.ID} {...cardMotion(topic.ID, index)}>
+            <div key={topic.ID} {...cardEnter(topic.ID, index)}>
               <TopicCard onVote={handlePostVote} showStage={showsStageBadges} topic={topic} />
-            </m.div>
+            </div>
           ))}
 
           {/* Sentinel: observed to trigger loading the next page */}

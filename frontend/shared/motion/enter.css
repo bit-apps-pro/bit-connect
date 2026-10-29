@@ -1,0 +1,32 @@
+/* Enter-only fade for content as it mounts: a page, a card, a list.
+
+   Plain CSS on purpose. framer-motion's `m.*` components animate only once the
+   motion features chunk has loaded (see motion-provider.tsx), and one that
+   mounts with `initial={{ opacity: 0 }}` before then stays invisible until it
+   arrives — on a slow connection, the whole page body sat blank after its data
+   had come back, and a card that mounted early never came back at all. A CSS
+   animation runs with the stylesheet, which is already there.
+
+   `both` keeps a delayed element hidden for its delay. Set `--enter-y` and
+   `--enter-duration` on the element to change the travel and the speed. */
+@keyframes motion-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--enter-y, 8px));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.motion-enter {
+  animation: motion-enter var(--enter-duration, 0.2s) ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter {
+    animation: none;
+  }
+}

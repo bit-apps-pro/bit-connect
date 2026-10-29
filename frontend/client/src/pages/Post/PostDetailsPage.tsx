@@ -246,7 +246,16 @@ export default function PostDetailsPage() {
   return (
     // On phones the page supplies the whole gutter, because the panel below
     // drops its own padding there — see the frame note on it.
-    <Flex align="start" className="bc-w-full bc-max-w-full bc-p-4 sm:bc-p-3 lg:bc-p-6" vertical>
+    //
+    // Keyed by topic: a cached topic opens with no skeleton in between, so
+    // without the key a half-written comment or an open menu from the previous
+    // topic would stay on screen under the next one.
+    <Flex
+      align="start"
+      className="bc-w-full bc-max-w-full bc-p-4 sm:bc-p-3 lg:bc-p-6"
+      key={post.ID}
+      vertical
+    >
       {/* Optically aligned with the card below by offsetting the button's own
           padding, not by removing it: zeroing padding-left lined the label up
           but left the hover surface lopsided — flush against the arrow on one
