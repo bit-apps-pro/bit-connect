@@ -68,10 +68,24 @@ final class RestNoCache
 
         // The cache plugins' shared signal. LiteSpeed Cache reads it when it
         // writes its own header, which would otherwise replace the one above.
-        if (!defined('DONOTCACHEPAGE')) {
+        //
+        // Only on a REST request. PortalPreload runs these routes inside a
+        // portal page, and core fires this filter there too: defined then, the
+        // constant told every cache plugin to keep no portal page at all, for
+        // guests as well. The headers above go on a response the page drops.
+        if (self::servesRestRequest() && !defined('DONOTCACHEPAGE')) {
             \define('DONOTCACHEPAGE', true);
         }
 
         return $response;
+    }
+
+    /**
+     * Whether the request being answered is a REST request, not a page that
+     * runs REST routes in-process.
+     */
+    public static function servesRestRequest(): bool
+    {
+        return wp_is_serving_rest_request();
     }
 }

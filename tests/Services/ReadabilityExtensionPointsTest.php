@@ -73,14 +73,14 @@ final class ReadabilityExtensionPointsTest extends TestCase
     {
         $GLOBALS['__wp_filters']['bit_connect_portal_terms'] = static fn (array $terms): array => [$terms[1]];
 
-        $this->assertSame(['b'], ExtensionPoints::portalTerms(['a', 'b'], 'bit-connect-boards'));
+        $this->assertSame(['b'], ExtensionPoints::portalTerms(['a', 'b'], 'bit-connect-groups'));
     }
 
     public function testAnAnswerThatAddsTermsIsDiscarded(): void
     {
         $GLOBALS['__wp_filters']['bit_connect_portal_terms'] = static fn (array $terms): array => [...$terms, 'c'];
 
-        $this->assertSame(['a', 'b'], ExtensionPoints::portalTerms(['a', 'b'], 'bit-connect-boards'));
+        $this->assertSame(['a', 'b'], ExtensionPoints::portalTerms(['a', 'b'], 'bit-connect-groups'));
     }
 
     public function testATermsAnswerThatIsNotAnArrayIsDiscarded(): void

@@ -25,7 +25,7 @@ const FADE = '2rem'
  * only while there are chips past it, so a row that fits shows no fade at all.
  *
  * Under an archive (`scope`) the row offers only the types its topics are
- * filed as, so a tag or a board holding questions and bug reports shows those
+ * filed as, so a tag or a group holding questions and bug reports shows those
  * two rather than every type the forum has. The type in the URL keeps its chip
  * either way, so a shared link never lands on a filter with no way to clear it.
  */

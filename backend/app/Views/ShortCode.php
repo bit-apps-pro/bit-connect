@@ -5,12 +5,8 @@ namespace BitApps\BitConnect\Views;
 use BitApps\BitConnect\Config;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Router\StaticRouter;
 use BitApps\BitConnect\Enum\GeneralSettings;
-use BitApps\BitConnect\Enum\PostTypes;
-use BitApps\BitConnect\Http\Controller\PostController;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\RootRouter;
-use BitApps\BitConnect\Services\StageService;
-use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\SSR\SSRHandler;
 use WP_Post;
 
@@ -57,41 +53,15 @@ class ShortCode
 
         $page = isset($attributes['page']) ? $attributes['page'] : '';
 
-        // Use the new SSR View system
-        $viewManager = $this->ssrHandler->getViewManager(); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
-        $topicService = new TopicService();
-
-        // A members-only portal's guest gets no topics in the hydration state —
-        // see TopicsView::isClosed().
-        $isClosed = TopicsView::isClosed();
-
-        $stateData = [
-            'data' => $isClosed ? [] : $topicService->getAllTopics()
-        ];
-
-        // If we're on a single bit-connect post page, add topic details and comments for SSR
-        if (!$isClosed && is_singular(PostTypes::BIT_CONNECT->value) && get_the_ID()) {
-            global $post;
-            // Add topic details to state in the new format
-            $stateData['topicDetails'] = [
-                'topic' => $topicService->getReadableTopicById($post->ID),
-            ];
-        }
-
-        // Add post data and stages to state
-        $stateData = array_merge(
-            $stateData,
-            [
-                'data'   => (new PostController())->all()->getData(),
-                'stages' => $isClosed ? [] : StageService::ordered(),
-            ]
-        );
-
+        // No hydration state goes with the page. The client fetches its own
+        // data and never read the topics, stages and posts this used to put in
+        // the markup — they cost three queries and up to 80 KB on every render,
+        // and a members-only portal had to take care not to leak them.
         if (\is_string($page)) {
             $this->baseView->registerAssets();
 
             // Generate view using the new system
-            $pageBody = $this->ssrHandler->generateView($page, $stateData);
+            $pageBody = $this->ssrHandler->generateView($page);
         } else {
             // Fallback content
             $generalSettings = Config::getOption(GeneralSettings::OPTION_NAME->value, []);
@@ -129,7 +99,6 @@ SVG;
 HTML,
                 ['{{logo}}' => $logoMarkup]
             );
-            wp_interactivity_state('bitConnectStore', $stateData);
             $pageBody = wp_interactivity_process_directives($pageBody);
         }
 

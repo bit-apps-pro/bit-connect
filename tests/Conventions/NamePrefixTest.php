@@ -78,6 +78,19 @@ final class NamePrefixTest extends TestCase
         'the_content', 'comment_text', 'big_image_size_threshold',
     ];
 
+    /**
+     * Other plugins' public purge actions, fired by PageCache so that their
+     * page cache empties when the portal changes. The plugin declares none of
+     * them; each is the named plugin's documented way in, and nothing happens
+     * when it is not installed.
+     */
+    private const THIRD_PARTY_NAMES = [
+        'litespeed_tag_add', 'litespeed_purge', 'litespeed_control_set_nocache',
+        'cache_enabler_clear_page_cache_by_url', 'cache_enabler_clear_complete_cache',
+        'wpfc_clear_post_cache_by_id', 'wpfc_clear_all_cache',
+        'wphb_clear_page_cache', 'breeze_clear_all_cache', 'rt_nginx_helper_purge_all',
+    ];
+
     public function testEveryRegisteredOrStoredNameCarriesThePrefix(): void
     {
         $offenders = [];
@@ -90,6 +103,10 @@ final class NamePrefixTest extends TestCase
                 $name = self::resolve($argument, $constants);
 
                 if ($name === null || \in_array($name, self::CORE_NAMES, true)) {
+                    continue;
+                }
+
+                if ($function === 'do_action' && \in_array($name, self::THIRD_PARTY_NAMES, true)) {
                     continue;
                 }
 

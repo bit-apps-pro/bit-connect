@@ -9,5 +9,14 @@ import { QueryClient } from '@tanstack/react-query'
  *
  * The prerender entry deliberately does not use this one. It builds a client
  * per render so a build-time page can never inherit another page's data.
+ *
+ * A cached answer counts as fresh for 30 seconds. Without that, every screen
+ * the reader goes back to asks the server again on mount, even a list they
+ * left a moment ago. A write the reader makes still refreshes what it touches
+ * at once, through the invalidations next to each mutation.
  */
-export const queryClient = new QueryClient()
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 30_000 }
+  }
+})

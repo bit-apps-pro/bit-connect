@@ -6,8 +6,8 @@ import TabNav, { type TabItem } from '@utilities/tab-nav'
 import TopicCard from '@utilities/topic-card'
 import getScrollParent from '@utils/get-scroll-parent'
 import { Empty, Pagination, Select, Skeleton } from 'antd'
-import { m, useReducedMotion } from 'framer-motion'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import '@shared/motion/enter.css'
+import { type CSSProperties, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowLeft, LuCalendar } from 'react-icons/lu'
 import { Link, useParams, useSearchParams } from 'react-router'
 
@@ -74,7 +74,6 @@ export default function UserProfilePage() {
   const { userSlug } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const { notificationApi } = useContext(NotifyContext)
-  const shouldReduceMotion = useReducedMotion()
 
   // The URL carries a slug; every other endpoint is addressed by numeric id,
   // which only arrives with the profile response. The lists below therefore
@@ -248,16 +247,12 @@ export default function UserProfilePage() {
     })()
 
     return (
-      <m.div
-        // Fade the list on tab/page change so the swap reads as a transition
-        // rather than a flash of new content.
-        animate={{ opacity: 1, y: 0 }}
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
-        key={`${view}-${page}`}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-      >
+      // Fade the list on tab/page change so the swap reads as a transition
+      // rather than a flash of new content. CSS, not framer-motion: see
+      // shared/motion/enter.css for why.
+      <div className="motion-enter" key={`${view}-${page}`} style={{ '--enter-y': '6px' } as CSSProperties}>
         {body}
-      </m.div>
+      </div>
     )
   }
 

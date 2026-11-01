@@ -7,10 +7,10 @@ import { type Topic } from '@features/topic-modal/shared/type'
 import { chipTitle } from '@pages/Post/ui/tag-chips'
 import VoteBox from '@pages/Post/ui/voteBox/VoteBox'
 import StageIcon from '@utilities/stage-icon'
-import { tagLabel } from '@utilities/tag-filter'
+import { tagLabel } from '@utilities/tag-filter/tag-params'
 import UserLink from '@utilities/user-link'
 import { archivePath } from '@utils/listing-path'
-import { Flex, Tag, Typography } from 'antd'
+import { Flex, Tag } from 'antd'
 import { useEffect, useRef } from 'react'
 import { LuClock, LuMessageCircle, LuPlay } from 'react-icons/lu'
 import { Link, useLocation } from 'react-router'
@@ -26,6 +26,7 @@ import TopicCardState from './topic-card-state'
 import TopicCardSummary from './topic-card-summary'
 import TopicCardTerms from './topic-card-terms'
 import './topic-card.css'
+import usePrefetchTopic from './use-prefetch-topic'
 
 /** "20 Nov 2025" — on the site's calendar, in the reader's own locale's order. */
 const DATE_OPTIONS: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
@@ -98,6 +99,8 @@ export default function TopicCard({
     cardRef.current?.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'nearest' })
   }, [isJustCreated])
 
+  const prefetchHandlers = usePrefetchTopic(topic)
+
   const handlePostVote = async () => {
     await onVote(postId)
   }
@@ -118,19 +121,21 @@ export default function TopicCard({
       <div className="bc-flex bc-min-w-0 bc-max-w-full bc-flex-1 bc-flex-col">
         {/* The link stretches over the whole card (see topic-card.css), so the
             target is the card rather than the title text alone. */}
-        <Link className="topic-card__link" to={routePath(`/${topic.post_name}`)}>
+        <Link className="topic-card__link" to={routePath(`/${topic.post_name}`)} {...prefetchHandlers}>
           {/* One chip holds the card's right edge, aligned down the list so the
               column can be scanned on its own. Which chip depends on the width:
               below md the topic type, since that is what a reader scans a phone
               list for; from md the status, with the type moving to the meta
               line, which by then has room for it. */}
           <Flex align="start" gap="small">
-            <Typography.Title
-              className="topic-card__title bc-mb-0 bc-min-w-0 bc-flex-1 bc-text-[16px] bc-font-semibold bc-leading-snug lg:bc-text-[17px]"
-              level={2}
-            >
+            {/* A plain h2, not antd's Typography.Title: this card is the only
+                thing on the first screen that used Typography, and it cost
+                ~18 KB of the first download for a heading. Colour and font come
+                from the portal's heading rule in global.css; the top margin is
+                set here because some themes give h2 one. */}
+            <h2 className="topic-card__title bc-m-0 bc-min-w-0 bc-flex-1 bc-break-words bc-text-[16px] bc-font-semibold bc-leading-snug lg:bc-text-[17px]">
               {postTitle}
-            </Typography.Title>
+            </h2>
 
             {/* Capped: the title keeps most of the row whatever the site
                 owner named the term, and the chip truncates instead. */}

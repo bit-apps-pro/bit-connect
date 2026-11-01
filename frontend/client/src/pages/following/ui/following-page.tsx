@@ -30,7 +30,7 @@ const TERM_LIMIT = 100
 
 /**
  * A term's tint, picked from its id so it keeps one colour on every visit —
- * the same palette boards are drawn with.
+ * the same palette groups are drawn with.
  */
 const HUES = ['#2563EB', '#EA580C', '#059669', '#7C3AED', '#DB2777', '#D97706', '#0891B2']
 
@@ -111,7 +111,7 @@ function useFollowedTerms() {
  * topics they hear about.
  *
  * Laid out like the portal's other lists — the topic cards the listing uses,
- * and terms as a grid of cards like Browse boards — so following something
+ * and terms as a grid of cards like Browse groups — so following something
  * never looks like a different app.
  */
 export default function FollowingPage() {
@@ -287,7 +287,7 @@ function TermsTab({ isLoading, terms }: { isLoading: boolean; terms: FollowedTer
   )
 }
 
-/** One followed term, drawn like a board card: its mark, name, count and actions. */
+/** One followed term, drawn like a group card: its mark, name, count and actions. */
 function TermCard({ archive, term }: FollowedTerm) {
   const { chipColors } = useChipProps()
   const tint = chipColors(HUES[Math.abs(term.id) % HUES.length])

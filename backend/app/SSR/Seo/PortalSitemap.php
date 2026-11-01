@@ -931,7 +931,7 @@ final class PortalSitemap extends WP_Sitemaps_Provider
                 'taxonomy'   => $taxonomy,
                 'hide_empty' => true,
                 // A tag a member suggested is not advertised until approved.
-                'exclude' => $taxonomy === Taxonomies::TAGS->value ? TagApprovalService::pendingIds() : [],
+                'exclude' => $taxonomy === Taxonomies::TAGS->value ? TagApprovalService::pendingIds() : [], // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- Only the tags still awaiting review, a short list.
             ]
         );
 

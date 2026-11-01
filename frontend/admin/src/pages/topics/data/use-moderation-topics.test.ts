@@ -11,8 +11,8 @@ describe('toQueryParam', () => {
   })
 
   it('sends added taxonomy terms flat, under their own parameter', () => {
-    expect(toQueryParam({ page: 2, per_page: 20, terms: { boards: 7, other: undefined } }, '')).toEqual({
-      boards: 7,
+    expect(toQueryParam({ page: 2, per_page: 20, terms: { groups: 7, other: undefined } }, '')).toEqual({
+      groups: 7,
       page: 2,
       per_page: 20
     })

@@ -22,6 +22,7 @@ import config from './config/config'
 import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
+import PostDetailsSkeleton from './pages/Post/ui/post-details-skeleton'
 
 // The topic list is the portal's front door and loads with the app. Every other
 // page is its own chunk, fetched on first visit, so a reader landing on the
@@ -36,6 +37,17 @@ const Login = lazy(() => import('./pages/Auth/LoginPage'))
 const Signup = lazy(() => import('./pages/Auth/RegisterPage'))
 const VerifyEmail = lazy(() => import('./pages/Auth/VerifyEmailPage'))
 const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPasswordPage'))
+
+// The topic page's skeleton, shown while its chunk downloads as well as while
+// its data loads. Without this boundary Layout's generic "Loading" line came
+// first and the skeleton only after it, so one visit showed two loading
+// states. The skeleton is a small module with no page code behind it, so it
+// loads with the app.
+const postPage = (
+  <Suspense fallback={<PostDetailsSkeleton />}>
+    <PostDetailsPage />
+  </Suspense>
+)
 
 const { darkAlgorithm, defaultAlgorithm } = theme
 
@@ -85,7 +97,7 @@ export const routeList: {
     path: '/:archiveSegment/:termSlug'
   },
   {
-    element: <PostDetailsPage />,
+    element: postPage,
     index: false,
     path: '/:postName'
   },
@@ -94,7 +106,7 @@ export const routeList: {
   // React Router has no syntax for it — so the page treats a malformed one the
   // same as a reply that no longer exists.
   {
-    element: <PostDetailsPage />,
+    element: postPage,
     index: false,
     path: '/:postName/comment/:commentId'
   },

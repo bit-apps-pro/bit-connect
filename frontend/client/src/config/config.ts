@@ -113,6 +113,8 @@ export interface PortalArchive {
 }
 
 interface ConfigType {
+  /** admin-ajax.php — where an expired nonce is renewed (utils/request/nonce.ts). */
+  AJAX_URL: string
   API_URL: string
   /** Missing only where there is no page — the SSR prerender and tests. */
   ATTACHMENT_TYPES?: Record<string, string[]>
@@ -212,6 +214,8 @@ const ownArchives: Record<string, PortalArchive> = {
 const config = {
   // Endpoint URLs come only from the server (wp_login_url(), get_rest_url()):
   // a site can move the login page or the REST prefix, so no path is guessed.
+  // Off the payload directly, like ATTACHMENT_TYPES: the prerender has none.
+  AJAX_URL: SERVER_VARIABLES?.ajaxURL ?? '',
   API_URL: getServerVariable('apiURL'),
   // Off the payload directly: getServerVariable would warn during the SSR
   // prerender, where its absence is expected and the upload check falls back.

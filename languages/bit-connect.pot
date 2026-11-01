@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bit Connect – Community, Discussion Forum, Feedback & Roadmap 1.0.6\n"
+"Project-Id-Version: Bit Connect – Community, Discussion Forum, Feedback & Roadmap 1.0.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bit-connect\n"
 "Last-Translator: Bit Apps <developer@bitapps.pro>\n"
 "Language-Team: Bit Apps <support@bitapps.pro>\n"
@@ -3027,10 +3027,10 @@ msgstr ""
 msgid "%1$s: %2$d"
 msgstr ""
 
-#. translators: %d, %s are value(s) inserted by the plugin. Keep them in the translation.
+#. translators: %1$d, %2$s are value(s) inserted by the plugin. Keep them in the translation.
 #: backend/i18n/frontend-strings.php:846
 #, php-format
-msgid "%d posts: %s"
+msgid "%1$d posts: %2$s"
 msgstr ""
 
 #: backend/i18n/frontend-strings.php:848

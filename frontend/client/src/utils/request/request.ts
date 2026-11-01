@@ -1,6 +1,6 @@
 import config from '@config/config'
 
-import { nonceHeader } from './nonce'
+import { sendWithNonce } from './nonce'
 import { takePreloaded } from './preload'
 import { type QueryParam, type ResponseType } from './types'
 
@@ -29,18 +29,20 @@ export async function request<PAYLOAD, RESPONSE_DATA>(
   const preloaded = takePreloaded(url, method)
   if (preloaded !== undefined) return preloaded as ResponseType<RESPONSE_DATA>
 
-  const response = await fetch(url, {
-    body: body ? JSON.stringify(body) : undefined,
-    credentials: 'include',
-    headers: {
-      ...(['POST', 'PUT'].includes(method || 'GET') ? { 'Content-Type': 'application/json' } : {}),
-      Accept: 'application/json',
-      ...nonceHeader(),
-      ...headers
-    },
-    method: method,
-    ...rest
-  })
+  const response = await sendWithNonce(nonce =>
+    fetch(url, {
+      body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include',
+      headers: {
+        ...(['POST', 'PUT'].includes(method || 'GET') ? { 'Content-Type': 'application/json' } : {}),
+        Accept: 'application/json',
+        ...nonce,
+        ...headers
+      },
+      method: method,
+      ...rest
+    })
+  )
 
   // 204 (logout, deletes) and other empty/non-JSON bodies must not be parsed —
   // response.json() throws on an empty body and turns a success into a failure.

@@ -1,1 +1,2 @@
-export { default, parseTagParam, tagLabel } from './tag-filter'
+export { default } from './tag-filter'
+export { parseTagParam, tagLabel } from './tag-params'

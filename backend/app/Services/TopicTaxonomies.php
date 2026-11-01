@@ -32,6 +32,9 @@ use BitApps\BitConnect\Enum\Taxonomies;
  *   - `archive`   the key its portal archives are stored under in SEO settings
  *                 and sitemap names, or '' for none.
  *   - `slug`      the URL segment those archives answer to.
+ *   - `formerSlugs` optional list of segments those archives once answered
+ *                 to. Each stays routed and redirects to `slug`, so links made
+ *                 before a rename keep working.
  *   - `follow`    the follow target type members follow a term by, or ''.
  *   - `orderable` whether the admin may drag its terms into an order.
  *   - `icons`     whether its terms carry an icon.
@@ -58,7 +61,7 @@ final class TopicTaxonomies
     ];
 
     /**
-     * @return array<string, array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool, assignable: null|callable}>
+     * @return array<string, array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, formerSlugs: array<int, string>, follow: string, orderable: bool, icons: bool, assignable: null|callable}>
      */
     public static function all(): array
     {
@@ -93,15 +96,16 @@ final class TopicTaxonomies
             $singular = trim(sanitize_text_field((string) ($entry['singular'] ?? '')));
 
             $taxonomies[$param] = [
-                'taxonomy'  => $entry['taxonomy'],
-                'singular'  => $singular === '' ? $param : $singular,
-                'plural'    => trim(sanitize_text_field((string) ($entry['plural'] ?? ''))) ?: $singular,
-                'required'  => (bool) ($entry['required'] ?? false),
-                'archive'   => $archive,
-                'slug'      => $archive === '' ? '' : $slug,
-                'follow'    => sanitize_key((string) ($entry['follow'] ?? '')),
-                'orderable' => (bool) ($entry['orderable'] ?? false),
-                'icons'     => (bool) ($entry['icons'] ?? false),
+                'taxonomy'    => $entry['taxonomy'],
+                'singular'    => $singular === '' ? $param : $singular,
+                'plural'      => trim(sanitize_text_field((string) ($entry['plural'] ?? ''))) ?: $singular,
+                'required'    => (bool) ($entry['required'] ?? false),
+                'archive'     => $archive,
+                'slug'        => $archive === '' ? '' : $slug,
+                'formerSlugs' => $archive === '' ? [] : self::formerSlugs($entry['formerSlugs'] ?? [], $slug),
+                'follow'      => sanitize_key((string) ($entry['follow'] ?? '')),
+                'orderable'   => (bool) ($entry['orderable'] ?? false),
+                'icons'       => (bool) ($entry['icons'] ?? false),
                 // Kept only when it can be called; checked, like every field.
                 'assignable' => \is_callable($entry['assignable'] ?? null) ? $entry['assignable'] : null,
             ];
@@ -126,7 +130,7 @@ final class TopicTaxonomies
     /**
      * The entry carrying a taxonomy, or null when none does.
      *
-     * @return null|array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, follow: string, orderable: bool, icons: bool, assignable: null|callable}
+     * @return null|array{taxonomy: string, singular: string, plural: string, required: bool, archive: string, slug: string, formerSlugs: array<int, string>, follow: string, orderable: bool, icons: bool, assignable: null|callable}
      */
     public static function forTaxonomy(string $taxonomy): ?array
     {
@@ -180,5 +184,32 @@ final class TopicTaxonomies
                 wp_set_object_terms($postId, $termIds, $entry['taxonomy']);
             }
         }
+    }
+
+    /**
+     * The segments an archive once answered to, checked like its own: one the
+     * portal routes is refused, and so is the archive's current segment.
+     *
+     * @param mixed $formerSlugs
+     *
+     * @return array<int, string>
+     */
+    private static function formerSlugs($formerSlugs, string $slug): array
+    {
+        if (!\is_array($formerSlugs)) {
+            return [];
+        }
+
+        $slugs = [];
+
+        foreach ($formerSlugs as $formerSlug) {
+            $formerSlug = \is_string($formerSlug) ? sanitize_title($formerSlug) : '';
+
+            if ($formerSlug !== '' && $formerSlug !== $slug && !PortalTaxonomies::isReservedSegment($formerSlug)) {
+                $slugs[] = $formerSlug;
+            }
+        }
+
+        return array_values(array_unique($slugs));
     }
 }

@@ -22,6 +22,7 @@ use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\ForumUploadsInLibrary;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
 use BitApps\BitConnect\Services\NotificationMailer;
+use BitApps\BitConnect\Services\PageCache;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalTaxonomies;
 use BitApps\BitConnect\Services\ProfileSlugService;
@@ -33,6 +34,7 @@ use BitApps\BitConnect\Services\UserStatsService;
 use BitApps\BitConnect\SSR\Seo\PortalSitemap;
 use BitApps\BitConnect\SSR\Seo\SeoMeta;
 use BitApps\BitConnect\SSR\Seo\SeoPluginBridge;
+use BitApps\BitConnect\Views\OptimizerExclusions;
 use BitApps\BitConnect\Views\PortalBlock;
 
 class HookProvider
@@ -114,6 +116,14 @@ class HookProvider
         // `bit_connect_topic_created` for a topic made public outside the
         // portal's create — see TopicPublication.
         TopicPublication::register();
+
+        // The site's page cache, purged as topics, terms, settings and the
+        // bundle change — see PageCache.
+        PageCache::registerHooks();
+
+        // The portal's scripts kept out of the site's JS/CSS optimisers, which
+        // reorder, delay or strip them — see OptimizerExclusions.
+        OptimizerExclusions::register();
 
         // Pending reports close when their topic or comment is deleted, from
         // the portal or from wp-admin.

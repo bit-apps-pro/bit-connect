@@ -1,18 +1,17 @@
 import './topics.css'
-
+import '@shared/motion/enter.css'
 import NotifyContext from '@common/context/NotifyContext'
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import useCapabilityGate from '@common/hooks/useCapabilityGate'
 import usePageTitle, { pageTitle } from '@common/hooks/usePageTitle'
-import SortFilter from '@utilities/sort-filter'
-import TagFilter, { parseTagParam, tagLabel } from '@utilities/tag-filter'
+import { parseTagParam, tagLabel } from '@utilities/tag-filter/tag-params'
 import TopicCard from '@utilities/topic-card'
 import TopicTypeFilter from '@utilities/topic-type-filter'
 import getScrollParent from '@utils/get-scroll-parent'
 import { deleteFilter, readFilter } from '@utils/portal-query'
 import { Button, Drawer } from 'antd'
-import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, m } from 'framer-motion'
+import { type CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { LuArrowUp, LuSlidersHorizontal, LuX } from 'react-icons/lu'
 import { useParams, useSearchParams } from 'react-router'
 
@@ -25,6 +24,7 @@ import useListingSelection from '../Layout/data/use-listing-selection'
 import { ALL_STAGES } from '../Layout/ui/Sidebar/listing-link'
 import ArchiveHeader from './archive-header'
 import useTopics from './data/use-topics'
+import { LazySortFilter as SortFilter, LazyTagFilter as TagFilter } from './lazy-filters'
 import ListingContext from './listing-context'
 import TopicListSkeleton from './topic-card-skeleton'
 import TopicListBanners from './topic-list-banners'
@@ -92,8 +92,8 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
   //
   // A search drops the listing scope and any stage — even one the URL names.
   // It keeps a term archive, though: the header's search box only lands on an
-  // archive with `?search=` when the reader searched *in* it (a board, a tag),
-  // the way a forum's search stays inside the board you are on; a search for
+  // archive with `?search=` when the reader searched *in* it (a group, a tag),
+  // the way a forum's search stays inside the group you are on; a search for
   // everything goes to the root. The refinements the reader picked here (sort,
   // type, tags) still apply, since their chips stay on screen beside the
   // results.
@@ -284,16 +284,20 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
     })
   }, [posts, listKey])
 
-  const shouldReduceMotion = useReducedMotion()
-  const cardMotion = (topicId: number, index: number) => ({
-    animate: { opacity: 1, y: 0 },
-    initial:
-      shouldReduceMotion || listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
-        ? false
-        : { opacity: 0, y: 12 },
-    // Stagger is capped so late infinite-scroll pages don't accumulate delay.
-    transition: { delay: Math.min(index * 0.05, 0.3), duration: 0.3, ease: 'easeOut' as const }
-  })
+  // CSS rather than framer-motion — see shared/motion/enter.css, which also
+  // honours reduced motion.
+  const cardEnter = (topicId: number, index: number) =>
+    listKey === undefined || seen.key !== listKey || seen.ids.has(topicId)
+      ? {}
+      : {
+          className: 'motion-enter',
+          style: {
+            '--enter-duration': '0.3s',
+            '--enter-y': '12px',
+            // Stagger is capped so late infinite-scroll pages don't accumulate delay.
+            animationDelay: `${Math.min(index * 0.05, 0.3)}s`
+          } as CSSProperties
+        }
 
   // The "all caught up" note is only meaningful after the user has actually
   // paginated — a list that fits in the first page never shows it.
@@ -601,9 +605,9 @@ export default function Topics({ archiveFilter, showArchiveHeader = true }: Topi
       {!showSkeleton && posts.length > 0 && (
         <div aria-busy={isSwitching} className="bc-flex bc-flex-col bc-gap-4">
           {posts.map((topic, index) => (
-            <m.div key={topic.ID} {...cardMotion(topic.ID, index)}>
+            <div key={topic.ID} {...cardEnter(topic.ID, index)}>
               <TopicCard onVote={handlePostVote} showStage={showsStageBadges} topic={topic} />
-            </m.div>
+            </div>
           ))}
 
           {/* Sentinel: observed to trigger loading the next page */}

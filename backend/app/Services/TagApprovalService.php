@@ -92,8 +92,8 @@ final class TagApprovalService
             'taxonomy'   => Taxonomies::TAGS->value,
             'hide_empty' => false,
             'fields'     => 'ids',
-            'meta_key'   => self::META_STATUS,
-            'meta_value' => self::STATUS_PENDING,
+            'meta_key'   => self::META_STATUS, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Term meta of one taxonomy; the review status lives nowhere else.
+            'meta_value' => self::STATUS_PENDING, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- As above.
         ]);
 
         return is_wp_error($ids) ? [] : array_map('intval', $ids);
@@ -132,8 +132,8 @@ final class TagApprovalService
             'taxonomy'   => Taxonomies::TAGS->value,
             'hide_empty' => false,
             'fields'     => 'ids',
-            'meta_key'   => self::META_CREATOR,
-            'meta_value' => (string) $userId,
+            'meta_key'   => self::META_CREATOR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Term meta of one taxonomy; the creator lives nowhere else.
+            'meta_value' => (string) $userId, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- As above.
         ]);
 
         if (is_wp_error($ids)) {

@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
+use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\NotificationDigest;
 use BitApps\BitConnect\Services\UploadClaims;
 
@@ -44,6 +45,9 @@ final class CronProvider
      */
     public const UPLOAD_CLEANUP_HOOK = 'bit_connect_upload_cleanup';
 
+    /** Registrations whose verification link expired unopened (AuthService). */
+    public const REGISTRATION_CLEANUP_HOOK = 'bit_connect_registration_cleanup';
+
     /**
      * Wires the callbacks and makes sure both events exist.
      */
@@ -52,6 +56,7 @@ final class CronProvider
         Hooks::addAction(self::DIGEST_HOOK, [NotificationDigest::class, 'run']);
         Hooks::addAction(self::CLEANUP_HOOK, [NotificationDigest::class, 'cleanup']);
         Hooks::addAction(self::UPLOAD_CLEANUP_HOOK, [UploadClaims::class, 'cleanup']);
+        Hooks::addAction(self::REGISTRATION_CLEANUP_HOOK, [AuthService::class, 'sweepPendingRegistrations']);
 
         self::schedule();
     }
@@ -77,6 +82,10 @@ final class CronProvider
         if (!wp_next_scheduled(self::UPLOAD_CLEANUP_HOOK)) {
             wp_schedule_event(time() + DAY_IN_SECONDS, 'daily', self::UPLOAD_CLEANUP_HOOK);
         }
+
+        if (!wp_next_scheduled(self::REGISTRATION_CLEANUP_HOOK)) {
+            wp_schedule_event(time() + DAY_IN_SECONDS, 'daily', self::REGISTRATION_CLEANUP_HOOK);
+        }
     }
 
     /**
@@ -91,5 +100,6 @@ final class CronProvider
         wp_clear_scheduled_hook(self::DIGEST_HOOK);
         wp_clear_scheduled_hook(self::CLEANUP_HOOK);
         wp_clear_scheduled_hook(self::UPLOAD_CLEANUP_HOOK);
+        wp_clear_scheduled_hook(self::REGISTRATION_CLEANUP_HOOK);
     }
 }

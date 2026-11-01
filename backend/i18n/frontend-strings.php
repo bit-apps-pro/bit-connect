@@ -866,8 +866,8 @@ return [
     /* translators: %1$s, %2$d are value(s) inserted by the plugin. Keep them in the translation. */
     '%1$s: %2$d' => __('%1$s: %2$d', 'bit-connect'),
 
-    /* translators: %d, %s are value(s) inserted by the plugin. Keep them in the translation. */
-    '%d posts: %s' => __('%d posts: %s', 'bit-connect'),
+    /* translators: %1$d, %2$s are value(s) inserted by the plugin. Keep them in the translation. */
+    '%1$d posts: %2$s' => __('%1$d posts: %2$s', 'bit-connect'),
 
     'Total posts' => __('Total posts', 'bit-connect'),
 

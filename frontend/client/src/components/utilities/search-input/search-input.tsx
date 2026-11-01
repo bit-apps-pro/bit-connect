@@ -45,7 +45,7 @@ function isTypingTarget(target: EventTarget | null) {
  * through them and Enter opens the one highlighted — or, with none, runs the
  * full search, whose results are the topic list at `/?search=…`.
  *
- * On a term archive — a board, a tag — the box searches inside it, shown as a
+ * On a term archive — a group, a tag — the box searches inside it, shown as a
  * chip before the text: suggestions and results stay in that archive, whose
  * results are its own page with `?search=…`. Removing the chip (its ×, or
  * Backspace in an empty field) searches everything instead, and "Search for
@@ -181,7 +181,7 @@ export default function SearchInput({
     setTerm(next)
 
     if (within) {
-      // The archive's own page, fresh: a board's other tabs and the list's
+      // The archive's own page, fresh: a group's other tabs and the list's
       // filters belong to browsing it, not to a search inside it.
       navigate(`${archivePath(within.archive.filter, within.slug)}?${QUERY_KEY}=${encodeURIComponent(next)}`)
     } else if (onResults) {
@@ -341,7 +341,7 @@ export default function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={
           activeScope
-            ? // translators: %s: the board, tag or other term the search is limited to
+            ? // translators: %s: the group, tag or other term the search is limited to
               sprintf(__('Search in %s'), activeScope.name)
             : __('Search post, tag, etc.')
         }

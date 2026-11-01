@@ -200,9 +200,9 @@ final class PortalTaxonomies
         $slugs = array_map([self::class, 'slugFor'], self::segments());
 
         // An archive served under a segment other than its key stays routable
-        // at the key, so its old URLs reach renamedArchiveUrl() and redirect
-        // instead of 404ing.
-        $slugs = [...$slugs, ...self::segments()];
+        // at the key, and at each segment it once answered to, so its old URLs
+        // reach renamedArchiveUrl() and redirect instead of 404ing.
+        $slugs = [...$slugs, ...self::segments(), ...array_keys(self::formerSegments())];
 
         return implode('|', array_map('preg_quote', array_unique($slugs)));
     }
@@ -213,13 +213,20 @@ final class PortalTaxonomies
      *
      * Search engines and shared links keep pointing at the segment the archive
      * started under, so a rename redirects them rather than 404ing each one.
-     * Only that original segment is remembered: a later rename of a rename
-     * leaves the intermediate name unrouted.
+     * The archive's key is remembered, and so is each segment its entry lists
+     * in `formerSlugs`; any other intermediate name is left unrouted.
      */
     public static function renamedArchiveUrl(string $urlSegment, string $termSlug): string
     {
         if (self::taxonomyFor($urlSegment) !== '' && self::slugFor($urlSegment) !== $urlSegment) {
             return self::resolve(self::slugFor($urlSegment), $termSlug) === null ? '' : self::url($urlSegment, $termSlug);
+        }
+
+        // A segment an archive serves now is that archive's, never a redirect.
+        $segment = self::segmentForSlug($urlSegment) === '' ? (self::formerSegments()[$urlSegment] ?? '') : '';
+
+        if ($segment !== '') {
+            return self::resolve(self::slugFor($segment), $termSlug) === null ? '' : self::url($segment, $termSlug);
         }
 
         return self::renamedTermUrl($urlSegment, $termSlug);
@@ -357,6 +364,28 @@ final class PortalTaxonomies
         $segment = self::segmentFor($term->taxonomy);
 
         return $segment === '' ? '' : self::url($segment, $term->slug);
+    }
+
+    /**
+     * Each segment an archive once answered to, and the archive's key.
+     *
+     * @return array<string, string>
+     */
+    private static function formerSegments(): array
+    {
+        $segments = [];
+
+        foreach (TopicTaxonomies::all() as $entry) {
+            if ($entry['archive'] === '' || self::taxonomyFor($entry['archive']) !== $entry['taxonomy']) {
+                continue;
+            }
+
+            foreach ($entry['formerSlugs'] as $formerSlug) {
+                $segments[$formerSlug] ??= $entry['archive'];
+            }
+        }
+
+        return $segments;
     }
 
     /**

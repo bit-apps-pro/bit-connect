@@ -6,10 +6,21 @@ import { createCommentApi } from './data/create-comment-api'
 import { deleteCommentApi } from './data/delete-comment-api'
 import { deletePostApi } from './data/delete-post-api'
 import { fetchCommentsApi } from './data/fetch-comments-api'
-import { fetchPostByNameApi } from './data/fetch-post-api'
+import { TopicNotFoundError } from './data/fetch-post-api'
 import { toggleVoteApi } from './data/toggle-vote-api'
 import { updateCommentApi } from './data/update-comment-api'
 import { sortHierarchicalComments, transformTopicCommentsToComments } from './helper/post-commons'
+import {
+  cachedComments,
+  cachedTopic,
+  COMMENTS_PER_PAGE,
+  fetchFirstCommentsPage,
+  fetchTopic,
+  forgetTopic,
+  markTopicsStale,
+  rememberComments,
+  rememberTopic
+} from './helper/topic-cache'
 import { syncTopicVote } from './helper/topic-vote-sync'
 import { refreshContributions, syncVotesReceived } from './helper/user-stats-sync'
 import { flipVote, type Vote } from './helper/vote-flip'
@@ -19,8 +30,6 @@ const defaultVoteState = {
   hasVoted: false,
   total: 0
 }
-
-const COMMENTS_PER_PAGE = 10
 
 // Monotonic token shared by every comment fetch (initial load, sort change,
 // infinite-scroll append). Each fetch stamps itself before awaiting; if a newer
@@ -53,6 +62,8 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
     try {
       const newComment = await createCommentApi(content, currentPost.ID, parentId, attachmentIds)
       refreshContributions()
+      // Commenting can follow the topic for the author (auto-follow).
+      void markTopicsStale()
       newComment.vote = { ...defaultVoteState }
       const existingComments = get().comments
       const updatedComments = [...existingComments, newComment]
@@ -120,6 +131,8 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
 
     try {
       await deletePostApi(postId)
+      const deleted = get().post
+      if (deleted?.ID === postId) forgetTopic(deleted)
       set({ isDeleting: false, post: undefined })
     } catch (error) {
       const errorMessage = (error as Error).message || 'Failed to delete post'
@@ -136,11 +149,9 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
     set({ isLoadingComments: true })
 
     try {
-      const { comments, pagination } = await fetchCommentsApi(postId, {
-        page: 1,
-        perPage: COMMENTS_PER_PAGE,
-        sort: get().sortOption
-      })
+      // Through the query cache, so a second call for the same page (a
+      // prefetch, or React running the page's effect twice) shares one request.
+      const { comments, page, totalPages } = await fetchFirstCommentsPage(postId, get().sortOption)
 
       // A newer fetch (post change, sort change, or append) started while this
       // request was in flight — discard this stale response.
@@ -148,9 +159,9 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
 
       set(state => ({
         comments,
-        commentsHasMore: pagination.current_page < pagination.total_pages,
-        commentsPage: pagination.current_page,
-        commentsTotalPages: pagination.total_pages,
+        commentsHasMore: page < totalPages,
+        commentsPage: page,
+        commentsTotalPages: totalPages,
         isLoadingComments: false,
         transformedComments: sortHierarchicalComments(
           transformTopicCommentsToComments(comments),
@@ -273,35 +284,57 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
   fetchPostByName: async (postName: string) => {
     const requestId = ++postRequestSeq
 
-    // Clear the previous topic and its comments *before* awaiting. This store is
-    // a module singleton that outlives the route, and the page renders straight
-    // off `post` — leaving the old one in place paints the previous topic under
-    // the new URL until this request lands.
-    set({
-      comments: [],
-      commentsHasMore: false,
-      commentsPage: 1,
-      commentsTotalPages: 1,
+    // Replace the previous topic and its comments *before* awaiting. This store
+    // is a module singleton that outlives the route, and the page renders
+    // straight off `post` — leaving the old one in place paints the previous
+    // topic under the new URL until this request lands.
+    //
+    // What replaces it is whatever the cache already knows: this topic from an
+    // earlier visit, or its card from the list the reader clicked. Only a topic
+    // seen nowhere yet starts from nothing, and so shows the skeleton.
+    const seed = cachedTopic(postName)
+    const saved = seed ? cachedComments(seed.ID, get().sortOption) : undefined
+
+    set(state => ({
+      comments: saved?.snapshot.comments ?? [],
+      commentsHasMore: saved ? saved.snapshot.page < saved.snapshot.totalPages : false,
+      commentsPage: saved?.snapshot.page ?? 1,
+      commentsTotalPages: saved?.snapshot.totalPages ?? 1,
       error: undefined,
-      isLoading: true,
-      post: undefined,
-      transformedComments: []
-    })
+      isLoading: !seed,
+      post: seed,
+      transformedComments: saved
+        ? sortHierarchicalComments(transformTopicCommentsToComments(saved.snapshot.comments), state.sortOption)
+        : []
+    }))
+
+    // With a seed the topic ID is known, so the comments need not wait for the
+    // topic request. Fresh cached comments need no request at all.
+    const commentsLoad = seed && !saved?.fresh ? get().fetchComments(seed.ID) : undefined
 
     try {
-      const topic = await fetchPostByNameApi(postName)
+      const topic = await fetchTopic(postName)
 
       // A newer navigation superseded us — discard this response.
       if (requestId !== postRequestSeq) return
 
       set({ isLoading: false, post: topic })
 
-      // Comments are not embedded in the topic payload; load page 1 separately.
-      await get().fetchComments(topic.ID)
+      // Comments are not embedded in the topic payload; load page 1 separately,
+      // unless the seed already started that for this same topic.
+      await (seed?.ID === topic.ID ? commentsLoad : get().fetchComments(topic.ID))
     } catch (error) {
       if (requestId !== postRequestSeq) return
       const errorMessage = (error as Error).message || 'Failed to fetch post'
-      set({ error: errorMessage, isLoading: false })
+
+      // A topic that is gone must not stay on screen from the cache. Any other
+      // failure keeps the cached copy: it is still the best answer there is.
+      if (error instanceof TopicNotFoundError) {
+        if (seed) forgetTopic(seed)
+        set({ error: errorMessage, isLoading: false, post: undefined })
+      } else {
+        set({ error: errorMessage, isLoading: false })
+      }
       throw error
     }
   },
@@ -477,3 +510,28 @@ export const useSinglePostStore = create<SinglePostStore>((set, get) => ({
     }
   }
 }))
+
+// Keep the cached copies in step with what the reader changed — a vote, a lock,
+// a new comment — so the next visit does not show the topic as it was before.
+// Free code and the add-on both change the topic through this store, so one
+// listener here covers every writer. See topic-cache.ts.
+useSinglePostStore.subscribe((state, previous) => {
+  const { post } = state
+  if (!post) return
+
+  if (post !== previous.post) rememberTopic(post)
+
+  // Not on a sort change: the list on screen is still in the old order until
+  // the new sort's page arrives, and must not be stored under the new key.
+  const sortChanged = state.sortOption !== previous.sortOption
+  const commentsChanged =
+    state.comments !== previous.comments || state.commentsPage !== previous.commentsPage
+
+  if (commentsChanged && !sortChanged) {
+    rememberComments(post.ID, state.sortOption, {
+      comments: state.comments,
+      page: state.commentsPage,
+      totalPages: state.commentsTotalPages
+    })
+  }
+})
