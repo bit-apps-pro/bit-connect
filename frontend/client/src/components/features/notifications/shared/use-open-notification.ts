@@ -1,3 +1,5 @@
+import { __ } from '@common/helpers/i18nWrap'
+import { App as AntApp } from 'antd'
 import { useNavigate } from 'react-router'
 
 import { type NotificationItem, useMarkNotificationsRead } from '../data/use-notifications'
@@ -21,10 +23,9 @@ const ignoreBadgeFailure = (): void => undefined
 export default function useOpenNotification(onOpen?: () => void) {
   const navigate = useNavigate()
   const { markRead } = useMarkNotificationsRead()
+  const { message } = AntApp.useApp()
 
   return (item: NotificationItem) => {
-    onOpen?.()
-
     // Marked before navigating, not after. Opening a notification is the
     // clearest possible statement that it has been seen, and leaving it unread
     // means the badge still counts something the reader is looking at.
@@ -36,8 +37,16 @@ export default function useOpenNotification(onOpen?: () => void) {
 
     // The server clears the link when nothing is left to open — a row whose
     // comment was removed still carries its topic's. A row with no link is
-    // still worth reading; it says what happened, and says it is gone.
-    if (!url) return
+    // still worth reading; it says what happened, and says it is gone. The
+    // panel stays open: closing it reads as "something happened", and the
+    // reader is left looking for a page that never opened.
+    if (!url) {
+      if (!item.target.exists) message.info(__('This post was deleted. You cannot open it.'))
+
+      return
+    }
+
+    onOpen?.()
 
     try {
       const parsed = new URL(url, window.location.origin)
