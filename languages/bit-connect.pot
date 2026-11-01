@@ -4355,6 +4355,10 @@ msgstr ""
 msgid "No longer available"
 msgstr ""
 
+#: backend/i18n/frontend-strings.php:1546
+msgid "This post was deleted. You cannot open it."
+msgstr ""
+
 #: backend/i18n/frontend-strings.php:1517
 msgid "You will be notified about new replies."
 msgstr ""
