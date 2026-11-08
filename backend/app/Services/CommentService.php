@@ -54,7 +54,7 @@ final class CommentService
         }
 
         if (!TopicAccess::allows(TopicAccess::COMMENT)) {
-            throw new CommentRejected(__('Comments are turned off in this forum.', 'bit-connect'), 403);
+            throw new CommentRejected(esc_html__('Comments are turned off in this forum.', 'bit-connect'), 403);
         }
 
         // Respect topic lock (comment_status closed). Moderators bypass the lock.
@@ -67,19 +67,19 @@ final class CommentService
         try {
             $content = $sanitizer->sanitize($content);
         } catch (InvalidArgumentException $e) {
-            throw new CommentRejected($e->getMessage(), 422);
+            throw new CommentRejected(esc_html($e->getMessage()), 422);
         }
 
         $attachments = array_map('intval', $attachments);
 
         if (!self::hasSubstance($content, $attachments)) {
-            throw new CommentRejected(__('Comment content is required.', 'bit-connect'), 422);
+            throw new CommentRejected(esc_html__('Comment content is required.', 'bit-connect'), 422);
         }
 
         try {
             PostingLimits::assertWithin('comment', $content, $attachments);
         } catch (InvalidArgumentException $e) {
-            throw new CommentRejected($e->getMessage(), 422);
+            throw new CommentRejected(esc_html($e->getMessage()), 422);
         }
 
         if ($parentId > 0) {
