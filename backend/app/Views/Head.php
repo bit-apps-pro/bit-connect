@@ -7,6 +7,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Helpers\DateTimeHelper;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Deps\BitApps\WPKit\Utils\Capabilities as WpCapabilities;
 use BitApps\BitConnect\Enum\Capabilities;
+use BitApps\BitConnect\Services\FrontendTranslations;
 use BitApps\BitConnect\Services\PostingLimits;
 
 if (!defined('ABSPATH')) {
@@ -163,23 +164,6 @@ class Head
             ]
         );
 
-        // `backend/i18n/`, not `languages/`. The catalogue is plugin source — a
-        // generated list of `__()` calls that `wp i18n make-pot` reads and that
-        // this line executes to hand the frontend bundle its translations. It is
-        // not a compiled translation, and a `.php` sitting in `languages/` reads
-        // as one to the directory's scanners.
-        $frontendStrings = Config::get('ROOT_DIR') . '/backend/i18n/frontend-strings.php';
-
-        if (get_locale() !== 'en_US' && file_exists($frontendStrings)) {
-            // Merged, not assigned: a `bit_connect_localized_script` listener
-            // may already have added the strings of a bundle it extends this
-            // one with, and assigning would throw them away.
-            $frontendVars['translations'] = array_merge(
-                (array) include $frontendStrings,
-                \is_array($frontendVars['translations'] ?? null) ? $frontendVars['translations'] : []
-            );
-        }
-
-        return $frontendVars;
+        return FrontendTranslations::merge($frontendVars);
     }
 }

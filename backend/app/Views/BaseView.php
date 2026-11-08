@@ -9,6 +9,7 @@ use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Services\AttachmentValidatorService;
 use BitApps\BitConnect\Services\AuthService;
 use BitApps\BitConnect\Services\FollowService;
+use BitApps\BitConnect\Services\FrontendTranslations;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PortalLocation;
 use BitApps\BitConnect\Services\PortalPreload;
@@ -187,8 +188,12 @@ class BaseView
         ];
 
         // Same extension point Head uses for the admin payload. The portal
-        // needs it too, so another plugin can add its own keys to both.
-        return Hooks::applyFilter('bit_connect_localized_script', $frontendVars);
+        // needs it too, so another plugin can add its own keys to both. The
+        // translations go on after it, as in Head: the portal calls `__()` in
+        // the browser too, and without the map it stays in English.
+        return FrontendTranslations::merge(
+            Hooks::applyFilter('bit_connect_localized_script', $frontendVars)
+        );
     }
 
     public function enqueueAssets()
