@@ -17,6 +17,7 @@ use BitApps\BitConnect\Http\RestPermission;
 use BitApps\BitConnect\Services\AdminAccessService;
 use BitApps\BitConnect\Services\AvatarService;
 use BitApps\BitConnect\Services\DashboardCache;
+use BitApps\BitConnect\Services\Events\TopicPublication;
 use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\ForumUploadsInLibrary;
 use BitApps\BitConnect\Services\MembersOnlyGuard;
@@ -111,6 +112,10 @@ class HookProvider
 
         // The dashboard's cached answer, dropped the same way — see DashboardCache.
         DashboardCache::registerHooks();
+
+        // `bit_connect_topic_created` for a topic made public outside the
+        // portal's create — see TopicPublication.
+        TopicPublication::register();
 
         // The site's page cache, purged as topics, terms, settings and the
         // bundle change — see PageCache.

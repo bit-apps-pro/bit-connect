@@ -11,6 +11,7 @@ use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
+use BitApps\BitConnect\Services\Events\Events;
 use InvalidArgumentException;
 use WP_Post;
 use WP_Query;
@@ -214,9 +215,9 @@ final class TopicModerationService
      */
     public function apply(string $action, int $id, ?int $termId = null): string
     {
-        $post = get_post($id);
+        $post = self::moderatable($id);
 
-        if (!$post instanceof WP_Post || $post->post_type !== PostTypes::BIT_CONNECT->value || !TopicService::isReadable($post)) {
+        if ($post === null) {
             return self::OUTCOME_FAILED;
         }
 
@@ -226,7 +227,9 @@ final class TopicModerationService
         switch ($action) {
             case 'set_status':
             case 'set_stage':
-                return $this->setTerm($id, $action === 'set_status' ? 'statuses' : 'stages', (int) $termId);
+                $key = $action === 'set_status' ? 'statuses' : 'stages';
+
+                return $this->setTerms($id, [$key => (int) $termId])[$key];
 
             case 'lock':
             case 'unlock':
@@ -397,6 +400,17 @@ final class TopicModerationService
             ],
             $id
         );
+
+        $post = get_post($id);
+
+        if ($post instanceof WP_Post) {
+            Events::topicStatusChanged(
+                $post,
+                self::termName($existingTopic, 'statuses'),
+                self::termName($existingTopic, 'stages'),
+                $moved
+            );
+        }
     }
 
     /**
@@ -429,37 +443,66 @@ final class TopicModerationService
     }
 
     /**
-     * Files a topic under a status or a stage, and tells its thread.
+     * Files a topic under a status, a stage or both, and tells its thread.
      *
-     * @param string $key `statuses` or `stages`, as TopicService::updateTopic() takes them
+     * One update and one notice for the lot: a caller that moves both at once
+     * reads to the thread as one move, "Planned, Roadmap → Shipped, Done", not
+     * two. Same checks as apply() — the topic must exist and be readable.
+     *
+     * @param array<string, int> $termIds `statuses` and/or `stages`, as TopicService::updateTopic() takes them, to a term id
+     *
+     * @return array<string, string> one of the OUTCOME_ constants for each key given
      */
-    private function setTerm(int $id, string $key, int $termId): string
+    public function setTerms(int $id, array $termIds): array
     {
-        $existing = $this->topicService->getTopicById($id);
+        $outcomes = array_fill_keys(array_keys($termIds), self::OUTCOME_FAILED);
+        $existing = self::moderatable($id) === null ? null : $this->topicService->getTopicById($id);
 
         if ($existing === null) {
-            return self::OUTCOME_FAILED;
+            return $outcomes;
         }
 
-        if (self::termId($existing, $key) === $termId) {
-            return self::OUTCOME_SKIPPED;
+        $updateData = [];
+
+        foreach ($termIds as $key => $termId) {
+            if (self::termId($existing, $key) === $termId) {
+                $outcomes[$key] = self::OUTCOME_SKIPPED;
+            } else {
+                $updateData[$key] = $termId;
+            }
         }
 
-        $updateData = [$key => $termId];
+        if ($updateData === []) {
+            return $outcomes;
+        }
 
         try {
             $after = $this->topicService->updateTopic($id, $updateData);
         } catch (InvalidArgumentException $e) {
-            return self::OUTCOME_FAILED;
+            return $outcomes;
         }
 
         if ($after === null) {
-            return self::OUTCOME_FAILED;
+            return $outcomes;
         }
 
         self::notifyStatusChange($id, $updateData, $existing, $after);
 
-        return self::OUTCOME_DONE;
+        foreach (array_keys($updateData) as $key) {
+            $outcomes[$key] = self::OUTCOME_DONE;
+        }
+
+        return $outcomes;
+    }
+
+    /**
+     * The topic, if it exists and the moderator may read it.
+     */
+    private static function moderatable(int $id): ?WP_Post
+    {
+        $post = get_post($id);
+
+        return $post instanceof WP_Post && $post->post_type === PostTypes::BIT_CONNECT->value && TopicService::isReadable($post) ? $post : null;
     }
 
     /**

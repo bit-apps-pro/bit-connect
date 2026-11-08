@@ -16,23 +16,16 @@ use BitApps\BitConnect\Http\Requests\DeleteTopicRequest;
 use BitApps\BitConnect\Http\Requests\GetAllTopicsRequest;
 use BitApps\BitConnect\Http\Requests\GetTopicRequest;
 use BitApps\BitConnect\Http\Requests\UpdateTopicRequest;
-use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\ActivityLogService;
-use BitApps\BitConnect\Services\FollowService;
 use BitApps\BitConnect\Services\MentionService;
-use BitApps\BitConnect\Services\NotificationPreferences;
-use BitApps\BitConnect\Services\NotificationRecipients;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PortalLocation;
-use BitApps\BitConnect\Services\StageService;
-use BitApps\BitConnect\Services\StatusService;
-use BitApps\BitConnect\Services\TagResolverService;
+use BitApps\BitConnect\Services\TopicCreationService;
 use BitApps\BitConnect\Services\TopicModerationService;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
-use WP_Error;
 
 final class TopicController
 {
@@ -152,59 +145,20 @@ final class TopicController
 
     public function create(CreateTopicRequest $request)
     {
-        $validatedData = $request->validated();
+        $topic = (new TopicCreationService($this->topicService))->create($request->validated());
 
-        $resolved = $this->resolveTags($validatedData);
+        if (is_wp_error($topic)) {
+            $data = $topic->get_error_data();
+            $status = (int) ($data['status'] ?? self::HTTP_SERVER_ERROR);
+            $message = $topic->get_error_message();
 
-        if (is_wp_error($resolved)) {
-            return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
+            // An error about one field names it, as the request's own rules would.
+            if (!empty($data['field'])) {
+                return Response::error([$data['field'] => [$message]], $status)->message($message);
+            }
+
+            return Response::error($message, $status);
         }
-
-        // Prepare data for service
-        $topicData = [
-            'post_title'   => $validatedData['post_title'],
-            'post_content' => $validatedData['post_content'] ?? '',
-            'post_status'  => $validatedData['post_status'] ?? 'publish',
-            'topic_types'  => $validatedData['topic-types'] ?? [],
-            'tags'         => $resolved['ids'],
-            'attachments'  => $validatedData['attachments'] ?? [],
-        ];
-
-        foreach (array_keys(TopicTaxonomies::all()) as $param) {
-            $topicData[$param] = $validatedData[$param] ?? [];
-        }
-
-        // Only when the author actually chose one. A slug of separators alone
-        // sanitizes to '', which must fall through to the title rather than
-        // reach wp_insert_post as an empty explicit slug.
-        if (!empty($validatedData['post_name'])) {
-            $topicData['post_name'] = $validatedData['post_name'];
-        }
-
-        // By flag, not by slug — an admin can rename either default term.
-        $defaultStage = StageService::defaultStage();
-        $defaultStatus = StatusService::defaultStatus();
-
-        if ($defaultStage) {
-            $topicData['stages'] = [$defaultStage->term_id];
-        }
-
-        if ($defaultStatus) {
-            $topicData['statuses'] = [$defaultStatus->term_id];
-        }
-
-        try {
-            $topic = $this->topicService->createTopic($topicData);
-        } catch (InvalidArgumentException $e) {
-            return Response::error($e->getMessage(), 422);
-        }
-
-        if (!$topic) {
-            return Response::error('Failed to create post', self::HTTP_SERVER_ERROR);
-        }
-
-        $this->notifyNewTopic($topic);
-        $this->notifySuggestedTags($topic, $resolved['created']);
 
         return Response::success($topic);
     }
@@ -303,6 +257,13 @@ final class TopicController
                 $updateData['post_status'] = $validatedData['post_status'];
             }
             if (isset($validatedData['topic-types'])) {
+                $unknownType = TopicCreationService::unknownTopicType($validatedData['topic-types']);
+
+                if ($unknownType !== null) {
+                    return Response::error(['topic-types' => [$unknownType->get_error_message()]], 422)
+                        ->message($unknownType->get_error_message());
+                }
+
                 $updateData['topic_types'] = $validatedData['topic-types'];
             }
             // Present and empty means "take it out of that taxonomy's term";
@@ -324,7 +285,7 @@ final class TopicController
         $suggested = [];
 
         if (isset($validatedData['tags'])) {
-            $resolved = $this->resolveTags($validatedData);
+            $resolved = TopicCreationService::resolveTags($validatedData['tags']);
 
             if (is_wp_error($resolved)) {
                 return Response::error(['tags' => [$resolved->get_error_message()]], 422)->message($resolved->get_error_message());
@@ -351,7 +312,7 @@ final class TopicController
         TopicModerationService::recordTopicActivity($id, (int) ($existingTopic['post_author'] ?? 0), $updateData, $topic);
         $this->notifyMentions($id, $existingTopic, $topic);
         TopicModerationService::notifyStatusChange($id, $updateData, $existingTopic, $topic);
-        $this->notifySuggestedTags($topic, $suggested);
+        TopicCreationService::notifySuggestedTags($topic, $suggested);
 
         return Response::success($topic);
     }
@@ -383,98 +344,6 @@ final class TopicController
                 'message'  => 'Post deleted successfully',
                 'topic_id' => $id,
             ]
-        );
-    }
-
-    /**
-     * Announces a new topic to the people who asked to hear about its subject.
-     *
-     * Deliberately not to everyone. NotificationRecipients::newTopicAudience()
-     * answers with the followers of the products and tags the topic was filed
-     * under, plus anyone following the forum itself. A broadcast to every member
-     * stops being usable past a handful of topics a week, and a bell full of
-     * things nobody asked for is the fastest way to teach people to ignore it.
-     *
-     * Moderators are the exception: they get TOPIC_POSTED for every topic,
-     * because keeping an eye on everything is their job. It is a separate type so
-     * they can switch it off without losing the topics they follow.
-     *
-     * @param array<string, mixed> $topic as returned by TopicService::createTopic()
-     */
-    private function notifyNewTopic(array $topic): void
-    {
-        $topicId = (int) ($topic['ID'] ?? 0);
-
-        if ($topicId <= 0) {
-            return;
-        }
-
-        // The author follows their own topic. Not a formality: it is what makes
-        // replies reach them through the same path as every other follower,
-        // rather than through an "and also the author" special case that each
-        // recipient rule would have to remember separately.
-        FollowService::autoFollow(get_current_user_id(), Follow::TARGET_TOPIC, $topicId);
-
-        // A draft is not news. Topics can be created unpublished, and announcing
-        // one would send people to something they cannot read.
-        if ((string) ($topic['post_status'] ?? '') !== 'publish') {
-            return;
-        }
-
-        $context = [
-            'topic_title' => (string) ($topic['post_title'] ?? ''),
-            'excerpt'     => ActivityLogService::excerpt(
-                wp_strip_all_tags((string) ($topic['post_content'] ?? ''))
-            ),
-            'url' => PortalLocation::topicUrl((int) ($topic['ID'] ?? 0)),
-        ];
-
-        // Named before announced, and the names are then excluded below. Being
-        // spoken to is the more specific of the two things that just happened,
-        // and one topic must not arrive twice for the person it was written to.
-        $mentioned = MentionService::parse((string) ($topic['post_content'] ?? ''));
-
-        if ($mentioned !== []) {
-            NotificationService::dispatch(
-                NotificationTypes::MENTION,
-                NotificationService::TARGET_TOPIC,
-                $topicId,
-                $context,
-                $topicId,
-                $mentioned
-            );
-        }
-
-        $followers = NotificationRecipients::newTopicAudience($topicId);
-
-        NotificationService::dispatch(
-            NotificationTypes::TOPIC_NEW,
-            NotificationService::TARGET_TOPIC,
-            $topicId,
-            $context,
-            $topicId,
-            $followers,
-            $mentioned
-        );
-
-        // Moderators hear about every topic, followed or not, so nothing new
-        // reaches the portal unseen. A moderator who was already told as a
-        // follower is skipped: one topic is one row. Only the followers who
-        // actually took the TOPIC_NEW row count as told — one who switched that
-        // type off must still get this one.
-        $toldAsFollower = array_filter(
-            $followers,
-            static fn (int $id): bool => NotificationPreferences::wantsInApp($id, NotificationTypes::TOPIC_NEW)
-        );
-
-        NotificationService::dispatch(
-            NotificationTypes::TOPIC_POSTED,
-            NotificationService::TARGET_TOPIC,
-            $topicId,
-            $context,
-            $topicId,
-            null,
-            array_merge($mentioned, $toldAsFollower)
         );
     }
 
@@ -562,58 +431,5 @@ final class TopicController
         }
 
         return $taxQuery;
-    }
-
-    /**
-     * Tells moderators a tag is waiting for review, one row per tag.
-     *
-     * Sent after the topic is saved, not when the tag is created: a suggestion
-     * on a topic that then failed to save is nothing to review. The row points
-     * at the topic, where the tag can be seen in use; the decision is made on
-     * the admin's Tags screen.
-     *
-     * @param array<string, mixed>                     $topic     as the service returned it
-     * @param array<int, array{id: int, name: string}> $suggested what TagResolverService created
-     */
-    private function notifySuggestedTags(array $topic, array $suggested): void
-    {
-        $topicId = (int) ($topic['ID'] ?? 0);
-
-        if ($topicId <= 0) {
-            return;
-        }
-
-        foreach ($suggested as $tag) {
-            NotificationService::dispatch(
-                NotificationTypes::TAG_SUGGESTED,
-                NotificationService::TARGET_TOPIC,
-                $topicId,
-                [
-                    'topic_title' => (string) ($topic['post_title'] ?? ''),
-                    'tag_name'    => $tag['name'],
-                    'tag_id'      => $tag['id'],
-                ],
-                $topicId
-            );
-        }
-    }
-
-    /**
-     * The topic's tags as ids, with any name the member typed matched to a
-     * tag or created as a pending one — see TagResolverService.
-     *
-     * @param array<string, mixed> $validatedData
-     *
-     * @return array{ids: array<int, int>, created: array<int, array{id: int, name: string}>}|WP_Error
-     */
-    private function resolveTags(array $validatedData)
-    {
-        $refs = $validatedData['tags'] ?? [];
-
-        return TagResolverService::resolve(
-            \is_array($refs) ? $refs : [],
-            get_current_user_id(),
-            PermissionService::canCreateTag()
-        );
     }
 }

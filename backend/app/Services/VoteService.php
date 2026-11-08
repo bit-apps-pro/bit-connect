@@ -13,6 +13,7 @@ use BitApps\BitConnect\Enum\NotificationSettings;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\PostTypes as EnumPostTypes;
 use BitApps\BitConnect\Model\Vote;
+use BitApps\BitConnect\Services\Events\Events;
 
 /**
  * Upvoting a topic.
@@ -75,6 +76,10 @@ class VoteService
         $this->rebuildPostVoteCache($postId);
         UserStatsService::forget($post->post_author);
         VoteRateLimiter::consume($userId);
+
+        // Every vote added, before the fold below: a listener counting votes
+        // needs each one, where a bell only needs to hear once.
+        Events::topicVoted($post, $userId, $this->getPostVoteCounts($postId));
 
         // Only on the way up. Un-voting is not an event anyone needs telling
         // about, and pairing the two would let one person toggle a notification

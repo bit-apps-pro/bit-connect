@@ -15,6 +15,7 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Model\Vote;
+use BitApps\BitConnect\Services\Events\TopicPublication;
 use WP_Post;
 use WP_Query;
 use WP_Term;
@@ -437,7 +438,15 @@ class TopicService
             ),
         ];
 
-        $postId = wp_insert_post($postData);
+        // The insert's own status transition would announce a topic with no
+        // terms yet; markCreated() below announces it once they are set.
+        TopicPublication::creating(true);
+
+        try {
+            $postId = wp_insert_post($postData);
+        } finally {
+            TopicPublication::creating(false);
+        }
 
         // 0 is how wp_insert_post() reports a failed database write.
         if (is_wp_error($postId) || !$postId) {
@@ -483,6 +492,10 @@ class TopicService
         UploadClaims::claim($linked);
 
         $post = get_post($postId);
+
+        if ($post instanceof WP_Post) {
+            TopicPublication::markCreated($post);
+        }
 
         return $this->prepareTopicData($post, false);
     }
