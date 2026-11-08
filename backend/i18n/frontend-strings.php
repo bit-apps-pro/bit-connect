@@ -1543,6 +1543,7 @@ return [
     'upvoted your post in' => __('upvoted your post in', 'bit-connect'),
 
     'No longer available' => __('No longer available', 'bit-connect'),
+    'This post was deleted. You cannot open it.' => __('This post was deleted. You cannot open it.', 'bit-connect'),
 
     'You will get a notification about new comments.' => __('You will get a notification about new comments.', 'bit-connect'),
 

@@ -193,13 +193,18 @@ export default function NotificationRow({ item, onSelect, variant = 'flat' }: No
   const { bg, fg, Icon } = appearanceFor(item.type)
   const initial = (item.actor.name || '?').charAt(0).toUpperCase()
   const isCard = variant === 'card'
+  const isGone = !item.target.exists
 
   return (
     <button
       className={cn([
-        'bc-relative bc-flex bc-w-full bc-cursor-pointer bc-items-start bc-gap-3',
+        'bc-relative bc-flex bc-w-full bc-items-start bc-gap-3',
         'bc-py-3 bc-pe-4 bc-ps-5 bc-text-left',
-        'bc-transition-colors bc-duration-150 hover:bc-bg-surface-hover',
+        // A row with nothing behind it must not look like a link. It stays a
+        // button so a click still marks it read and says why nothing opened.
+        isGone
+          ? 'bc-cursor-default'
+          : 'bc-cursor-pointer bc-transition-colors bc-duration-150 hover:bc-bg-surface-hover',
         // overflow-hidden is what keeps the unread rail inside the radius. The
         // rail is pinned to the leading edge, and without clipping it squares
         // off the top-left corner the card just rounded.
@@ -228,7 +233,7 @@ export default function NotificationRow({ item, onSelect, variant = 'flat' }: No
         />
       )}
 
-      <span className="bc-relative bc-shrink-0">
+      <span className={cn(['bc-relative bc-shrink-0', isGone && 'bc-opacity-60'])}>
         {/* No person behind it, so no face and no initial. An auto-hide or a
             retention sweep is the forum acting on its own, and a "?" avatar
             invents a member who does not exist — the same reason the server
@@ -268,7 +273,9 @@ export default function NotificationRow({ item, onSelect, variant = 'flat' }: No
       </span>
 
       <span className="bc-min-w-0 bc-flex-1">
-        <span className="bc-block bc-text-sm bc-leading-snug bc-text-ink-muted">{describe(item)}</span>
+        <span className={cn(['bc-block bc-text-sm bc-leading-snug bc-text-ink-muted', isGone && 'bc-opacity-60'])}>
+          {describe(item)}
+        </span>
 
         {excerpt && (
           <span className="bc-mt-1 bc-block bc-truncate bc-text-xs bc-text-ink-subtle">{excerpt}</span>
@@ -277,7 +284,7 @@ export default function NotificationRow({ item, onSelect, variant = 'flat' }: No
         <span className="bc-mt-1 bc-flex bc-items-center bc-gap-1.5 bc-text-xs bc-text-ink-subtle">
           <span>{shortAgo(item.created_at)}</span>
           {/* Said plainly rather than leaving a dead link to explain itself. */}
-          {!item.target.exists && (
+          {isGone && (
             <>
               <span aria-hidden>·</span>
               <span>{__('No longer available')}</span>

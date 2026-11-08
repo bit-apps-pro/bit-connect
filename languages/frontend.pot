@@ -3390,6 +3390,10 @@ msgstr ""
 msgid "No longer available"
 msgstr ""
 
+#: frontend/client/src/components/features/notifications/shared/use-open-notification.ts:44
+msgid "This post was deleted. You cannot open it."
+msgstr ""
+
 #: frontend/client/src/components/features/notifications/ui/use-follow-menu-item.tsx:58
 msgid "You will be notified about new replies."
 msgstr ""

@@ -3,14 +3,14 @@ import {
   LuAtSign,
   LuBell,
   LuCircleCheck,
-  LuHeart,
-  LuKeyRound,
-  LuMessageSquare,
-  LuReply,
+  LuFlag,
+  LuLockOpen,
+  LuMessageCircle,
+  LuMessageCircleReply,
+  LuPencilLine,
   LuShieldAlert,
-  LuSparkles,
   LuTag,
-  LuTriangleAlert,
+  LuTriangle,
   LuTrophy,
   LuUserPlus
 } from 'react-icons/lu'
@@ -28,6 +28,11 @@ import {
  * your content, amber is only ever something waiting on a decision. A reader
  * who learns that once should never be surprised by it — which is also why
  * these come from the semantic tokens rather than from a picked palette.
+ *
+ * The glyphs are the ones the rest of the portal already uses for the same
+ * thing — the vote box's triangle, the topic card's comment bubble, the
+ * Report menu's flag, the lock on a private group — so a reader does not
+ * learn a second icon for an action they already know.
  */
 export interface NotificationAppearance {
   /** Soft token for the badge disc behind the glyph. */
@@ -39,25 +44,25 @@ export interface NotificationAppearance {
 
 const APPEARANCE: Record<string, NotificationAppearance> = {
   // Green like an upvote: something good happened to you.
-  access_granted: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuKeyRound },
+  access_granted: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuLockOpen },
   // Amber: a request waiting on a moderator's decision.
   access_requested: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuUserPlus },
   badge_awarded: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTrophy },
-  comment_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuReply },
+  comment_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuMessageCircleReply },
   // The one red. Something you wrote was taken down, and nothing else in this
   // list should be able to look as serious as that does.
   content_actioned: { bg: 'bc-bg-negative-soft', fg: 'bc-text-negative', Icon: LuShieldAlert },
   mention: { bg: 'bc-bg-tone-violet-soft', fg: 'bc-text-tone-violet', Icon: LuAtSign },
-  report_filed: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTriangleAlert },
+  report_filed: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuFlag },
   report_resolved: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuCircleCheck },
   // Amber like a report: something waiting on a moderator's decision.
   tag_suggested: { bg: 'bc-bg-tone-amber-soft', fg: 'bc-text-tone-amber', Icon: LuTag },
-  topic_new: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
+  topic_new: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuPencilLine },
   // The same event as topic_new, sent to moderators, so it looks the same.
-  topic_posted: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuSparkles },
-  topic_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuMessageSquare },
+  topic_posted: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuPencilLine },
+  topic_reply: { bg: 'bc-bg-info-soft', fg: 'bc-text-info', Icon: LuMessageCircle },
   topic_status_changed: { bg: 'bc-bg-tone-teal-soft', fg: 'bc-text-tone-teal', Icon: LuCircleCheck },
-  vote_received: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuHeart }
+  vote_received: { bg: 'bc-bg-positive-soft', fg: 'bc-text-positive', Icon: LuTriangle }
 }
 
 const FALLBACK: NotificationAppearance = {
