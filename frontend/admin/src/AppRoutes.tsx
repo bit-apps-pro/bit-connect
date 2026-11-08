@@ -11,7 +11,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 're
 import { $isDarkTheme } from './common/globalStates/$appConfig'
 import $navigate from './common/globalStates/$navigate'
 import config from './config/config'
-import { buttonTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
+import { buttonTheme, checkTheme, darkThemeConfig, inputTheme, lightThemeConfig, selectTheme } from './config/theme'
 import Error404 from './pages/Error404'
 import Layout from './pages/Layout'
 import useOnboardingStatus from './pages/onboarding/data/use-onboarding-status'
@@ -105,6 +105,7 @@ export default function AppRoutes() {
         algorithm: themeAlgorithm,
         components: {
           Button: buttonTheme(isDarkTheme),
+          Checkbox: checkTheme(isDarkTheme),
           Input: inputTheme(isDarkTheme),
           Select: selectTheme(isDarkTheme),
           Table: {

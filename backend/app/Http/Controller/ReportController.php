@@ -20,6 +20,7 @@ use BitApps\BitConnect\Model\Report;
 use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\ContentRemovalService;
 use BitApps\BitConnect\Services\ContentVisibilityService;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\PortalLocation;
@@ -86,6 +87,15 @@ final class ReportController
                 );
             }
         }
+
+        Events::reportFiled(
+            $targetType,
+            (int) $validated['target_id'],
+            (string) $validated['reason'],
+            (int) $result['pending'],
+            $hidden,
+            get_current_user_id()
+        );
 
         // The queue only helps if somebody is told there is something in it.
         // Recipients are resolved by the dispatcher — everyone holding
@@ -197,6 +207,7 @@ final class ReportController
         // gone.
         $reporterIds = ReportService::pendingReporterIds($targetType, $targetId);
         $snapshot = $this->describeForNotice($targetType, $targetId);
+        $eventTarget = Events::target($targetType, $targetId);
 
         if ($isRemoval && Report::pendingCount($targetType, $targetId) === 0) {
             return Response::error([], 404)->message(__('There is nothing left to review on this.', 'bit-connect'));
@@ -262,6 +273,8 @@ final class ReportController
             [...$titleContext, 'closed' => $closed, 'decision' => $status->value],
             (string) ($validated['note'] ?? '')
         );
+
+        Events::reportResolved($eventTarget, $status->value, (string) ($validated['note'] ?? ''), $closed);
 
         $this->notifyDecision(
             $targetType,

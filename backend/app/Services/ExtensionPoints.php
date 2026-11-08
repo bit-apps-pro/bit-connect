@@ -12,6 +12,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
+use BitApps\BitConnect\Services\Events\EventRegistry;
 use WP_Comment;
 use WP_Post;
 
@@ -477,6 +478,65 @@ final class ExtensionPoints
         $offered = Hooks::applyFilter('bit_connect_moderation_topic_row', $fields, $postId);
 
         return \is_array($offered) ? $offered : $fields;
+    }
+
+    /**
+     * Forum events beyond this plugin's own — see Events\EventRegistry.
+     *
+     * A plugin that fires an event of its own answers with `key => entry`, so
+     * the event is listed with the others and `bit_connect_event` carries it.
+     * The entry is checked, not trusted: the hook must be `bit_connect_<key>`,
+     * the group one of EventRegistry::GROUPS, the label a non-empty string, and
+     * every field example a scalar under a string name. A key this plugin
+     * already uses is not taken over.
+     *
+     * @param list<string> $ownKeys the keys this plugin's own events use
+     *
+     * @return array<string, array{hook: string, group: string, label: string, fields: array<string, null|scalar>}>
+     */
+    public static function integrationEvents(array $ownKeys): array
+    {
+        $offered = Hooks::applyFilter('bit_connect_integration_events', []);
+
+        if (!\is_array($offered)) {
+            return [];
+        }
+
+        $own = array_flip($ownKeys);
+        $clean = [];
+
+        foreach ($offered as $key => $entry) {
+            if (
+                !\is_string($key)
+                || !preg_match('/^[a-z][a-z0-9_]{1,47}$/', $key)
+                || isset($own[$key])
+                || !\is_array($entry)
+                || ($entry['hook'] ?? null) !== 'bit_connect_' . $key
+                || !\in_array($entry['group'] ?? null, EventRegistry::GROUPS, true)
+                || !\is_string($entry['label'] ?? null)
+                || $entry['label'] === ''
+                || !\is_array($entry['fields'] ?? null)
+            ) {
+                continue;
+            }
+
+            $fields = [];
+
+            foreach ($entry['fields'] as $name => $example) {
+                if (\is_string($name) && $name !== '' && ($example === null || \is_scalar($example))) {
+                    $fields[$name] = $example;
+                }
+            }
+
+            $clean[$key] = [
+                'hook'   => $entry['hook'],
+                'group'  => $entry['group'],
+                'label'  => $entry['label'],
+                'fields' => $fields,
+            ];
+        }
+
+        return $clean;
     }
 
     /**

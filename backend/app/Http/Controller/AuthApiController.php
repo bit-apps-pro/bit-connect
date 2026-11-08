@@ -15,6 +15,7 @@ use BitApps\BitConnect\Http\Requests\RestSignupRequest;
 use BitApps\BitConnect\Http\Requests\RestVerifyEmailRequest;
 use BitApps\BitConnect\Services\AuthRateLimiter;
 use BitApps\BitConnect\Services\AuthService;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\PermissionService;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use WP_Error;
@@ -64,6 +65,7 @@ final class AuthApiController
         AuthRateLimiter::forget(AuthRateLimiter::LOGIN, $username);
 
         Hooks::doAction('bit_connect_after_login', $user);
+        Events::memberLoggedIn($user);
 
         return Response::success(self::authResponse($user));
     }

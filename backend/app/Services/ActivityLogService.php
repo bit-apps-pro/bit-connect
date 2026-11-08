@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPDatabase\Collection;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Model\ActivityLog;
+use BitApps\BitConnect\Services\Events\Events;
 use DateTimeImmutable;
 use DateTimeZone;
 use WP_Post;
@@ -334,6 +335,10 @@ final class ActivityLogService
                 'context'       => $context === [] ? null : wp_json_encode($context),
             ]
         );
+
+        // Here, at the one insert, so every action the log records — by a
+        // moderator, by the report threshold, by another plugin — is an event.
+        Events::moderationAction($actorId, $action, $targetType, $targetId, $targetAuthor, $reason, $context);
     }
 
     /**
