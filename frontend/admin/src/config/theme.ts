@@ -80,6 +80,22 @@ export function selectTheme(isDark: boolean) {
   }
 }
 
+/**
+ * Checkbox tokens, theme-aware.
+ *
+ * antd draws the box with the shared colorBorder (#d9d9d9) on colorBgContainer
+ * (#f9f9f9): about 1.3:1, so on many screens an unticked box disappears and
+ * only its label shows. A box is the control itself, not a divider, so it
+ * gets a border with 3:1 contrast (WCAG 1.4.11) and a white fill — the same
+ * grey WordPress uses for its own checkboxes.
+ */
+export function checkTheme(isDark: boolean) {
+  return {
+    colorBgContainer: isDark ? 'transparent' : '#ffffff',
+    colorBorder: isDark ? '#7a7a7a' : '#8c8f94'
+  }
+}
+
 export const lightThemeConfig: Partial<AliasToken> = {
   borderRadius: 6,
   borderRadiusSM: 4,
