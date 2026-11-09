@@ -1,4 +1,4 @@
-import getRequest from '@utils/request/get'
+import postRequest from '@utils/request/post'
 
 interface DeleteCommentResponse {
   id: number
@@ -10,7 +10,8 @@ interface DeleteCommentResponse {
  * @returns The deleted comment ID
  */
 export async function deleteCommentApi(commentId: number): Promise<DeleteCommentResponse> {
-  const response = await getRequest<DeleteCommentResponse>(`comments-delete/${commentId}`)
+  // POST, never GET: a link preview or a prefetch must not be able to delete.
+  const response = await postRequest<never, DeleteCommentResponse>(`comments-delete/${commentId}`)
 
   return response.data
 }

@@ -51,7 +51,7 @@ Route::get('topics', [TopicController::class, 'all']);
 Route::post('topics', [TopicController::class, 'create']);
 Route::get('topics/{id}', [TopicController::class, 'get']);
 Route::post('topics/{id}', [TopicController::class, 'update']);
-Route::get('topics-delete/{id}', [TopicController::class, 'delete']);
+Route::post('topics-delete/{id}', [TopicController::class, 'delete']);
 // Off the `topics/` prefix on purpose — `topics/{id}` would swallow it.
 Route::get('topic-slug-check', [TopicController::class, 'slugCheck']);
 Route::get('topic-types-used', [TopicController::class, 'typesUsed']);
@@ -60,7 +60,7 @@ Route::get('topic-types-used', [TopicController::class, 'typesUsed']);
 Route::get('posts/{id}/comments', [CommentController::class, 'getByPost']);
 Route::post('posts/{id}/comments', [CommentController::class, 'create']);
 Route::post('comments/{id}', [CommentController::class, 'update']);
-Route::get('comments-delete/{id}', [CommentController::class, 'delete']);
+Route::post('comments-delete/{id}', [CommentController::class, 'delete']);
 
 // The editor's "@" picker. A read of the member list, so it sits with the
 // composer it serves rather than under the public `users/` routes below — those
