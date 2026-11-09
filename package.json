@@ -60,7 +60,6 @@
     "antd": "5.23.1",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
-    "deepmerge": "^4.3.1",
     "dotenv": "^16.6.1",
     "framer-motion": "^11.18.2",
     "human-id": "^4.2.1",
@@ -122,9 +121,9 @@
     "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.69.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "@vitest/coverage-v8": "^3.2.7",
-    "@vitest/expect": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.12",
+    "@vitest/expect": "^4.1.12",
+    "@vitest/ui": "^4.1.12",
     "@wordpress/i18n": "^5.26.0",
     "autoprefixer": "^10.5.5",
     "bitapps-dev-utils": "github:Bit-Apps-Pro/bitapps-dev-utils#d8beb5f184cfe84385e60f91e4c7ed6c08bdb799",
@@ -163,7 +162,7 @@
     "fs-extra": "^11.4.0",
     "gettext-parser": "^9.1.1",
     "globals": "^15.15.0",
-    "happy-dom": "^20.14.0",
+    "happy-dom": "^21.0.4",
     "incstr": "^1.2.3",
     "jsdom": "^26.1.0",
     "lefthook": "^1.13.6",
@@ -185,9 +184,9 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.69.0",
     "typescript-plugin-css-modules": "^5.2.0",
-    "vite": "^6.4.3",
+    "vite": "^6.4.6",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "packageManager": "pnpm@10.20.0",
   "engines": {
@@ -197,6 +196,16 @@
   "pnpm": {
     "overrides": {
       "@babel/runtime@<7.26.10": "^7.29.7",
+      "brace-expansion@<1.1.21": "^1.1.21",
+      "brace-expansion@>=2.0.0 <2.1.7": "^2.1.7",
+      "brace-expansion@>=5.0.0 <5.0.12": "^5.0.12",
+      "fast-uri@<3.1.9": "^3.1.9",
+      "glob@>=9.0.0 <14.0.2": "^14.0.2",
+      "minimatch@>=7.0.0 <11.0.1": "^11.0.1",
+      "moment@<2.31.0": "^2.31.0",
+      "postcss-selector-parser@<6.1.5": "^6.1.5",
+      "shell-quote@<1.11.0": "^1.11.0",
+      "source-map-js@<1.2.2": "^1.2.2",
       "yargs-parser@<5.0.1": "^5.0.1"
     }
   }

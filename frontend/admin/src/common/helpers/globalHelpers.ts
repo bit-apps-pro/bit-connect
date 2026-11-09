@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { type ClassValue, clsx } from 'clsx'
-import merge, { type Options } from 'deepmerge'
 import { twMerge } from 'tailwind-merge'
 
 // keyPath is a path array (['a','b','c']) — the loop below indexes it to walk
@@ -148,32 +147,4 @@ export function _if<T>(condition: AllDataType): IfCondition<T> {
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
-
-/**
- *
- * array combine merge function for deepmerge
- */
-// NonNullable: `arrayMerge` is optional on `Options`, so the bare indexed type
-// carries `| undefined` and every caller has to null-check a function that is
-// always defined.
-const combineMerge: NonNullable<Options['arrayMerge']> = (target, source, options) => {
-  const destination = [...target]
-
-  source.forEach((item, index) => {
-    if (destination[index] === undefined) {
-      destination[index] = options?.cloneUnlessOtherwiseSpecified(item, options)
-    } else if (options?.isMergeableObject(item)) {
-      destination[index] = merge(target[index], item, options)
-    } else if (!target.includes(item)) {
-      destination.push(item)
-    }
-  })
-  return destination
-}
-
-type DeepmergeType = <T1, T2 = T1>(x: Partial<T1>, y: Partial<T2>, options?: Options) => T1 & T2
-
-export const deepmerge: DeepmergeType = (x, y, options) => {
-  return merge(x, y, { arrayMerge: combineMerge, ...options })
 }

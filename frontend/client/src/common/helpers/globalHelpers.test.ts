@@ -5,10 +5,8 @@ import {
   assign,
   checkValidEmail,
   cn,
-  combineMerge,
   dateTimeFormatter,
   deepCopy,
-  deepmerge,
   isObjectEqual,
   lighten,
   sortArrOfObj,
@@ -190,20 +188,6 @@ describe('cn', () => {
   it('drops falsy values', () => {
     // eslint-disable-next-line no-constant-binary-expression -- a constant falsy argument is the input under test: this is how conditional classes reach cn() at call sites
     expect(cn('a', false && 'b', undefined, 'c')).toBe('a c')
-  })
-})
-
-describe('deepmerge / combineMerge', () => {
-  it('merges plain objects', () => {
-    expect(deepmerge({ a: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 })
-  })
-
-  it('combineMerge merges arrays index-wise', () => {
-    const result = combineMerge([{ a: 1 }], [{ b: 2 }], {
-      cloneUnlessOtherwiseSpecified: (value: object) => value,
-      isMergeableObject: (value: object) => typeof value === 'object' && value !== null
-    })
-    expect(result).toEqual([{ a: 1, b: 2 }])
   })
 })
 
