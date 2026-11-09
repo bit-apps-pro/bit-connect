@@ -7,6 +7,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use BitApps\BitConnect\Services\Events\CommentPublication;
+use BitApps\BitConnect\Services\Events\EventPayload;
+use BitApps\BitConnect\Services\Events\Events;
 use WP_Comment;
 use WP_Post;
 
@@ -82,15 +85,34 @@ final class ContentRemovalService
      */
     private static function removeComment(int $commentId): bool
     {
-        if (!get_comment($commentId) instanceof WP_Comment) {
+        $comment = get_comment($commentId);
+
+        if (!$comment instanceof WP_Comment) {
             return false;
         }
 
-        foreach (self::replyIds($commentId) as $replyId) {
+        // Read before the delete: afterwards the comment cannot describe itself.
+        // Only a comment listeners heard of is news when it goes.
+        $post = get_post((int) $comment->comment_post_ID);
+        $snapshot = CommentPublication::isAnnounced($comment) && $post instanceof WP_Post
+            ? EventPayload::comment($comment) + EventPayload::topic($post)
+            : null;
+
+        $replies = self::replyIds($commentId);
+
+        foreach ($replies as $replyId) {
             wp_delete_comment($replyId, true);
         }
 
-        return (bool) wp_delete_comment($commentId, true);
+        if (!wp_delete_comment($commentId, true)) {
+            return false;
+        }
+
+        if ($snapshot !== null) {
+            Events::commentDeleted($snapshot, (int) $comment->user_id, \count($replies));
+        }
+
+        return true;
     }
 
     /**

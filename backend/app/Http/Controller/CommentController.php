@@ -23,6 +23,8 @@ use BitApps\BitConnect\Services\CommentService;
 use BitApps\BitConnect\Services\ContentRemovalService;
 use BitApps\BitConnect\Services\ContentVisibilityService;
 use BitApps\BitConnect\Services\EditAttributionService;
+use BitApps\BitConnect\Services\Events\CommentPublication;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\ExtensionPoints;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
@@ -36,6 +38,7 @@ use BitApps\BitConnect\Services\UploadClaims;
 use BitApps\BitConnect\Services\UserBadgeService;
 use InvalidArgumentException;
 use WP_Comment;
+use WP_Post;
 
 final class CommentController
 {
@@ -234,6 +237,15 @@ final class CommentController
             // conversation already under way — "@aiden this is the bug you
             // hit" — and the person brought in has heard nothing about it yet.
             $this->notifyAddedMentions($comment, $content);
+
+            // A comment still waiting for approval was never announced, so
+            // its edit is not news either.
+            $edited = get_comment($commentId);
+            $post = $edited instanceof WP_Comment ? get_post((int) $edited->comment_post_ID) : null;
+
+            if ($edited instanceof WP_Comment && $post instanceof WP_Post && CommentPublication::isAnnounced($edited)) {
+                Events::commentUpdated($edited, $post);
+            }
         }
 
         if ($newAttachmentIds !== null) {

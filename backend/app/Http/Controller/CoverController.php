@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\DeleteCoverRequest;
 use BitApps\BitConnect\Http\Requests\UploadCoverRequest;
 use BitApps\BitConnect\Services\CoverImageService;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\UploadClaims;
 
 /**
@@ -81,6 +82,7 @@ final class CoverController
 
         UploadClaims::markPortal((int) $attachmentId);
         CoverImageService::setCover($userId, $attachmentId);
+        Events::profileUpdated($userId, ['cover']);
 
         return Response::success(
             [
@@ -93,6 +95,10 @@ final class CoverController
     public function remove(DeleteCoverRequest $request)
     {
         $removed = CoverImageService::removeCover((int) $request->id);
+
+        if ($removed) {
+            Events::profileUpdated((int) $request->id, ['cover']);
+        }
 
         return Response::success(
             [

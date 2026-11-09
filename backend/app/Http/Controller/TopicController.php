@@ -17,6 +17,8 @@ use BitApps\BitConnect\Http\Requests\GetAllTopicsRequest;
 use BitApps\BitConnect\Http\Requests\GetTopicRequest;
 use BitApps\BitConnect\Http\Requests\UpdateTopicRequest;
 use BitApps\BitConnect\Services\ActivityLogService;
+use BitApps\BitConnect\Services\Events\Events;
+use BitApps\BitConnect\Services\Events\TopicPublication;
 use BitApps\BitConnect\Services\MentionService;
 use BitApps\BitConnect\Services\NotificationService;
 use BitApps\BitConnect\Services\PermissionService;
@@ -26,6 +28,7 @@ use BitApps\BitConnect\Services\TopicModerationService;
 use BitApps\BitConnect\Services\TopicService;
 use BitApps\BitConnect\Services\TopicTaxonomies;
 use InvalidArgumentException;
+use WP_Post;
 
 final class TopicController
 {
@@ -299,6 +302,8 @@ final class TopicController
             return Response::error('No allowed fields to update', 403);
         }
 
+        $before = self::editableState((int) $id);
+
         try {
             $topic = $this->topicService->updateTopic($id, $updateData);
         } catch (InvalidArgumentException $e) {
@@ -313,6 +318,7 @@ final class TopicController
         $this->notifyMentions($id, $existingTopic, $topic);
         TopicModerationService::notifyStatusChange($id, $updateData, $existingTopic, $topic);
         TopicCreationService::notifySuggestedTags($topic, $suggested);
+        self::announceEdit((int) $id, $before);
 
         return Response::success($topic);
     }
@@ -345,6 +351,59 @@ final class TopicController
                 'topic_id' => $id,
             ]
         );
+    }
+
+    /**
+     * What an edit can change, read the same way before and after it.
+     * Status and stage are left out: they have their own event.
+     *
+     * @return array<string, string>
+     */
+    private static function editableState(int $id): array
+    {
+        $post = get_post($id);
+
+        if (!$post instanceof WP_Post) {
+            return [];
+        }
+
+        $termIds = static function (string $taxonomy) use ($id): string {
+            $ids = wp_get_post_terms($id, $taxonomy, ['fields' => 'ids']);
+            $ids = \is_array($ids) ? array_map('intval', $ids) : [];
+            sort($ids);
+
+            return implode(',', $ids);
+        };
+
+        return [
+            'title'       => (string) $post->post_title,
+            'content'     => (string) $post->post_content,
+            'slug'        => (string) $post->post_name,
+            'topic_types' => $termIds(Taxonomies::TOPIC_TYPES->value),
+            'tags'        => $termIds(Taxonomies::TAGS->value),
+        ];
+    }
+
+    /**
+     * Fires `topic_updated` when the edit changed what readers see, and only
+     * for a post listeners were told about.
+     *
+     * @param array<string, string> $before editableState() before the write
+     */
+    private static function announceEdit(int $id, array $before): void
+    {
+        $post = get_post($id);
+
+        if ($before === [] || !$post instanceof WP_Post || !TopicPublication::isAnnounced($post)) {
+            return;
+        }
+
+        $after = self::editableState($id);
+        $changed = array_keys(array_filter($before, static fn (string $value, string $key): bool => ($after[$key] ?? $value) !== $value, ARRAY_FILTER_USE_BOTH));
+
+        if ($changed !== []) {
+            Events::topicUpdated($post, $changed);
+        }
     }
 
     /**

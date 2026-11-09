@@ -86,6 +86,18 @@ final class TopicPublication
     }
 
     /**
+     * Whether listeners have heard of this topic: it is public now and
+     * `topic_created` fired for it. An edit or a delete of a topic nobody was
+     * told about is not news either.
+     */
+    public static function isAnnounced(WP_Post $post): bool
+    {
+        return $post->post_status === 'publish'
+            && $post->post_type === PostTypes::BIT_CONNECT->value
+            && (bool) get_post_meta($post->ID, self::PUBLISHED_META, true);
+    }
+
+    /**
      * Fires `topic_created` for a topic that is public now, unless it already
      * has been.
      */

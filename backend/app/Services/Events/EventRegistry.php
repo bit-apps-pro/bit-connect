@@ -174,6 +174,46 @@ final class EventRegistry
                 'label'  => __('A member adds a comment', 'bit-connect'),
                 'fields' => $comment + $topic + self::userFields('author'),
             ],
+            'topic_updated' => [
+                'hook'   => 'bit_connect_topic_updated',
+                'group'  => self::GROUP_CONTENT,
+                'label'  => __('A member edits a public post', 'bit-connect'),
+                'fields' => $topic + ['changed' => 'title,content'] + self::userFields('author') + self::userFields('actor'),
+            ],
+            'topic_deleted' => [
+                'hook'   => 'bit_connect_topic_deleted',
+                'group'  => self::GROUP_CONTENT,
+                'label'  => __('A public post is deleted', 'bit-connect'),
+                'fields' => $topic + self::userFields('author') + self::userFields('actor'),
+            ],
+            'comment_updated' => [
+                'hook'   => 'bit_connect_comment_updated',
+                'group'  => self::GROUP_CONTENT,
+                'label'  => __('A member edits a comment', 'bit-connect'),
+                'fields' => $comment + $topic + self::userFields('author'),
+            ],
+            'comment_deleted' => [
+                'hook'   => 'bit_connect_comment_deleted',
+                'group'  => self::GROUP_CONTENT,
+                'label'  => __('A comment is deleted', 'bit-connect'),
+                'fields' => $comment + $topic + ['replies_deleted' => 0] + self::userFields('author') + self::userFields('actor'),
+            ],
+            'followed' => [
+                'hook'   => 'bit_connect_followed',
+                'group'  => self::GROUP_ENGAGEMENT,
+                'label'  => __('A member follows a post, a tag or the forum', 'bit-connect'),
+                'fields' => [
+                    'follow_target_type' => 'topic',
+                    'follow_target_id'   => 42,
+                    'follow_target_name' => 'How do I export my data?',
+                ] + self::userFields('member'),
+            ],
+            'profile_updated' => [
+                'hook'   => 'bit_connect_profile_updated',
+                'group'  => self::GROUP_MEMBERS,
+                'label'  => __('A member changes their profile', 'bit-connect'),
+                'fields' => ['changed' => 'display_name,bio'] + self::userFields('member'),
+            ],
             'topic_voted' => [
                 'hook'   => 'bit_connect_topic_voted',
                 'group'  => self::GROUP_ENGAGEMENT,

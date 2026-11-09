@@ -12,6 +12,7 @@ use BitApps\BitConnect\Http\Requests\GetFollowsRequest;
 use BitApps\BitConnect\Http\Requests\GetFollowStateRequest;
 use BitApps\BitConnect\Http\Requests\ToggleFollowRequest;
 use BitApps\BitConnect\Model\Follow;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\FollowService;
 
 /**
@@ -40,6 +41,7 @@ final class FollowController
         }
 
         $wantsToFollow = filter_var($validated['follow'], FILTER_VALIDATE_BOOLEAN);
+        $wasFollowing = FollowService::stateFor($userId, $targetType, $targetId)['following'];
 
         $ok = $wantsToFollow
             ? FollowService::follow($userId, $targetType, $targetId)
@@ -48,6 +50,11 @@ final class FollowController
         if (!$ok) {
             return Response::error([], 500)
                 ->message(__('That could not be saved. Please try again.', 'bit-connect'));
+        }
+
+        // A new follow only: a second click on Follow is not news.
+        if ($wantsToFollow && !$wasFollowing) {
+            Events::followed($userId, $targetType, $targetId);
         }
 
         return Response::success(FollowService::stateFor($userId, $targetType, $targetId));

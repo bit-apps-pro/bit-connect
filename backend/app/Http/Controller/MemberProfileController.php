@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 
 use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\UpdateMemberProfileRequest;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\MemberProfileService;
 use BitApps\BitConnect\Services\ProfileSlugService;
 use BitApps\BitConnect\Services\UserProfileService;
@@ -67,6 +68,15 @@ final class MemberProfileController
 
         if ($request->submitted('links')) {
             MemberProfileService::setLinks($userId, $request->sanitizedLinks());
+        }
+
+        $changed = array_values(array_filter(
+            ['display_name', 'slug', 'bio', 'links'],
+            static fn (string $field): bool => $request->submitted($field)
+        ));
+
+        if ($changed !== []) {
+            Events::profileUpdated($userId, $changed);
         }
 
         return Response::success(
