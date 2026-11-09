@@ -156,7 +156,21 @@ final class EventsLifecycleTest extends TestCase
         self::assertSame('bit_connect_followed', $this->fired()[0]['tag']);
         self::assertSame('topic', $payload['follow_target_type']);
         self::assertSame('Export failed', $payload['follow_target_name']);
+        self::assertSame('public', $payload['topic_visibility']);
         self::assertSame(self::ACTOR, $payload['member_id']);
+    }
+
+    public function testAFollowOfAPrivatePostSaysItIsPrivate(): void
+    {
+        $private = $this->topic();
+        $private->post_status = 'private';
+        $GLOBALS['__wp_posts'][self::TOPIC] = $private;
+
+        Events::followed(self::ACTOR, 'topic', self::TOPIC);
+
+        // The webhook dispatcher reads this to keep the title from a webhook
+        // that does not take private posts.
+        self::assertSame('private', $this->fired()[0]['args'][0]['topic_visibility']);
     }
 
     public function testAProfileChangeSaysWhichFieldsChanged(): void

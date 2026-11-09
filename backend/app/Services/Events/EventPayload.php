@@ -151,6 +151,16 @@ final class EventPayload
         return $envelope + $payload;
     }
 
+    public static function visibility(string $postStatus): string
+    {
+        return match ($postStatus) {
+            'publish'                               => 'public',
+            ContentVisibilityService::HIDDEN_STATUS => 'hidden',
+            'private'                               => 'private',
+            default                                 => $postStatus,
+        };
+    }
+
     /**
      * @param array<mixed> $values
      *
@@ -163,16 +173,6 @@ final class EventPayload
             static fn ($value, $key): bool => \is_string($key) && ($value === null || \is_scalar($value)),
             ARRAY_FILTER_USE_BOTH
         );
-    }
-
-    private static function visibility(string $postStatus): string
-    {
-        return match ($postStatus) {
-            'publish'                               => 'public',
-            ContentVisibilityService::HIDDEN_STATUS => 'hidden',
-            'private'                               => 'private',
-            default                                 => $postStatus,
-        };
     }
 
     private static function commentStatus(WP_Comment $comment): string

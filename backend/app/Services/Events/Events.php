@@ -154,10 +154,14 @@ final class Events
     public static function followed(int $userId, string $targetType, int $targetId): void
     {
         $name = '';
+        // Sent so a webhook that does not take private posts can leave out
+        // the title of one: a member may follow a post only some can read.
+        $visibility = 'public';
 
         if ($targetType === Follow::TARGET_TOPIC) {
             $post = get_post($targetId);
             $name = $post instanceof WP_Post ? (string) $post->post_title : '';
+            $visibility = $post instanceof WP_Post ? EventPayload::visibility((string) $post->post_status) : 'public';
         } elseif ($targetId > 0) {
             $term = get_term($targetId);
             $name = $term instanceof WP_Term ? (string) $term->name : '';
@@ -169,6 +173,7 @@ final class Events
                 'follow_target_type' => $targetType,
                 'follow_target_id'   => $targetId,
                 'follow_target_name' => $name,
+                'topic_visibility'   => $visibility,
             ]
             + EventPayload::user($userId, 'member')
         );

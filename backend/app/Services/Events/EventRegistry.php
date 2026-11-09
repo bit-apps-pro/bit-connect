@@ -206,6 +206,7 @@ final class EventRegistry
                     'follow_target_type' => 'topic',
                     'follow_target_id'   => 42,
                     'follow_target_name' => 'How do I export my data?',
+                    'topic_visibility'   => 'public',
                 ] + self::userFields('member'),
             ],
             'profile_updated' => [
