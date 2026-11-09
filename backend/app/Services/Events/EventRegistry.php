@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 use BitApps\BitConnect\Services\ExtensionPoints;
+use BitApps\BitConnect\Services\TopicTaxonomies;
 
 /**
  * The forum events another plugin can listen for, and what each one carries.
@@ -88,11 +89,15 @@ final class EventRegistry
     }
 
     /**
+     * The fields EventPayload::topic() sends, including `<param>_ids` and
+     * `<param>_names` for each taxonomy another plugin files topics under —
+     * otherwise a payload carries fields its example does not show.
+     *
      * @return array<string, null|scalar>
      */
     public static function topicFields(): array
     {
-        return [
+        $fields = [
             'topic_id'           => 42,
             'topic_title'        => 'How do I export my data?',
             'topic_url'          => home_url('/community/topic/how-do-i-export-my-data/'),
@@ -107,6 +112,14 @@ final class EventRegistry
             'topic_stage'        => 'New',
             'topic_created_at'   => '2026-10-20T09:30:00+00:00',
         ];
+
+        foreach (TopicTaxonomies::all() as $param => $entry) {
+            $key = str_replace('-', '_', $param);
+            $fields[$key . '_ids'] = '3';
+            $fields[$key . '_names'] = $entry['singular'];
+        }
+
+        return $fields;
     }
 
     /**
