@@ -407,6 +407,9 @@ final class AuthService
         // WP roles — without this, reactivation would leave every role cap-less.
         CapabilityService::initDefaultSettings();
         CapabilityService::applySettings(CapabilityService::getSettings());
+
+        // Capabilities another plugin adds are not known in this request.
+        CapabilityService::requestReapply();
     }
 
     /**

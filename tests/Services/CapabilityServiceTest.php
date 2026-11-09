@@ -99,4 +99,54 @@ class CapabilityServiceTest extends TestCase
         // Should not overwrite existing settings
         $this->assertSame(['existing' => 'data'], $GLOBALS['__wp_options']['bit_connect_capability_settings']);
     }
+
+    /**
+     * Deactivation removes a capability another plugin adds. Reactivation runs
+     * before that plugin can boot, so only the pass after activation, with its
+     * listener registered, gives the capability back.
+     */
+    public function testListenerCapabilityComesBackAfterReactivation(): void
+    {
+        $extra = 'bit_connect_forum_extra';
+        $withExtra = static fn (array $caps): array => [...$caps, $extra];
+
+        $this->addRole('administrator', 'Administrator', ['manage_options' => true]);
+        $GLOBALS['__wp_options']['bit_connect_capability_settings'] = [
+            'administrator' => Capabilities::capMap(Capabilities::adminCaps()) + [$extra => true],
+        ];
+
+        try {
+            // Deactivation, with the listener registered.
+            $GLOBALS['__wp_filters']['bit_connect_capabilities'] = $withExtra;
+            CapabilityService::removeAllCapabilities();
+
+            // Reactivation, before the listener boots.
+            unset($GLOBALS['__wp_filters']['bit_connect_capabilities']);
+            CapabilityService::applySettings(CapabilityService::getSettings());
+            CapabilityService::requestReapply();
+            $this->assertArrayNotHasKey($extra, get_role('administrator')->capabilities);
+
+            // The next full request.
+            $GLOBALS['__wp_filters']['bit_connect_capabilities'] = $withExtra;
+            CapabilityService::applyAfterActivation();
+        } finally {
+            unset($GLOBALS['__wp_filters']['bit_connect_capabilities']);
+        }
+
+        $this->assertTrue(get_role('administrator')->capabilities[$extra] ?? false);
+        $this->assertTrue(get_role('administrator')->capabilities['bit_connect_forum_manage'] ?? false);
+        $this->assertArrayNotHasKey('bit_connect_caps_reapply', $GLOBALS['__wp_options']);
+    }
+
+    public function testApplyAfterActivationDoesNothingUnlessRequested(): void
+    {
+        $this->addRole('administrator', 'Administrator', ['manage_options' => true]);
+        $GLOBALS['__wp_options']['bit_connect_capability_settings'] = [
+            'administrator' => Capabilities::capMap(Capabilities::adminCaps()),
+        ];
+
+        CapabilityService::applyAfterActivation();
+
+        $this->assertArrayNotHasKey('bit_connect_forum_manage', get_role('administrator')->capabilities);
+    }
 }
