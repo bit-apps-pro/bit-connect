@@ -78,7 +78,7 @@ export default function TopicCard({
   const relativeDate = relativeTime(postDateGmt)
   const calendarDate = formatSiteTime(postDate, DATE_OPTIONS)
   const { settings } = useAdminSettingsStore()
-  const canComment = settings.topicAccess.comment
+  const { comment: canComment, upvote: canUpvote } = settings.topicAccess
   const { can, isLoggedIn } = useAuthStore()
   // Same rule as the topic page: a member without the capability gets a
   // disabled control, a guest a live one that asks them to sign in.
@@ -113,10 +113,13 @@ export default function TopicCard({
       )}
       ref={cardRef}
     >
-      {/* Above the card link overlay so voting never navigates. */}
-      <div className="bc-relative bc-z-10">
-        <VoteBox isVote={hasVoted} onVote={memberMayVote ? handlePostVote : undefined} votes={total} />
-      </div>
+      {/* Above the card link overlay so voting never navigates. Left out when
+          the forum has upvotes switched off — the server refuses the vote. */}
+      {canUpvote && (
+        <div className="bc-relative bc-z-10">
+          <VoteBox isVote={hasVoted} onVote={memberMayVote ? handlePostVote : undefined} votes={total} />
+        </div>
+      )}
 
       <div className="bc-flex bc-min-w-0 bc-max-w-full bc-flex-1 bc-flex-col">
         {/* The link stretches over the whole card (see topic-card.css), so the
