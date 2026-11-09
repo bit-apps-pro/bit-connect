@@ -74,6 +74,10 @@ final class Plugin
 
         Hooks::addAction('init', [$this, 'registerProviders'], 8);
 
+        // After `init:11`, where another plugin adds its capabilities to
+        // `bit_connect_capabilities`. See CapabilityService::requestReapply().
+        Hooks::addAction('init', [CapabilityService::class, 'applyAfterActivation'], 20);
+
         Hooks::addFilter('plugin_action_links_' . Config::get('BASENAME'), [new PluginPageActions(), 'renderActionLinks']);
 
         $this->maybeMigrateDB();

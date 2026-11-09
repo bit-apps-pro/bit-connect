@@ -32,6 +32,12 @@ final class CapabilityService
     private const PREFIXED_SLUGS_OPTION = 'bit_connect_caps_prefixed_v5';
 
     /**
+     * Set on activation, cleared once the saved settings are applied again on
+     * a full request. See applyAfterActivation().
+     */
+    private const REAPPLY_OPTION = 'bit_connect_caps_reapply';
+
+    /**
      * The prefix every capability slug carried before it was namespaced.
      *
      * `forum_create_post` became `bit_connect_forum_create_post`, and so on:
@@ -234,6 +240,35 @@ final class CapabilityService
         $defaults = self::buildDefaultSettings();
         update_option(self::OPTION_NAME, $defaults);
         self::applySettings($defaults);
+    }
+
+    /**
+     * Asks for the saved settings to be applied again on the next request.
+     *
+     * Activation applies them at once, but only for the capabilities known in
+     * that request. Another plugin that adds capabilities through
+     * `bit_connect_capabilities` cannot boot while this plugin is off, so its
+     * capabilities are not on the list then. Deactivation removed them from
+     * every role, and without a second pass they stay removed while the
+     * settings screen still shows them as granted.
+     */
+    public static function requestReapply(): void
+    {
+        update_option(self::REAPPLY_OPTION, true);
+    }
+
+    /**
+     * Applies the saved settings once after activation, with every listener
+     * of `bit_connect_capabilities` registered. Runs on `init` at priority 20.
+     */
+    public static function applyAfterActivation(): void
+    {
+        if (!get_option(self::REAPPLY_OPTION)) {
+            return;
+        }
+
+        delete_option(self::REAPPLY_OPTION);
+        self::applySettings(self::getSettings());
     }
 
     // -------------------------------------------------------------------------
