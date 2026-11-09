@@ -15,6 +15,8 @@ use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Enum\Taxonomies;
 use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Model\Vote;
+use BitApps\BitConnect\Services\Events\EventPayload;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\Events\TopicPublication;
 use WP_Post;
 use WP_Query;
@@ -670,10 +672,18 @@ class TopicService
         // uploads go to the daily cleanup instead of staying behind forever.
         $media = array_keys(get_attached_media('', $id));
 
+        // Read before the delete: afterwards the post cannot describe itself.
+        $announced = TopicPublication::isAnnounced($post);
+        $snapshot = $announced ? EventPayload::topic($post) : [];
+
         $result = wp_delete_post($id, true);
 
         if ($result instanceof WP_Post) {
             UploadClaims::release($media);
+
+            if ($announced) {
+                Events::topicDeleted($snapshot, (int) $post->post_author);
+            }
         }
 
         return $result instanceof WP_Post;

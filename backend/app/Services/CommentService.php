@@ -12,7 +12,7 @@ use BitApps\BitConnect\Enum\Capabilities;
 use BitApps\BitConnect\Enum\NotificationTypes;
 use BitApps\BitConnect\Enum\PostTypes;
 use BitApps\BitConnect\Model\Follow;
-use BitApps\BitConnect\Services\Events\Events;
+use BitApps\BitConnect\Services\Events\CommentPublication;
 use InvalidArgumentException;
 use WP_Comment;
 use WP_Post;
@@ -145,7 +145,8 @@ final class CommentService
         // by design.
         $this->notifyThread($post, $comment, $parentId);
 
-        Events::commentCreated($comment, $post);
+        // Held for approval, the event waits for the approval — see CommentPublication.
+        CommentPublication::created($comment, $post);
 
         return $comment;
     }

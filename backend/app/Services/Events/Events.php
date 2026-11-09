@@ -10,10 +10,12 @@ if (!defined('ABSPATH')) {
 use BitApps\BitConnect\Deps\BitApps\WPKit\Hooks\Hooks;
 use BitApps\BitConnect\Enum\ActivityActions;
 use BitApps\BitConnect\Enum\PostTypes;
+use BitApps\BitConnect\Model\Follow;
 use BitApps\BitConnect\Services\ActivityLogService;
 use BitApps\BitConnect\Services\ExtensionPoints;
 use WP_Comment;
 use WP_Post;
+use WP_Term;
 use WP_User;
 
 /**
@@ -73,6 +75,126 @@ final class Events
 
         Hooks::doAction('bit_connect_comment_created', $payload);
         self::announce('comment_created', $payload);
+    }
+
+    /**
+     * @param list<string> $changed which of `title`, `content`, `slug`,
+     *                              `topic_types` and `tags` the edit moved
+     */
+    public static function topicUpdated(WP_Post $post, array $changed): void
+    {
+        $payload = EventPayload::finalize(
+            'topic_updated',
+            EventPayload::topic($post)
+            + ['changed' => implode(',', $changed)]
+            + EventPayload::user((int) $post->post_author, 'author')
+            + EventPayload::user(get_current_user_id(), 'actor')
+        );
+
+        Hooks::doAction('bit_connect_topic_updated', $payload);
+        self::announce('topic_updated', $payload);
+    }
+
+    /**
+     * Fired after the delete, from fields read before it: a deleted post can no
+     * longer describe itself.
+     *
+     * @param array<string, null|scalar> $topic EventPayload::topic() of the post
+     *                                          as it stood before the delete
+     */
+    public static function topicDeleted(array $topic, int $authorId): void
+    {
+        $payload = EventPayload::finalize(
+            'topic_deleted',
+            $topic
+            + EventPayload::user($authorId, 'author')
+            + EventPayload::user(get_current_user_id(), 'actor')
+        );
+
+        Hooks::doAction('bit_connect_topic_deleted', $payload);
+        self::announce('topic_deleted', $payload);
+    }
+
+    public static function commentUpdated(WP_Comment $comment, WP_Post $post): void
+    {
+        $payload = EventPayload::finalize(
+            'comment_updated',
+            EventPayload::comment($comment)
+            + EventPayload::topic($post)
+            + EventPayload::user((int) $comment->user_id, 'author')
+        );
+
+        Hooks::doAction('bit_connect_comment_updated', $payload);
+        self::announce('comment_updated', $payload);
+    }
+
+    /**
+     * @param array<string, null|scalar> $comment EventPayload::comment() and
+     *                                            EventPayload::topic(), read
+     *                                            before the delete
+     */
+    public static function commentDeleted(array $comment, int $authorId, int $repliesDeleted): void
+    {
+        $payload = EventPayload::finalize(
+            'comment_deleted',
+            $comment
+            + ['replies_deleted' => $repliesDeleted]
+            + EventPayload::user($authorId, 'author')
+            + EventPayload::user(get_current_user_id(), 'actor')
+        );
+
+        Hooks::doAction('bit_connect_comment_deleted', $payload);
+        self::announce('comment_deleted', $payload);
+    }
+
+    /**
+     * A member starts to follow a post, a tag, the forum, or a term of a
+     * taxonomy another plugin files posts under.
+     */
+    public static function followed(int $userId, string $targetType, int $targetId): void
+    {
+        $name = '';
+        // Sent so a webhook that does not take private posts can leave out
+        // the title of one: a member may follow a post only some can read.
+        $visibility = 'public';
+
+        if ($targetType === Follow::TARGET_TOPIC) {
+            $post = get_post($targetId);
+            $name = $post instanceof WP_Post ? (string) $post->post_title : '';
+            $visibility = $post instanceof WP_Post ? EventPayload::visibility((string) $post->post_status) : 'public';
+        } elseif ($targetId > 0) {
+            $term = get_term($targetId);
+            $name = $term instanceof WP_Term ? (string) $term->name : '';
+        }
+
+        $payload = EventPayload::finalize(
+            'followed',
+            [
+                'follow_target_type' => $targetType,
+                'follow_target_id'   => $targetId,
+                'follow_target_name' => $name,
+                'topic_visibility'   => $visibility,
+            ]
+            + EventPayload::user($userId, 'member')
+        );
+
+        Hooks::doAction('bit_connect_followed', $payload);
+        self::announce('followed', $payload);
+    }
+
+    /**
+     * @param list<string> $changed which of `display_name`, `slug`, `bio`,
+     *                              `links`, `avatar` and `cover` changed
+     */
+    public static function profileUpdated(int $userId, array $changed): void
+    {
+        $payload = EventPayload::finalize(
+            'profile_updated',
+            ['changed' => implode(',', $changed)] + EventPayload::user($userId, 'member')
+        );
+
+        Hooks::doAction('bit_connect_profile_updated', $payload);
+        self::announce('profile_updated', $payload);
     }
 
     public static function topicVoted(WP_Post $post, int $voterId, int $voteCount): void

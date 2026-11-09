@@ -11,6 +11,7 @@ use BitApps\BitConnect\Deps\BitApps\WPKit\Http\Response;
 use BitApps\BitConnect\Http\Requests\DeleteAvatarRequest;
 use BitApps\BitConnect\Http\Requests\UploadAvatarRequest;
 use BitApps\BitConnect\Services\AvatarService;
+use BitApps\BitConnect\Services\Events\Events;
 use BitApps\BitConnect\Services\UploadClaims;
 
 /**
@@ -84,6 +85,7 @@ final class AvatarController
 
         UploadClaims::markPortal((int) $attachmentId);
         AvatarService::setAvatar($userId, $attachmentId);
+        Events::profileUpdated($userId, ['avatar']);
 
         return Response::success(
             [
@@ -97,6 +99,10 @@ final class AvatarController
     {
         $userId = (int) $request->id;
         $removed = AvatarService::removeAvatar($userId);
+
+        if ($removed) {
+            Events::profileUpdated($userId, ['avatar']);
+        }
 
         return Response::success(
             [

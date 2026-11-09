@@ -881,6 +881,30 @@ msgstr ""
 msgid "A new post becomes public"
 msgstr ""
 
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A member edits a public post"
+msgstr ""
+
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A public post is deleted"
+msgstr ""
+
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A member edits a comment"
+msgstr ""
+
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A comment is deleted"
+msgstr ""
+
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A member follows a post, a tag or the forum"
+msgstr ""
+
+#: backend/app/Services/Events/EventRegistry.php
+msgid "A member changes their profile"
+msgstr ""
+
 #: backend/app/Services/Events/EventRegistry.php:164
 msgid "The status or stage of a post changes"
 msgstr ""

@@ -18,6 +18,14 @@ use PHPUnit\Framework\TestCase;
  */
 final class EventRegistryTest extends TestCase
 {
+    private const FREE_EVENTS = [
+        'topic_created', 'topic_status_changed', 'comment_created',
+        'topic_updated', 'topic_deleted', 'comment_updated', 'comment_deleted',
+        'followed', 'profile_updated', 'topic_voted',
+        'member_registered', 'member_logged_in', 'report_filed', 'report_resolved',
+        'moderation_action',
+    ];
+
     protected function setUp(): void
     {
         $GLOBALS['__wp_filters'] = [];
@@ -43,11 +51,7 @@ final class EventRegistryTest extends TestCase
     public function testTheFreeEventsAreListed(): void
     {
         self::assertSame(
-            [
-                'topic_created', 'topic_status_changed', 'comment_created', 'topic_voted',
-                'member_registered', 'member_logged_in', 'report_filed', 'report_resolved',
-                'moderation_action',
-            ],
+            self::FREE_EVENTS,
             array_keys(EventRegistry::all())
         );
     }
@@ -104,10 +108,7 @@ final class EventRegistryTest extends TestCase
             'not_an_array' => 'nope',
         ];
 
-        self::assertSame(
-            ['topic_created', 'topic_status_changed', 'comment_created', 'topic_voted', 'member_registered', 'member_logged_in', 'report_filed', 'report_resolved', 'moderation_action'],
-            array_keys(EventRegistry::all())
-        );
+        self::assertSame(self::FREE_EVENTS, array_keys(EventRegistry::all()));
     }
 
     public function testASampleCarriesTheEnvelopeAndTheFields(): void

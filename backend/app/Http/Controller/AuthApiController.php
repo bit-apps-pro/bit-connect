@@ -212,6 +212,11 @@ final class AuthApiController
 
         $user = get_userdata($userId);
 
+        // Opening the link signs the new member in, like the login endpoint.
+        if ($user instanceof WP_User) {
+            Events::memberLoggedIn($user);
+        }
+
         return Response::success(
             $user instanceof WP_User ? self::authResponse($user) : self::createdResponse($userId)
         );
@@ -304,7 +309,7 @@ final class AuthApiController
      * asked for, an account awaiting verification, a lockout — is the member's
      * to read and passes through as WordPress or its plugin wrote it.
      *
-     * @param \WP_Error $error
+     * @param WP_Error $error
      */
     private static function loginErrorMessage($error): string
     {
