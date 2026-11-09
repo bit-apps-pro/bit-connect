@@ -222,7 +222,9 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 
 = 1.1.0 =
 * New: the plugin sends a WordPress action for each forum event. Automation tools, for example Bit Integrations and Bit Flows, can use these actions as triggers.
-* The events are: a post is published, the status of a post changes, a comment is added, a post gets a vote, a member registers or logs in, a report is sent or resolved, and a moderator acts.
+* Post events: a post is published, edited or deleted, the status of a post changes, and a post gets a vote.
+* Comment and member events: a comment is added, edited or deleted. A member follows an item, changes their profile, registers or logs in.
+* Moderation events: a report is sent or resolved, and a moderator acts.
 * If upvotes are off, the portal does not show the vote control on posts.
 * The portal shows its text in the language of the site.
 * If the post of a notification was deleted, the notification tells you so.
