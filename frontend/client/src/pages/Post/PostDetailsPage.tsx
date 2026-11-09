@@ -237,9 +237,12 @@ export default function PostDetailsPage() {
   const mayCommentWhenLocked = isLoggedIn && can('bit_connect_forum_moderate')
   const commentsClosed = Boolean(post.is_locked) && !mayCommentWhenLocked
 
+  // With upvotes switched off the control is left out, as a comment's is when
+  // the forum has no comment upvotes — not drawn disabled with a count nobody
+  // can change. Disabled is kept for the member a role denies.
   const voteBoxProps = {
     isVote: post.vote.hasVoted,
-    onVote: canPostUpvote && memberMayVotePost ? handlePostVote : undefined,
+    onVote: memberMayVotePost ? handlePostVote : undefined,
     votes: post.vote.total
   }
 
@@ -301,9 +304,11 @@ export default function PostDetailsPage() {
           <ReportModal />
           <ShareDialog />
 
-          <div className="bc-hidden lg:bc-block">
-            <VoteBox {...voteBoxProps} />
-          </div>
+          {canPostUpvote && (
+            <div className="bc-hidden lg:bc-block">
+              <VoteBox {...voteBoxProps} />
+            </div>
+          )}
 
           <Space className="bc-w-full bc-max-w-full bc-min-w-0 bc-py-1" direction="vertical">
             {/* Below lg the vote control is handed to the header, which puts it
@@ -321,7 +326,10 @@ export default function PostDetailsPage() {
                 so the block closes at the same distance from the comments
                 whether or not the topic has files. */}
             <div className="bc-mb-3 lg:bc-mb-6">
-              <PostHeader post={post} voteBox={<VoteBox compact {...voteBoxProps} />} />
+              <PostHeader
+                post={post}
+                voteBox={canPostUpvote ? <VoteBox compact {...voteBoxProps} /> : undefined}
+              />
 
               {attachments.length > 0 && (
                 <AttachmentList attachments={attachments} className="bc-mt-2 lg:bc-mt-4" />

@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.8
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -211,6 +211,18 @@ Yes. Bit Connect Pro lets you create public or private groups, add different typ
 One, described under *External Services* above: the Bit Apps API, which is contacted only from the Support screen. The public portal contacts no third party; its typeface is bundled with the plugin. The plugin collects no usage or diagnostic data and sends nothing about your site, your members or your settings anywhere.
 
 == Changelog ==
+
+= 1.1.0 =
+* New: the plugin sends a WordPress action for each forum event. Automation tools, for example Bit Integrations and Bit Flows, can use these actions as triggers.
+* The events are: a post is published, the status of a post changes, a comment is added, a post gets a vote, a member registers or logs in, a report is sent or resolved, and a moderator acts.
+* If upvotes are off, the portal does not show the vote control on posts.
+* The portal shows its text in the language of the site.
+* If the post of a notification was deleted, the notification tells you so.
+* Notification badges use the icons of the portal.
+* If you change the status and the stage of a post together, the plugin saves them in one update.
+* Fixed: the role settings apply again after you deactivate and activate the plugin.
+* Fixed: the checkboxes in the admin have a border on all screens.
+* Fixed: the plugin escapes the comment error messages.
 
 = 1.0.8 =
 * The portal loads faster. The first download is smaller, and the pickers, the notification panel and the preferences form load when you open them.
