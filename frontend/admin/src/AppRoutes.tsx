@@ -153,8 +153,11 @@ export default function AppRoutes() {
               {/* `topics` is the topics screen; the list of posts is `posts`. */}
               <Route element={manageOnly(<TopicTypes />)} path="topics" />
               <Route element={<MovedTo to="/topics" />} path="topic-types" />
+              {/* With the same optional `:tab` segment as Tags and Settings, so
+                  an added screen with tabs can keep the open one in the address
+                  (useRouteTab). A screen without tabs ignores it. */}
               {addedPages.map(page => (
-                <Route element={page.element} key={page.path} path={page.path} />
+                <Route element={page.element} key={page.path} path={`${page.path}/:tab?`} />
               ))}
               <Route element={<Error404 />} path="*" />
             </Route>
