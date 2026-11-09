@@ -114,7 +114,7 @@ class HookProvider
         // The dashboard's cached answer, dropped the same way — see DashboardCache.
         DashboardCache::registerHooks();
 
-        // `bit_connect_topic_created` for a topic made public outside the
+        // `bit_connect_post_created` for a topic made public outside the
         // portal's create — see TopicPublication.
         TopicPublication::register();
         CommentPublication::register();

@@ -13,7 +13,7 @@ use BitApps\BitConnect\Services\ContentVisibilityService;
 use WP_Post;
 
 /**
- * Fires `topic_created` once per topic: the first time it is public.
+ * Fires `post_created` once per topic: the first time it is public.
  *
  * "Created" means "there is a new post people can read", because that is what
  * every listener wants to act on — a topic still waiting for a moderator must
@@ -87,7 +87,7 @@ final class TopicPublication
 
     /**
      * Whether listeners have heard of this topic: it is public now and
-     * `topic_created` fired for it. An edit or a delete of a topic nobody was
+     * `post_created` fired for it. An edit or a delete of a topic nobody was
      * told about is not news either.
      */
     public static function isAnnounced(WP_Post $post): bool
@@ -98,7 +98,7 @@ final class TopicPublication
     }
 
     /**
-     * Fires `topic_created` for a topic that is public now, unless it already
+     * Fires `post_created` for a topic that is public now, unless it already
      * has been.
      */
     public static function announce(WP_Post $post): void

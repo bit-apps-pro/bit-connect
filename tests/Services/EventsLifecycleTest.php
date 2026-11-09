@@ -113,10 +113,21 @@ final class EventsLifecycleTest extends TestCase
 
         $payload = $this->fired()[0]['args'][0];
 
-        self::assertSame('bit_connect_topic_updated', $this->fired()[0]['tag']);
+        self::assertSame('bit_connect_post_updated', $this->fired()[0]['tag']);
         self::assertSame('title,tags', $payload['changed']);
         self::assertSame(self::AUTHOR, $payload['author_id']);
         self::assertSame(self::ACTOR, $payload['actor_id']);
+    }
+
+    /**
+     * The payload calls the Topics of a post `topics`, as its `topic_names`
+     * and `topic_ids` fields do, not by the internal `topic_types`.
+     */
+    public function testAnEditOfTheTopicsSaysTopics(): void
+    {
+        Events::topicUpdated($this->topic(), ['topic_types', 'tags']);
+
+        self::assertSame('topics,tags', $this->fired()[0]['args'][0]['changed']);
     }
 
     public function testADeletedTopicIsDescribedFromBeforeTheDelete(): void
@@ -128,9 +139,9 @@ final class EventsLifecycleTest extends TestCase
 
         $payload = $this->fired()[0]['args'][0];
 
-        self::assertSame('bit_connect_topic_deleted', $this->fired()[0]['tag']);
-        self::assertSame(self::TOPIC, $payload['topic_id']);
-        self::assertSame('Export failed', $payload['topic_title']);
+        self::assertSame('bit_connect_post_deleted', $this->fired()[0]['tag']);
+        self::assertSame(self::TOPIC, $payload['post_id']);
+        self::assertSame('Export failed', $payload['post_title']);
         self::assertSame(self::ACTOR, $payload['actor_id']);
     }
 
@@ -154,9 +165,9 @@ final class EventsLifecycleTest extends TestCase
         $payload = $this->fired()[0]['args'][0];
 
         self::assertSame('bit_connect_followed', $this->fired()[0]['tag']);
-        self::assertSame('topic', $payload['follow_target_type']);
+        self::assertSame('post', $payload['follow_target_type']);
         self::assertSame('Export failed', $payload['follow_target_name']);
-        self::assertSame('public', $payload['topic_visibility']);
+        self::assertSame('public', $payload['post_visibility']);
         self::assertSame(self::ACTOR, $payload['member_id']);
     }
 
@@ -170,7 +181,7 @@ final class EventsLifecycleTest extends TestCase
 
         // The webhook dispatcher reads this to keep the title from a webhook
         // that does not take private posts.
-        self::assertSame('private', $this->fired()[0]['args'][0]['topic_visibility']);
+        self::assertSame('private', $this->fired()[0]['args'][0]['post_visibility']);
     }
 
     public function testAProfileChangeSaysWhichFieldsChanged(): void

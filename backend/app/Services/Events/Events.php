@@ -35,12 +35,12 @@ final class Events
     public static function topicCreated(WP_Post $post): void
     {
         $payload = EventPayload::finalize(
-            'topic_created',
+            'post_created',
             EventPayload::topic($post) + EventPayload::user((int) $post->post_author, 'author')
         );
 
-        Hooks::doAction('bit_connect_topic_created', $payload);
-        self::announce('topic_created', $payload);
+        Hooks::doAction('bit_connect_post_created', $payload);
+        self::announce('post_created', $payload);
     }
 
     /**
@@ -49,7 +49,7 @@ final class Events
     public static function topicStatusChanged(WP_Post $post, string $fromStatus, string $fromStage, array $changed): void
     {
         $payload = EventPayload::finalize(
-            'topic_status_changed',
+            'post_status_changed',
             EventPayload::topic($post)
             + [
                 'from_status' => $fromStatus,
@@ -60,8 +60,8 @@ final class Events
             + EventPayload::user(get_current_user_id(), 'actor')
         );
 
-        Hooks::doAction('bit_connect_topic_status_changed', $payload);
-        self::announce('topic_status_changed', $payload);
+        Hooks::doAction('bit_connect_post_status_changed', $payload);
+        self::announce('post_status_changed', $payload);
     }
 
     public static function commentCreated(WP_Comment $comment, WP_Post $post): void
@@ -79,20 +79,24 @@ final class Events
 
     /**
      * @param list<string> $changed which of `title`, `content`, `slug`,
-     *                              `topic_types` and `tags` the edit moved
+     *                              `topic_types` and `tags` the edit moved.
+     *                              The payload says `topics` for
+     *                              `topic_types`, as its fields do.
      */
     public static function topicUpdated(WP_Post $post, array $changed): void
     {
+        $changed = array_map(static fn (string $part): string => $part === 'topic_types' ? 'topics' : $part, $changed);
+
         $payload = EventPayload::finalize(
-            'topic_updated',
+            'post_updated',
             EventPayload::topic($post)
             + ['changed' => implode(',', $changed)]
             + EventPayload::user((int) $post->post_author, 'author')
             + EventPayload::user(get_current_user_id(), 'actor')
         );
 
-        Hooks::doAction('bit_connect_topic_updated', $payload);
-        self::announce('topic_updated', $payload);
+        Hooks::doAction('bit_connect_post_updated', $payload);
+        self::announce('post_updated', $payload);
     }
 
     /**
@@ -105,14 +109,14 @@ final class Events
     public static function topicDeleted(array $topic, int $authorId): void
     {
         $payload = EventPayload::finalize(
-            'topic_deleted',
+            'post_deleted',
             $topic
             + EventPayload::user($authorId, 'author')
             + EventPayload::user(get_current_user_id(), 'actor')
         );
 
-        Hooks::doAction('bit_connect_topic_deleted', $payload);
-        self::announce('topic_deleted', $payload);
+        Hooks::doAction('bit_connect_post_deleted', $payload);
+        self::announce('post_deleted', $payload);
     }
 
     public static function commentUpdated(WP_Comment $comment, WP_Post $post): void
@@ -170,10 +174,11 @@ final class Events
         $payload = EventPayload::finalize(
             'followed',
             [
-                'follow_target_type' => $targetType,
+                // A post is a "topic" inside the code; the payload says "post".
+                'follow_target_type' => $targetType === Follow::TARGET_TOPIC ? 'post' : $targetType,
                 'follow_target_id'   => $targetId,
                 'follow_target_name' => $name,
-                'topic_visibility'   => $visibility,
+                'post_visibility'    => $visibility,
             ]
             + EventPayload::user($userId, 'member')
         );
@@ -200,15 +205,15 @@ final class Events
     public static function topicVoted(WP_Post $post, int $voterId, int $voteCount): void
     {
         $payload = EventPayload::finalize(
-            'topic_voted',
+            'post_voted',
             ['vote_count' => $voteCount]
             + EventPayload::topic($post)
             + EventPayload::user((int) $post->post_author, 'author')
             + EventPayload::user($voterId, 'member')
         );
 
-        Hooks::doAction('bit_connect_topic_voted', $payload);
-        self::announce('topic_voted', $payload);
+        Hooks::doAction('bit_connect_post_voted', $payload);
+        self::announce('post_voted', $payload);
     }
 
     public static function memberRegistered(int $userId): void
@@ -335,9 +340,9 @@ final class Events
         $fields = [
             'report_target_type' => $targetType,
             'report_target_id'   => $targetId,
-            'topic_id'           => 0,
-            'topic_title'        => '',
-            'topic_url'          => '',
+            'post_id'            => 0,
+            'post_title'         => '',
+            'post_url'           => '',
             'comment_id'         => 0,
             'comment_content'    => '',
         ];
@@ -358,9 +363,9 @@ final class Events
 
         if ($post instanceof WP_Post && $post->post_type === PostTypes::BIT_CONNECT->value) {
             $topic = EventPayload::topic($post);
-            $fields['topic_id'] = $topic['topic_id'];
-            $fields['topic_title'] = $topic['topic_title'];
-            $fields['topic_url'] = $topic['topic_url'];
+            $fields['post_id'] = $topic['post_id'];
+            $fields['post_title'] = $topic['post_title'];
+            $fields['post_url'] = $topic['post_url'];
         }
 
         return $fields;

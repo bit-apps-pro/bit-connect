@@ -58,6 +58,9 @@ final class TopicTaxonomies
         'post_content', 'post_excerpt', 'post_status', 'post_name', 'search', 'name', 'sortBy',
         'page', 'per_page', 'visibility', 'my_topics', 'slug', 'id', 'topic_id', 'seo', 'is_locked',
         'stage',
+        // An event payload names a post's terms `<name>_names` and `<name>_ids`
+        // (EventPayload::topic()); these are the names its own terms use.
+        'topic', 'tag', 'post',
     ];
 
     /**
