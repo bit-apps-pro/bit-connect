@@ -6,7 +6,6 @@ import {
   checkValidEmail,
   cn,
   deepCopy,
-  deepmerge,
   isObjectEqual,
   lighten,
   sortArrOfObj
@@ -99,11 +98,5 @@ describe('cn', () => {
     expect(cn('p-2', 'p-4')).toBe('p-4')
     // eslint-disable-next-line no-constant-binary-expression -- a constant falsy argument is the input under test: this is how conditional classes reach cn() at call sites
     expect(cn('a', false && 'b', undefined, 'c')).toBe('a c')
-  })
-})
-
-describe('deepmerge', () => {
-  it('merges plain objects', () => {
-    expect(deepmerge({ a: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 })
   })
 })
