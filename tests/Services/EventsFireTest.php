@@ -69,8 +69,8 @@ final class EventsFireTest extends TestCase
 
         $fired = $this->fired();
 
-        self::assertSame(['bit_connect_topic_created', 'bit_connect_event'], array_column($fired, 'tag'));
-        self::assertSame('topic_created', $fired[1]['args'][0]);
+        self::assertSame(['bit_connect_post_created', 'bit_connect_event'], array_column($fired, 'tag'));
+        self::assertSame('post_created', $fired[1]['args'][0]);
         self::assertSame($fired[0]['args'][0], $fired[1]['args'][1]);
     }
 
@@ -85,14 +85,14 @@ final class EventsFireTest extends TestCase
             self::assertTrue($value === null || \is_scalar($value), $key);
         }
 
-        self::assertSame('topic_created', $payload['event']);
-        self::assertSame(self::TOPIC, $payload['topic_id']);
-        self::assertSame('public', $payload['topic_visibility']);
-        self::assertSame('Export failed', $payload['topic_title']);
-        self::assertSame('Export does not work.', $payload['topic_content_text']);
-        self::assertSame('export,csv', $payload['topic_tags']);
-        self::assertSame('7,9', $payload['topic_tag_ids']);
-        self::assertSame('2026-10-20T09:30:00+00:00', $payload['topic_created_at']);
+        self::assertSame('post_created', $payload['event']);
+        self::assertSame(self::TOPIC, $payload['post_id']);
+        self::assertSame('public', $payload['post_visibility']);
+        self::assertSame('Export failed', $payload['post_title']);
+        self::assertSame('Export does not work.', $payload['post_content_text']);
+        self::assertSame('export,csv', $payload['tag_names']);
+        self::assertSame('7,9', $payload['tag_ids']);
+        self::assertSame('2026-10-20T09:30:00+00:00', $payload['post_created_at']);
         self::assertSame(self::AUTHOR, $payload['author_id']);
         self::assertSame('jane@example.com', $payload['author_email']);
     }
@@ -103,7 +103,7 @@ final class EventsFireTest extends TestCase
 
         $payload = $this->fired()[0]['args'][0];
 
-        foreach (array_keys(EventRegistry::all()['topic_created']['fields']) as $field) {
+        foreach (array_keys(EventRegistry::all()['post_created']['fields']) as $field) {
             self::assertArrayHasKey($field, $payload);
         }
     }
@@ -129,7 +129,7 @@ final class EventsFireTest extends TestCase
 
         $payload = $this->fired()[0]['args'][0];
 
-        self::assertSame('topic_created', $payload['event']);
+        self::assertSame('post_created', $payload['event']);
         self::assertArrayNotHasKey('nested', $payload);
     }
 
@@ -158,7 +158,7 @@ final class EventsFireTest extends TestCase
         self::assertSame('bit_connect_comment_created', $this->fired()[0]['tag']);
         self::assertSame(128, $payload['comment_id']);
         self::assertSame('pending', $payload['comment_status']);
-        self::assertSame(self::TOPIC, $payload['topic_id']);
+        self::assertSame(self::TOPIC, $payload['post_id']);
         self::assertSame(self::ACTOR, $payload['author_id']);
     }
 
@@ -197,7 +197,7 @@ final class EventsFireTest extends TestCase
         TopicPublication::markCreated($post);
         TopicPublication::onTransition('publish', 'draft', $post);
 
-        self::assertCount(1, array_filter($this->fired(), static fn (array $a): bool => $a['tag'] === 'bit_connect_topic_created'));
+        self::assertCount(1, array_filter($this->fired(), static fn (array $a): bool => $a['tag'] === 'bit_connect_post_created'));
     }
 
     public function testATopicCreatedHiddenIsNotAnnounced(): void
@@ -220,7 +220,7 @@ final class EventsFireTest extends TestCase
     {
         TopicPublication::onTransition('publish', 'draft', $this->topic('publish'));
 
-        self::assertSame('bit_connect_topic_created', $this->fired()[0]['tag'] ?? null);
+        self::assertSame('bit_connect_post_created', $this->fired()[0]['tag'] ?? null);
     }
 
     public function testATopicRestoredAfterAReportIsNotNew(): void

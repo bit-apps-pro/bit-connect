@@ -24,7 +24,12 @@ use BitApps\BitConnect\Services\TopicTaxonomies;
  * and so `bit_connect_event` is fired for known events only.
  *
  * The hook names are a public contract. A field may be added to an event; a
- * field or an event is never renamed.
+ * field or an event is never renamed once released.
+ *
+ * Names use the words the portal uses: the thing a member creates is a
+ * "post" (`post_created`, `post_id`) and the grouping it is filed under is a
+ * "topic" (`topic_names`, `topic_ids`) — even though a post is still a
+ * "topic" inside the code.
  */
 final class EventRegistry
 {
@@ -98,19 +103,19 @@ final class EventRegistry
     public static function topicFields(): array
     {
         $fields = [
-            'topic_id'           => 42,
-            'topic_title'        => 'How do I export my data?',
-            'topic_url'          => home_url('/community/topic/how-do-i-export-my-data/'),
-            'topic_visibility'   => 'public',
-            'topic_content'      => '<p>I want to export all my data to a CSV file.</p>',
-            'topic_content_text' => 'I want to export all my data to a CSV file.',
-            'topic_types'        => 'Question',
-            'topic_type_ids'     => '3',
-            'topic_tags'         => 'export,csv',
-            'topic_tag_ids'      => '7,9',
-            'topic_status'       => 'Open',
-            'topic_stage'        => 'New',
-            'topic_created_at'   => '2026-10-20T09:30:00+00:00',
+            'post_id'           => 42,
+            'post_title'        => 'How do I export my data?',
+            'post_url'          => home_url('/community/topic/how-do-i-export-my-data/'),
+            'post_visibility'   => 'public',
+            'post_content'      => '<p>I want to export all my data to a CSV file.</p>',
+            'post_content_text' => 'I want to export all my data to a CSV file.',
+            'topic_names'       => 'Question',
+            'topic_ids'         => '3',
+            'tag_names'         => 'export,csv',
+            'tag_ids'           => '7,9',
+            'post_status'       => 'Open',
+            'post_stage'        => 'New',
+            'post_created_at'   => '2026-10-20T09:30:00+00:00',
         ];
 
         foreach (TopicTaxonomies::all() as $param => $entry) {
@@ -165,14 +170,14 @@ final class EventRegistry
         $comment = self::commentFields();
 
         return [
-            'topic_created' => [
-                'hook'   => 'bit_connect_topic_created',
+            'post_created' => [
+                'hook'   => 'bit_connect_post_created',
                 'group'  => self::GROUP_CONTENT,
                 'label'  => __('A new post becomes public', 'bit-connect'),
                 'fields' => $topic + self::userFields('author'),
             ],
-            'topic_status_changed' => [
-                'hook'   => 'bit_connect_topic_status_changed',
+            'post_status_changed' => [
+                'hook'   => 'bit_connect_post_status_changed',
                 'group'  => self::GROUP_CONTENT,
                 'label'  => __('The status or stage of a post changes', 'bit-connect'),
                 'fields' => $topic + [
@@ -187,14 +192,14 @@ final class EventRegistry
                 'label'  => __('A member adds a comment', 'bit-connect'),
                 'fields' => $comment + $topic + self::userFields('author'),
             ],
-            'topic_updated' => [
-                'hook'   => 'bit_connect_topic_updated',
+            'post_updated' => [
+                'hook'   => 'bit_connect_post_updated',
                 'group'  => self::GROUP_CONTENT,
                 'label'  => __('A member edits a public post', 'bit-connect'),
                 'fields' => $topic + ['changed' => 'title,content'] + self::userFields('author') + self::userFields('actor'),
             ],
-            'topic_deleted' => [
-                'hook'   => 'bit_connect_topic_deleted',
+            'post_deleted' => [
+                'hook'   => 'bit_connect_post_deleted',
                 'group'  => self::GROUP_CONTENT,
                 'label'  => __('A public post is deleted', 'bit-connect'),
                 'fields' => $topic + self::userFields('author') + self::userFields('actor'),
@@ -216,10 +221,10 @@ final class EventRegistry
                 'group'  => self::GROUP_ENGAGEMENT,
                 'label'  => __('A member follows a post, a tag or the forum', 'bit-connect'),
                 'fields' => [
-                    'follow_target_type' => 'topic',
+                    'follow_target_type' => 'post',
                     'follow_target_id'   => 42,
                     'follow_target_name' => 'How do I export my data?',
-                    'topic_visibility'   => 'public',
+                    'post_visibility'    => 'public',
                 ] + self::userFields('member'),
             ],
             'profile_updated' => [
@@ -228,8 +233,8 @@ final class EventRegistry
                 'label'  => __('A member changes their profile', 'bit-connect'),
                 'fields' => ['changed' => 'display_name,bio'] + self::userFields('member'),
             ],
-            'topic_voted' => [
-                'hook'   => 'bit_connect_topic_voted',
+            'post_voted' => [
+                'hook'   => 'bit_connect_post_voted',
                 'group'  => self::GROUP_ENGAGEMENT,
                 'label'  => __('A member votes for a post', 'bit-connect'),
                 'fields' => ['vote_count' => 12] + $topic + self::userFields('author') + self::userFields('member'),
@@ -291,9 +296,9 @@ final class EventRegistry
         return [
             'report_target_type' => 'post',
             'report_target_id'   => 42,
-            'topic_id'           => 42,
-            'topic_title'        => 'How do I export my data?',
-            'topic_url'          => home_url('/community/topic/how-do-i-export-my-data/'),
+            'post_id'            => 42,
+            'post_title'         => 'How do I export my data?',
+            'post_url'           => home_url('/community/topic/how-do-i-export-my-data/'),
             'comment_id'         => 0,
             'comment_content'    => '',
         ];

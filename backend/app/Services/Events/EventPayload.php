@@ -49,8 +49,13 @@ final class EventPayload
     }
 
     /**
-     * A topic, under `topic_*`, plus `<param>_ids` and `<param>_names` for
-     * each taxonomy another plugin files topics under (TopicTaxonomies).
+     * A post, in the words the portal uses: the post's own fields under
+     * `post_*`, and its terms as `<name>_names` and `<name>_ids` — `topic_*`
+     * for the Topics it is filed under, `tag_*` for its tags, and the same for
+     * each taxonomy another plugin files posts under (TopicTaxonomies).
+     *
+     * The internal name of a post is still "topic" (the post type, this
+     * method, the routes); the payload is a public contract and says "post".
      *
      * @return array<string, null|scalar>
      */
@@ -59,19 +64,19 @@ final class EventPayload
         $content = (string) $post->post_content;
 
         $fields = [
-            'topic_id'           => (int) $post->ID,
-            'topic_title'        => (string) $post->post_title,
-            'topic_url'          => PortalLocation::topicUrl($post),
-            'topic_visibility'   => self::visibility((string) $post->post_status),
-            'topic_content'      => $content,
-            'topic_content_text' => self::text($content),
-            'topic_types'        => self::termNames($post, Taxonomies::TOPIC_TYPES->value),
-            'topic_type_ids'     => self::termIds($post, Taxonomies::TOPIC_TYPES->value),
-            'topic_tags'         => self::termNames($post, Taxonomies::TAGS->value),
-            'topic_tag_ids'      => self::termIds($post, Taxonomies::TAGS->value),
-            'topic_status'       => self::termNames($post, Taxonomies::STATUSES->value),
-            'topic_stage'        => self::termNames($post, Taxonomies::STAGES->value),
-            'topic_created_at'   => self::date((string) $post->post_date_gmt),
+            'post_id'           => (int) $post->ID,
+            'post_title'        => (string) $post->post_title,
+            'post_url'          => PortalLocation::topicUrl($post),
+            'post_visibility'   => self::visibility((string) $post->post_status),
+            'post_content'      => $content,
+            'post_content_text' => self::text($content),
+            'topic_names'       => self::termNames($post, Taxonomies::TOPIC_TYPES->value),
+            'topic_ids'         => self::termIds($post, Taxonomies::TOPIC_TYPES->value),
+            'tag_names'         => self::termNames($post, Taxonomies::TAGS->value),
+            'tag_ids'           => self::termIds($post, Taxonomies::TAGS->value),
+            'post_status'       => self::termNames($post, Taxonomies::STATUSES->value),
+            'post_stage'        => self::termNames($post, Taxonomies::STAGES->value),
+            'post_created_at'   => self::date((string) $post->post_date_gmt),
         ];
 
         foreach (TopicTaxonomies::all() as $param => $entry) {

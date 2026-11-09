@@ -385,7 +385,7 @@ final class TopicController
     }
 
     /**
-     * Fires `topic_updated` when the edit changed what readers see, and only
+     * Fires `post_updated` when the edit changed what readers see, and only
      * for a post listeners were told about.
      *
      * @param array<string, string> $before editableState() before the write

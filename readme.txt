@@ -127,15 +127,23 @@ To build it yourself (requires PHP 8.2+, Node 20+, pnpm 9+ and Composer 2):
 
 Bit Connect fires a WordPress action when something happens in the community. Each action gets one argument: a flat array of the event data. Automation plugins can use these actions as triggers.
 
-* `bit_connect_topic_created` – a new post becomes public
-* `bit_connect_topic_status_changed` – the status or stage of a post changes
+* `bit_connect_post_created` – a new post becomes public
+* `bit_connect_post_status_changed` – the status or stage of a post changes
+* `bit_connect_post_updated` – a member edits a public post
+* `bit_connect_post_deleted` – a public post is deleted
 * `bit_connect_comment_created` – a member adds a comment
-* `bit_connect_topic_voted` – a member votes for a post
+* `bit_connect_comment_updated` – a member edits a comment
+* `bit_connect_comment_deleted` – a comment is deleted
+* `bit_connect_post_voted` – a member votes for a post
+* `bit_connect_followed` – a member follows a post, a tag or the forum
+* `bit_connect_profile_updated` – a member changes their profile
 * `bit_connect_member_registered` – a person registers on the forum
 * `bit_connect_member_logged_in` – a member logs in on the forum
 * `bit_connect_report_filed` – a member reports a post or a comment
 * `bit_connect_report_resolved` – a moderator closes the reports on an item
 * `bit_connect_moderation_action` – a moderator or the forum acts on an item
+
+In the data, the fields of a post start with `post_` (for example, `post_id` and `post_title`). The Topics of a post are in `topic_names` and `topic_ids`, and its tags are in `tag_names` and `tag_ids`.
 
 The `bit_connect_event` action fires for all events, with the event name and the data. To remove a field from the data, use the `bit_connect_event_payload` filter.
 

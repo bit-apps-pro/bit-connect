@@ -19,9 +19,9 @@ use PHPUnit\Framework\TestCase;
 final class EventRegistryTest extends TestCase
 {
     private const FREE_EVENTS = [
-        'topic_created', 'topic_status_changed', 'comment_created',
-        'topic_updated', 'topic_deleted', 'comment_updated', 'comment_deleted',
-        'followed', 'profile_updated', 'topic_voted',
+        'post_created', 'post_status_changed', 'comment_created',
+        'post_updated', 'post_deleted', 'comment_updated', 'comment_deleted',
+        'followed', 'profile_updated', 'post_voted',
         'member_registered', 'member_logged_in', 'report_filed', 'report_resolved',
         'moderation_action',
     ];
@@ -87,15 +87,15 @@ final class EventRegistryTest extends TestCase
     public function testAnotherPluginCannotTakeOverAFreeEvent(): void
     {
         $GLOBALS['__wp_filters']['bit_connect_integration_events'] = [
-            'topic_created' => [
-                'hook'   => 'bit_connect_topic_created',
+            'post_created' => [
+                'hook'   => 'bit_connect_post_created',
                 'group'  => 'content',
                 'label'  => 'Something else',
                 'fields' => [],
             ],
         ];
 
-        self::assertSame('A new post becomes public', EventRegistry::all()['topic_created']['label']);
+        self::assertSame('A new post becomes public', EventRegistry::all()['post_created']['label']);
     }
 
     public function testAMalformedEntryIsDropped(): void
@@ -119,7 +119,7 @@ final class EventRegistryTest extends TestCase
         self::assertSame(1, $sample['schema_version']);
         self::assertArrayHasKey('event_id', $sample);
         self::assertArrayHasKey('comment_id', $sample);
-        self::assertArrayHasKey('topic_id', $sample);
+        self::assertArrayHasKey('post_id', $sample);
         self::assertArrayHasKey('author_email', $sample);
         self::assertSame([], EventRegistry::sample('no_such_event'));
     }
