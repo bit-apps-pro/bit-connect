@@ -6,11 +6,12 @@ import { useAppEssentials } from '@plugin-commons/utils/useAppEssentials'
 import MotionProvider from '@shared/motion/motion-provider'
 import useApplyTheme from '@shared/theme/use-apply-theme'
 import { externalLoginUrl } from '@utils/auth-urls'
+import { layerInlineThemeStyles } from '@utils/layer-inline-theme-styles'
 import { routePath } from '@utils/route-path'
 import { createAntDesignStyleContainer } from '@utils/themeUtils'
 import { App as AntApp, ConfigProvider, notification, theme } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import addedPortalRoutes from './added-portal-routes'
@@ -183,6 +184,7 @@ export default function AppRoutes() {
   const notifyContextValue = useMemo(() => ({ notificationApi }), [notificationApi])
 
   useAppEssentials()
+  useLayoutEffect(() => layerInlineThemeStyles(), [])
 
   useEffect(() => {
     if (navigateUrl && navigateUrl !== '') {
