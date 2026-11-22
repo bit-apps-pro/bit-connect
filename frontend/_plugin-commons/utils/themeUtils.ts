@@ -52,7 +52,9 @@ export function setCascadeLayerToWordpressStyles(cssLayers: string) {
         const isIgnoreFromLayer = isPluginCss(url.href)
         if (isIgnoreFromLayer) continue
 
-        if (!isConflictingCSS(url.href)) {
+        // A <link> is in the list twice: once as its CSSStyleSheet, once as the
+        // element. Import each file once.
+        if (!isConflictingCSS(url.href) && !styleSheetUrls.includes(url.href)) {
           styleSheetUrls.push(url.href)
         }
         styleSheet.disabled = true
@@ -81,5 +83,12 @@ export function setCascadeLayerToWordpressStyles(cssLayers: string) {
  * @returns boolean indicating if the css file is from the plugin
  */
 function isPluginCss(cssUrl: string) {
+  // Code-split chunks (CSS modules of lazy components) do not carry the
+  // `-ba-assets` name of the entry file, but they are served from the same
+  // assets folder. Sites that hide their plugin paths rewrite assetsURL the
+  // same way as the file URLs, so the prefix still matches there.
+  const { assetsURL } = SERVER_VARIABLES
+  if (assetsURL && cssUrl.startsWith(`${assetsURL.replace(/\/+$/, '')}/`)) return true
+
   return cssUrl.replaceAll(window.location.host, '').includes(`${SERVER_VARIABLES.pluginSlug}-ba-assets`)
 }
