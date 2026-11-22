@@ -32,10 +32,10 @@ body:has(#bit-connect-portal) {
 /* The portal owns its own ink, rather than inheriting the host theme's.
    WordPress prints Global Styles as an inline <style id="global-styles-inline-css">
    holding `body{color:var(--wp--preset--color--contrast)}` — #111 in most block
-   themes, and it is not theme-aware. setCascadeLayerToWordpressStyles() cannot
-   demote it: that only re-imports sheets with an href into @layer wp, and an
-   inline block has none, so an unlayered `body` rule outranks everything the
-   portal puts in a layer.
+   themes, and it is not theme-aware. layerInlineThemeStyles() moves that block
+   into @layer wp when the app mounts, but the server-rendered page paints
+   before then, and an unlayered `body` rule outranks everything the portal
+   puts in a layer.
 
    Both roots are named because neither is what WordPress targets — a direct
    rule on them beats an inherited one from `body` whatever the layer order,
@@ -74,10 +74,11 @@ body:has(#bit-connect-portal) {
    the portal's heading font (Outfit, over Inter body text), including those
    inside antd overlays, which mount on <body> outside the root.
 
-   Colour too: block themes' Global Styles print an unlayered
+   Colour too: block themes' Global Styles print
    `h1, h2, h3, h4, h5, h6 { color: var(--wp--preset--color--contrast) }` — #111
-   whatever the portal's theme — which outranks antd's Typography colour in
-   @layer antd and left every title black on black in dark mode. The token
+   whatever the portal's theme. Before the app mounts that block is unlayered
+   and outranks antd's Typography colour in @layer antd, which left every
+   title black on black in dark mode. The token
    rather than `inherit`: a title often sits in a link, and themes colour
    links the same theme-blind way. A Tailwind colour class still wins, being
    !important. */
@@ -124,6 +125,28 @@ body:has(#bit-connect-u-root > .ant-layout-has-sider) {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizelegibility;
+}
+
+/* Themes style the bare `input` element. Astra gives every text field a shadow
+   and a 40px height. A theme rule in @layer wp loses only where antd sets the
+   same property, and antd sets neither on the field inside an affix wrapper
+   (the search box, password fields). The theme values then showed as a second
+   box inside the wrapper, with the text pushed down. Select and InputNumber
+   set their own field height, so only the affix field takes `height: auto`. */
+:is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
+  :is(
+    .ant-input-affix-wrapper > input,
+    .ant-input-number-input,
+    .ant-select-selection-search-input,
+    .ant-picker-input > input
+  ) {
+  box-shadow: none;
+}
+
+:is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
+  .ant-input-affix-wrapper
+  > input {
+  height: auto;
 }
 
 /* inputs/textareas: always remove outline (border itself signals focus) */
