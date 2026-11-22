@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { layerInlineThemeStyles } from './layer-inline-theme-styles'
+import { hasBalancedBraces, layerInlineThemeStyles } from './layer-inline-theme-styles'
 
 // A theme's inline CSS sits outside every layer, so it beats the portal's
 // antd and Tailwind layers and repaints the portal's buttons and inputs.
@@ -50,6 +50,25 @@ describe('layerInlineThemeStyles', () => {
     expect(style.textContent).toBe(css)
   })
 
+  it('leaves a block with @namespace, which a layer block cannot hold', () => {
+    const css = '@namespace svg url(http://www.w3.org/2000/svg);a{color:red}'
+    const style = addStyle('theme-inline-css', css)
+
+    layerInlineThemeStyles()
+
+    expect(style.textContent).toBe(css)
+  })
+
+  it('puts the text back when a stray brace would end the layer early', () => {
+    const css = 'a{color:red}}button{color:blue}'
+    const style = addStyle('theme-inline-css', css)
+
+    layerInlineThemeStyles()
+
+    expect(style.textContent).toBe(css)
+    expect(style.dataset.bcLayered).toBeUndefined()
+  })
+
   it('wraps a block only once', () => {
     const style = addStyle('theme-inline-css', 'a{color:red}')
 
@@ -57,5 +76,22 @@ describe('layerInlineThemeStyles', () => {
     layerInlineThemeStyles()
 
     expect(style.textContent).toBe('@layer wp{a{color:red}}')
+  })
+})
+
+describe('hasBalancedBraces', () => {
+  it.each([
+    ['a{color:red}', true],
+    ['@media (min-width:1px){a{color:red}}', true],
+    ['a{content:"}"}', true],
+    ["a{content:'{'}", true],
+    ['/* } */a{color:red}', true],
+    [String.raw`a{content:"\""}`, true],
+    ['a{color:red}}', false],
+    ['a{color:red', false],
+    ['/* open comment a{}', false],
+    ['a{content:"open}', false]
+  ])('%s → %s', (css, expected) => {
+    expect(hasBalancedBraces(css)).toBe(expected)
   })
 })

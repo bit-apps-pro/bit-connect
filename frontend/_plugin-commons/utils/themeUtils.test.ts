@@ -37,8 +37,16 @@ beforeEach(() => {
 afterEach(() => {
   document.head.innerHTML = ''
   const globals = globalThis as Globals
-  if (saved && globals.SERVER_VARIABLES) Object.assign(globals.SERVER_VARIABLES, saved)
+  const current = globals.SERVER_VARIABLES
+  if (saved && current) {
+    // Remove the fields this file added, then put the old values back.
+    for (const key of Object.keys(testVariables)) {
+      if (!(key in saved)) Reflect.deleteProperty(current, key)
+    }
+    Object.assign(current, saved)
+  }
   saved = undefined
+  vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
 
@@ -65,6 +73,14 @@ describe('setCascadeLayerToWordpressStyles', () => {
 
     expect(layerStyle()).not.toContain('ClTyMlQ6')
     expect(chunk.isConnected).toBe(true)
+  })
+
+  it('keeps the plugin’s chunks out of the wp layer when a CDN serves them', () => {
+    addLink('https://cdn.example.test/wp-content/plugins/my-plugin/assets/client/my-plugin-Abc.css')
+
+    setCascadeLayerToWordpressStyles('@layer wp, antd;')
+
+    expect(layerStyle()).not.toContain('my-plugin-Abc')
   })
 
   it('keeps the plugin’s entry stylesheet out of the wp layer', () => {

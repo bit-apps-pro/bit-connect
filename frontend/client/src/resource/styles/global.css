@@ -129,13 +129,14 @@ body:has(#bit-connect-u-root > .ant-layout-has-sider) {
 
 /* Themes style the bare `input` element. Astra gives every text field a shadow
    and a 40px height. A theme rule in @layer wp loses only where antd sets the
-   same property, and antd sets neither on the field inside an affix wrapper
-   (the search box, password fields). The theme values then showed as a second
-   box inside the wrapper, with the text pushed down. Select and InputNumber
-   set their own field height, so only the affix field takes `height: auto`. */
+   same property, and antd sets neither on its text fields: a plain Input, or
+   the field inside an affix wrapper (the search box, password fields). In the
+   wrapper the theme values showed as a second box, with the text pushed down.
+   Select and InputNumber set their own field height, so only `input.ant-input`
+   takes `height: auto` (a TextArea keeps the height its rows give it). */
 :is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
   :is(
-    .ant-input-affix-wrapper > input,
+    .ant-input,
     .ant-input-number-input,
     .ant-select-selection-search-input,
     .ant-picker-input > input
@@ -144,8 +145,7 @@ body:has(#bit-connect-u-root > .ant-layout-has-sider) {
 }
 
 :is(#bit-connect-u-root, .ant-modal-root, .ant-drawer, .ant-popover, .ant-dropdown)
-  .ant-input-affix-wrapper
-  > input {
+  input.ant-input {
   height: auto;
 }
 
@@ -180,7 +180,11 @@ body:has(#bit-connect-u-root > .ant-layout-has-sider) {
   box-shadow: none !important;
 }
 
-svg {
+/* Scoped to the portal and antd's overlays, which mount on <body>. A bare
+   `svg` rule here is unlayered, so it beats every theme rule in @layer wp —
+   a theme that hides one of its own header icons with `display: none` would
+   show it again. :where() keeps the specificity of a bare `svg`. */
+:where(#bit-connect-portal, #bit-connect-u-root, [class^='ant-'], [class*=' ant-']) svg {
   pointer-events: none;
   display: inline-block;
 }

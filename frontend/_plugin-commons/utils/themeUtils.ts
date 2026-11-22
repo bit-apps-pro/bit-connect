@@ -85,10 +85,18 @@ export function setCascadeLayerToWordpressStyles(cssLayers: string) {
 function isPluginCss(cssUrl: string) {
   // Code-split chunks (CSS modules of lazy components) do not carry the
   // `-ba-assets` name of the entry file, but they are served from the same
-  // assets folder. Sites that hide their plugin paths rewrite assetsURL the
-  // same way as the file URLs, so the prefix still matches there.
+  // assets folder. Compare paths, not full URLs: a CDN changes the host of the
+  // file URLs but not of assetsURL. Sites that hide their plugin paths rewrite
+  // assetsURL the same way as the file URLs, so the path still matches there.
   const { assetsURL } = SERVER_VARIABLES
-  if (assetsURL && cssUrl.startsWith(`${assetsURL.replace(/\/+$/, '')}/`)) return true
+  if (assetsURL) {
+    try {
+      const assetsPath = new URL(assetsURL, window.location.href).pathname.replace(/\/+$/, '')
+      if (assetsPath && new URL(cssUrl).pathname.startsWith(`${assetsPath}/`)) return true
+    } catch {
+      // Not a URL: fall back to the file-name check below.
+    }
+  }
 
   return cssUrl.replaceAll(window.location.host, '').includes(`${SERVER_VARIABLES.pluginSlug}-ba-assets`)
 }
