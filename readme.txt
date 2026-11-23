@@ -4,7 +4,7 @@ Tags: community, forum, discussion, feedback, roadmap
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -220,6 +220,11 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 
 == Changelog ==
 
+= 1.1.1 =
+* Fixed: theme styles do not change the buttons and fields of the portal. Some themes, for example Astra, put their styles in the page.
+* Fixed: the parts of the portal that load later, for example the post text, keep their styles.
+* The portal loads each theme stylesheet one time only.
+
 = 1.1.0 =
 * New: the plugin sends a WordPress action for each forum event. Automation tools, for example Bit Integrations and Bit Flows, can use these actions as triggers.
 * Post events: a post is published, edited or deleted, the status of a post changes, and a post gets a vote.
@@ -233,7 +238,6 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 * Fixed: the role settings apply again after you deactivate and activate the plugin.
 * Fixed: the checkboxes in the admin have a border on all screens.
 * Fixed: the plugin escapes the comment error messages.
-* Fixed: theme styles do not change the buttons and fields of the portal. Some themes, for example Astra, put their styles in the page.
 
 = 1.0.8 =
 * The portal loads faster. The first download is smaller, and the pickers, the notification panel and the preferences form load when you open them.
