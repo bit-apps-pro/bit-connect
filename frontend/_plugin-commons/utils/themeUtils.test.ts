@@ -1,0 +1,99 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { setCascadeLayerToWordpressStyles } from './themeUtils'
+
+const ASSETS = 'https://example.test/wp-content/plugins/my-plugin/assets'
+
+function addLink(href: string) {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = href
+  document.head.append(link)
+  return link
+}
+
+function layerStyle() {
+  return document.head.firstElementChild?.textContent ?? ''
+}
+
+const testVariables = { assetsURL: ASSETS, pluginSlug: 'my-plugin' }
+interface Globals {
+  happyDOM?: { settings: { disableCSSFileLoading: boolean } }
+  SERVER_VARIABLES?: Record<string, unknown>
+}
+let saved: Record<string, unknown> | undefined
+
+beforeEach(() => {
+  // happy-dom downloads each <link> the tests add, and logs a NetworkError for
+  // each one. The tests do not need the files, so stop the download.
+  const { happyDOM } = globalThis as Globals
+  if (happyDOM) happyDOM.settings.disableCSSFileLoading = true
+
+  // A plugin's test setup may already define the global, and not let a test
+  // redefine it. Change its fields then, and put them back after.
+  const globals = globalThis as Globals
+  if (globals.SERVER_VARIABLES) {
+    saved = { ...globals.SERVER_VARIABLES }
+    Object.assign(globals.SERVER_VARIABLES, testVariables)
+  } else {
+    vi.stubGlobal('SERVER_VARIABLES', { ...testVariables })
+  }
+})
+
+afterEach(() => {
+  document.head.innerHTML = ''
+  const globals = globalThis as Globals
+  const current = globals.SERVER_VARIABLES
+  if (saved && current) {
+    // Remove the fields this file added, then put the old values back.
+    for (const key of Object.keys(testVariables)) {
+      if (!(key in saved)) Reflect.deleteProperty(current, key)
+    }
+    Object.assign(current, saved)
+  }
+  saved = undefined
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+})
+
+describe('setCascadeLayerToWordpressStyles', () => {
+  it('imports a theme stylesheet into the wp layer once', () => {
+    const href = 'https://example.test/wp-content/themes/astra/main.min.css'
+    const link = addLink(href)
+    // A browser lists a loaded <link> in document.styleSheets as well;
+    // happy-dom does not load it, so give the sheet by hand.
+    vi.spyOn(document, 'styleSheets', 'get').mockReturnValue([
+      { disabled: false, href, ownerNode: link }
+    ] as unknown as StyleSheetList)
+
+    setCascadeLayerToWordpressStyles('@layer wp, antd;')
+
+    const imports = layerStyle().match(/@import url\('[^']+astra\/main\.min\.css'\) layer\(wp\);/g)
+    expect(imports).toHaveLength(1)
+  })
+
+  it('keeps the plugin’s own code-split chunks out of the wp layer', () => {
+    const chunk = addLink(`${ASSETS}/client/my-plugin-ClTyMlQ6.css`)
+
+    setCascadeLayerToWordpressStyles('@layer wp, antd;')
+
+    expect(layerStyle()).not.toContain('ClTyMlQ6')
+    expect(chunk.isConnected).toBe(true)
+  })
+
+  it('keeps the plugin’s chunks out of the wp layer when a CDN serves them', () => {
+    addLink('https://cdn.example.test/wp-content/plugins/my-plugin/assets/client/my-plugin-Abc.css')
+
+    setCascadeLayerToWordpressStyles('@layer wp, antd;')
+
+    expect(layerStyle()).not.toContain('my-plugin-Abc')
+  })
+
+  it('keeps the plugin’s entry stylesheet out of the wp layer', () => {
+    addLink('https://example.test/elsewhere/main-my-plugin-ba-assets-x.css')
+
+    setCascadeLayerToWordpressStyles('@layer wp, antd;')
+
+    expect(layerStyle()).not.toContain('ba-assets')
+  })
+})

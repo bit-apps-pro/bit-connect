@@ -233,6 +233,7 @@ One, described under *External Services* above: the Bit Apps API, which is conta
 * Fixed: the role settings apply again after you deactivate and activate the plugin.
 * Fixed: the checkboxes in the admin have a border on all screens.
 * Fixed: the plugin escapes the comment error messages.
+* Fixed: theme styles do not change the buttons and fields of the portal. Some themes, for example Astra, put their styles in the page.
 
 = 1.0.8 =
 * The portal loads faster. The first download is smaller, and the pickers, the notification panel and the preferences form load when you open them.
