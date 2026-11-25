@@ -25,6 +25,7 @@ import { cn } from '../../../../common/helpers/globalHelpers'
 import { __ } from '../../../../common/helpers/i18nWrap'
 import supportNavLabel from '../../../support/support-nav-label'
 import useAddedPages from '../../../use-added-pages'
+import SidebarFootExtras from './sidebar-foot-extras'
 import SidebarNavItem from './SidebarNavItem'
 
 const { Sider } = Layout
@@ -144,6 +145,7 @@ export default function Sidebar() {
         {/* On the rail, the theme control is its own menu button and the
             credit — a line of text with nowhere to fit — is left out. */}
         <div className="bc-flex bc-shrink-0 bc-flex-col bc-items-center bc-pb-2 bc-pt-2">
+          <SidebarFootExtras compact={compact} />
           <ThemeToggle block={!compact} />
 
           {!compact && (
